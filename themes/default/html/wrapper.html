@@ -1,0 +1,483 @@
+<html lang="es" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <title>{$global_title}</title>
+  <meta name="title" content="{$global_title}">
+  <meta name="description" content="{$global_description}">
+  <meta name="keywords" content="{$global_keywords}">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <link rel="shortcut icon" type="image/png" href="{$theme->{images/favicon.ico}}" />
+  <link rel="stylesheet" type="text/css" href="{$theme->{assets/css/style.min.css}}" />
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@200;400;700&display=swap" rel="stylesheet">
+  <script type="text/javascript">
+    var D = document,
+        W = window,
+        M = '{#now_url}',
+        DW = W.innerWidth || D.documentElement.clientWidth || D.body.clienWidth,
+        DOWN = false,
+        CN = 0,
+        _timeDelay = [],
+        Req = (e, n, m, x, p, loadStartFunction, progressFunction, uploadFailed, uploadCanceled) => {
+          var i = window.XMLHttpRequest ? new XMLHttpRequest : new ActiveXObject("Microsoft.XMLHTTP"),
+          a = !1;
+          i && (i.open(m, e, !0), ('string' != typeof x && undefined != x) ? (f = new FormData(), f.append(p, x.files[0]), x = f) : (i.setRequestHeader("Content-Type", "application/x-www-form-urlencoded, */*; q=0.01"), x = "token={#token_session}"+(x != undefined ? x : '')), (('string' != typeof x && undefined != x) || ('string' != typeof p && undefined != p)) && (addEvent(i.upload, "loadstart", loadStartFunction, false), addEvent(i.upload, "progress", progressFunction, false), addEvent(i, "error", uploadFailed, false), addEvent(i, "abort", uploadCanceled, false)), addEvent(i, 'readystatechange', function() {
+            if (!a && 4 === i.readyState){
+              if (200 === i.status) {
+                a = !0;
+                var t = i.responseText,
+                e = t != '' ? JSON.parse(t) : 'Empty request';
+                (('string' != typeof x && undefined != x) || ('string' != typeof p && undefined != p)) ? addEvent(i, "load", n(e), false) : n(e)
+              } else {
+                if(navigator.onLine){
+                  console.log('Upss error')
+                } else {
+                  console.log('No internet access')
+                }
+              }
+            }
+          }, false), i.send(x));
+        }, UrlToParams = function(url){
+            var load;
+            url = url.replace('{#site_url}', '').split('/').filter(function(e){
+              return e;
+            });
+            switch (url.length) {
+              case 1:
+                load = '&one='+url[0];
+                break;
+              case 2:
+                load = '&one='+url[0]+'&two='+url[1];
+                break;
+              case 3:
+                load = '&one='+url[0]+'&two='+url[1]+'&three='+url[2];
+                break;
+              default:
+                load = '&one=home';
+            }
+            return load.replace('?', '&');
+        },
+        preloadPage = function(url){
+          if(DOWN) return null;
+          var DL = D.querySelector('#data-load');
+          DL.style.display = "block";
+          if("string" != typeof url){
+            event.preventDefault();
+            var url = UrlToParams(this.href);
+          }
+          var CS = D.querySelectorAll('.home_'),
+              CH = D.querySelectorAll('.settings_'),
+              CV = D.querySelectorAll('.about-us_');
+          Req("{$url->{req/global-data-load}}?token={#token_session}"+url, function(e) {
+            if (e.status == 200) {
+              for (var J = 0, I = CS.length; J < I; J++) CS && ((e.page == 'home') ? addClass(CS[J], 'active') : removeClass(CS[J], 'active'));
+              for (var J = 0, I = CH.length; J < I; J++) CH && ((e.page == 'settings') ? addClass(CH[J], 'active') : removeClass(CH[J], 'active'));
+              for (var J = 0, I = CV.length; J < I; J++) CV && ((e.page == 'about-us') ? addClass(CV[J], 'active') : removeClass(CV[J], 'active'));
+
+              window.history.pushState({state:'new'},'', e.url);
+              var CX = D.querySelector('#global_content'),
+                  CP = D.querySelectorAll('#language-href'),
+                  CA = window.innerWidth || D.documentElement.clientWidth || D.body.clientWidth;
+              removeAllTimeDelay(), M = encodeURIComponent(e.url);
+              var PZ = D.querySelector('.open-dropdown [data-toggle=dropdown]');
+              if(PZ){
+                setTimeout(function(){
+                  PZ.style.position = "";
+                }, 120), removeClass(PZ.parentNode, 'open-dropdown'), PZ.setAttribute('aria-expanded', false), window.dropdownActive = !1;
+              }  
+              CX.innerHTML = e.html;
+              <?php if($TEMP['#settings']['recaptcha'] == 'on'){ ?>
+              if(e.page == 'register'){
+                grecaptcha.render("g-recaptcha", {"sitekey": "{$settings->recaptcha_key}"})
+              }
+              <?php } ?>
+              D.querySelector('title').innerText = htmlDecode(e.title);
+              D.querySelector('meta[name=title]').setAttribute('content', htmlDecode(e.title));
+              D.querySelector('meta[name=description]').setAttribute('content', e.description);
+              D.querySelector('meta[name=keywords]').setAttribute('content', e.keyword);
+              D.body.style.overflow = "";
+              for (var J = 0, I = CP.length; J < I; J++) {
+                var CC = CP[J].href.split(''),
+                    CC = CC[CC.length-2]+CC[CC.length-1];
+                CP[J].href = e.url+(e.url.indexOf('?') != -1 ? '&' : '?')+'language='+CC;
+              }
+              var CL = CX.querySelectorAll('script');
+              for (var J = 0, I = CL.length; J < I; J++) eval(CL[J].innerHTML);
+              loadPage(CX.querySelectorAll('a[target="_self"]'), true);
+              timeDelay(function(){
+                DL.style.display = "";
+              }, 1000);
+            }else{
+              window.location.href = '{$url->{404}}';
+            }          
+          }, "GET"), scrollTo(0);
+        },
+        loadPage = function(CE, CO = false){
+          var CI = D.querySelectorAll('.mouse_hover'),
+              CB = D.querySelectorAll('.tabbable'),
+              CU = ["mouseenter", "touchstart"],
+              CW = ["mouseleave", "touchend"];
+          for (var J = 0, I = CE.length; J < I; J++) addEvent(CE[J], "click", preloadPage, 3);
+          if(CO && CI.length > 0){
+            for (var J = 0, I = CI.length; J < I; J++) {
+              for (var l = 0, o = CU.length; l < o; l++){
+                addEvent(CI[J], CU[l], function(){
+                  var self = this,
+                      el = self.querySelector('.hover_animation');
+                  var imim = D.createElement("img");
+                  imim.src = el.getAttribute('data-img'), addEvent(imim, 'load', function(){
+                    el.appendChild(imim), el.removeAttribute('data-img');
+                  })
+                }, 1, !1, CU[l] == 'touchstart' ? !0 : !1);
+              }
+              for (var l = 0, o = CW.length; l < o; l++){
+                addEvent(CI[J], CW[l], function(){
+                  var self = this,
+                      el = self.querySelector('.hover_animation img');
+                  if(el) {
+                      self.querySelector('.hover_animation').setAttribute('data-img', el.src), el.remove();
+                  }
+                }, 1, !1, CU[l] == 'touchend' ? !0 : !1);
+              }
+            } 
+          }
+          addEvent(D, 'mousedown', function(){
+            var self = this.querySelector('.tabbable[animating]');
+            if(self){
+              self.removeAttribute('animating');
+            }
+          }, 3);
+          for (var J = 0, I = CB.length; J < I; J++) {
+            addEvent(CB[J], 'focus', function(){
+              if(CN == 9){
+                this.setAttribute('animating', '');
+              }
+            });
+            addEvent(CB[J], 'blur', function(){
+              if(CN == 9){
+                this.removeAttribute('animating');
+              }
+            });
+          }
+        }, supportsPassive = () => {
+          var e = !1;
+          try {
+            var t = Object.defineProperty({}, "passive", {
+              get: function() {
+                e = !0
+              }
+            });
+            window.addEventListener("test", null, t)
+            window.removeEventListener("test", null, t)
+          } catch (e) {}
+          return e
+        },
+        addEvent = (node, event, handler, capture = !1, passive = !1) => {
+          node.addEventListener(event, handler, supportsPassive() && passive ? {passive: passive} : capture);
+          return node.addEventListener;
+        },
+        removeEvent = (node, event, handler, capture = !1, passive = !1) => {
+          node.removeEventListener(event, handler, supportsPassive() && passive ? {passive: passive} : capture);
+          return node.addEventListener;
+        },
+        hasClass = (e, t) => {
+          return "classList" in D.documentElement ? void 0 !== e.classList && e.classList.contains(t) : new RegExp("\\b" + t + "\\b").test(e.className);
+        },
+        addClass = (e, t) => {
+          return "classList" in D.documentElement ? e.classList.add(t) : e.className += " " + t;
+        },
+        removeClass = (e, t) => {
+          return "classList" in D.documentElement ? e.classList.remove(t) : e.className = e.className.replace(new RegExp("\\b" + t + "\\b", "g"), "");
+        },
+        toggleClass = (e, t) => {
+          return hasClass(e, t) ? removeClass(e, t) : addClass(e, t)
+        }, htmlDecode = function(input) {
+            var txt = D.createElement("textarea");
+            txt.innerHTML = input;
+            return txt.value;
+        }, timeDelay = function(handler, time = 0, type = 0){
+          var delayHandler = type == 0 ? setTimeout(handler, time) : setInterval(handler, time);
+          _timeDelay.push({type: type, timeDelay: delayHandler});
+          return delayHandler;
+        }, removeAllTimeDelay = function(){
+          for (var i = _timeDelay.length; i--;) {
+            if(_timeDelay[i]['type'] == 0){
+              clearTimeout(_timeDelay[i]['timeDelay']);
+            } else {
+              clearInterval(_timeDelay[i]['timeDelay']);
+            }
+          }
+        }, scrollTo = function(to, el){
+            var el = !el ? window : el,
+                i = parseInt(el.pageYOffset);
+            if (i != to) {
+                if (!'scrollBehavior' in D.documentElement.style) {
+                    to = parseInt(to);
+                    if (i < to) {
+                        var int = setInterval(function() {
+                            if (i > (to-20)) i += 1;
+                            else if (i > (to-40)) i += 3;
+                            else if (i > (to-80)) i += 8;
+                            else if (i > (to-160)) i += 18;
+                            else if (i > (to-200)) i += 24;
+                            else if (i > (to-300)) i += 40;
+                            else i += 60;
+                            el.scroll(0, i);
+                            if (i >= to) clearInterval(int);
+                        }, 15);
+                    } else {
+                        var int = setInterval(function() {
+                            if (i < (to+20)) i -= 1;
+                            else if (i < (to+40)) i -= 3;
+                            else if (i < (to+80)) i -= 8;
+                            else if (i < (to+160)) i -= 18;
+                            else if (i < (to+200)) i -= 24;
+                            else if (i < (to+300)) i -= 40;
+                            else i -= 60;
+                            el.scroll(0, i);
+                            if (i <= to) clearInterval(int);
+                        }, 15);
+                    }
+                } else {
+                    el.scroll({
+                        top: to,
+                        behavior: 'smooth'
+                    });
+                }
+            }
+        };
+  </script>
+</head>
+<body>
+  <header class="cont-contentheader container position-relative">
+    <div class="cont-header-wrapper padding-b15">
+      <button class="btn-clear is-mobile" id="tab-menu">
+        <svg class="dv-supra" viewBox="0 0 40 32" xmlns="http://www.w3.org/2000/svg">
+         <g transform="matrix(0.290323, 0, 0, 0.25, 2.000028, 0.5)">
+           <path d="M112,6H12C5.4,6,0,11.4,0,18s5.4,12,12,12h100c6.6,0,12-5.4,12-12S118.6,6,112,6z"/>
+           <path d="M112,50H12C5.4,50,0,55.4,0,62c0,6.6,5.4,12,12,12h100c6.6,0,12-5.4,12-12C124,55.4,118.6,50,112,50z"/>
+           <path d="M112,94H12c-6.6,0-12,5.4-12,12s5.4,12,12,12h100c6.6,0,12-5.4,12-12S118.6,94,112,94z"/>
+         </g>
+       </svg>
+     </button>
+     <div class="cont-site-logo display-flex padding-l10 padding-b15 padding-t15">
+      <a href="{$url->{home}}">
+        <img src="{$theme->{images/logo.png}}" alt="CENAUC" />
+      </a>
+    </div>
+    <nav class="cont-menu display-flex">
+      <ul class="contsub-menu is-desktop">
+        <li class="home_<?php echo($TEMP['#page'] == 'home') ? ' active' : ''?>">
+          <a class="animated-easy color-black" href="{$url->{home}}" target="_self">{$word->home}</a>
+        </li>
+        <?php if($TEMP['#loggedin'] === true){ ?>
+        <li class="settings_<?php echo($TEMP['#page'] == 'settings') ? ' active' : ''?>">
+          <a class="animated-easy color-black" href="#" target="_self">{$word->settings}</a>
+        </li>
+        <?php } ?>
+        <li class="about-us_<?php echo($TEMP['#page'] == 'about-us') ? ' active' : ''?>">
+          <a class="animated-easy color-black" href="{$url->{pages/about-us}}" target="_self">{$word->about_us}</a>
+        </li>
+        <?php if($TEMP['#loggedin'] === true){ ?>
+        <li>
+          <a class="animated-easy color-black" href="{$url->{logout}}">{$word->logout}</a>
+        </li>
+        <?php } ?>
+      </ul>
+      <div class="dv-vertical-center margin-l20 has-submenu" data-type="leave">
+        <button class="w-55px box-shadow-black-all btn-clear caret-down">
+          <img class="lang-icon pointer-events-none" src="{$theme->{images/{#language}.png}}">
+        </button>
+        <ul class="lang-submenu box-shadow-black nopadding-top nopadding-bottom position-absolute w-55px background-white hidden">
+          <li class="padding-5 nopadding-left nopadding-right background-hover">
+            <a class="dv-vertical-center" href="{$lang_url}es">
+              <img class="lang-icon pointer-events-none " src="{$theme->{images/es.png}}">
+              <span class="font-low font-bold color-black margin-left-auto margin-r5">ES</span>
+            </a>
+          </li>
+          <li class="padding-5 nopadding-left nopadding-right background-hover">
+            <a class="dv-vertical-center btn-clear" href="{$lang_url}en">
+              <img class="lang-icon pointer-events-none " src="{$theme->{images/en.png}}">
+              <span class="font-low font-bold color-black margin-left-auto margin-r5">EN</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+  </div>
+  <div class="data-loading w-100 position-absolute background-blud w-100 h-8 overflow-hidden pos-left pos-right pos-bottom" id="data-load"></div>
+</header>
+<aside class="cont-sidemenu">
+  <div class="cont-sidehead display-flex border-bottom border-grey margin-b15">
+    <div class="cont-logo-menu margin-t15 margin-l15">
+      <img src="{$theme->{images/logo-menu.png}}" alt="CENAUC" />
+    </div>
+    <buttom class="display-flex btn-clear margin-left-auto margin-r15" id="close-tab-menu">
+      <svg class="dv-supraly margin-auto" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path fill="currentColor" d="M 12 13.17 L 5.17 20 L 4 18.832 L 10.83 12 L 4 5.17 L 5.17 4 L 12 10.83 L 18.832 4 L 20 5.17 L 13.17 12 L 20 18.832 L 18.832 20 Z"/>
+      </svg>
+    </buttom>
+  </div>
+  <div class="cont-sidecontent">
+    <ul>
+      <li class="home_<?php echo($TEMP['#page'] == 'home') ? ' active' : ''?>">
+        <a class="animated-easy color-black padding-15 w-100" href="{$url->{home}}" target="_self">{$word->home}</a>
+      </li>
+      <?php if($TEMP['#loggedin'] === true){ ?>
+      <li class="settings_<?php echo($TEMP['#page'] == 'settings') ? ' active' : ''?>">
+        <a class="animated-easy color-black padding-15 w-100" href="#" target="_self">{$word->settings}</a>
+      </li>
+      <?php } ?>
+      <li class="about-us_<?php echo($TEMP['#page'] == 'about-us') ? ' active' : ''?>">
+        <a class="animated-easy color-black padding-15 w-100" href="{$url->{pages/about-us}}" target="_self">{$word->about_us}</a>
+      </li>
+      <?php if($TEMP['#loggedin'] === true){ ?>
+      <li>
+        <a class="animated-easy color-black padding-15 w-100" href="{$url->{logout}}">{$word->logout}</a>
+      </li>
+      <?php } ?>
+    </ul>
+  </div>
+</aside>
+<div class="global-container background-grely container" id="global_content">
+  {$content}
+</div>
+<footer class="cont-contentfooter container position-relative padding-t25">
+  <div class="h-8 w-100 position-absolute pos-top background-blud row"></div>
+  <div class="contsub-contentfooter padding-lr20">
+    <div class="cont-footer content-10w margin-t15 margin-b50 float-left first">
+      <div class="margin-b15">
+        <div class="cont-site-footerlogo display-flex margin-auto">
+          <a href="{$url->{home}}">
+            <img src="{$theme->{images/logo-footer.png}}">
+          </a>
+        </div>
+
+        <div class="display-flex margin-auto margin-t15">
+          <div class="text-center">
+            <p class="font-cursive margin-b5">Estudia por pasión</p>
+            <span class="font-bold">NIT: 891224762-9</span>
+            <span class="font-bold"> SNIES: 3817</span>   
+          </div>
+        </div>
+      </div>
+      <div class="cont-follow display-flex">
+        <span class="font-medium font-bold white-space-pre margin-r12">{$word->follow_us}:</span>
+        <ul class="display-flex">
+          <li>
+            <a href="https://www.facebook.com/estudiaporpasion" target="_blank">
+              <img class="dv-icon margin-r5" src="{$theme->{images/facebook.png}}">
+            </a>
+          </li>
+          <li>
+            <a href="https://www.instagram.com/aunarcartagena/" target="_blank">
+              <img class="dv-icon" src="{$theme->{images/instagram.png}}">
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="cont-footer content-20w margin-b50 float-left">
+      <div class="cont-list">
+        <h5 class="cont-footer-title ellipsis-horizontal margin-b15 padding-5 nopadding-right nopadding-left nopadding-top color-black">{$word->navigation}</h5>
+        <ul class="contsub-list">
+          <li class="home_<?php echo($TEMP['#page'] == 'home') ? ' active' : ''?>">
+            <a class="font-lowly color-black animated-easy" href="{$url->{home}}" target="_self">{$word->home}</a>
+          </li>
+          <?php if($TEMP['#loggedin'] === true){ ?>
+          <li class="settings_<?php echo($TEMP['#page'] == 'settings') ? ' active' : ''?>">
+            <a class="font-lowly color-black animated-easy" href="#" target="_self">{$word->settings}</a>
+          </li>
+          <?php } ?>
+          <li class="about-us_<?php echo($TEMP['#page'] == 'about-us') ? ' active' : ''?>">
+            <a class="font-lowly color-black animated-easy" href="{$url->{pages/about-us}}" target="_self">{$word->about_us}</a>
+          </li>
+          <?php if($TEMP['#loggedin'] === true){ ?>
+          <li>
+            <a class="font-lowly color-black animated-easy" href="{$url->{logout}}">{$word->logout}</a>
+          </li>
+          <?php } ?>
+        </ul>
+      </div>
+    </div>
+    <div class="cont-footer content-20w margin-b50 float-left">
+      <div class="cont-list">
+        <h5 class="cont-footer-title ellipsis-horizontal margin-b15 padding-5 nopadding-right nopadding-left nopadding-top color-black">{$word->legal}</h5>
+        <ul class="contsub-list">
+          <li>
+            <a class="font-lowly color-black animated-easy" href="{$url->{pages/terms-of-use}}" target="_self">{$word->terms_of_use}</a>
+          </li>
+          <li>
+            <a class="font-lowly color-black animated-easy" href="{$url->{pages/privacy-policy}}" target="_self">{$word->privacy_policy}</a>
+          </li>
+          <li>
+            <a class="font-lowly color-black animated-easy" href="{$url->{pages/cookies-policy}}" target="_self">{$word->cookies_policy}</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="cont-footer content-20w margin-b50 float-left">
+      <div class="w-contacts">
+        <h5 class="cont-footer-title ellipsis-horizontal margin-b15 padding-5 nopadding-right nopadding-left nopadding-top color-black">{$word->developer_team}</h5>
+        <p>{$word->developed_by}</p>
+        <ul class="list-inside font-bold">
+          <li>Oscar David Garcés Gómez</li>
+          <li>Luis Fernando Avendaño Cumplido</li>
+          <li>Victor Enrique Padilla Zúñiga</li>
+        </ul>
+        <p class="font-cursive margin-t5">{$word->from_engineering_with_love} ❤️</p>
+      </div>
+    </div>
+    <div class="cont-footer content-10w margin-t15 float-left last">
+      <div class="item-image-footer margin-b5 first">
+        <img src="{$theme->{images/team/oscar.png}}">
+      </div>
+      <div class="item-image-footer display-flex margin-auto margin-b5 middle">
+        <img src="{$theme->{images/team/luis.png}}">
+      </div>
+      <div class="item-image-footer display-flex margin-auto last">
+        <img src="{$theme->{images/team/victor.png}}">
+      </div>
+    </div>
+  </div>
+  <div class="display-inline-block w-100 padding-b15 text-center position-relative">
+    <span class="font-low color-grey">© 2000 - {$year_now} - Corporación Universitaria Autónoma de Nariño extensión Cartagena</span>
+  </div>
+</footer>
+<div class="cont-sideoverlay" id="untab-menu"></div>
+<script type="text/javascript">
+  var HC = D.querySelector('#close-tab-menu'),
+      HT = D.querySelectorAll('.has-submenu');
+  addEvent(D, 'keydown', function(e){
+    CN = e.which || e.keyCode;
+    if(e.ctrlKey || e.metaKey){
+      DOWN = true
+    }
+  }, 3), addEvent(D, 'keyup', function(e){
+    DOWN = false
+  }, 3), addEvent(D.querySelector('#tab-menu'), 'click', ()=>{
+    toggleClass(D.body, 'side_untab'), toggleClass(D.querySelector('#untab-menu'), 'toggle-guid')
+  }), addEvent(D.querySelector('#untab-menu'), 'click', () => {
+    removeClass(D.body, 'side_untab'), removeClass(D.querySelector('#untab-menu'), 'toggle-guid')
+  }), addEvent(HC, 'click', () => {
+    addClass(HC, 'rotating'), setTimeout(()=>{
+      removeClass(HC, 'rotating')
+    }, 250), removeClass(D.body, 'side_untab'), removeClass(D.querySelector('#untab-menu'), 'toggle-guid')
+  });
+  for (let i = 0; i < HT.length; i++) addEvent(document, 'click', (e) => {
+    var HP = HT[i],
+    HS = HP.querySelector('ul'),
+    HV = HP.querySelector('button');
+    if(e.target.className === HV.className)
+      toggleClass(HS, 'hidden'), toggleClass(HV.parentNode, 'active')
+    else
+      addClass(HS, 'hidden'), removeClass(HV.parentNode, 'active')
+  });
+  for (let i = 0; i < HT.length; i++) if(HT[i].getAttribute('data-type') == 'leave') addEvent(HT[i], 'mouseenter', (e) => {
+    removeClass(HT[i].querySelector('ul'), 'hidden'), addClass(HT[i].querySelector('button').parentNode, 'active')
+  }), addEvent(HT[i], 'mouseleave', (e) => {
+    addClass(HT[i].querySelector('ul'), 'hidden'), removeClass(HT[i].querySelector('button').parentNode, 'active')
+  });
+  loadPage(D.querySelectorAll('a[target="_self"]'), true)
+  </script>
+</body>
+</html>
