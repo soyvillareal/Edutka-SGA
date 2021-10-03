@@ -44,14 +44,17 @@ if ($TEMP['#loggedin'] === true && !in_array($one, array('verify-change-email', 
 	                $token = md5($code);
 	                $dba->query('UPDATE users SET token = "'.$token.'" WHERE username = "'.$username.'"');
 
+	                $id = $to_access['user_id'];
+	                $name = $to_access['first_name'];
+	                $TEMP['id'] = $id;
 	                $TEMP['token'] = $token;
 					$TEMP['code'] = $code;
-					$TEMP['username'] = $username;
+					$TEMP['name'] = $name;
 	                $send_email_data = array(
 	                   	'from_email' => $TEMP['#settings']['smtp_username'],
 	                    'from_name' => $TEMP['#settings']['name'],
 	                    'to_email' => $to_access['email'],
-	                    'to_name' => $username,
+	                    'to_name' => $name,
 	                    'subject' => $TEMP['#word']['authentication'],
 	                    'charSet' => 'UTF-8',
 	                    'message_body' => Specific::Maket('emails/includes/authentication'),
@@ -61,7 +64,7 @@ if ($TEMP['#loggedin'] === true && !in_array($one, array('verify-change-email', 
 			       	if($send){
 		                $deliver = array(
 						    'status' => 401,
-		            		'url' => "&one=authentication&code=$token&id=".$to_access['user_id']
+		            		'url' => "&one=authentication&code=$token&id=".$id
 						);
 	                } else {
 						$deliver = array(
@@ -104,12 +107,12 @@ if ($TEMP['#loggedin'] === true && !in_array($one, array('verify-change-email', 
 		$TEMP['id'] = $id;
 		$TEMP['token'] =  $token;
 		$TEMP['code'] = $code;
-		$TEMP['username'] = $user['username'];
+		$TEMP['name'] = $user['first_name'];
 	    $send_email_data = array(
 	        'from_email' => $TEMP['#settings']['smtp_username'],
 	        'from_name' => $TEMP['#settings']['name'],
 	        'to_email' => $user['email'],
-	        'to_name' => $user['username'],
+	        'to_name' => $user['first_name'],
 	        'subject' => $TEMP['#word']['authentication'],
 	        'charSet' => 'UTF-8',
 	        'message_body' => Specific::Maket('emails/includes/authentication'),
@@ -212,7 +215,7 @@ if ($TEMP['#loggedin'] === true && !in_array($one, array('verify-change-email', 
         $user = $dba->query('SELECT * FROM users WHERE email = "'.$email.'"')->fetchArray();
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $error = $TEMP['#word']['email_invalid_characters'];
-        } else if(empty($user['id'])){
+        } else if(empty($user)){
         	$error = $TEMP['#word']['email_not_exist'];
         }
         if ($user['status'] == 2) {
@@ -227,12 +230,12 @@ if ($TEMP['#loggedin'] === true && !in_array($one, array('verify-change-email', 
            	$dba->query('UPDATE users SET token = "'.$token.'" WHERE id = '.$user['id']);
 
            	$TEMP['token'] = $token;
-			$TEMP['username'] = $user['username'];
+			$TEMP['name'] = $user['first_name'];
            	$send_email_data = array(
            		'from_email' => $TEMP['#settings']['smtp_username'],
 	            'from_name' => $TEMP['#settings']['name'],
            		'to_email' => $email,
-           		'to_name' => $user['name'],
+           		'to_name' => $user['first_name'],
            		'subject' => $TEMP['#word']['reset_your_password'],
            		'charSet' => 'UTF-8',
            		'message_body' => Specific::Maket('emails/includes/reset-password'),

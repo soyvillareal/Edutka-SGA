@@ -1,42 +1,40 @@
-<div class="login-page">
-	<div class="login-form margin-auto text-center">
-    	<div class="cont-login-center">
-		    <div class="border-radius-4 padding-20 border-all border-primary">
-		   	    <h2 class="margin-b10 color-secondary">{$word->reset_your_password}</h2>
-				<div class="cont-group">
-					<label class="display-flex group-title color-secondary">{$word->password}</label>
+<div class="login-page display-flex">
+	<div class="margin-auto text-center">
+    	<div class="cont-login-center display-flex background-white border-radius-12 margin-t50 margin-b50" id="reset-boom">
+		    <div class="w-100 margin-auto">
+		   	    <h2 class="margin-b10 color-black">{$word->reset_your_password}</h2>
+				<div class="display-block margin-t15 position-relative">
 					<div class="position-relative">
-						<input class="cont-control border-focus-blue padding-right-30 input_key background-secondary color-secondary" type="password" id="password" required>
-						<button class="btn-trans display-flex color-grey binput-inleft" tabindex="-1">
-							<svg class="icon-little" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+						<input class="cont-input h-50 border-focus-blue border-radius-12 animated-easy padding-right-50 input_key background-grely color-black" type="password" id="password" placeholder="{$word->password}" required>
+						<button class="btn-noway display-flex background-hover color-grey binput-inleft border-top-right-radius border-bottom-right-radius" tabindex="-1">
+							<svg class="dv-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 								<path fill="currentColor" d="M 19.714 12 C 18.696 10.361 17.421 9.135 15.887 8.323 C 16.296 9.045 16.5 9.826 16.5 10.667 C 16.5 11.951 16.06 13.05 15.179 13.964 C 14.299 14.877 13.239 15.333 12 15.333 C 10.761 15.333 9.701 14.877 8.821 13.964 C 7.94 13.05 7.5 11.951 7.5 10.667 C 7.5 9.826 7.704 9.045 8.113 8.323 C 6.579 9.135 5.304 10.361 4.286 12 C 5.176 13.424 6.293 14.557 7.636 15.401 C 8.978 16.245 10.433 16.667 12 16.667 C 13.567 16.667 15.022 16.245 16.364 15.401 C 17.707 14.557 18.824 13.424 19.714 12 Z M 12.482 8 C 12.482 7.861 12.435 7.743 12.342 7.646 C 12.248 7.549 12.134 7.5 12 7.5 C 11.163 7.5 10.445 7.811 9.845 8.432 C 9.246 9.054 8.946 9.799 8.946 10.667 C 8.946 10.806 8.993 10.924 9.087 11.021 C 9.181 11.118 9.295 11.167 9.429 11.167 C 9.563 11.167 9.676 11.118 9.77 11.021 C 9.864 10.924 9.911 10.806 9.911 10.667 C 9.911 10.069 10.115 9.559 10.523 9.135 C 10.932 8.712 11.424 8.5 12 8.5 C 12.134 8.5 12.248 8.451 12.342 8.354 C 12.435 8.257 12.482 8.139 12.482 8 Z M 21 12 C 21 12.236 20.933 12.476 20.799 12.719 C 19.862 14.316 18.601 15.595 17.017 16.557 C 15.434 17.519 13.761 18 12 18 C 10.239 18 8.566 17.517 6.983 16.552 C 5.399 15.587 4.138 14.309 3.201 12.719 C 3.067 12.476 3 12.236 3 12 C 3 11.764 3.067 11.524 3.201 11.281 C 4.138 9.691 5.399 8.413 6.983 7.448 C 8.566 6.483 10.239 6 12 6 C 13.761 6 15.434 6.483 17.017 7.448 C 18.601 8.413 19.862 9.691 20.799 11.281 C 20.933 11.524 21 11.764 21 12 Z"/>
 							</svg>
 						</button>
-						<div class="color-red text-left text-error"></div>
+						<div class="color-red text-left text-error font-low margin-t5"></div>
 					</div>
 				</div>
-				<div class="cont-group">
-					<label class="display-flex group-title color-secondary">{$word->confirm_password}</label>
+				<div class="display-block margin-t15 position-relative">
 					<div class="position-relative">
-						<input class="cont-control border-focus-blue padding-right-30 input_key background-secondary color-secondary" type="password" id="re-password" required>
-						<button class="btn-trans display-flex color-grey binput-inleft" tabindex="-1">
-							<svg class="icon-little" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+						<input class="cont-input h-50 border-focus-blue border-radius-12 animated-easy padding-right-50 input_key background-grely color-black" type="password" id="re-password" placeholder="{$word->confirm_password}" required>
+						<button class="btn-noway display-flex background-hover color-grey binput-inleft border-top-right-radius border-bottom-right-radius" tabindex="-1">
+							<svg class="dv-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 								<path fill="currentColor" d="M 19.714 12 C 18.696 10.361 17.421 9.135 15.887 8.323 C 16.296 9.045 16.5 9.826 16.5 10.667 C 16.5 11.951 16.06 13.05 15.179 13.964 C 14.299 14.877 13.239 15.333 12 15.333 C 10.761 15.333 9.701 14.877 8.821 13.964 C 7.94 13.05 7.5 11.951 7.5 10.667 C 7.5 9.826 7.704 9.045 8.113 8.323 C 6.579 9.135 5.304 10.361 4.286 12 C 5.176 13.424 6.293 14.557 7.636 15.401 C 8.978 16.245 10.433 16.667 12 16.667 C 13.567 16.667 15.022 16.245 16.364 15.401 C 17.707 14.557 18.824 13.424 19.714 12 Z M 12.482 8 C 12.482 7.861 12.435 7.743 12.342 7.646 C 12.248 7.549 12.134 7.5 12 7.5 C 11.163 7.5 10.445 7.811 9.845 8.432 C 9.246 9.054 8.946 9.799 8.946 10.667 C 8.946 10.806 8.993 10.924 9.087 11.021 C 9.181 11.118 9.295 11.167 9.429 11.167 C 9.563 11.167 9.676 11.118 9.77 11.021 C 9.864 10.924 9.911 10.806 9.911 10.667 C 9.911 10.069 10.115 9.559 10.523 9.135 C 10.932 8.712 11.424 8.5 12 8.5 C 12.134 8.5 12.248 8.451 12.342 8.354 C 12.435 8.257 12.482 8.139 12.482 8 Z M 21 12 C 21 12.236 20.933 12.476 20.799 12.719 C 19.862 14.316 18.601 15.595 17.017 16.557 C 15.434 17.519 13.761 18 12 18 C 10.239 18 8.566 17.517 6.983 16.552 C 5.399 15.587 4.138 14.309 3.201 12.719 C 3.067 12.476 3 12.236 3 12 C 3 11.764 3.067 11.524 3.201 11.281 C 4.138 9.691 5.399 8.413 6.983 7.448 C 8.566 6.483 10.239 6 12 6 C 13.761 6 15.434 6.483 17.017 7.448 C 18.601 8.413 19.862 9.691 20.799 11.281 C 20.933 11.524 21 11.764 21 12 Z"/>
 							</svg>
 						</button>
-						<div class="color-red text-left text-error"></div>
+						<div class="color-red text-left text-error font-low margin-t5"></div>
 					</div>
 				</div>
-				<div class="cont-group">
-					<button class="btn-trans background-red cursor-disabled hover-opacity w-100 margin-b20 border-radius-4 padding-10" id="to-access" disabled>
+				<div class="display-block margin-t15 position-relative">
+					<button class="btn-noway background-blud cursor-disabled hover-opacity w-100 margin-b20 border-radius-4 padding-10" id="to-access" disabled>
 						<span class="color-white">{$word->change_password}</span>
-						<div class="tb_content-spinner-circle">
-							<div class="tb_spinner-circle"></div>
+						<div class="content-spinner-circle">
+							<div class="spinner-circle"></div>
 						</div>
 					</button>
 				</div>
-				<div class="color-secondary">
-					{$word->got_your_password} <a class="hover-button color-for-hover" href="{$url->{login}}" target="_self">{$word->login_}</a>
+				<div class="color-black">
+					{$word->got_your_password} <a class="hover-button color-black" href="{$url->{login}}" target="_self">{$word->login}</a>
 				</div>
 			</div>
 		</div>	
@@ -55,33 +53,37 @@ var RI = D.querySelectorAll('.input_key'),
 	RB = D.querySelector('#to-access'),
 	RM = D.querySelector('#password'),
 	RR = D.querySelector('#re-password'),
+	LG = D.querySelector('#reset-boom'),
 	RF = function(){
 		RX = !1;
-		for (var j = 0, i = RI.length; j < i; j++) {
-			var el = RI[j];
-			if(el.value != '')
-				removeClass(el, 'border-red'), removeClass(el, 'boxshadow-red');
-		}
 		if((RM.value == '' || RR.value == '') && !RX){
 			for (var j = 0, i = RI.length; j < i; j++){
 				var el = RI[j];
 				if(el.value == '')
-					el.parentNode.querySelector('.text-error').innerText = '*{$word->this_field_is_empty}', addClass(el, 'border-red'), addClass(el, 'boxshadow-red');
+					el.parentNode.querySelector('.text-error').innerText = '*{$word->this_field_is_empty}', addClass(el, 'border-red'), addClass(el, 'boxshadow-red'), timeDelay(function(){
+						addClass(LG, 'efect-boom'), timeDelay(function(){
+							removeClass(LG, 'efect-boom')
+						}, 200)
+					}, 700);
 			}
 			return false;
 		}
-		addClass(RB, 'tb_spinner-is-loading');
+		addClass(RB, 'spinner-is-loading');
 		RB.setAttribute('disabled', true);
 		Req("{$url->{req/to-access/reset-password}}", function(e){
 			if(e.status == 200){
 				preloadPage(e.url);
 			} else {
-				removeClass(RB, 'tb_spinner-is-loading');
+				removeClass(RB, 'spinner-is-loading');
 				RB.removeAttribute('disabled');
 				if(e.emptys != undefined){
 					for (var j = 0, i = e.emptys.length; j < i; j++){
 						var el = D.querySelector('#'+e.emptys[j]);
-						el.parentNode.querySelector('.text-error').innerText = '*{$word->this_field_is_empty}', addClass(el, 'border-red'), addClass(el, 'boxshadow-red');
+						el.parentNode.querySelector('.text-error').innerText = '*{$word->this_field_is_empty}', addClass(el, 'border-red'), addClass(el, 'boxshadow-red'), timeDelay(function(){
+							addClass(LG, 'efect-boom'), timeDelay(function(){
+								removeClass(LG, 'efect-boom')
+							}, 200)
+						}, 700);
 					}
 				}
 			}
@@ -147,7 +149,11 @@ for (var j = 0, i = RI.length; j < i; j++) addEvent(RI[j], 'keyup', function(e){
 				}
 				self.parentNode.querySelector('.text-error').innerText = msg, RX = !0;
 				if((RA == 'password' || RA == 're-password') && D.querySelector('#'+RA).value != '' && RM.value == RR.value){
-					RR.parentNode.querySelector('.text-error').innerText = "", removeClass(RR, 'border-red'), removeClass(RR, 'boxshadow-red');
+					RR.parentNode.querySelector('.text-error').innerText = "", removeClass(RR, 'border-red'), removeClass(RR, 'boxshadow-red'), timeDelay(function(){
+						addClass(LG, 'efect-boom'), timeDelay(function(){
+							removeClass(LG, 'efect-boom')
+						}, 200)
+					}, 700);
 				}
 			} else {
 				loadAlert(e.message, 1);

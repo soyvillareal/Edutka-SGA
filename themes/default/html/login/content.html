@@ -1,6 +1,6 @@
 <div class="login-page display-flex">
 	<div class="margin-auto text-center">
-	   	<div class="cont-login-center display-flex background-white margin-t50 margin-b50 border-radius-12" id="login-boom">
+	   	<div class="cont-login-center display-flex background-white border-radius-12 margin-t50 margin-b50" id="login-boom">
 	    	<div class="w-100 margin-auto">
 			   	<h2 class="margin-b15 color-black">{$word->log_into_your_account}</h2>
 			   	<div class="display-block margin-t15 position-relative">
@@ -24,7 +24,7 @@
 				<div class="clear"></div>
 				<div class="display-block margin-t15 position-relative">
 					<button class="btn-noway background-blud cursor-disabled hover-opacity w-100 border-radius-4 padding-10" id="to-access" disabled>
-						<span class="color-white">{$word->log_in}</span>
+						<span class="color-white">{$word->login}</span>
 						<div class="content-spinner-circle">
 							<div class="spinner-circle"></div>
 						</div>
@@ -69,11 +69,7 @@ var LI = D.querySelectorAll('.input_key'),
 		} else {
 			for (var j = 0, i = LI.length; j < i; j++) {
 				var el = LI[j];
-				el.parentNode.querySelector('.text-error').innerText = "", removeClass(el, 'border-red'), removeClass(el, 'boxshadow-red'), timeDelay(function(){
-						addClass(LG, 'efect-boom'), timeDelay(function(){
-							removeClass(LG, 'efect-boom')
-						}, 200)
-					}, 700)
+				el.parentNode.querySelector('.text-error').innerText = "", removeClass(el, 'border-red'), removeClass(el, 'boxshadow-red');
 			}
 		}
 		removeClass(LE, 'color-green');
@@ -81,6 +77,7 @@ var LI = D.querySelectorAll('.input_key'),
 		addClass(LB, 'spinner-is-loading');
 		LB.setAttribute('disabled', true);
 		Req("{$url->{req/to-access/login}}", function(e){
+			console.log(e);
 			if(e.status == 200){
 				window.location.reload();
 			} else if(e.status == 401) {

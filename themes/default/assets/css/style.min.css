@@ -503,6 +503,15 @@ h5 {
     }
 }
 
+@media(min-width:768px) {
+    .display-block-desk {
+        display: block !important
+    }
+    .display-block-mob {
+        display: none !important
+    }
+}
+
 @media(max-width:768px) {
     footer.cont-contentfooter.container .cont-footer {
         width: 100%;
@@ -537,6 +546,9 @@ h5 {
     }
     .cont-contentfooter .contsub-contentfooter .cont-footer {
         margin-right: 0
+    }
+    .display-block-desk {
+        display: none !important
     }
     .display-block-mob {
         display: block !important
@@ -588,6 +600,12 @@ h5 {
     }
 }
 
+@media(min-width: 320px) and (max-width:450px) {
+    .login-page .cont-login-center {
+        width: 270px
+    }
+}
+
 @media(max-width:360px) {
     .slots-container .cont-slots-two {
         width: 285px
@@ -603,6 +621,11 @@ h5 {
     }
 }
 
+@media(max-width:360px) {
+    .login-page .cont-login-center {
+        width: 100%;
+    }
+}
 
 
 
@@ -946,11 +969,11 @@ h5 {
     -moz-transform: scale(0.3);
     transform: scale(0.3);
 }
-.login-page .cont-login-center {
+.cont-login-center {
     width: 400px;
     padding: 25px;
 }
-.login-page .errors {
+.errors {
     width: 100%;
     padding: 10px;
     margin: 0 auto;
@@ -961,8 +984,8 @@ h5 {
     color: #e91916;
     border: 1px solid #e91916;
 }
-.login-page .errors:empty,
-.login-page .text-error:empty {
+.errors:empty,
+.text-error:empty {
     padding: 0;
     margin: 0;
     border: 0;
@@ -1084,6 +1107,9 @@ h5 {
 .hover-button:not([disabled]):focus,
 .hover-button:not([disabled]):hover {
     opacity: 1 !important;
+}
+.underline-hover:hover {
+    text-decoration: underline;
 }
 
 
@@ -1461,7 +1487,7 @@ h5 {
 }
 
 .h-8 {
-    height: 8px;
+    height: 8px
 }
 
 .h-250px {
@@ -1484,6 +1510,10 @@ h5 {
 
 .color-grey {
     color: #909090;
+}
+
+.color-green {
+    color: #4cbd1d;
 }
 
 /* Tamaños de fuentes */
@@ -1525,6 +1555,12 @@ h5 {
 .border-grey {
     border-color: #909090 !important
 }
+
+.border-green {
+    border-color: #4cbd1d !important;
+}
+
+/* Background's */
 
 .background-blud {
     background-color: #2e3191;
