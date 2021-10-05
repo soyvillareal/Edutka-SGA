@@ -8,7 +8,7 @@ $by_id = !empty($_POST['by_id']) ? Specific::Filter($_POST['by_id']) : $TEMP['#u
 if(!empty($page) && is_numeric($page) && isset($page) && $page > 0 && in_array($typet, $types)){
 	$html = "";
 	if ($typet == 'sessions'){
-		$user_sessions = $dba->query('SELECT * FROM sessions WHERE by_id = '.$by_id.' ORDER BY id DESC LIMIT ? OFFSET ?', $TEMP['#settings']['data_load_limit'], $page)->fetchAll();
+		$user_sessions = $dba->query('SELECT * FROM sessions WHERE by_id = '.$by_id.' ORDER BY id DESC LIMIT ? OFFSET ?', 10, $page)->fetchAll();
 	    if (!empty($user_sessions)) {
 	        foreach ($user_sessions as $value) {
 	            $session = Specific::GetSessions($value);

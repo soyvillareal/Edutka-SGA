@@ -25,15 +25,10 @@ if ($one == 'general') {
     $month = Specific::Filter($_POST['month']);
     $year = Specific::Filter($_POST['year']);
 
-    $username = Specific::Filter($_POST['username']);
-    $username_changed = Specific::Filter($_POST['username_changed']);
+    $dni = Specific::Filter($_POST['dni']);
     $email = Specific::Filter($_POST['settings-email']);
     $gender = Specific::Filter($_POST['gender']);
 
-    
-    if (empty($username) && time() > $user_data['user_changed']) {
-        $emptys[] = 'username';
-    }
     if (empty($email)) {
         $emptys[] = 'settings-email';
     }
@@ -53,9 +48,6 @@ if ($one == 'general') {
             $d = $day;
             $m = $month;
             $y = $year;
-            if(!Specific::Admin()){
-                $age_changed = $age_changed + 1;
-            }
             if(strlen($day) > 2){
                 $errors[] = array('error' => $TEMP['#word']['please_enter_valid_date'], 'el' => 'day');
             }
@@ -79,9 +71,6 @@ if ($one == 'general') {
                 $errors[] = array('error' => $TEMP['#word']['email_exists'], 'el' => 'settings-email');
             }
         }
-        if (time() < $user_data['user_changed'] && !empty($username) && $username_changed == "false") {
-            $errors[] = array('error' => $TEMP['#word']['you_still_dont_meet_equirements'], 'el' => 'username');
-        }
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $errors[] = array('error' => $TEMP['#word']['email_invalid_characters'], 'el' => 'settings-email');
         }
@@ -89,7 +78,6 @@ if ($one == 'general') {
         if (!isset($errors)) {
             $update_data = '';
             $redirect_verify = false;
-            $user_changed = false;
             $date_birthday = DateTime::createFromFormat('d-m-Y H:i:s', "$d-$m-$y 00:00:00");
             
             if ($TEMP['#settings']['validate_email'] == 'on' && !empty($email) && $user_data['email'] != $email) {
@@ -100,7 +88,7 @@ if ($one == 'general') {
                 $TEMP['token'] = $token;
                 $TEMP['code'] = $code;
                 $TEMP['id'] = $user_data['user_id'];
-                $TEMP['username'] = $user_data['username'];
+                $TEMP['name'] = $user_data['names'];
                 $TEMP['text'] = $TEMP['#word']['check_your_new_email'];
                 $TEMP['footer'] = $TEMP['#word']['just_ignore_this_message'];
                 $TEMP['type'] = 'change';
@@ -108,7 +96,7 @@ if ($one == 'general') {
                 $send_email = Specific::SendEmail(array(
                     'from_email' => $TEMP['#settings']['smtp_username'],
                     'from_name' => $TEMP['#settings']['name'],
-                    'to_email' => $user_data['email'],
+                    'to_email' => $email,
                     'to_name' => $user_data['name'],
                     'subject' => $TEMP['#word']['verify_your_account'],
                     'charSet' => 'UTF-8',
@@ -117,28 +105,19 @@ if ($one == 'general') {
                 ));
                 if ($send_email) {
                     $redirect_verify = true;
-                    $deliver['ecode'] = $token;
+                    $deliver['token'] = $token;
                     $update_data = ', change_email = "'.$email.'"';
                 }
             }else{
                 $update_data = ', email = "'.$email.'"';
             }
-            
-
-            if(!empty($username) && $username != $user_data['username'] && $username_changed == "false"){
-                $time_changed = strtotime("+2 month, 12:00am", time());
-                $update_data .= ', username = "'.$username.'", user_changed = '.$time_changed;
-                $user_changed = true;
-                $deliver['text'] = $TEMP['#word']['you_can_update_your_username_again_in'].Specific::DateString($time_changed, false);
-            }
 
             if (Specific::IsOwner($_POST['by_id'])) {
-                $update = $dba->query('UPDATE users SET gender = '.$gen.', age_changed = '.$age_changed.', date_birthday = '.$date_birthday->getTimestamp().', country = '.Specific::Filter($_POST['country']).', first_name = "'.Specific::Filter($_POST['first_name']).'", last_name = "'.Specific::Filter($_POST['last_name']).'", about = "'.Specific::Filter($_POST['about']).'", facebook = "'.Specific::Filter($_POST['facebook']).'", mail_contact = "'.Specific::Filter($_POST['mail_contact']).'", twitter = "'.Specific::Filter($_POST['twitter']).'", instagram = "'.Specific::Filter($_POST['instagram']).'"'.$update_data.' WHERE id = '.$by_id)->returnStatus();
+                $update = $dba->query('UPDATE users SET gender = '.$gen.', age_changed = '.$age_changed.', date_birthday = '.$date_birthday->getTimestamp().', province = "'.Specific::Filter($_POST['province']).'", municipality = '.Specific::Filter($_POST['municipality']).', names = "'.Specific::Filter($_POST['names']).'", surnames = "'.Specific::Filter($_POST['surnames']).'", about = "'.Specific::Filter($_POST['about']).'"'.$update_data.' WHERE id = '.$by_id)->returnStatus();
                 if ($update){
                     $deliver['status'] = 200;
                     $deliver['message'] = $TEMP['#word']['setting_updated'];
                     $deliver['redirect_verify'] = $redirect_verify;
-                    $deliver['user_changed'] = $user_changed;
                 }
             }
         } else {
@@ -258,13 +237,7 @@ if ($one == 'general') {
     }
 } else if ($one == 'authentication') {
     if(in_array($_POST['authentication'], array(0, 1))){
-        $by_id = $TEMP['#user']['id'];
-        if (!empty($_POST['by_id']) && is_numeric($_POST['by_id']) && $_POST['by_id'] > 0) {
-            if (Specific::Admin()) {
-                $by_id = Specific::Filter($_POST['by_id']);
-            }
-        }
-        if($dba->query('UPDATE users SET authentication = '.Specific::Filter($_POST['authentication']).' WHERE id = '.$by_id)->returnStatus()){
+        if($dba->query('UPDATE users SET authentication = '.Specific::Filter($_POST['authentication']).' WHERE id = '.$TEMP['#user']['id'])->returnStatus()){
             $deliver = array(
                 'status' => 200,
                 'message' => $TEMP['#word']['setting_updated']

@@ -158,6 +158,27 @@
               }
             });
           }
+        },
+        loadAlert = function(text, type = 0){
+          var alertA = D.querySelector('.content-load-alert'),
+              alert = D.createElement('div'),
+              alertF = function(){
+                alert.remove(), removeEvent(alert, 'click', alertF), clearTimeout(alertT), clearTimeout(alertB);
+              },
+              alertT = 0,
+              alertB = 0;
+            alertA && alertA.remove(), alert.className = 'content-load-alert color-white vertical-center border-radius-4 padding-12 '+(type == 0 ? ' border-all border-tertiary': type == 1 ? ' background-red' : ' background-blue'), alert.innerHTML += '<p class="margin-r10">'+text+'</p><button class="btn-trans"><svg class="vh-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M 12 13.17 L 5.17 20 L 4 18.832 L 10.83 12 L 4 5.17 L 5.17 4 L 12 10.83 L 18.832 4 L 20 5.17 L 13.17 12 L 20 18.832 L 18.832 20 Z"></path></svg></button>', D.body.appendChild(alert);
+          addEvent(alert, 'click', alertF);
+          alertB = setTimeout(function(){
+            addClass(alert, 'bottom-0');
+          }, 100)
+          alertT = setTimeout(function(){
+            removeClass(alert, 'bottom-0');
+            setTimeout(function(){
+              alert.remove();
+            }, 600);
+            removeEvent(alert, 'click', alertF);
+          }, 5000);
         }, supportsPassive = () => {
           var e = !1;
           try {
@@ -250,7 +271,7 @@
 <body>
   <header class="cont-contentheader container position-relative">
     <div class="cont-header-wrapper padding-b15">
-      <button class="btn-clear is-mobile" id="tab-menu">
+      <button class="btn-noway is-mobile" id="tab-menu">
         <svg class="dv-supra" viewBox="0 0 40 32" xmlns="http://www.w3.org/2000/svg">
          <g transform="matrix(0.290323, 0, 0, 0.25, 2.000028, 0.5)">
            <path d="M112,6H12C5.4,6,0,11.4,0,18s5.4,12,12,12h100c6.6,0,12-5.4,12-12S118.6,6,112,6z"/>
@@ -272,7 +293,7 @@
         </li>
         <?php if($TEMP['#loggedin'] === true){ ?>
         <li class="settings_<?php echo($TEMP['#page'] == 'settings') ? ' active' : ''?>">
-          <a class="animated-easy color-black" href="#" target="_self">{$word->settings}</a>
+          <a class="animated-easy color-black" href="{$url->{settings}}" target="_self">{$word->settings}</a>
         </li>
         <?php } ?>
         <li class="about-us_<?php echo($TEMP['#page'] == 'about-us') ? ' active' : ''?>">
@@ -285,7 +306,7 @@
         <?php } ?>
       </ul>
       <div class="dv-vertical-center margin-l20 has-submenu" data-type="leave">
-        <button class="w-55px box-shadow-black-all btn-clear caret-down">
+        <button class="w-55px box-shadow-black-all btn-noway caret-down">
           <img class="lang-icon pointer-events-none" src="{$theme->{images/{#language}.png}}">
         </button>
         <ul class="lang-submenu box-shadow-black nopadding-top nopadding-bottom position-absolute w-55px background-white hidden">
@@ -296,7 +317,7 @@
             </a>
           </li>
           <li class="padding-5 nopadding-left nopadding-right background-hover">
-            <a class="dv-vertical-center btn-clear" href="{$lang_url}en">
+            <a class="dv-vertical-center btn-noway" href="{$lang_url}en">
               <img class="lang-icon pointer-events-none " src="{$theme->{images/en.png}}">
               <span class="font-low font-bold color-black margin-left-auto margin-r5">EN</span>
             </a>
@@ -312,7 +333,7 @@
     <div class="cont-logo-menu margin-t15 margin-l15">
       <img src="{$theme->{images/logo-menu.png}}" alt="CENAUC" />
     </div>
-    <buttom class="display-flex btn-clear margin-left-auto margin-r15" id="close-tab-menu">
+    <buttom class="display-flex btn-noway margin-left-auto margin-r15" id="close-tab-menu">
       <svg class="dv-supraly margin-auto" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path fill="currentColor" d="M 12 13.17 L 5.17 20 L 4 18.832 L 10.83 12 L 4 5.17 L 5.17 4 L 12 10.83 L 18.832 4 L 20 5.17 L 13.17 12 L 20 18.832 L 18.832 20 Z"/>
       </svg>
@@ -325,7 +346,7 @@
       </li>
       <?php if($TEMP['#loggedin'] === true){ ?>
       <li class="settings_<?php echo($TEMP['#page'] == 'settings') ? ' active' : ''?>">
-        <a class="animated-easy color-black padding-15 w-100" href="#" target="_self">{$word->settings}</a>
+        <a class="animated-easy color-black padding-15 w-100" href="{$url->{settings}}" target="_self">{$word->settings}</a>
       </li>
       <?php } ?>
       <li class="about-us_<?php echo($TEMP['#page'] == 'about-us') ? ' active' : ''?>">
@@ -386,7 +407,7 @@
           </li>
           <?php if($TEMP['#loggedin'] === true){ ?>
           <li class="settings_<?php echo($TEMP['#page'] == 'settings') ? ' active' : ''?>">
-            <a class="font-lowly color-black animated-easy" href="#" target="_self">{$word->settings}</a>
+            <a class="font-lowly color-black animated-easy" href="{$url->{settings}}" target="_self">{$word->settings}</a>
           </li>
           <?php } ?>
           <li class="about-us_<?php echo($TEMP['#page'] == 'about-us') ? ' active' : ''?>">

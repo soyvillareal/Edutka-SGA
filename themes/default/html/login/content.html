@@ -85,7 +85,7 @@ var LI = D.querySelectorAll('.input_key'),
 					removeClass(LB, 'spinner-is-loading');
 					LB.removeAttribute('disabled');
 					LE.innerHTML = e.html;
-					if(e.ecode != undefined){
+					if(e.token != undefined){
 						addEvent(LE.querySelector('#resend-email'), 'click', function(){
 							var self = this;
 							self.setAttribute('disabled', true);
@@ -100,7 +100,7 @@ var LI = D.querySelectorAll('.input_key'),
 								} else {
 									window.location = e.url;
 								}
-							}, "POST", "&code=" + e.ecode + "&id=" + e.id)
+							}, "POST", "&code=" + e.token + "&id=" + e.id)
 						})
 					} else {
 						loadPage(LE.querySelectorAll('a[target="_self"]'));

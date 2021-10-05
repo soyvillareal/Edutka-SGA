@@ -3,11 +3,11 @@ RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^$ index.php?one=home [NC,QSA]
-RewriteRule ^reset-password/([^\/]+)(\/|)$ index.php?one=reset-password&code=$1 [NC,QSA]
-RewriteRule ^verify-email/([^/.]+)/([^\/]+)(\/|)?$ index.php?one=verify-email&code=$1&id=$2 [NC,QSA]
-RewriteRule ^authentication/([^/.]+)/([^\/]+)(\/|)?$ index.php?one=authentication&code=$1&id=$2 [NC,QSA]
-RewriteRule ^change-email/([^/.]+)/([^\/]+)(\/|)?$ index.php?one=change-email&code=$1&id=$2 [NC,QSA]
-RewriteRule ^not-me/([^/.]+)/([^\/]+)(\/|)?$ index.php?one=not-me&code=$1&id=$2 [NC,QSA]
+RewriteRule ^reset-password/([^\/]+)(\/|)$ index.php?one=reset-password&token=$1 [NC,QSA]
+RewriteRule ^verify-email/([^/.]+)/([^\/]+)(\/|)?$ index.php?one=verify-email&token=$1&id=$2 [NC,QSA]
+RewriteRule ^authentication/([^/.]+)/([^\/]+)(\/|)?$ index.php?one=authentication&token=$1&id=$2 [NC,QSA]
+RewriteRule ^change-email/([^/.]+)/([^\/]+)(\/|)?$ index.php?one=change-email&token=$1&id=$2 [NC,QSA]
+RewriteRule ^not-me/([^/.]+)/([^\/]+)(\/|)?$ index.php?one=not-me&token=$1&id=$2 [NC,QSA]
 
 RewriteRule ^admin$ index.php?one=admin&two=manage-dashboard [NC,QSA]
 RewriteRule ^admin/([^/.]+)?$ index.php?one=admin&two=$1 [NC,QSA]

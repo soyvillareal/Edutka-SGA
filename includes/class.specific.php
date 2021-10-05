@@ -140,12 +140,8 @@ class Specific {
 	    $user['date_time'] = self::DateFormat($user['time']);
 	    $user['time'] = self::DateString($user['time']);
 
-	    $user['name'] = $user['first_name'];
-	    if(empty($user['first_name'])){
-	        $user['name'] = $user['username'];
-	    }
-
-	    $user['country_name']  = $TEMP['#countries'][$user['country']];
+	    $user['provinces']  = $TEMP['#provinces'][$user['province']];
+	    $user['municipalities']  = $TEMP['#municipalities'][$user['municipality']];
 	    $gender = $TEMP['#word']['male'];
 	    if($user['gender'] == 2){
 	        $gender = $TEMP['#word']['female'];
@@ -205,6 +201,20 @@ class Specific {
 	public static function Url($params = '') {
 	    global $site_url;
 	    return $site_url . '/' . $params;
+	}
+
+	public static function GetSessions($value = array()){
+	    $data = array();
+	    $data['ip'] = 'Unknown';
+	    $data['browser'] = 'Unknown';
+	    $data['platform'] = 'Unknown';
+	    if (!empty($value['details'])) {
+	        $session = json_decode($value['details'], true);
+	        $data['ip'] = $session['ip'];
+	        $data['browser'] = $session['name'];
+	        $data['platform'] = ucfirst($session['platform']);
+	    }
+	    return $data;
 	}
 
 	public static function RandomKey($minlength = 12, $maxlength = 20) {
@@ -305,6 +315,16 @@ class Specific {
 	        }
 	    }
 	    return '?';
+	}
+
+	public static function IsOwner($by_id) {
+	    global $TEMP;
+	    if ($TEMP['#loggedin'] === true) {
+	        if ($TEMP['#user']['id'] == $by_id) {
+	            return true;
+	        }
+	    }
+	    return false;
 	}
 
 	public static function BrowserDetails() {

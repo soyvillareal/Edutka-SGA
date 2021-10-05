@@ -16,7 +16,7 @@
 					</div>
 					<div class="color-red text-left text-error font-low margin-t5"></div>
 					<div class="margin-t10 text-left">
-						<button class="btn-noway color-black underline-hover" id="resend-code">{$word->resend_code}</button>
+						<button class="btn-noway color-black underline-hover" id="resend-{$type}">{$word->resend_code}</button>
 					</div>
 				</div>
 				<div class="display-block margin-t15 position-relative">
@@ -48,7 +48,7 @@ var TI = D.querySelectorAll('.input_key'),
 	TV = D.querySelector('#five'),
 	TS = D.querySelector('#six'),
 	TB = D.querySelector('#to-access'),
-	TM = "{$code}",
+	TM = "{$token}",
 	TW = function(el, pos) {
 	    el.value = el.value;
 	    if (el.createTextRange) {
@@ -104,7 +104,8 @@ var TI = D.querySelectorAll('.input_key'),
 		}
 		addClass(TB, 'spinner-is-loading');
 		TB.setAttribute('disabled', true);
-		Req("{$url->{req/to-access/verify-code}}", function(e){
+		Req("{$url->{req/to-access/verify-{$type}}}", function(e){
+			console.log(e);
 			if(e.status == 200){
 				timeDelay(function(){
 					if(e.url == 'settings'){
@@ -122,7 +123,7 @@ var TI = D.querySelectorAll('.input_key'),
 				}
 				TH.querySelector('.text-error').innerText = '*'+e.message;
 			}
-		}, "POST", "&ecode=" + TC + "&id={$id}&to={$to}")
+		}, "POST", "&tokenu=" + TC + "&id={$id}&to={$to}")
 	},
 	TX = !1,
 	TY = "{$bubbles}".split(',');
@@ -147,14 +148,14 @@ var TI = D.querySelectorAll('.input_key'),
 	if((e.which == 13 || e.keyCode == 13) && TX){
 		FF();
 	}
-}), addEvent(TB, 'click', TF), addEvent(D.querySelector('#resend-code'), 'click', function(){
+}), addEvent(TB, 'click', TF), addEvent(D.querySelector('#resend-{$type}'), 'click', function(){
 	var self = this;
 	self.setAttribute('disabled', true);
 	self.innerText = "{$word->please_wait}";
-	Req("{$url->{req/to-access/resend-code}}", function(e){
+	Req("{$url->{req/to-access/resend-{$type}}}", function(e){
 		var clss = e.status == 200 ? 'color-green' : 'color-red';
 		if(e.status == 200 || e.status == 400){
-			TM = e.ecode, addClass(self, clss), self.innerText = e.message;
+			TM = e.token, addClass(self, clss), self.innerText = e.message;
 			timeDelay(function(){
 				removeClass(self, clss)
 				self.innerText = "{$word->resend_code}", self.removeAttribute('disabled');
