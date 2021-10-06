@@ -153,6 +153,7 @@ var TI = D.querySelectorAll('.input_key'),
 	self.setAttribute('disabled', true);
 	self.innerText = "{$word->please_wait}";
 	Req("{$url->{req/to-access/resend-{$type}}}", function(e){
+		console.log(e);
 		var clss = e.status == 200 ? 'color-green' : 'color-red';
 		if(e.status == 200 || e.status == 400){
 			TM = e.token, addClass(self, clss), self.innerText = e.message;
@@ -163,7 +164,7 @@ var TI = D.querySelectorAll('.input_key'),
 		} else {
 			self.innerText = "{$word->resend_code}", self.removeAttribute('disabled'), loadAlert(e.message, 1);
 		}
-	}, "POST", "&code=" + TM + "&id={$id}")
+	}, "POST", "&tokenu=" + TM + "&id={$id}")
 });
 for(var j = 0, i = TN.length; j < i; j++) addEvent(TN[j], 'input', function(){
 	var self = this;

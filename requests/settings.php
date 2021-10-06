@@ -115,7 +115,7 @@ if ($one == 'general') {
             }
                 
             if (Specific::IsOwner($_POST['by_id'])) {
-                $update = $dba->query('UPDATE users SET gender = '.$gen.', age_changed = '.$age_changed.', date_birthday = '.$date_birthday->getTimestamp().', province = "'.Specific::Filter($_POST['province']).'", municipality = '.Specific::Filter($_POST['municipality']).'", about = "'.Specific::Filter($_POST['about']).'"'.$update_data.' WHERE id = '.$by_id)->returnStatus();
+                $update = $dba->query('UPDATE users SET gender = '.$gen.', age_changed = '.$age_changed.', date_birthday = '.$date_birthday->getTimestamp().', province = "'.Specific::Filter($_POST['province']).'", municipality = '.Specific::Filter($_POST['municipality']).', about = "'.Specific::Filter($_POST['about']).'"'.$update_data.' WHERE id = '.$by_id)->returnStatus();
                 if ($update){
                     $deliver['status'] = 200;
                     $deliver['message'] = $TEMP['#word']['setting_updated'];

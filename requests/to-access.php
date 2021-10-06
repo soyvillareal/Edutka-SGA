@@ -1,5 +1,5 @@
 <?php
-if ($TEMP['#loggedin'] === true && !in_array($one, array('verify-change-email', 'resend-change-email'))) {
+if ($TEMP['#loggedin'] === true && !in_array($one, array('verify-change-email', 'resend-change-email', 'register'))) {
 	$deliver = array(
 		'status' => 400,
 		'error' => $TEMP['#word']['already_logged_in']
@@ -37,7 +37,7 @@ if ($TEMP['#loggedin'] === true && !in_array($one, array('verify-change-email', 
 	           		'status' => 401,
 	           		'id' => $to_access['user_id'],
 	           		'token' => $to_access['token'],
-	           		'html' => $TEMP['#word']['account_is_not_active'] . ' <button class="btn-trans color-blue" id="resend-email">' . $TEMP['#word']['resend_email'] . '</button>'
+	           		'html' => $TEMP['#word']['account_is_not_active'] . ' <button class="btn-noway color-blue" id="resend-email">' . $TEMP['#word']['resend_email'] . '</button>'
 	            );
 	        } else if ($to_access['status'] == 2) {
 	           	$deliver = array(
@@ -45,7 +45,7 @@ if ($TEMP['#loggedin'] === true && !in_array($one, array('verify-change-email', 
 	           		'html' => $TEMP['#word']['account_was_deactivated_owner_email_related'] . ' ' . $TEMP['#word']['if_you_need_more_help'] . ' <a class="color-blue" href="'.Specific::Url('contact').'" target="_self">' . $TEMP['#word']['contact_our_helpdesk'] . '</a>'
 	            );
 	        } else {
-	            if ($to_access['authentication'] == 1 && $to_access['ip'] != Specific::GetClientIp()) {
+	            if ($to_access['authentication'] == 1 && $to_access['ip'] != 'XD') {
 	                $code = rand(111111, 999999);
 	                $token = md5($code);
 	                $dba->query('UPDATE users SET token = "'.$token.'" WHERE dni = "'.$dni.'"');
@@ -164,7 +164,7 @@ if ($TEMP['#loggedin'] === true && !in_array($one, array('verify-change-email', 
 			$send_email = Specific::SendEmail(array(
 				'from_email' => $TEMP['#settings']['smtp_username'],
 	            'from_name' => $TEMP['#settings']['name'],
-				'to_email' => $user['change_email'],
+				'to_email' => $user['email'],
 				'to_name' => $user['names'],
 				'subject' => $TEMP['#word']['verify_your_account'],
 				'charSet' => 'UTF-8',
@@ -303,10 +303,10 @@ if ($TEMP['#loggedin'] === true && !in_array($one, array('verify-change-email', 
 		);
 	}
 } else if($one == 'register'){
+	$deliver['status'] = 400;
 	$dates 			= array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
 	$errors      	= array();
 	$emptys     	= array();
-	$deliver['status'] = 400;
 	$dni        = Specific::Filter($_POST['dni']);
 	$names        = Specific::Filter($_POST['names']);
 	$surnames        = Specific::Filter($_POST['surnames']);
@@ -323,6 +323,12 @@ if ($TEMP['#loggedin'] === true && !in_array($one, array('verify-change-email', 
 	}
 	if (empty($email)){
 		$emptys[] = 'email';
+	}
+	if (empty($names)){
+		$emptys[] = 'names';
+	}
+	if (empty($surnames)){
+		$emptys[] = 'surnames';
 	}
 	if (empty($password)){
 		$emptys[] = 'password';
@@ -392,6 +398,8 @@ if ($TEMP['#loggedin'] === true && !in_array($one, array('verify-change-email', 
             $insert_array = array(
             	'user_id' => "'$id'",
                 'dni' => "'$dni'",
+                'names' => "'$names'",
+                'surnames' => "'$surnames'",
                 'password' => "'$password'",
                 'email' => "'$email'",
                 'ip' => "'$ip'",

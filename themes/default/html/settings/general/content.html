@@ -245,6 +245,7 @@ var GL = D.querySelectorAll('.area_validate'),
     addClass(GB, 'spinner-is-loading');
     GB.setAttribute('disabled', true);
     Req("{$url->{req/settings/general}}", function(e){
+        console.log(e);
         if (e.status == 200) {
             GX = !1;
             if (e.redirect_verify == true) {

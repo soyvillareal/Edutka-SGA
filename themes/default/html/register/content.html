@@ -38,7 +38,7 @@
 					</div>
 					<div class="group-validate display-block margin-t15 position-relative">
 						<label class="display-flex group-title color-secondary">{$word->gender}</label>
-						<select class="cont-input h-50 border-radius-12 animated-easy border-focus-blue input_key area_changed caret-down background-grely color-black" id="gender">
+						<select class="cont-input h-50 border-radius-12 animated-easy border-focus-blue input_key area_validate area_changed caret-down background-grely color-black" id="gender">
 							<option value="1">{$word->male}</option>
 							<option value="2">{$word->female}</option>
 						</select>
@@ -73,7 +73,7 @@
 					</div>
 					<div class="group-validate display-block margin-t15 position-relative">
 						<label class="display-flex group-title color-secondary">{$word->province}</label>
-						<select class="cont-input h-50 border-radius-12 animated-easy border-focus-blue input_key area_changed caret-down background-grely color-black" id="province">
+						<select class="cont-input h-50 border-radius-12 animated-easy border-focus-blue area_validate area_changed caret-down background-grely color-black" id="province">
 							<?php foreach ($TEMP['#provinces'] as $key => $value) {?>
 			                <option value="<?php echo $key; ?>"<?php echo($key == 'antioquia') ? ' selected' : '';?>><?php echo $value; ?></option>
 			                <?php } ?>
@@ -82,7 +82,7 @@
 					</div>
 					<div class="group-validate display-block margin-t15 position-relative">
 						<label class="display-flex group-title color-secondary">{$word->municipality}</label>
-						<select class="cont-input h-50 border-radius-12 animated-easy border-focus-blue input_key area_changed caret-down background-grely color-black" id="municipality">
+						<select class="cont-input h-50 border-radius-12 animated-easy border-focus-blue area_validate area_changed caret-down background-grely color-black" id="municipality">
 							<?php foreach ($TEMP['#municipalities']['antioquia'] as $key => $value) {?>
 			                <option value="<?php echo $key; ?>"<?php echo($key == 'antioquia') ? ' selected' : '';?>><?php echo $value; ?></option>
 			                <?php } ?>
@@ -93,7 +93,7 @@
 						<label class="display-flex group-title color-secondary">{$word->date_of_birth}</label>
 						<div class="display-flex">
 							<input class="cont-input h-50 border-radius-12 animated-easy border-focus-blue number mw-100 input_key area_validate background-grely color-black" type="text" placeholder="{$word->day}" id="day" maxlength="2">
-							<select class="cont-input h-50 border-radius-12 animated-easy border-focus-blue area_changed caret-down margin-l10 area_validate background-grely color-black" id="month">
+							<select class="cont-input h-50 border-radius-12 animated-easy border-focus-blue area_validate area_changed caret-down margin-l10 background-grely color-black" id="month">
 								<option value="" disabled selected>{$word->month}</option>
 								<option value="1">{$word->january}</option>
 								<option value="2">{$word->february}</option>
@@ -108,7 +108,7 @@
 								<option value="11">{$word->november}</option>
 								<option value="12">{$word->december}</option>
 							</select>
-							<select class="cont-input h-50 border-radius-12 animated-easy border-focus-blue area_changed caret-down margin-l10 area_validate background-grely color-black" id="year"<?php echo($TEMP['#data']['age_changed'] >= 1) ? ' disabled="true"' : ''?>>
+							<select class="cont-input h-50 border-radius-12 animated-easy border-focus-blue area_validate area_changed caret-down margin-l10 background-grely color-black" id="year"<?php echo($TEMP['#data']['age_changed'] >= 1) ? ' disabled="true"' : ''?>>
 	                            <option value="" disabled selected>{$word->year}</option>
 	                            <?php for ($i=1900; $i < (date('Y') - 18); $i++) { ?>
 	                                <option value="<?php echo $i ?>"<?php echo($TEMP['#data']['birthday_year'] == $i) ? ' selected' : ''?>><?php echo $i ?></option>
@@ -129,11 +129,11 @@
 					<div class="display-flex">
 						<div class="margin-auto area_validate g-recaptcha" id="g-recaptcha" data-sitekey="{$settings->recaptcha_public_key}"></div>
 					</div>
-					<div class="color-red text-center text-error"></div>
+					<div class="color-red text-center text-error font-low margin-t5"></div>
 				</div>
 				<?php } ?>
 				<div class="display-block margin-t15 position-relative">
-					<button class="btn-noway background-blud cursor-disabled hover-opacity w-100 border-radius-4 padding-10" id="to-access" disabled>
+					<button class="btn-noway background-blud hover-opacity w-100 border-radius-4 padding-10 cdisabled" id="to-access">
 						<span class="color-white">{$word->sign_up}</span>
 						<div class="content-spinner-circle">
 							<div class="spinner-circle"></div>
@@ -162,6 +162,7 @@ var GI = D.querySelectorAll('.input_key'),
 	GN = D.querySelectorAll('.number'),
 	GQ = D.querySelectorAll('.area_changed'),
 	GB = D.querySelector('#to-access'),
+
 	GU = D.querySelector('#dni'),
 	GO = D.querySelector('#names'),
 	GY = D.querySelector('#surnames'),
@@ -172,9 +173,10 @@ var GI = D.querySelectorAll('.input_key'),
 	GD = D.querySelector('#day'),
 	GJ = D.querySelector('#month'),
 	GR = D.querySelector('#year'),
-	GE = D.querySelector('.errors'),
 	Ga = D.querySelector('#province'),
 	Gb = D.querySelector('#municipality'),
+
+	GE = D.querySelector('.errors'),
 	Gc = D.querySelector('#register-boom'),
 	Gd = D.querySelector('#move-cube-left'),
 	Ge = D.querySelector('#move-cube-right'),
@@ -187,17 +189,30 @@ var GI = D.querySelectorAll('.input_key'),
 			GH.querySelector('.text-error').innerText = "", removeClass(el, 'border-red'), removeClass(el, 'boxshadow-red');
 		}
 	},
+	Gh = function(elv){
+		for (var j = 0, i = elv.length; j < i; j++) Gi.push(elv[j]['el']);
+		for (var j = 0, i = Gi.length; j < i; j++) {
+			if(Gi.indexOf('g-recaptcha') != -1 && Gi.length == 1) break;
+			if((Gi.indexOf(GP.id) != -1 || Gi.indexOf(GP.id) != -1 || Gi.indexOf(GC.id) != -1 || Gi.indexOf(Ga.id) != -1 || Gi.indexOf(Gb.id) != -1 || Gi.indexOf(GD.id) != -1 || Gi.indexOf(GJ.id) != -1 || Gi.indexOf(GR.id) != -1) && hasClass(Gd, 'active')){
+				removeClass(Gd, 'active'), addClass(Ge, 'active'), addClass(Gf, 'move-cube-left');
+			} else if((Gi.indexOf(GU.id) != -1 || Gi.indexOf(GO.id) != -1 || Gi.indexOf(GY.id) != -1 || Gi.indexOf(GM.id) != -1 || Gi.indexOf(GG.id) != -1) && hasClass(Ge, 'active'))  {
+				removeClass(Ge, 'active'), addClass(Gd, 'active'), removeClass(Gf, 'move-cube-left');
+			}
+		}
+		Gi = [];
+	},
 	bDisabled = function(){
 		if(GU.value != '' && Ga.value != '' && Gb.value != '' && GO.value != '' && GY.value != '' && GM.value != '' && GP.value != '' && GC.value != '' && GD.value != '' && GJ.value != '' && GR.value != ''){
-			GB.removeAttribute('disabled');
+			removeClass(GB, 'cdisabled')
 		} else {
-			GB.setAttribute('disabled', true)
+			addClass(GB, 'cdisabled')
 		}
 	},
 	GF = function(){
-		GX = !1;
-		GE.innerText = "";
-		if((GU.value == '' || Ga.value == '' || Gb.value == '' || GO.value == '' || GY.value == '' || GM.value == '' || GP.value == '' || GC.value == '' || GG.value == '' || GD.value == '' || GJ.value == '' || GR.value == '') && !GX){
+		if(GU.value == '' || Ga.value == '' || Gb.value == '' || GO.value == '' || GY.value == '' || GM.value == '' || GP.value == '' || GC.value == '' || GG.value == '' || GD.value == '' || GJ.value == '' || GR.value == '') return false;
+		GX = !1, GE.innerText = "";
+
+		if((GU.value == '' || Ga.value == '' || Gb.value == '' || GO.value == '' || GY.value == '' || GM.value == '' || GP.value == '' || GC.value == '' || GG.value == '' || GD.value == '' || GJ.value == '' || GR.value == '') && D.querySelector('#g-recaptcha-response').value == '' && !GX){
 			for (var j = 0, i = GL.length; j < i; j++){
 				var el = GL[j],
 					GZ = el.parentNode,
@@ -221,7 +236,7 @@ var GI = D.querySelectorAll('.input_key'),
 				var el = GL[j],
 					GZ = el.parentNode,
 					GH = hasClass(GZ, 'group-validate') ? GZ : GZ.parentNode;
-				if(el.value != '' || (el.id == 'g-recaptcha' && el.querySelector('#g-recaptcha-response').value != '')){
+				if(el.value != ''){
 					GH.querySelector('.text-error').innerText = "", removeClass(el, 'border-red'), removeClass(el, 'boxshadow-red');
 					if((el.id == 'day' || el.id == 'year') && !(GJ.value > 0 && GJ.value < 13 && GR.value > 0 && GR.value < 32768 && GD.value > 0 && GD.value <= (new Date(GR.value, GJ.value, 0)).getDate() && GR.value <= (new Date()).getFullYear())){
 						if(GR.value > (new Date()).getFullYear()){
@@ -235,28 +250,23 @@ var GI = D.querySelectorAll('.input_key'),
 				}
 			}
 		}
-		removeClass(GE, 'color-green');
-		removeClass(GE, 'border-green');
-		addClass(GB, 'spinner-is-loading');
-		GB.setAttribute('disabled', true);
+		removeClass(GE, 'color-green'), removeClass(GE, 'border-green'), addClass(GB, 'spinner-is-loading'), GB.setAttribute('disabled', true);
 		Req("{$url->{req/to-access/register}}", function(e){
 			if(e.status == 200){
 				if(e.url == undefined){
-					addClass(GE, 'color-green');
-					addClass(GE, 'border-green');
-					removeClass(GB, 'spinner-is-loading');
-					GB.removeAttribute('disabled');
-					GE.innerText = e.message;
+					addClass(GE, 'color-green'), addClass(GE, 'border-green'), removeClass(GB, 'spinner-is-loading'), GB.removeAttribute('disabled'), GE.innerText = e.message;
 				} else {
 					window.location = e.url;
 				}
 			} else {
-				removeClass(GB, 'spinner-is-loading');
-				GB.removeAttribute('disabled');
+				Gh(e.err), removeClass(GB, 'spinner-is-loading'), GB.removeAttribute('disabled');
 				if(e.err != undefined){
 					for (var j = 0, i = e.err.length; j < i; j++){
-						var els = e.err[j]['el'].split('-'),
-							el = e.err[j]['el'].indexOf('-') == -1 ? D.querySelector('#'+e.err[j]['el']) : D.querySelector('#'+els[0]),
+						var els = e.err[j]['el'],
+							elp = els.split('-'),
+							ela = elp.indexOf('g'),
+							elb = elp.indexOf('re'),
+							el = els.indexOf('-') == -1 || ela != -1 || elb != -1 ? D.querySelector('#'+els) : D.querySelector('#'+elp[0]),
 							GZ = el.parentNode,
 							GH = hasClass(GZ, 'group-validate') ? GZ : GZ.parentNode;
 						GH.querySelector('.text-error').innerText = '*'+e.err[j]['error'], timeDelay(function(){
@@ -264,21 +274,17 @@ var GI = D.querySelectorAll('.input_key'),
 								removeClass(Gc, 'efect-boom')
 							}, 200)
 						}, 700);
-						if(e.err[j]['el'].indexOf('-') == -1){
-							addClass(el, 'border-red');
-							addClass(el, 'boxshadow-red');
+						if(els.indexOf('-') == -1 || ela != -1 || elb != -1){
+							addClass(el, 'border-red'), addClass(el, 'boxshadow-red');
 						} else {
-							for (var j = 0, i = els.length; j < i; j++){
-								var del = D.querySelector('#'+els[j]);
+							for (var j = 0, i = elp.length; j < i; j++){
+								var del = D.querySelector('#'+elp[j]);
 								addClass(del, 'border-red'), addClass(del, 'boxshadow-red');
 							} 
 						}
-						
 					}
 				} else if(e.message != undefined){
-					removeClass(GB, 'spinner-is-loading');
-					GB.removeAttribute('disabled');
-					GE.innerText = e.message;
+					removeClass(GB, 'spinner-is-loading'), GB.removeAttribute('disabled'), GE.innerText = e.message;
 				} else {
 					for (var j = 0, i = e.emptys.length; j < i; j++){
 						var el = D.querySelector('#'+e.emptys[j]),
@@ -292,9 +298,10 @@ var GI = D.querySelectorAll('.input_key'),
 					}
 				}
 			}
-		}, "POST", "&username=" + GU.value + "&password=" + GP.value + "&re-password=" + GC.value + "&gender=" + GG.value + "&email=" + GM.value + "&day=" + GD.value + "&month=" + GJ.value + "&year=" + GR.value + "&names=" + GO.value + "&surnames=" + GY.value + "&province=" + Ga.value + "&municipality=" + Gb.value<?php echo $TEMP['#settings']['recaptcha'] == 'on' ? ' + "&recaptcha=" + D.querySelector("#g-recaptcha-response").value' : ''?>)
+		}, "POST", "&dni=" + GU.value + "&password=" + GP.value + "&re-password=" + GC.value + "&gender=" + GG.value + "&email=" + GM.value + "&day=" + GD.value + "&month=" + GJ.value + "&year=" + GR.value + "&names=" + GO.value + "&surnames=" + GY.value + "&province=" + Ga.value + "&municipality=" + Gb.value<?php echo $TEMP['#settings']['recaptcha'] == 'on' ? ' + "&recaptcha=" + D.querySelector("#g-recaptcha-response").value' : ''?>)
 	},
 	GX = !1,
+	Gi = [],
 	GK = "{$bubbles}".split(',');
 GU.focus(), timeDelay(function(){
 	if(GK.length > 0){
@@ -316,6 +323,16 @@ GU.focus(), timeDelay(function(){
 }, 14000, 1), addEvent(D, 'keydown', function(e){
 	if((e.which == 13 || e.keyCode == 13) && GX){
 		GF();
+	}
+}), addEvent(GB, 'mouseenter', function(){
+	if((GP.value == '' || GC.value == '' || Ga.value == '' || Gb.value == '' || GD.value == '' || GJ.value == '' || GR.value == '') && hasClass(Gd, 'active')){
+		addClass(Gf, 'move-cube-boom'), removeClass(Gd, 'active'), addClass(Ge, 'active'), timeDelay(function(){
+			removeClass(Gf, 'move-cube-boom'), removeClass(Ge, 'active'), addClass(Gd, 'active')
+		}, 400)	
+	} else if((GU.value == '' || GO.value == '' || GY.value == '' || GM.value == '' || GG.value == '') && hasClass(Ge, 'active')){
+		addClass(Gf, 'move-cube-boom'), removeClass(Ge, 'active'), addClass(Gd, 'active'), timeDelay(function(){
+			removeClass(Gf, 'move-cube-boom'), removeClass(Gd, 'active'), addClass(Ge, 'active')
+		}, 400)
 	}
 }), addEvent(Ge, 'click', function(){
 	removeClass(Gd, 'active'), addClass(Ge, 'active'), addClass(Gf, 'move-cube-left'), Gg();
@@ -360,25 +377,19 @@ for (var j = 0, i = GI.length; j < i; j++) addEvent(GI[j], 'keyup', function(e){
 			GH = hasClass(GZ, 'group-validate') ? GZ : GZ.parentNode,
 			els = GH.querySelectorAll('.area_validate'),
 			GS = GA == 'password' ? GC : GP;
-		bDisabled();
-		if(GA == 'day' || GA == 'year'){
-			for (var j = 0, i = els.length; j < i; j++) removeClass(els[j], 'border-red'), removeClass(els[j], 'boxshadow-red');
-		}
+		bDisabled(), removeClass(GD, 'border-red'), removeClass(GD, 'boxshadow-red');
 		if(GW == ''){
 			GH.querySelector('.text-error').innerText = "", removeClass(self, 'border-red'), removeClass(self, 'boxshadow-red'), GX = !1;
 			return false;
 		}
 		Req("{$url->{req/key-validate}}", function(e){
+			console.log(e);
 			if(e.status == 200){
 				var msg = e.message;
 				if(msg == ''){
 					removeClass(self, 'border-red'), removeClass(self, 'boxshadow-red');
 				} else {
-					addClass(self, 'border-red'), addClass(self, 'boxshadow-red'), timeDelay(function(){
-						addClass(Gc, 'efect-boom'), timeDelay(function(){
-							removeClass(Gc, 'efect-boom')
-						}, 200)
-					}, 700);
+					addClass(self, 'border-red'), addClass(self, 'boxshadow-red');
 				}
 				GH.querySelector('.text-error').innerText = msg, GX = !0;
 				if((GA == 'password' || GA == 're-password') && D.querySelector('#'+GA).value != '' && GP.value == GC.value){

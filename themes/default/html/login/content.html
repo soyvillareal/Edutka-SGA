@@ -7,12 +7,12 @@
 		    	    <div class="background-white errors"></div>
 		    	</div>
 				<div class="display-block margin-t15 position-relative">
-					<input class="cont-input h-50 border-radius-12 animated-easy border-focus-blue input_key background-grely color-black" type="text" id="dni" placeholder="{$word->document_number}" required>
+					<input class="cont-input h-50 border-radius-12 animated-easy border-focus-blue area_validate input_key background-grely color-black" type="text" id="dni" placeholder="{$word->document_number}" required>
 					<div class="color-red text-left text-error font-low margin-t5"></div>
 				</div>
 				<div class="display-block margin-t15 position-relative">
 					<div class="position-relative">
-						<input class="cont-input h-50 border-radius-12 animated-easy border-focus-blue padding-right-50 input_key background-grely color-black" type="password" id="password" placeholder="{$word->password}" autocomplete="off" required>
+						<input class="cont-input h-50 border-radius-12 animated-easy border-focus-blue padding-right-50 area_validate input_key background-grely color-black" type="password" id="password" placeholder="{$word->password}" autocomplete="off" required>
 						<button class="btn-noway display-inline-flex background-hover color-grey binput-inleft border-top-right-radius border-bottom-right-radius" tabindex="-1">
 							<svg class="dv-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 								<path fill="currentColor" d="M 19.714 12 C 18.696 10.361 17.421 9.135 15.887 8.323 C 16.296 9.045 16.5 9.826 16.5 10.667 C 16.5 11.951 16.06 13.05 15.179 13.964 C 14.299 14.877 13.239 15.333 12 15.333 C 10.761 15.333 9.701 14.877 8.821 13.964 C 7.94 13.05 7.5 11.951 7.5 10.667 C 7.5 9.826 7.704 9.045 8.113 8.323 C 6.579 9.135 5.304 10.361 4.286 12 C 5.176 13.424 6.293 14.557 7.636 15.401 C 8.978 16.245 10.433 16.667 12 16.667 C 13.567 16.667 15.022 16.245 16.364 15.401 C 17.707 14.557 18.824 13.424 19.714 12 Z M 12.482 8 C 12.482 7.861 12.435 7.743 12.342 7.646 C 12.248 7.549 12.134 7.5 12 7.5 C 11.163 7.5 10.445 7.811 9.845 8.432 C 9.246 9.054 8.946 9.799 8.946 10.667 C 8.946 10.806 8.993 10.924 9.087 11.021 C 9.181 11.118 9.295 11.167 9.429 11.167 C 9.563 11.167 9.676 11.118 9.77 11.021 C 9.864 10.924 9.911 10.806 9.911 10.667 C 9.911 10.069 10.115 9.559 10.523 9.135 C 10.932 8.712 11.424 8.5 12 8.5 C 12.134 8.5 12.248 8.451 12.342 8.354 C 12.435 8.257 12.482 8.139 12.482 8 Z M 21 12 C 21 12.236 20.933 12.476 20.799 12.719 C 19.862 14.316 18.601 15.595 17.017 16.557 C 15.434 17.519 13.761 18 12 18 C 10.239 18 8.566 17.517 6.983 16.552 C 5.399 15.587 4.138 14.309 3.201 12.719 C 3.067 12.476 3 12.236 3 12 C 3 11.764 3.067 11.524 3.201 11.281 C 4.138 9.691 5.399 8.413 6.983 7.448 C 8.566 6.483 10.239 6 12 6 C 13.761 6 15.434 6.483 17.017 7.448 C 18.601 8.413 19.862 9.691 20.799 11.281 C 20.933 11.524 21 11.764 21 12 Z"/>
@@ -23,8 +23,10 @@
 				</div>
 				<?php if($TEMP['#settings']['recaptcha'] == 'on'){ ?>
 				<div class="display-block margin-t15 position-relative">
-					<div class="area_validate g-recaptcha" id="g-recaptcha" data-sitekey="{$settings->recaptcha_public_key}"></div>
-					<div class="color-red text-left text-error font-low margin-t5"></div>
+					<div class="display-flex">
+						<div class="margin-auto area_validate g-recaptcha" id="g-recaptcha" data-sitekey="{$settings->recaptcha_public_key}"></div>
+					</div>
+					<div class="color-red text-center text-error font-low margin-t5"></div>
 				</div>
 				<?php } ?>
 				<div class="clear"></div>
@@ -52,16 +54,15 @@
 </ul>
 <script>
 var LI = D.querySelectorAll('.input_key'),
+	LA = D.querySelectorAll('.area_validate'),
 	LB = D.querySelector('#to-access'),
 	LU = D.querySelector('#dni'),
 	LP = D.querySelector('#password'),
 	LE = D.querySelector('.errors'),
-	LL = D.querySelector('#data-load'),
 	LG = D.querySelector('#login-boom'),
 	LF = function(){
-		LX = !1;
-		LE.innerHTML = "";
-		if((LU.value == '' || LP.value == '') && !LX){
+		LX = !1, LE.innerHTML = "";
+		if((LU.value == '' || LP.value == '') && D.querySelector('#g-recaptcha-response').value == '' && !LX){
 			for (var j = 0, i = LI.length; j < i; j++){
 				var el = LI[j];
 				if(el.value == '')
@@ -73,15 +74,15 @@ var LI = D.querySelectorAll('.input_key'),
 			}
 			return false;
 		} else {
-			for (var j = 0, i = LI.length; j < i; j++) {
-				var el = LI[j];
-				el.parentNode.querySelector('.text-error').innerText = "", removeClass(el, 'border-red'), removeClass(el, 'boxshadow-red');
+			for (var j = 0, i = LA.length; j < i; j++) {
+				var el = LA[j],
+					elt = el.id == 'g-recaptcha' ? el.parentNode : el;
+				if(el.value != ''){
+					elt.parentNode.querySelector('.text-error').innerText = "", removeClass(el, 'border-red'), removeClass(el, 'boxshadow-red');
+				}
 			}
 		}
-		removeClass(LE, 'color-green');
-		removeClass(LE, 'border-green');
-		addClass(LB, 'spinner-is-loading');
-		LB.setAttribute('disabled', true);
+		removeClass(LE, 'color-green'), removeClass(LE, 'border-green'), addClass(LB, 'spinner-is-loading'), LB.setAttribute('disabled', true);
 		Req("{$url->{req/to-access/login}}", function(e){
 			if(e.status == 200){
 				window.location.reload();
@@ -93,19 +94,14 @@ var LI = D.querySelectorAll('.input_key'),
 					if(e.token != undefined){
 						addEvent(LE.querySelector('#resend-email'), 'click', function(){
 							var self = this;
-							self.setAttribute('disabled', true);
-							LL.style.display = "block";
+							self.setAttribute('disabled', true), self.innerText = '{$word->please_wait}';
 							Req("{$url->{req/to-access/resend-email}}", function(e){
 								if(e.status == 200){
-									self.removeAttribute('disabled');
-									LL.style.display = "";
-									addClass(LE, 'color-green');
-									addClass(LE, 'border-green');
-									LE.innerText = e.message;
+									self.removeAttribute('disabled'), self.innerText = '', addClass(LE, 'color-green'), addClass(LE, 'border-green'), LE.innerText = e.message;
 								} else {
 									window.location = e.url;
 								}
-							}, "POST", "&code=" + e.token + "&id=" + e.id)
+							}, "POST", "&tokenu=" + e.token + "&id=" + e.id)
 						})
 					} else {
 						loadPage(LE.querySelectorAll('a[target="_self"]'));
@@ -113,10 +109,10 @@ var LI = D.querySelectorAll('.input_key'),
 				} else if(e.url != undefined){
 					preloadPage(e.url);
 				} else {
-					var el = D.querySelector('#'+e.err['el']);
-					removeClass(LB, 'spinner-is-loading');
-					LB.removeAttribute('disabled');
-					el.parentNode.querySelector('.text-error').innerText = '*'+e.err['error'], addClass(el, 'border-red'), addClass(el, 'boxshadow-red'), timeDelay(function(){
+					var els = e.err['el'],
+						el = D.querySelector('#'+els),
+						elt = els == 'g-recaptcha' ? el.parentNode : el;
+					removeClass(LB, 'spinner-is-loading'), LB.removeAttribute('disabled'), elt.parentNode.querySelector('.text-error').innerText = '*'+e.err['error'], addClass(el, 'border-red'), addClass(el, 'boxshadow-red'), timeDelay(function(){
 						addClass(LG, 'efect-boom'), timeDelay(function(){
 							removeClass(LG, 'efect-boom')
 						}, 200)
