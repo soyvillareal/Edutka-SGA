@@ -13,14 +13,10 @@ if (!isset($_POST['input'])) {
 	$dates = array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
 	$re_password = $type == 're-password' ? Specific::Filter($_POST['password']) : Specific::Filter($_POST['re-password']);
 	if(!empty($input) && !empty($type)){
-		if ($dba->query('SELECT COUNT(*) FROM users WHERE username = "'.$input.'"')->fetchArray() > 0 && $type == 'username') {
-	       	$error = $TEMP['#word']['username_is_taken'];
-	    } else if (preg_match_all('~@(.*?)(.*)~', $input, $matches) && !empty($matches[2]) && !empty($matches[2][0]) && Specific::IsBanned($matches[2][0]) && ($type == 'email' || $type == 'settings-email')) {
-	        $error = $TEMP['#word']['email_provider_banned'];
-	    } else if ((strlen($input) < 4 || strlen($input) > 25) && $type == 'username') {
-	        $error = $TEMP['#word']['username_characters_length'];
-	    } else if (!preg_match('/^[\w]+$/', $input) && $type == 'username') {
-	        $error = $TEMP['#word']['username_invalid_characters'];
+		if ($dba->query('SELECT COUNT(*) FROM users WHERE dni = "'.$input.'"')->fetchArray() > 0 && $type == 'dni') {
+	       	$error = $TEMP['#word']['document_already_exists'];
+	    } else if (!preg_match('/^[0-9]/', $input) && $type == 'dni') {
+	        $error = $TEMP['#word']['invalid_document_characters'];
 	    } else if ($dba->query('SELECT COUNT(*) FROM users WHERE email = "'.$input.'"')->fetchArray() > 0 && ($type == 'email' || ($type == 'settings-email' && $user_data['email'] != $input))) {
 	        $error = $TEMP['#word']['email_exists'];
 	    } else if (!filter_var($input, FILTER_VALIDATE_EMAIL) && ($type == 'email' || $type == 'settings-email')) {

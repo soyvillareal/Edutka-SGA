@@ -414,6 +414,20 @@ class Specific {
 	    );
 	}
 
+	public static function CheckRecaptcha($token){
+		global $TEMP;
+		 
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL,"https://www.google.com/recaptcha/api/siteverify");
+		curl_setopt($ch, CURLOPT_POST, 1);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query(array('secret' => $TEMP['#settings']['recaptcha_private_key'], 'response' => self::Filter($token))));
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		$response = curl_exec($ch);
+		curl_close($ch);
+
+		return json_decode($response, true);
+	}
+
 	public static function DestroyMaket(){
 	    global $TEMP;
 	    unset($TEMP['!data']);

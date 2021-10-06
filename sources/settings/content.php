@@ -22,11 +22,8 @@ if (!empty($user_id)) {
     $TEMP['#load_url'] = Specific::Url('settings'.$TEMP['href_setting']);
 }
 
-$TEMP['#unverified']  = ($dba->query('SELECT COUNT(*) FROM subscriptions WHERE by_id = '.$TEMP['#data']['id'])->fetchArray() >= $TEMP['#settings']['verification_subscribers_cap'] && $dba->query('SELECT COUNT(*) FROM requests WHERE status = 0 AND by_id = '.$TEMP['#user']['id'])->fetchArray() == 0 && $TEMP['#data']['verified'] == 0);
-$TEMP['#username_change'] = time() < $TEMP['#data']['user_changed'];
 $TEMP['#birthday_enable'] = $TEMP['#data']['age_changed'] >= 1;
 $TEMP['data'] = $TEMP['#data'];
-$TEMP['time_user'] = Specific::DateString($TEMP['#data']['user_changed'], false);
 
 $TEMP['#page']        = 'general';
 $TEMP['#title']       = $TEMP['#word']['settings'] . ' - ' . $TEMP['#settings']['title'];

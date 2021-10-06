@@ -1,6 +1,6 @@
 <?php 
 $id = Specific::Filter($_GET['id']);
-$token = Specific::Filter($_GET['token']);
+$token = Specific::Filter($_GET['tokenu']);
 $TEMP['#descode'] = Specific::Filter($_GET['insert']);
 if ($TEMP['#loggedin'] === false){
     header("Location: " . Specific::Url('login'));

@@ -37,9 +37,9 @@ foreach ($pages as $key => $value) {
         $TEMP['footer_list'] .= '<li class="item-footer"><a class="color-tertiary" href="'.Specific::Url("pages/{$value['type']}").'" target="_self">'.$TEMP['#word'][str_replace('-', '_', $value['type'])].'</a></li>';
     }
 }
-$TEMP['lang_url'] = $now_url . (strpos($_SERVER['REQUEST_URI'], '?') !== false ? '&' : '?') . 'language=';
+$TEMP['lang_url'] = $now_url . (strpos($_SERVER['REQUEST_URI'], '?') !== false ? '&' : '?') . 'language';
 if(strpos($_SERVER['REQUEST_URI'], 'language') !== false){
-    $TEMP['lang_url'] = preg_replace('/language=(.+?)$/i', 'language=', $_SERVER['REQUEST_URI']);
+    $TEMP['lang_url'] = preg_replace('/language(.+?)$/i', 'language', $_SERVER['REQUEST_URI']);
 }
 $TEMP['global_title'] = $TEMP['#title'];
 $TEMP['global_description'] = $TEMP['#description'];

@@ -12,6 +12,7 @@ $page = $dba->query('SELECT COUNT(*) FROM users WHERE user_id = "'.$id.'" AND to
 $TEMP['#bubbles'] = Specific::Bubbles();
 
 $TEMP['title'] = $TEMP['#word']['authentication'];
+$TEMP['type'] = 'code';
 $TEMP['to'] = Specific::Filter($_GET['to']);
 $TEMP['id'] = $id;
 $TEMP['token'] = $token;

@@ -9,6 +9,9 @@
   <link rel="shortcut icon" type="image/png" href="{$theme->{images/favicon.ico}}" />
   <link rel="stylesheet" type="text/css" href="{$theme->{assets/css/style.min.css}}" />
   <link href="https://fonts.googleapis.com/css2?family=Jost:wght@200;400;700&display=swap" rel="stylesheet">
+  <?php if ($TEMP['#settings']['recaptcha'] == 'on') { ?>
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+  <?php } ?>
   <script type="text/javascript">
     var D = document,
         W = window,
@@ -75,7 +78,7 @@
 
               window.history.pushState({state:'new'},'', e.url);
               var CX = D.querySelector('#global_content'),
-                  CP = D.querySelectorAll('#language-href'),
+                  CP = D.querySelectorAll('.language-href'),
                   CA = window.innerWidth || D.documentElement.clientWidth || D.body.clientWidth;
               removeAllTimeDelay(), M = encodeURIComponent(e.url);
               var PZ = D.querySelector('.open-dropdown [data-toggle=dropdown]');
@@ -167,13 +170,13 @@
               },
               alertT = 0,
               alertB = 0;
-            alertA && alertA.remove(), alert.className = 'content-load-alert color-white vertical-center border-radius-4 padding-12 '+(type == 0 ? ' border-all border-tertiary': type == 1 ? ' background-red' : ' background-blue'), alert.innerHTML += '<p class="margin-r10">'+text+'</p><button class="btn-trans"><svg class="vh-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M 12 13.17 L 5.17 20 L 4 18.832 L 10.83 12 L 4 5.17 L 5.17 4 L 12 10.83 L 18.832 4 L 20 5.17 L 13.17 12 L 20 18.832 L 18.832 20 Z"></path></svg></button>', D.body.appendChild(alert);
+            alertA && alertA.remove(), alert.className = 'content-load-alert color-white dv-vertical-center border-radius-4 padding-15 '+(type == 0 ? 'background-blue border-all border-bluly': type == 1 ? ' background-red' : ''), alert.innerHTML += '<p class="margin-r10">'+text+'</p><button class="btn-noway"><svg class="dv-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M 12 13.17 L 5.17 20 L 4 18.832 L 10.83 12 L 4 5.17 L 5.17 4 L 12 10.83 L 18.832 4 L 20 5.17 L 13.17 12 L 20 18.832 L 18.832 20 Z"></path></svg></button>', D.body.appendChild(alert);
           addEvent(alert, 'click', alertF);
           alertB = setTimeout(function(){
-            addClass(alert, 'bottom-0');
+            addClass(alert, 'pos-bottom');
           }, 100)
           alertT = setTimeout(function(){
-            removeClass(alert, 'bottom-0');
+            removeClass(alert, 'pos-bottom');
             setTimeout(function(){
               alert.remove();
             }, 600);
@@ -305,25 +308,18 @@
         </li>
         <?php } ?>
       </ul>
-      <div class="dv-vertical-center margin-l20 has-submenu" data-type="leave">
-        <button class="w-55px box-shadow-black-all btn-noway caret-down">
-          <img class="lang-icon pointer-events-none" src="{$theme->{images/{#language}.png}}">
-        </button>
-        <ul class="lang-submenu box-shadow-black nopadding-top nopadding-bottom position-absolute w-55px background-white hidden">
-          <li class="padding-5 nopadding-left nopadding-right background-hover">
-            <a class="dv-vertical-center" href="{$lang_url}es">
-              <img class="lang-icon pointer-events-none " src="{$theme->{images/es.png}}">
-              <span class="font-low font-bold color-black margin-left-auto margin-r5">ES</span>
-            </a>
-          </li>
-          <li class="padding-5 nopadding-left nopadding-right background-hover">
-            <a class="dv-vertical-center btn-noway" href="{$lang_url}en">
-              <img class="lang-icon pointer-events-none " src="{$theme->{images/en.png}}">
-              <span class="font-low font-bold color-black margin-left-auto margin-r5">EN</span>
-            </a>
-          </li>
-        </ul>
-      </div>
+      <ul class="cont-language">
+        <li class="margin-b10">
+          <a class="language-href btn-noway dv-vertical-center hover-opacity" href="{$lang_url}=es">
+            <img class="dv-lang" src="{$theme->{images/es.png}}">
+          </a>
+        </li>
+        <li>
+          <a class="language-href btn-noway dv-vertical-center hover-opacity" href="{$lang_url}=en">
+            <img class="dv-lang" src="{$theme->{images/en.png}}">
+          </a>
+        </li>
+      </ul>
     </nav>
   </div>
   <div class="data-loading w-100 position-absolute background-blud w-100 h-8 overflow-hidden pos-left pos-right pos-bottom" id="data-load"></div>

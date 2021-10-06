@@ -10,21 +10,27 @@ if ($TEMP['#loggedin'] === true && !in_array($one, array('verify-change-email', 
 	$deliver['status'] = 400;
 	$error   = '';
 	$emptys = array();
-	$username = Specific::Filter($_POST['username']);
+	$dni = Specific::Filter($_POST['dni']);
 	$password = Specific::Filter($_POST['password']);
-	if(empty($username)){
-		$emptys[] = 'username';
+	$recaptcha = Specific::CheckRecaptcha($_POST['recaptcha']);
+	if(empty($dni)){
+		$emptys[] = 'dni';
 	}
 	if(empty($password)){
 		$emptys[] = 'password';
 	}
 	if(empty($emptys)){
-		if($dba->query('SELECT COUNT(*) FROM users WHERE username = "'.$username.'"')->fetchArray() == 0){
-	        $error = array('error' => $TEMP['#word']['invalid_username'], 'el' => 'username');
-	    } else if ($dba->query('SELECT COUNT(*) FROM users WHERE username = "'.$username.'" AND password = "'.sha1($password).'"')->fetchArray() == 0){
+		if($dba->query('SELECT COUNT(*) FROM users WHERE dni = "'.$dni.'"')->fetchArray() == 0){
+	        $error = array('error' => $TEMP['#word']['invalid_dni'], 'el' => 'dni');
+	    } else if ($dba->query('SELECT COUNT(*) FROM users WHERE dni = "'.$dni.'" AND password = "'.sha1($password).'"')->fetchArray() == 0){
 	       	$error = array('error' => $TEMP['#word']['invalid_password'], 'el' => 'password');
-	    }
-	    $to_access = $dba->query('SELECT * FROM users WHERE username = "'.$username.'" AND password = "'.sha1($password).'"')->fetchArray();
+	    } else if ($TEMP['#settings']['recaptcha'] == 'on') {
+            if (!isset($_POST['recaptcha']) || empty($_POST['recaptcha']) || ($recaptcha["success"] == false && $recaptcha["score"] < 0.5)) {
+                $error = array('error' => $TEMP['#word']['recaptcha_error'], 'el' => 'g-recaptcha');
+            }
+        } 
+
+	    $to_access = $dba->query('SELECT * FROM users WHERE dni = "'.$dni.'" AND password = "'.sha1($password).'"')->fetchArray();
 	    if (empty($error)) {
 	        if ($to_access['status'] == 0) {
 	           	$deliver = array(
@@ -42,7 +48,7 @@ if ($TEMP['#loggedin'] === true && !in_array($one, array('verify-change-email', 
 	            if ($to_access['authentication'] == 1 && $to_access['ip'] != Specific::GetClientIp()) {
 	                $code = rand(111111, 999999);
 	                $token = md5($code);
-	                $dba->query('UPDATE users SET token = "'.$token.'" WHERE username = "'.$username.'"');
+	                $dba->query('UPDATE users SET token = "'.$token.'" WHERE dni = "'.$dni.'"');
 
 	                $id = $to_access['user_id'];
 	                $name = $to_access['names'];
@@ -64,7 +70,7 @@ if ($TEMP['#loggedin'] === true && !in_array($one, array('verify-change-email', 
 			       	if($send){
 		                $deliver = array(
 						    'status' => 401,
-		            		'url' => "&one=authentication&token=$token&id=".$id
+		            		'url' => "&one=authentication&tokenu=$token&id=".$id
 						);
 	                } else {
 						$deliver = array(
@@ -301,7 +307,9 @@ if ($TEMP['#loggedin'] === true && !in_array($one, array('verify-change-email', 
 	$errors      	= array();
 	$emptys     	= array();
 	$deliver['status'] = 400;
-	$username        = Specific::Filter($_POST['username']);
+	$dni        = Specific::Filter($_POST['dni']);
+	$names        = Specific::Filter($_POST['names']);
+	$surnames        = Specific::Filter($_POST['surnames']);
     $password        = Specific::Filter($_POST['password']);
     $re_password      = Specific::Filter($_POST['re-password']);
     $email           = Specific::Filter($_POST['email']);
@@ -309,8 +317,9 @@ if ($TEMP['#loggedin'] === true && !in_array($one, array('verify-change-email', 
     $day          = Specific::Filter($_POST['day']);
     $month          = Specific::Filter($_POST['month']);
     $year          = Specific::Filter($_POST['year']);
-	if (empty($username)){
-		$emptys[] = 'username';
+	$recaptcha = Specific::CheckRecaptcha($_POST['recaptcha']);
+	if (empty($dni)){
+		$emptys[] = 'dni';
 	}
 	if (empty($email)){
 		$emptys[] = 'email';
@@ -334,14 +343,11 @@ if ($TEMP['#loggedin'] === true && !in_array($one, array('verify-change-email', 
 		$emptys[] = 'year';
 	}
 	if(empty($emptys)){
-        if ($dba->query('SELECT COUNT(*) FROM users WHERE username = "'.$username.'"')->fetchArray() > 0) {
-            $errors[] = array('error' => $TEMP['#word']['username_is_taken'], 'el' => 'username');
+        if ($dba->query('SELECT COUNT(*) FROM users WHERE dni = "'.$dni.'"')->fetchArray() > 0) {
+            $errors[] = array('error' => $TEMP['#word']['document_already_exists'], 'el' => 'dni');
         }
-        if (strlen($username) < 4 || strlen($username) > 25) {
-            $errors[] = array('error' => $TEMP['#word']['username_characters_length'], 'el' => 'username');
-        }
-        if (!preg_match('/^[\w]+$/', $username)) {
-            $errors[] = array('error' => $TEMP['#word']['username_invalid_characters'], 'el' => 'username');
+        if (!preg_match('/^[0-9]/', $dni)) {
+            $errors[] = array('error' => $TEMP['#word']['invalid_document_characters'], 'el' => 'dni');
         }
         if ($dba->query('SELECT COUNT(*) FROM users WHERE email = "'.$email.'"')->fetchArray() > 0) {
             $errors[] = array('error' => $TEMP['#word']['email_exists'], 'el' => 'email');
@@ -371,32 +377,27 @@ if ($TEMP['#loggedin'] === true && !in_array($one, array('verify-change-email', 
 	    	$errors[] = array('error' => $TEMP['#word']['please_enter_valid_date'], 'el' => 'day-month-year');
 	    }
         if ($TEMP['#settings']['recaptcha'] == 'on') {
-            if (!isset($_POST['recaptcha']) || empty($_POST['recaptcha'])) {
-                $errors[] = array('error' => $TEMP['#word']['reCaptcha_error'], 'el' => 'g-recaptcha');
+            if (!isset($_POST['recaptcha']) || empty($_POST['recaptcha']) || ($recaptcha["success"] == false && $recaptcha["score"] < 0.5)) {
+                $errors[] = array('error' => $TEMP['#word']['recaptcha_error'], 'el' => 'g-recaptcha');
             }
-        }
+        } 
+
         if (empty($errors)) {
         	$date_birthday = DateTime::createFromFormat('d-m-Y H:i:s', "$day-$month-$year 00:00:00");
             $code = rand(111111,999999);
 			$token = sha1($code);
 			$id = Specific::RandomKey(12, 16);
-			$live_key = 'live_'.Specific::RandomKey(24, 30);
-			if($dba->query('SELECT COUNT(*) FROM users WHERE live_key = "'.$live_key.'"')->fetchArray() > 0){
-				$live_key = 'live_'.Specific::RandomKey(24, 30);
-			}
 			$ip = Specific::GetClientIp();
 			$password = sha1($password);
             $insert_array = array(
             	'user_id' => "'$id'",
-                'username' => "'$username'",
-                'user_changed' => strtotime("+2 month, 12:00am", time()),
+                'dni' => "'$dni'",
                 'password' => "'$password'",
                 'email' => "'$email'",
                 'ip' => "'$ip'",
                 'gender' => "'$gender'",
                 'status' => $TEMP['#settings']['validate_email'] == 'on' ? 0 : 1,
                 'token' => "'$token'",
-                'live_key' => "'$live_key'",
                 'date_birthday' => $date_birthday->getTimestamp(),
                 'time' => time()
             );
@@ -417,7 +418,7 @@ if ($TEMP['#loggedin'] === true && !in_array($one, array('verify-change-email', 
 					$TEMP['id'] = $id;
 	            	$TEMP['token'] = $token;
 					$TEMP['code'] = $code;
-					$TEMP['username'] = $username;
+					$TEMP['name'] = $names;
 					$TEMP['text'] = $TEMP['#word']['verify_your_account'].' '.$TEMP['#word']['of'].' '.$TEMP['#settings']['title'];
 					$TEMP['footer'] = '<a target="_blank" href="'.Specific::Url("not-me/$token/$id").'" style="color: #999; text-decoration: underline;">'.$TEMP['#word']['let_us_know'].'</a>.';
 					$TEMP['type'] = 'verify';
@@ -426,7 +427,7 @@ if ($TEMP['#loggedin'] === true && !in_array($one, array('verify-change-email', 
 	                    'from_email' => $TEMP['#settings']['smtp_username'],
 		                'from_name' => $TEMP['#settings']['name'],
 	                    'to_email' => $email,
-	                    'to_name' => $username,
+	                    'to_name' => $names,
 	                    'subject' => $TEMP['#word']['verify_your_account'],
 	                    'charSet' => 'UTF-8',
 				        'message_body' => Specific::Maket('emails/includes/verify-email'),

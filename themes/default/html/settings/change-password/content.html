@@ -1,6 +1,6 @@
-<form class="settings-panel form-middle" action="javascript:void(0)">
+<form class="password-panel form-middle" id="password-boom" action="javascript:void(0)">
     <div class="max-w-900 border-top-left-radius border-top-right-radius background-white padding-25">
-        <div class="validate-group display-block margin-t15 position-relative w-100 padding-25">
+        <div class="group-validate display-block margin-t15 position-relative w-100 padding-25">
             <div class="display-flex flex-wrap">
                 <div class="cont-label dv-vertical-center">
         		  <label class="color-black">{$word->current_password}</label>
@@ -16,7 +16,7 @@
                 </div>
             </div>
     	</div>
-        <div class="validate-group display-block margin-t15 position-relative w-100 padding-25">
+        <div class="group-validate display-block margin-t15 position-relative w-100 padding-25">
             <div class="display-flex flex-wrap">
                 <div class="cont-label dv-vertical-center">
         		  <label class="color-black">{$word->new_password}</label>
@@ -32,7 +32,7 @@
                 </div>
             </div>
     	</div>
-        <div class="validate-group display-block margin-t15 position-relative w-100 padding-25">
+        <div class="group-validate display-block margin-t15 position-relative w-100 padding-25">
             <div class="display-flex flex-wrap">
                 <div class="cont-label dv-vertical-center">
         		  <label class="color-black">{$word->confirm_new_password}</label>
@@ -69,15 +69,20 @@ var PI = D.querySelectorAll('.input_key'),
     PE = D.querySelector('#current-password'),
     PP = D.querySelector('#password'),
     PC = D.querySelector('#re-password'),
+    PZ = D.querySelector('#password-boom'),
     PF = function(){
         PX = !1;
         if((PE.value == '' || PP.value == '' || PC.value == '') && !PX){
             for (var j = 0, i = PI.length; j < i; j++){
                 var el = PI[j],
                     GZ = el.parentNode,
-                    GH = hasClass(GZ, 'validate-group') ? GZ : GZ.parentNode;
+                    GH = hasClass(GZ, 'group-validate') ? GZ : GZ.parentNode;
                 if(el.value == ''){
-                    GH.querySelector('.text-error').innerText = '*{$word->this_field_is_empty}', removeClass(PS, 'hidden'), addClass(el, 'border-red'), addClass(el, 'boxshadow-red');
+                    GH.querySelector('.text-error').innerText = '*{$word->this_field_is_empty}', removeClass(PS, 'hidden'), addClass(el, 'border-red'), addClass(el, 'boxshadow-red'), timeDelay(function(){
+                        addClass(PZ, 'efect-boom'), timeDelay(function(){
+                            removeClass(PZ, 'efect-boom')
+                        }, 200)
+                    }, 700);
                 }
             }
             return false;
@@ -85,34 +90,42 @@ var PI = D.querySelectorAll('.input_key'),
             for (var j = 0, i = PI.length; j < i; j++) {
                 var el = PI[j],
                     GZ = el.parentNode,
-                    GH = hasClass(GZ, 'validate-group') ? GZ : GZ.parentNode;
+                    GH = hasClass(GZ, 'group-validate') ? GZ : GZ.parentNode;
                 if(el.value != ''){
                     GH.querySelector('.text-error').innerText = "", addClass(PS, 'hidden'), removeClass(el, 'border-red'), removeClass(el, 'boxshadow-red');
                 }
             }
         }
-        addClass(PB, 'tb_spinner-is-loading');
+        addClass(PB, 'spinner-is-loading');
         PB.setAttribute('disabled', true);
         Req("{$url->{req/settings/change-password}}", function(e){
             if (e.status == 200) {
-                addClass(PS, 'hidden'), removeClass(PB, 'tb_spinner-is-loading'), PB.removeAttribute('disabled'), loadAlert(e.message);
+                addClass(PS, 'hidden'), removeClass(PB, 'spinner-is-loading'), PB.removeAttribute('disabled'), loadAlert(e.message);
                 for (var j = 0, i = PI.length; j < i; j++) PI[j].value = "";
             } else {
-                removeClass(PS, 'hidden'), removeClass(PB, 'tb_spinner-is-loading');
+                removeClass(PS, 'hidden'), removeClass(PB, 'spinner-is-loading');
                 PB.removeAttribute('disabled');
                 if(e.err != undefined){
                     for (var j = 0, i = e.err.length; j < i; j++){
                         var el = D.querySelector('#'+e.err[j]['el']),
                             GZ = el.parentNode,
-                            GH = hasClass(GZ, 'validate-group') ? GZ : GZ.parentNode;
-                        GH.querySelector('.text-error').innerText = '*'+e.err[j]['error'], addClass(el, 'border-red'), addClass(el, 'boxshadow-red');
+                            GH = hasClass(GZ, 'group-validate') ? GZ : GZ.parentNode;
+                        GH.querySelector('.text-error').innerText = '*'+e.err[j]['error'], addClass(el, 'border-red'), addClass(el, 'boxshadow-red'), timeDelay(function(){
+                            addClass(PZ, 'efect-boom'), timeDelay(function(){
+                                removeClass(PZ, 'efect-boom')
+                            }, 200)
+                        }, 700);
                     }
                 } else {
                     for (var j = 0, i = e.emptys.length; j < i; j++){
                         var el = D.querySelector('#'+e.emptys[j]),
                             GZ = el.parentNode,
-                            GH = hasClass(GZ, 'validate-group') ? GZ : GZ.parentNode;
-                        GH.querySelector('.text-error').innerText = '*{$word->this_field_is_empty}';
+                            GH = hasClass(GZ, 'group-validate') ? GZ : GZ.parentNode;
+                        GH.querySelector('.text-error').innerText = '*{$word->this_field_is_empty}', timeDelay(function(){
+                            addClass(PZ, 'efect-boom'), timeDelay(function(){
+                                removeClass(PZ, 'efect-boom')
+                            }, 200)
+                        }, 700);
                         addClass(el, 'border-red');
                         addClass(el, 'boxshadow-red');
                     }
@@ -144,7 +157,7 @@ for (var j = 0, i = PI.length; j < i; j++) addEvent(PI[j], 'keyup', function(e){
             GA = self.id,
             GW = self.value,
             GZ = self.parentNode,
-            GH = hasClass(GZ, 'validate-group') ? GZ : GZ.parentNode,
+            GH = hasClass(GZ, 'group-validate') ? GZ : GZ.parentNode,
             GS = GA == 'password' ? PC : PP;
         if(PP.value != '' && PC.value != '' && PE.value != ''){
             PB.removeAttribute('disabled');
@@ -161,7 +174,11 @@ for (var j = 0, i = PI.length; j < i; j++) addEvent(PI[j], 'keyup', function(e){
                 if(msg == ''){
                     removeClass(self, 'border-red'), removeClass(self, 'boxshadow-red');
                 } else {
-                    addClass(self, 'border-red'), addClass(self, 'boxshadow-red'), PX = !0;
+                    addClass(self, 'border-red'), addClass(self, 'boxshadow-red'), timeDelay(function(){
+                        addClass(PZ, 'efect-boom'), timeDelay(function(){
+                            removeClass(PZ, 'efect-boom')
+                        }, 200)
+                    }, 700), PX = !0;
                 }
                 GH.querySelector('.text-error').innerText = msg;
                 if((GA == 'password' || GA == 're-password') && D.querySelector('#'+GA).value != '' && PP.value == PC.value){

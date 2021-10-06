@@ -79,41 +79,43 @@ if ($one == 'general') {
             $update_data = '';
             $redirect_verify = false;
             $date_birthday = DateTime::createFromFormat('d-m-Y H:i:s', "$d-$m-$y 00:00:00");
-            
-            if ($TEMP['#settings']['validate_email'] == 'on' && !empty($email) && $user_data['email'] != $email) {
-                $code = rand(111111, 999999);
-                $token = md5($code);
-                $dba->query('UPDATE users SET token = "'.$token.'" WHERE id = '.$user_data['id']);
 
-                $TEMP['token'] = $token;
-                $TEMP['code'] = $code;
-                $TEMP['id'] = $user_data['user_id'];
-                $TEMP['name'] = $user_data['names'];
-                $TEMP['text'] = $TEMP['#word']['check_your_new_email'];
-                $TEMP['footer'] = $TEMP['#word']['just_ignore_this_message'];
-                $TEMP['type'] = 'change';
+            if(empty($user_data['change_email'])){
+                if ($TEMP['#settings']['validate_email'] == 'on' && !empty($email) && $user_data['email'] != $email) {
+                    $code = rand(111111, 999999);
+                    $token = md5($code);
+                    $dba->query('UPDATE users SET token = "'.$token.'" WHERE id = '.$user_data['id']);
 
-                $send_email = Specific::SendEmail(array(
-                    'from_email' => $TEMP['#settings']['smtp_username'],
-                    'from_name' => $TEMP['#settings']['name'],
-                    'to_email' => $email,
-                    'to_name' => $user_data['name'],
-                    'subject' => $TEMP['#word']['verify_your_account'],
-                    'charSet' => 'UTF-8',
-                    'message_body' => Specific::Maket('emails/includes/verify-email'),
-                    'is_html' => true
-                ));
-                if ($send_email) {
-                    $redirect_verify = true;
-                    $deliver['token'] = $token;
-                    $update_data = ', change_email = "'.$email.'"';
+                    $TEMP['token'] = $token;
+                    $TEMP['code'] = $code;
+                    $TEMP['id'] = $user_data['user_id'];
+                    $TEMP['name'] = $user_data['names'];
+                    $TEMP['text'] = $TEMP['#word']['check_your_new_email'];
+                    $TEMP['footer'] = $TEMP['#word']['just_ignore_this_message'];
+                    $TEMP['type'] = 'change';
+
+                    $send_email = Specific::SendEmail(array(
+                        'from_email' => $TEMP['#settings']['smtp_username'],
+                        'from_name' => $TEMP['#settings']['name'],
+                        'to_email' => $email,
+                        'to_name' => $user_data['name'],
+                        'subject' => $TEMP['#word']['verify_your_account'],
+                        'charSet' => 'UTF-8',
+                        'message_body' => Specific::Maket('emails/includes/verify-email'),
+                        'is_html' => true
+                    ));
+                    if ($send_email) {
+                        $redirect_verify = true;
+                        $deliver['token'] = $token;
+                        $update_data = ', change_email = "'.$email.'"';
+                    }
+                }else{
+                    $update_data = ', email = "'.$email.'"';
                 }
-            }else{
-                $update_data = ', email = "'.$email.'"';
             }
-
+                
             if (Specific::IsOwner($_POST['by_id'])) {
-                $update = $dba->query('UPDATE users SET gender = '.$gen.', age_changed = '.$age_changed.', date_birthday = '.$date_birthday->getTimestamp().', province = "'.Specific::Filter($_POST['province']).'", municipality = '.Specific::Filter($_POST['municipality']).', names = "'.Specific::Filter($_POST['names']).'", surnames = "'.Specific::Filter($_POST['surnames']).'", about = "'.Specific::Filter($_POST['about']).'"'.$update_data.' WHERE id = '.$by_id)->returnStatus();
+                $update = $dba->query('UPDATE users SET gender = '.$gen.', age_changed = '.$age_changed.', date_birthday = '.$date_birthday->getTimestamp().', province = "'.Specific::Filter($_POST['province']).'", municipality = '.Specific::Filter($_POST['municipality']).'", about = "'.Specific::Filter($_POST['about']).'"'.$update_data.' WHERE id = '.$by_id)->returnStatus();
                 if ($update){
                     $deliver['status'] = 200;
                     $deliver['message'] = $TEMP['#word']['setting_updated'];
