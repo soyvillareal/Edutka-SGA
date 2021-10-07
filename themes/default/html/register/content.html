@@ -140,9 +140,11 @@
 						</div>
 					</button>
 				</div>
+				<?php if($TEMP['#loggedin'] === false){ ?>
 				<div class="margin-t15 margin-b20 color-black">
 					{$word->already_have_account} <a class="hover-button color-black" href="{$url->{login}}" target="_self">{$word->login}</a>
 				</div>
+				<?php } ?>
 			</div>
 
 		</div>

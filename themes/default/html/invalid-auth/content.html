@@ -3,9 +3,11 @@
 	    <div class="cont-login-center display-flex background-white border-radius-12 margin-t50 margin-b50">
 	    	<div class="w-100 margin-auto">
 	    	    <div class="background-white errors">{$word->invalid_request}</div>
+	    	    <?php if($TEMP['#loggedin'] === false){ ?>
 				<div class="color-black">
 					{$word->got_your_password} <a class="hover-button color-black" href="{$url->{login}}" target="_self">{$word->login}</a>
 				</div>
+				<?php } ?>
 			</div>
 		</div>
 	</div>

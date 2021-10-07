@@ -326,11 +326,8 @@ for (var j = 0, i = GK.length; j < i; j++) addEvent(GK[j], 'keyup', function(e){
             GZ = self.parentNode,
             GH = hasClass(GZ, 'group-validate') ? GZ : GZ.parentNode,
             els = GH.querySelectorAll('.area_validate');
-        bDisabled();
-        if(GA == 'day' || GA == 'year'){
-            for (var j = 0, i = els.length; j < i; j++) removeClass(els[j], 'border-red'), removeClass(els[j], 'boxshadow-red');
-        }
-        if(GW == '' || (GA == 'year' && GW.split('')[0] == 0)){
+        bDisabled(), removeClass(GD, 'border-red'), removeClass(GD, 'boxshadow-red');
+        if(GW == ''){
             GH.querySelector('.text-error').innerText = "", removeClass(self, 'border-red'), removeClass(self, 'boxshadow-red');
             return false;
         }
