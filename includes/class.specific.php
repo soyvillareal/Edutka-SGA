@@ -31,6 +31,21 @@ class Specific {
 	    return self::Url($theme.$file);
 	}
 
+	public static function Academic() {
+	    global $TEMP;
+	    return $TEMP['#loggedin'] === false ? false : $TEMP['#user']['role'] == 2 ? true : false;
+	}
+
+	public static function Teacher() {
+	    global $TEMP;
+	    return $TEMP['#loggedin'] === false ? false : $TEMP['#user']['role'] == 1 ? true : false;
+	}
+
+	public static function Student() {
+	    global $TEMP;
+	    return $TEMP['#loggedin'] === false ? false : $TEMP['#user']['role'] == 0 ? true : false;
+	}
+
 	public static function CreateDirImage(){
 		if (!file_exists('uploads/images/' . date('Y'))) {
 	        mkdir('uploads/images/' . date('Y'), 0777, true);
@@ -120,6 +135,7 @@ class Specific {
 	    if (empty($user)) {
 	        return false;
 	    }
+	    $user['full_name'] = $user['names'].' '.$user['surnames'];
 	    $date_birthday = explode("-", date('d-m-Y', $user['date_birthday']));
 
 	    $user['birthday'] = $date_birthday[0];
@@ -142,6 +158,12 @@ class Specific {
 
 	    $user['provinces']  = $TEMP['#provinces'][$user['province']];
 	    $user['municipalities']  = $TEMP['#municipalities'][$user['municipality']];
+
+
+	    $user['program'] = $dba->query('SELECT max(id) FROM enrolled e WHERE user_id = '.$user['id'].' AND (SELECT id FROM programs WHERE id = e.program_id) = id LIMIT 1')->fetchArray();
+
+	    $user['period'] = $dba->query('SELECT max(id) FROM periods p WHERE (SELECT period_id FROM enrolled WHERE user_id = '.$user['id'].' AND period_id = p.id) = id LIMIT 1')->fetchArray();
+
 	    $gender = $TEMP['#word']['male'];
 	    if($user['gender'] == 2){
 	        $gender = $TEMP['#word']['female'];

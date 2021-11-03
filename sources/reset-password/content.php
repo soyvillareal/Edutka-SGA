@@ -12,7 +12,7 @@ $TEMP['#bubbles'] = Specific::Bubbles();
 $TEMP['code'] = $code;
 $TEMP['bubbles'] = implode(',', $TEMP['#bubbles']['rands']);
 
-$TEMP['#page']        = 'login';
+$TEMP['#page']        = 'reset-password';
 $TEMP['#title']       = $TEMP['#word']['change_password'] . ' - ' . $TEMP['#settings']['title'];
 $TEMP['#description'] = $TEMP['#settings']['description'];
 $TEMP['#keyword']     = $TEMP['#settings']['keyword'];

@@ -1,0 +1,82 @@
+<div class="display-block margin-t15 position-relative w-100 padding-25 border-all border-blue">
+   <div class="cont-label">
+      <div class="color-black">{$word->subject}: {!subject}</div>
+      <div class="color-black">{$word->teacher}: {!teacher}</div>
+   </div>
+   <div class="container-data-table margin-t15">
+      <div class="scroll-table-header border-all border-blue border-radius-12">
+         <div class="contsub-table-header display-flex padding-t15 padding-b15 border-bottom border-blue">
+            <div class="cont-cell-header padding-lr20 color-secondary">
+               {$word->court}
+            </div>
+            <div class="cont-cell-header padding-lr20 color-secondary">
+               {$word->note}
+            </div>
+            <div class="cont-cell-header padding-lr20 color-secondary">
+               {$word->percentage}
+            </div>
+         </div>
+         <div class="container-pages">
+            <div class="content-row-table dv-vertical-center padding-t15 padding-b15 border-bottom border-blue">
+               <div class="cont-cell-header padding-lr20 color-black">
+                  {$word->first}
+               </div>
+               <div class="cont-cell-header padding-lr20 color-black">
+                  {!first}
+               </div>
+               <div class="cont-cell-header padding-lr20 color-black">
+                  30%
+               </div>
+            </div>
+            <div class="content-row-table dv-vertical-center padding-t15 padding-b15 border-bottom border-blue">
+               <div class="cont-cell-header padding-lr20 color-black">
+                  {$word->second}
+               </div>
+               <div class="cont-cell-header padding-lr20 color-black">
+                  {!second}
+               </div>
+               <div class="cont-cell-header padding-lr20 color-black">
+                  30%
+               </div>
+            </div>
+            <div class="content-row-table dv-vertical-center padding-t15 padding-b15">
+               <div class="cont-cell-header padding-lr20 color-black">
+                  {$word->third}
+               </div>
+               <div class="cont-cell-header padding-lr20 color-black">
+                  {!third}
+               </div>
+               <div class="cont-cell-header padding-lr20 color-black">
+                  40%
+               </div>
+            </div>
+         </div>
+      </div>
+      <div class="scroll-table-header margin-t15 border-all <?php echo($TEMP['!approved'] == true) ? 'border-blue ' : 'border-red ';?>border-radius-12">
+         <div class="contsub-table-header display-flex padding-t15 padding-b15 border-bottom <?php echo($TEMP['!approved'] == true) ? 'border-blue' : 'border-red';?>">
+            <div class="cont-cell-header padding-lr20 color-secondary">
+               {$word->period}
+            </div>
+            <div class="cont-cell-header padding-lr20 color-secondary">
+               {$word->average}
+            </div>
+            <div class="cont-cell-header padding-lr20 color-secondary">
+               {$word->status}
+            </div>
+         </div>
+         <div class="container-pages">
+            <div class="content-row-table dv-vertical-center padding-t15 padding-b15">
+               <div class="cont-cell-header padding-lr20 color-black">
+                  {!period}
+               </div>
+               <div class="cont-cell-header padding-lr20 color-black">
+                  {!average}
+               </div>
+               <div class="cont-cell-header padding-lr20 color-white">
+                  <div class="<?php echo($TEMP['!approved'] == true) ? 'background-green ' : 'background-red ';?> padding-5 text-center border-radius-4">{!status}</div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>

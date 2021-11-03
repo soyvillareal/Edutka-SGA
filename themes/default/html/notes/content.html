@@ -1,0 +1,65 @@
+<div class="display-flex">
+	<div class="margin-auto">
+		<div class="margin-t10 margin-t50 padding-b50">
+			<?php if(count($TEMP['#programs']) > 1){ ?>
+			<div class="text-center background-white border-radius-12 padding-25 margin-b10">
+				<div class="max-w-900 border-top-left-radius border-top-right-radius">
+					<div class="group-validate display-block position-relative w-100 padding-5">
+			            <div class="display-flex flex-wrap">
+			                <div class="cont-label dv-vertical-center">
+			                    <label class="color-black">{$word->program}</label>
+			                </div>
+			                <div class="flex-grow">
+			                    <select id="province" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue area_changed caret-down background-grely color-black">
+			                        <?php foreach ($TEMP['#programs'] as $key => $value) {?>
+			                        <option value="<?php echo $value['id'];?>"<?php echo($value['program_id'] == $TEMP['#notes']['program_id']) ? ' selected' : '';?>><?php echo $value['name']; ?></option>
+			                        <?php } ?>
+			                    </select>
+			                    <div class="color-red text-left text-error font-low margin-t5"></div>
+			                </div>
+			            </div>
+			        </div>
+			    </div>
+			</div>
+			<?php } ?>
+			<div class="content-notes text-center background-white border-radius-12 padding-25 margin-b10">
+				<div class="max-w-900 border-top-left-radius border-top-right-radius">
+					<div class="font-medium color-black">{$word->global_average}</div>
+					<div class="font-supraly font-bold">{$average}</div>
+				</div>
+			</div>
+			<?php if(count($TEMP['#periods']) > 1){ ?>
+			<div class="text-center background-white border-radius-12 padding-25 margin-b10">
+				<div class="max-w-900 border-top-left-radius border-top-right-radius">
+			        <div class="group-validate display-block position-relative w-100 padding-5">
+			            <div class="display-flex flex-wrap">
+			                <div class="cont-label dv-vertical-center">
+			                    <label class="color-black">{$word->period}</label>
+			                </div>
+			                <div class="flex-grow">
+			                    <select id="periods" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue area_changed caret-down background-grely color-black">
+			                        <?php foreach ($TEMP['#periods'] as $key => $value) {?>
+			                        <option value="<?php echo $value['id'];?>"<?php echo($value['id'] == $TEMP['#period_id']) ? ' selected' : '';?>><?php echo $value['name']; ?></option>
+			                        <?php } ?>
+			                    </select>
+			                    <div class="color-red text-left text-error font-low margin-t5"></div>
+			                </div>
+			            </div>
+			        </div>
+			    </div>
+			</div>
+			<?php } ?>
+	   	    <div class="content-notes background-white border-radius-12 padding-25">
+			    <div class="max-w-900 border-top-left-radius border-top-right-radius">
+			    	{$notes}
+			    </div>
+			</div>
+		</div>
+		<div class="clear"></div>
+	</div>
+</div>
+<script type="text/javascript">
+addEvent(D.querySelector('#periods'), 'change', function(){
+    preloadPage('&one=notes&period='+this.value);
+})
+</script>

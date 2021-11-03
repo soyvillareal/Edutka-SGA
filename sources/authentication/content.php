@@ -26,7 +26,7 @@ if(!empty($_GET['insert'])){
 	$TEMP['dessix'] = substr($TEMP['#descode'], 5, 1);
 }
 
-$TEMP['#page']        = 'login';
+$TEMP['#page']        = 'authentication';
 $TEMP['#title']       = $TEMP['#word']['authentication'] . ' - ' . $TEMP['#settings']['title'];
 $TEMP['#description'] = $TEMP['#settings']['description'];
 $TEMP['#keyword']     = $TEMP['#settings']['keyword'];

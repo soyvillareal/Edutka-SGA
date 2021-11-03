@@ -134,7 +134,7 @@ var LI = D.querySelectorAll('.input_key'),
 					LE.innerHTML = e.message;
 				}
 			}
-		}, "POST", "&dni=" + LU.value + "&password=" + LP.value + "&to={$to}"<?php echo $TEMP['#settings']['recaptcha'] == 'on' ? ' + "&recaptcha=" + D.querySelector("#g-recaptcha-response").value' : ''?>)
+		}, "POST", "&dni=" + LU.value + "&password=" + LP.value + "&to={$to}"<?php echo $TEMP['#settings']['recaptcha'] == 'on' ? ' + "&recaptcha=" + D.querySelector("#g-recaptcha .g-recaptcha-response").value' : ''?>)
 	},
 	LX = !1,
 	LO = "{$bubbles}".split(',');

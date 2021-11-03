@@ -350,6 +350,10 @@ ul {
     margin-right: -20px
 }
 
+.row-25 {
+    margin-left: -25px;
+    margin-right: -25px
+}
 
 h5 {
     margin: .5em 0;
@@ -481,38 +485,6 @@ h5 {
 
 .item-slot-title {
     height: 38px
-}
-
-.item-slot-two.one h3 {
-    color: #55b7b8
-}
-
-.item-slot-two.two h3 {
-    color: #ee8133
-}
-
-.item-slot-two.three h3 {
-    color: #5bc1bc
-}
-
-.item-slot-two.four h3 {
-    color: #e93f33
-}
-
-.item-slot-two.five h3 {
-    color: #a362a9
-}
-
-.item-slot-two.six h3 {
-    color: #d2d726
-}
-
-.item-slot-two.seven h3 {
-    color: #51a262
-}
-
-.item-slot-two.eight h3 {
-    color: #f2a233
 }
 
 .cont-about-us-page {
@@ -1358,8 +1330,16 @@ h5 {
     color: #4cbd1d;
 }
 
+.color-greenly {
+    color: #55b7b8;
+}
+
 .color-blue {
     color: #45a6d6;
+}
+
+.color-orange {
+    color: #ee8133;
 }
 
 /* Tamaños de fuentes */

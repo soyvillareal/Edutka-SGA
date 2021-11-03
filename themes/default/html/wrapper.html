@@ -89,8 +89,8 @@
               }  
               CX.innerHTML = e.html;
               <?php if($TEMP['#settings']['recaptcha'] == 'on'){ ?>
-              if(e.page == 'register'){
-                grecaptcha.render("g-recaptcha", {"sitekey": "{$settings->recaptcha_key}"})
+              if(e.page == 'register' || e.page == 'login'){
+                grecaptcha.render("g-recaptcha", {"sitekey": "{$settings->recaptcha_public_key}"})
               }
               <?php } ?>
               D.querySelector('title').innerText = htmlDecode(e.title);

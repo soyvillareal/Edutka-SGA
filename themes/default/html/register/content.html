@@ -300,7 +300,7 @@ var GI = D.querySelectorAll('.input_key'),
 					}
 				}
 			}
-		}, "POST", "&dni=" + GU.value + "&password=" + GP.value + "&re-password=" + GC.value + "&gender=" + GG.value + "&email=" + GM.value + "&day=" + GD.value + "&month=" + GJ.value + "&year=" + GR.value + "&names=" + GO.value + "&surnames=" + GY.value + "&province=" + Ga.value + "&municipality=" + Gb.value<?php echo $TEMP['#settings']['recaptcha'] == 'on' ? ' + "&recaptcha=" + D.querySelector("#g-recaptcha-response").value' : ''?>)
+		}, "POST", "&dni=" + GU.value + "&password=" + GP.value + "&re-password=" + GC.value + "&gender=" + GG.value + "&email=" + GM.value + "&day=" + GD.value + "&month=" + GJ.value + "&year=" + GR.value + "&names=" + GO.value + "&surnames=" + GY.value + "&province=" + Ga.value + "&municipality=" + Gb.value<?php echo $TEMP['#settings']['recaptcha'] == 'on' ? ' + "&recaptcha=" + D.querySelector("#g-recaptcha .g-recaptcha-response").value' : ''?>)
 	},
 	GX = !1,
 	Gi = [],
