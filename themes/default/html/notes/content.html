@@ -1,6 +1,22 @@
 <div class="display-flex">
-	<div class="margin-auto">
+	<div class="content-notes margin-auto">
 		<div class="margin-t10 margin-t50 padding-b50">
+			<?php if($TEMP['#academic'] == true) { ?>
+			<div class="background-white border-radius-12 padding-25 margin-b10">
+				<label class="color-black">Buscar usuario</label>
+				<div class="content-search-notes position-relative margin-b10">
+					    <div class="display-flex margin-auto border-radius-4">
+					        <input class="background-grely padding-10 border-focus-blue border-all border-grey border-top-left-radius w-100 color-black" type="text" id="search-notes" name="keyword" placeholder="Ej: Oscar David Garces Gomez" autocomplete="off" value="{#keyword_notes}"> 
+				            <button class="border-left-none background-grely display-flex border-all border-grey border-top-right-radius border-bottom-right-radius padding-5 w-10" id="submit-search">
+							    <svg class="dv-icon margin-auto hover-button" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+								  	<path fill="currentColor" d="M 15.077 10.769 C 15.077 9.583 14.655 8.569 13.812 7.726 C 12.97 6.883 11.956 6.461 10.769 6.461 C 9.583 6.461 8.569 6.883 7.726 7.726 C 6.883 8.569 6.461 9.583 6.461 10.769 C 6.461 11.956 6.883 12.97 7.726 13.812 C 8.569 14.655 9.583 15.077 10.769 15.077 C 11.956 15.077 12.97 14.655 13.812 13.812 C 14.655 12.97 15.077 11.956 15.077 10.769 Z M 20 18.769 C 20 19.102 19.878 19.391 19.635 19.635 C 19.391 19.878 19.102 20 18.769 20 C 18.423 20 18.134 19.878 17.904 19.635 L 14.605 16.346 C 13.459 17.141 12.18 17.539 10.769 17.539 C 9.852 17.539 8.976 17.361 8.14 17.004 C 7.303 16.649 6.581 16.168 5.976 15.563 C 5.37 14.956 4.89 14.236 4.533 13.399 C 4.178 12.563 4 11.686 4 10.769 C 4 9.852 4.178 8.976 4.533 8.14 C 4.89 7.303 5.37 6.581 5.976 5.976 C 6.581 5.37 7.303 4.89 8.14 4.533 C 8.976 4.178 9.852 4 10.769 4 C 11.686 4 12.563 4.178 13.399 4.533 C 14.236 4.89 14.956 5.37 15.563 5.976 C 16.168 6.581 16.649 7.303 17.004 8.14 C 17.361 8.976 17.539 9.852 17.539 10.769 C 17.539 12.18 17.141 13.459 16.346 14.605 L 19.644 17.904 C 19.882 18.141 20 18.429 20 18.769 Z"/>
+								</svg>
+						    </button>
+				        </div>
+			        <div class="search-down border-left border-right border-bottom border-grey border-bottom-left-radius border-bottom-right-radius position-absolute background-white"></div>
+			    </div>
+			</div>
+			<?php } ?>
 			<?php if(count($TEMP['#programs']) > 1){ ?>
 			<div class="text-center background-white border-radius-12 padding-25 margin-b10">
 				<div class="max-w-900 border-top-left-radius border-top-right-radius">
@@ -10,7 +26,7 @@
 			                    <label class="color-black">{$word->program}</label>
 			                </div>
 			                <div class="flex-grow">
-			                    <select id="province" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue area_changed caret-down background-grely color-black">
+			                    <select id="programs" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue area_changed caret-down background-grely color-black">
 			                        <?php foreach ($TEMP['#programs'] as $key => $value) {?>
 			                        <option value="<?php echo $value['id'];?>"<?php echo($value['program_id'] == $TEMP['#notes']['program_id']) ? ' selected' : '';?>><?php echo $value['name']; ?></option>
 			                        <?php } ?>
@@ -22,7 +38,7 @@
 			    </div>
 			</div>
 			<?php } ?>
-			<div class="content-notes text-center background-white border-radius-12 padding-25 margin-b10">
+			<div class="text-center background-white border-radius-12 padding-25 margin-b10">
 				<div class="max-w-900 border-top-left-radius border-top-right-radius">
 					<div class="font-medium color-black">{$word->global_average}</div>
 					<div class="font-supraly font-bold">{$average}</div>
@@ -49,7 +65,7 @@
 			    </div>
 			</div>
 			<?php } ?>
-	   	    <div class="content-notes background-white border-radius-12 padding-25">
+	   	    <div class="background-white border-radius-12 padding-25">
 			    <div class="max-w-900 border-top-left-radius border-top-right-radius">
 			    	{$notes}
 			    </div>
@@ -59,7 +75,51 @@
 	</div>
 </div>
 <script type="text/javascript">
-addEvent(D.querySelector('#periods'), 'change', function(){
-    preloadPage('&one=notes&period='+this.value);
+var count = 0,
+	timeSearch = 0,
+	keyword = "{#keyword_notes}";
+<?php if(count($TEMP['#programs']) > 1){ ?>
+addEvent(D.querySelector('#programs'), 'change', function(){
+    preloadPage('&one=notes<?php echo($TEMP['#academic'] == true) ? "&user={#user_id}" : "" ;?>&program='+this.value);
+}), <?php } if(count($TEMP['#periods']) > 1){ ?>addEvent(D.querySelector('#periods'), 'change', function(){
+    preloadPage('&one=notes<?php echo($TEMP['#academic'] == true) ? "&user={#user_id}" : "" ;?>&program={#program_id}&period='+this.value);
 })
+<?php } if($TEMP['#academic'] == true) { ?>
+addEvent(D, "keydown", function(e){
+	var P = e.which || e.keyCode;
+	if(P == 40){
+		var allK = D.querySelector('.search-down').querySelectorAll('a');
+		D.body.style.overflow = "hidden", clearTimeout(timeSearch), (count == allK.length) ? (D.querySelector('#search-bar').focus(), D.querySelector('#search-bar').value = keyword, count = 0) : (allK.length > 0) && (allK[count].focus(), D.querySelector('#search-bar').value = allK[count].innerText), timeSearch = setTimeout(function(){
+			D.body.style.overflow = ""
+		}, 300);
+		count++;
+	} else if(P == 38){
+		var allK = Array.prototype.slice.call(D.querySelector('.search-down').querySelectorAll('a'));
+		D.body.style.overflow = "hidden", clearTimeout(timeSearch), allK.unshift(D.querySelector('#search-bar')), (count == 0) && (count = allK.length), (count > 1 && allK[count-1]) ? (allK[count-1].focus(), D.querySelector('#search-bar').value = allK[count-1].innerText) : (D.querySelector('#search-bar').focus(), D.querySelector('#search-bar').value = keyword), timeSearch = setTimeout(function(){
+			D.body.style.overflow = ""
+		}, 300);
+		count--;	
+	}
+}), addEvent(D.querySelector('#search-notes'), "keyup", function(e){
+	let SV = this.value,
+		SD = D.querySelector('.search-down');
+	if (SV == '') {
+		addClass(SD, 'hidden');
+		SD.innerHTML = "";
+		return false;
+	} else if(e.which != 13 || e.keyCode != 13){
+		removeClass(SD, 'hidden');
+	}
+	keyword = SV;
+	Req('{$url->{req/search-notes}}', function(e) {
+	    if (e.status == 200) {
+	   		SD.innerHTML = e.html, count = 0, loadPage(SD.querySelectorAll('a[target="_self"]'));
+	    } else {
+		    addClass(SD, 'hidden');
+		   	SD.innerHTML = "", count = 0;
+		   	return false;
+	    }
+	}, "POST", "&keyword=" + SV);
+}, 3)
+<?php } ?>
 </script>

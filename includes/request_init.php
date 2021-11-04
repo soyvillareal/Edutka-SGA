@@ -21,6 +21,9 @@ if (isset($_SESSION['session_id'])) {
 if (empty($TEMP['#word'])) {
     $TEMP['#word'] = Specific::Words();
 }
+$TEMP['#academic'] = Specific::Academic();
+$TEMP['#teacher'] = Specific::Teacher();
+$TEMP['#student'] = Specific::Student();
 $TEMP['#provinces'] = array(
 	'antioquia' => 'Antioquía',
 	'amazonas' => 'Amazonas',
