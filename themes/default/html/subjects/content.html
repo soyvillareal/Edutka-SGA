@@ -1,0 +1,290 @@
+<div class="display-flex">
+    <div class="content-notes margin-auto">
+        <h2 class="font-supraly text-center no-margin padding-t25 padding-b15">{$word->subjects}</h2>
+        <div class="background-white border-radius-12 padding-25 margin-b50">
+            <div class="max-w-1100 border-top-left-radius border-top-right-radius">
+                <label class="color-black">{$word->search}</label>
+                <div class="content-search-notes position-relative margin-b20">
+                    <div class="display-flex margin-auto border-radius-4">
+                        <input id="search-subjects" class="background-grely padding-10 border-focus-blue border-all border-grey border-top-left-radius border-top-right-radius border-bottom-right-radius border-bottom-left-radius w-100 color-black" type="text" autocomplete="off">
+                    </div>
+                </div>
+                <div class="content-subjects">
+                    <div class="container-data-table">
+                        <div class="cont-table-header">
+                            <div class="scroll-table-header">
+                                <div class="contsub-table-header w-100 display-flex padding-t15 padding-b15 border-bottom border-top border-grey" id="container-table-header">
+                                    <div class="cont-cell-header padding-lr20 color-black">
+                                        {$word->code}
+                                    </div>
+                                    <div class="cont-cell-header padding-lr20 color-black">
+                                        {$word->subject}
+                                    </div>
+                                    <div class="cont-cell-header padding-lr20 color-black">
+                                        {$word->date}
+                                    </div>
+                                    <div class="cont-cell-header padding-lr20 color-black text-center">
+                                        {$word->action}
+                                    </div>
+                                </div>
+                                <div id="container-pages">
+                                    {$subjects}
+                                </div>
+                            </div>
+                        </div>
+                        <?php if ($TEMP['#total_pages'] > 1) { ?>
+                        <div class="display-flex">
+                            <div class="dv-vertical-center margin-left-auto padding-t25">
+                                <div class="table-page-description padding-lr20 margin-r10 margin-l10">
+                                    <span class="color-black" id="page-now">1</span>
+                                    <span class="color-black">{$word->of}</span>
+                                    <span class="color-black" id="total-pages">{#total_pages}</span>
+                                </div>
+                                <button class="margin-r10 cursor-disabled color-black hover-button btn-noway load-table-page" id="navigation-first" data-type="first" disabled>
+                                    <svg class="dv-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path
+                                            fill="currentColor"
+                                            d="M 13.23 17.002 C 13.23 17.106 13.189 17.198 13.106 17.279 L 12.484 17.88 C 12.402 17.96 12.306 18 12.199 18 C 12.091 18 11.996 17.96 11.913 17.88 L 6.124 12.277 C 6.041 12.196 6 12.104 6 12 C 6 11.896 6.041 11.804 6.124 11.723 L 11.913 6.12 C 11.996 6.04 12.091 6 12.199 6 C 12.306 6 12.402 6.04 12.484 6.12 L 13.106 6.721 C 13.189 6.802 13.23 6.894 13.23 6.998 C 13.23 7.102 13.189 7.194 13.106 7.275 L 8.224 12 L 13.106 16.725 C 13.189 16.806 13.23 16.898 13.23 17.002 Z M 18 17.002 C 18 17.106 17.959 17.198 17.876 17.279 L 17.254 17.88 C 17.171 17.96 17.077 18 16.969 18 C 16.862 18 16.766 17.96 16.684 17.88 L 10.894 12.277 C 10.811 12.196 10.77 12.104 10.77 12 C 10.77 11.896 10.811 11.804 10.894 11.723 L 16.684 6.12 C 16.766 6.04 16.862 6 16.969 6 C 17.077 6 17.171 6.04 17.254 6.12 L 17.876 6.721 C 17.959 6.802 18 6.894 18 6.998 C 18 7.102 17.959 7.194 17.876 7.275 L 12.994 12 L 17.876 16.725 C 17.959 16.806 18 16.898 18 17.002 Z"
+                                        />
+                                    </svg>
+                                </button>
+                                <button class="margin-r10 cursor-disabled color-black hover-button btn-noway load-table-page" id="navigation-before" data-type="before">
+                                    <svg class="dv-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path
+                                            fill="currentColor"
+                                            d="M 15.7 6.998 C 15.7 7.102 15.658 7.194 15.573 7.275 L 10.576 12 L 15.573 16.725 C 15.658 16.806 15.7 16.898 15.7 17.002 C 15.7 17.106 15.658 17.198 15.573 17.279 L 14.937 17.88 C 14.852 17.96 14.755 18 14.645 18 C 14.534 18 14.437 17.96 14.352 17.88 L 8.427 12.277 C 8.342 12.196 8.3 12.104 8.3 12 C 8.3 11.896 8.342 11.804 8.427 11.723 L 14.352 6.12 C 14.437 6.04 14.534 6 14.645 6 C 14.755 6 14.852 6.04 14.937 6.12 L 15.573 6.721 C 15.658 6.802 15.7 6.894 15.7 6.998 Z"
+                                        />
+                                    </svg>
+                                </button>
+                                <button class="margin-r10 cursor-disabled color-black hover-button btn-noway load-table-page" id="navigation-after" data-type="after">
+                                    <svg class="dv-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path
+                                            fill="currentColor"
+                                            d="M 15.7 12 C 15.7 12.105 15.658 12.196 15.573 12.277 L 9.648 17.88 C 9.563 17.96 9.466 18 9.355 18 C 9.245 18 9.148 17.96 9.063 17.88 L 8.427 17.278 C 8.342 17.199 8.3 17.106 8.3 17.002 C 8.3 16.898 8.342 16.806 8.427 16.725 L 13.424 12 L 8.427 7.275 C 8.342 7.194 8.3 7.102 8.3 6.998 C 8.3 6.894 8.342 6.801 8.427 6.722 L 9.063 6.12 C 9.148 6.04 9.245 6 9.355 6 C 9.466 6 9.563 6.04 9.648 6.12 L 15.573 11.723 C 15.658 11.804 15.7 11.895 15.7 12 Z"
+                                        />
+                                    </svg>
+                                </button>
+                                <button class="margin-r10 cursor-disabled color-black hover-button btn-noway load-table-page" id="navigation-last" data-type="last">
+                                    <svg class="dv-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path
+                                            fill="currentColor"
+                                            d="M 13.23 12 C 13.23 12.104 13.188 12.196 13.106 12.277 L 7.317 17.88 C 7.234 17.96 7.139 18 7.031 18 C 6.923 18 6.828 17.96 6.745 17.88 L 6.124 17.279 C 6.041 17.198 6 17.106 6 17.002 C 6 16.898 6.041 16.806 6.124 16.725 L 11.006 12 L 6.124 7.275 C 6.041 7.194 6 7.102 6 6.998 C 6 6.894 6.041 6.802 6.124 6.721 L 6.745 6.12 C 6.828 6.04 6.923 6 7.031 6 C 7.139 6 7.234 6.04 7.317 6.12 L 13.106 11.723 C 13.188 11.804 13.23 11.896 13.23 12 Z M 18 12 C 18 12.104 17.959 12.196 17.876 12.277 L 12.087 17.88 C 12.004 17.96 11.909 18 11.801 18 C 11.694 18 11.598 17.96 11.516 17.88 L 10.894 17.279 C 10.812 17.198 10.77 17.106 10.77 17.002 C 10.77 16.898 10.812 16.806 10.894 16.725 L 15.776 12 L 10.894 7.275 C 10.812 7.194 10.77 7.102 10.77 6.998 C 10.77 6.894 10.812 6.802 10.894 6.721 L 11.516 6.12 C 11.598 6.04 11.694 6 11.801 6 C 11.909 6 12.004 6.04 12.087 6.12 L 17.876 11.723 C 17.959 11.804 18 11.896 18 12 Z"
+                                        />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        <?php } ?>
+                    </div>
+                    <div class="display-flex flex-end margin-t50">
+                        <span class="color-black dv-vertical-center margin-r10">
+                            {$word->if_you_want_add_subject}
+                        </span>
+                        <button class="btn-noway background-blue border-radius-4 padding-10 cursor-disabled color-white hover-opacity" id="show-pmodal">{$word->add}</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="content-modal" id="alert-subjects">
+    <div class="cont-dialog">
+        <div class="cont-popup background-white">
+            <div class="top-header">
+                <div class="padding-t15 padding-b15 w-100 font-lowly color-black">
+                    {$word->add_new_subject}
+                </div>
+            </div>
+            <div class="content-modal-body color-grey">
+                <div class="group-validate display-block position-relative w-100 padding-25">
+                    <div class="display-flex flex-wrap">
+                        <div class="cont-label dv-vertical-center">
+                            <label class="color-black">{$word->subject}</label>
+                        </div>
+                        <div class="flex-grow">
+                            <input id="name" type="text" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue background-grely color-black"/>
+                            <div class="color-red text-left text-error font-low margin-t5"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="display-flex">
+                <div class="margin-left-auto margin-r25 margin-b15">
+                    <button class="btn-noway background-grely border-radius-4 padding-10 color-black hover-button font-uppercase" id="cancel-alert">{$word->cancel}</button>
+                    <button class="btn-noway background-blue border-radius-4 padding-10 color-black hover-opacity font-uppercase" data-type="add" id="this-subject">
+                        <span class="color-white">{$word->save}</span>
+                        <div class="content-spinner-circle">
+                            <div class="spinner-circle"></div>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="cont-alert" id="alert-delete">
+   <h2 class="color-red">{$word->delete} {$word->subject}</h2>
+   <p>{$word->this_action_cannot_undone_continue}</p>
+   <div class="padding-t25">
+      <button class="btn-noway background-grely border-radius-4 padding-10 color-black hover-button font-uppercase" id="cancel-dalert">{$word->cancel}</button>
+      <button class="btn-noway background-blue border-radius-4 padding-10 color-black hover-opacity font-uppercase" id="delete-subject">
+        <span class="color-white">{$word->delete}</span>
+        <div class="content-spinner-circle">
+            <div class="spinner-circle"></div>
+        </div>
+    </button>
+   </div>
+</div>
+<div class="background-pointer"></div>
+<script>
+var GE = D.querySelectorAll('.show_emodal'),
+    GW = D.querySelectorAll('.show_dmodal'),
+    GL = D.querySelectorAll('.load-table-page'),
+    GV = D.querySelector('.content-modal-body'),
+    GA = D.querySelector('#search-subjects'),
+    GB = D.querySelector('#this-subject'),
+    GQ = D.querySelector('#delete-subject'),
+    GI = D.querySelector('#alert-subjects'),
+    GT = D.querySelector('#alert-delete'),
+    GM = D.querySelector('#name'),
+    TE = D.querySelector('#navigation-after'),
+    TO = D.querySelector('#navigation-before'),
+    TR = D.querySelector('#navigation-first'),
+    TS = D.querySelector('#navigation-last'),
+    TN = D.querySelector('#page-now'),
+    GS = function(){
+        var self = this,
+            subject_id = self.getAttribute('data-id');
+        self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
+        Req('{$url->{req/rol-academic/get-sitems}}', function(e){
+            if(e.status == 200){
+                D.querySelector('#name').value = e.item;
+                GI.style.display = "block", D.body.style.overflow = "hidden", GB.setAttribute('data-id', subject_id), GB.setAttribute('data-type', 'edit'), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
+            } else {
+                self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
+            }
+        }, "POST", "&id=" + subject_id)
+    },
+    GD = function(){
+        GT.style.display = "block", D.body.style.overflow = "hidden", GQ.setAttribute('data-id', this.getAttribute('data-id'));
+    },
+    TA = 1,
+    TT = {#total_pages};
+
+addEvent(D.querySelector('#show-pmodal'), 'click', function(){
+    GI.style.display = "block", D.body.style.overflow = "hidden", GB.setAttribute('data-type', 'add'), GB.removeAttribute('data-id'), scrollTo(0, GV);
+}), addEvent(D.querySelector('#cancel-alert'), 'click', function(){
+    GI.style.display = "", D.body.style.overflow = "";
+}), addEvent(D.querySelector('#cancel-dalert'), 'click', function(){
+    GT.style.display = "", D.body.style.overflow = "";
+}), addEvent(GB, 'click', function(){
+    var self = this,
+        type = self.getAttribute('data-type');
+    if(GM.value == '' && !GM.getAttribute('disabled')){
+        GM.parentNode.querySelector('.text-error').innerText = '*{$word->this_field_is_empty}', addClass(GM, 'border-red'), addClass(GM, 'boxshadow-red'), timeDelay(function(){
+            addClass(GI, 'efect-boom'), timeDelay(function(){
+                removeClass(GI, 'efect-boom')
+            }, 200)
+        }, 700);
+        return false;
+    } else {
+        GM.parentNode.querySelector('.text-error').innerText = "", removeClass(GM, 'border-red'), removeClass(GM, 'boxshadow-red');
+    }
+    GB.setAttribute('disabled', true), addClass(GB, 'spinner-is-loading');
+    Req('{$url->{req/rol-academic/this-subject}}', function(e){
+        if(e.status == 200){
+            GI.style.display = "", loadAlert((type == 'add' ? "{$word->subject_added_successfully}" : "{$word->subject_updated_successfully}")), preloadPage('&one=subjects');
+        } else {
+            if(e.empty == true){
+                if(!GM.getAttribute('disabled')) GM.parentNode.querySelector('.text-error').innerText = '*{$word->this_field_is_empty}', addClass(GM, 'border-red'), addClass(GM, 'boxshadow-red'), timeDelay(function(){
+                        addClass(GI, 'efect-boom'), timeDelay(function(){
+                            removeClass(GI, 'efect-boom')
+                        }, 200)
+                    }, 700);
+            } else {
+                loadAlert("{$word->error}", 1)
+            }
+            GB.removeAttribute('disabled'), removeClass(GB, 'spinner-is-loading');
+        }
+    }, "POST", "&type=" + type + "&id=" + self.getAttribute('data-id') + "&name=" + GM.value)
+}), addEvent(GQ, "click", function(){
+    var self = this; 
+    self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
+    Req('{$url->{req/rol-academic/delete-subject}}', function(e){
+        if(e.status == 200){
+            GT.style.display = "", loadAlert("{$word->subject_successfully_removed}", 1), preloadPage('&one=subjects');
+        } else {
+            self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
+        }
+    }, "POST", "&id=" + self.getAttribute('data-id'));
+}), addEvent(GA, 'keyup', function(){
+    var self = this,
+        TZ = D.querySelector('#table-footer');
+    Req('{$url->{req/rol-academic/search-subjects}}', function(e){
+        console.log(e);
+        if(e.status == 200){
+            <?php echo($TEMP['#total_pages'] > 1) ? "TT = e.total_pages, TA = 1, TO.setAttribute('disabled', true), TR.setAttribute('disabled', true), TE.removeAttribute('disabled'), TS.removeAttribute('disabled'), D.querySelector('#total-pages').innerText = TT, TN.innerText = TA, TZ && (TT <= 1 ? TZ.style.display = 'none' : TZ.removeAttribute('style')), " : ""?>D.querySelector('#container-pages').innerHTML = e.html, loadPage(D.querySelectorAll('a[target="_self"]')), GE = D.querySelectorAll('.show_emodal'), GW = D.querySelectorAll('.show_dmodal');
+            for(var j = 0, i = GE.length; j < i; j++) addEvent(GE[j], "click", GS);
+            for(var j = 0, i = GW.length; j < i; j++) addEvent(GW[j], "click", GD);
+        } else {
+            D.querySelector('#container-pages').innerHTML = e.html<?php echo($TEMP['#total_pages'] > 1) ? ', TZ.style.display = "none"' : '';?>; 
+        }
+    }, "POST", "&keyword=" + self.value)
+}), addEvent(GM, 'keyup', function(){
+    if(GM.value != ''){
+        GB.removeAttribute('disabled');
+    } else {
+        GB.setAttribute('disabled', true);
+    }
+});
+
+for(var j = 0, i = GE.length; j < i; j++) addEvent(GE[j], "click", GS);
+for(var j = 0, i = GW.length; j < i; j++) addEvent(GW[j], "click", GD);
+for (var j = 0, i = GL.length; j < i; j++) addEvent(GL[j], "click", function(){
+    var self = this,
+        type = self.getAttribute('data-type');
+    if(type == 'after') {
+        if(TT > TA) {
+            TA++;
+            TR.removeAttribute('disabled');
+            TO.removeAttribute('disabled');
+            TN.innerText = TA;
+        }
+    } else if(type == 'before'){
+        if(TA > 1){
+            TA--;
+            TS.removeAttribute('disabled');
+            TE.removeAttribute('disabled');
+            TN.innerText = TA;
+        }
+    } else if(type == 'last')   {
+        TA = TT;
+        TS.setAttribute('disabled', true);
+        TR.removeAttribute('disabled');
+        TO.removeAttribute('disabled');
+        TN.innerText = TT;
+    } else if(type == 'first') {
+        TA = 1;
+        TR.setAttribute('disabled', true);
+        TE.removeAttribute('disabled');
+        TS.removeAttribute('disabled');
+        TN.innerText = 1;
+    }
+    if(TA == 1){
+        TR.setAttribute('disabled', true);
+        TO.setAttribute('disabled', true);
+    } else if(TA == TT) {
+        TS.setAttribute('disabled', true);
+        TE.setAttribute('disabled', true);
+    }
+    Req("{$url->{req/rol-academic/table-subjects}}", function(e){
+        if(e.status == 200){
+            D.querySelector('#container-pages').innerHTML = e.html, GE = D.querySelectorAll('.show_emodal'), GW = D.querySelectorAll('.show_dmodal');
+            for(var j = 0, i = GE.length; j < i; j++) addEvent(GE[j], "click", GS);
+            for(var j = 0, i = GW.length; j < i; j++) addEvent(GW[j], "click", GD);
+        } else {
+            TE.setAttribute('disabled', true), TO.setAttribute('disabled', true), TR.setAttribute('disabled', true), TS.setAttribute('disabled', true), TA = 1, loadAlert('{$word->error}', 1);
+        }
+    }, "POST", "&page_id=" + TA + "&type=admin-categories&total-pages={#total_pages}")
+});
+</script>

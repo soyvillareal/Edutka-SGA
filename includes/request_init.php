@@ -21,6 +21,8 @@ if (isset($_SESSION['session_id'])) {
 if (empty($TEMP['#word'])) {
     $TEMP['#word'] = Specific::Words();
 }
+$TEMP['#plans'] = $dba->query('SELECT * FROM plan')->fetchAll();
+$TEMP['#faculties'] = $dba->query('SELECT * FROM faculty')->fetchAll();
 $TEMP['#academic'] = Specific::Academic();
 $TEMP['#teacher'] = Specific::Teacher();
 $TEMP['#student'] = Specific::Student();

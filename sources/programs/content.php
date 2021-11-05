@@ -13,10 +13,10 @@ if(!empty($programs)){
 		$TEMP['!name'] = $program['name'];
 		$TEMP['!title'] = $program['title'];
 		$TEMP['!snies'] = $program['snies'];
-		$TEMP['!level'] = $program['level'];
+		$TEMP['!level'] = $program['level'] == 'pre' ? $TEMP['#word']['undergraduate'] : ($program['level'] == 'tec' ? $TEMP['#word']['technique'] : $TEMP['#word']['technologist']);
 		$TEMP['!semesters'] = $program['semesters'];
-		$TEMP['!mode'] = $program['mode'];
-		$TEMP['!time'] = $program['time'];
+		$TEMP['!mode'] = $TEMP['#word'][$program['mode']];
+		$TEMP['!time'] = Specific::DateFormat($program['time']);
 		$TEMP['programs'] .= Specific::Maket('programs/includes/programs-list');
 	}
 	Specific::DestroyMaket();

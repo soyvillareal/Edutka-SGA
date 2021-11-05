@@ -17,7 +17,7 @@
             </a>
             <?php } ?>
             <?php if(Specific::Academic() == true || Specific::Teacher() == true) { ?>
-            <a class="item-slot-two position-relative margin-r20 margin-b20" href="#">
+            <a class="item-slot-two position-relative margin-r20 margin-b20" href="{$url->{courses}}" target="_self">
                 <img class="border-radius-12" src="{$theme->{images/navigation/certificate.png}}" />
                 <div class="item-slot-title position-absolute pos-bottom w-100 background-white margin-b10">
                     <h3 class="font-mediumly font-bold color-orange text-center text-uppercase no-margin">{$word->courses}</h3>
@@ -25,13 +25,13 @@
             </a>
             <?php } ?>
             <?php if(Specific::Academic() == true) { ?>
-            <a class="item-slot-two position-relative margin-r20 margin-b20" href="{$url->{programs}}">
+            <a class="item-slot-two position-relative margin-r20 margin-b20" href="{$url->{programs}}" target="_self">
                 <img class="border-radius-12" src="{$theme->{images/navigation/programs.png}}" />
                 <div class="item-slot-title position-absolute pos-bottom w-100 background-white margin-b10">
                     <h3 class="font-mediumly font-bold color-green text-center text-uppercase no-margin">{$word->programs}</h3>
                 </div>
             </a>
-            <a class="item-slot-two position-relative margin-r20 margin-b20" href="#">
+            <a class="item-slot-two position-relative margin-r20 margin-b20" href="{$url->{subjects}}" target="_self">
                 <img class="border-radius-12" src="{$theme->{images/navigation/asignaturas.png}}" />
                 <div class="item-slot-title position-absolute pos-bottom w-100 background-white margin-b10">
                     <h3 class="font-mediumly font-bold color-purple text-center text-uppercase no-margin">{$word->subjects}</h3>

@@ -241,7 +241,7 @@ class Specific {
 
 	public static function RandomKey($minlength = 12, $maxlength = 20) {
 		$length = mt_rand($minlength, $maxlength);
-	    return substr(str_shuffle("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"), 0, $length);
+	    return substr(str_shuffle("ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"), 0, $length);
 	}
 
 	public static function TokenSession() {
