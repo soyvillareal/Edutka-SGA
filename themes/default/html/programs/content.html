@@ -1,8 +1,8 @@
 <div class="display-flex">
-    <div class="content-notes margin-auto">
+    <div class="container-items margin-auto">
         <h2 class="font-supraly text-center no-margin padding-t25 padding-b15">{$word->academic_programs}</h2>
         <div class="background-white border-radius-12 padding-25 margin-b50">
-            <div class="max-w-1100 border-top-left-radius border-top-right-radius">
+            <div class="border-top-left-radius border-top-right-radius">
                 <label class="color-black">{$word->search}</label>
                 <div class="content-search-notes position-relative margin-b20">
                     <div class="display-flex margin-auto border-radius-4">
@@ -50,7 +50,7 @@
                             </div>
                         </div>
                         <?php if ($TEMP['#total_pages'] > 1) { ?>
-                        <div class="display-flex">
+                        <div class="display-flex" id="table-footer">
                             <div class="dv-vertical-center margin-left-auto padding-t25">
                                 <div class="table-page-description padding-lr20 margin-r10 margin-l10">
                                     <span class="color-black" id="page-now">1</span>

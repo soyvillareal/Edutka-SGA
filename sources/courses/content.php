@@ -12,10 +12,21 @@ $TEMP['#total_pages'] = $dba->totalPages;
 
 if(!empty($courses)){
 	foreach ($courses as $course) {
-		$TEMP['!code'] = $course['code'];
+		$teachers = $dba->query('SELECT names FROM users WHERE id IN ('.$course['teacher'].')')->fetchAll(false);
+		if(count($teachers) == 2){
+			$teachers = $teachers[0]. ' y ' .$teachers[1];
+		} else if(count($teachers) > 2){
+			$and = end($teachers);
+			array_pop($teachers);
+			$teachers = implode(', ', $teachers). ' y '. $and;
+		} else {
+			$teachers = $teachers[0];
+		}
+		$TEMP['!id'] = $course['id'];
 		$TEMP['!subject'] = $dba->query('SELECT name FROM subjects WHERE id = '.$course['subject_id'])->fetchArray();
 		$TEMP['!program'] = $dba->query('SELECT name FROM programs WHERE id = '.$course['program_id'])->fetchArray();
 		$TEMP['!period'] = $dba->query('SELECT name FROM periods WHERE id = '.$course['period_id'])->fetchArray();
+		$TEMP['!teacher'] = $teachers;
 		$TEMP['!semester'] = $course['semester'];
 		$TEMP['!credits'] = $course['credits'];
 		$TEMP['!quota'] = $course['quota'];
