@@ -23,7 +23,9 @@ if(Specific::Academic() == false){
 	$sqls .= ' AND program_id = '.$TEMP['#program_id'];
 	$sqls .= ' AND period_id = '.$TEMP['#period_id'];
 } else {
-	$params .= "?keyword=".$TEMP['#keyword_notes'];
+	if(isset($_GET['keyword'])){
+		$params .= "?keyword=".$TEMP['#keyword_notes'];
+	}
 	if(isset($_GET['user'])){
 		$params .= "&user={$TEMP['#user_id']}";
 	}
@@ -63,15 +65,15 @@ if(!empty($TEMP['#notes'])){
 
 	    $TEMP['notes'] .= Specific::Maket("notes/includes/notes");
 	}
-Specific::DestroyMaket();
+	Specific::DestroyMaket();
 
-$TEMP['average'] = round(array_sum($average)/count($average), 2);
+	$TEMP['average'] = round(array_sum($average)/count($average), 2);
 
-$TEMP['#programs'] = $dba->query('SELECT * FROM programs p WHERE (SELECT program_id FROM enrolled WHERE user_id = '.$TEMP['#user_id'].' AND program_id = p.id) = id')->fetchAll();
-$TEMP['#periods'] = $dba->query('SELECT * FROM periods p WHERE (SELECT period_id FROM enrolled WHERE user_id = '.$TEMP['#user_id'].' AND period_id = p.id) = id')->fetchAll();
+	$TEMP['#programs'] = $dba->query('SELECT * FROM programs p WHERE (SELECT program_id FROM enrolled WHERE user_id = '.$TEMP['#user_id'].' AND program_id = p.id) = id')->fetchAll();
+	$TEMP['#periods'] = $dba->query('SELECT * FROM periods p WHERE (SELECT period_id FROM enrolled WHERE user_id = '.$TEMP['#user_id'].' AND period_id = p.id) = id')->fetchAll();
 
-} else {
-	$TEMP['notes'] .= Specific::Maket("not-found/notes");
+	} else {
+		$TEMP['notes'] .= Specific::Maket("not-found/notes");
 }
 
 

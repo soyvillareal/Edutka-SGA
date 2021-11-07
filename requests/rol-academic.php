@@ -1,5 +1,5 @@
 <?php 
-if ($TEMP['#loggedin'] === false && Specific::Academic() === false) {
+if ($TEMP['#loggedin'] === false || Specific::Academic() === false) {
     $deliver = array(
         'status' => 400,
         'error' => $TEMP['#word']['error']
@@ -162,91 +162,6 @@ if($one == 'this-program'){
         $deliver['status'] = 200;
         $deliver['html'] = $html;
     }
-} else if($one == 'this-subject'){
-    $deliver['status'] = 400;
-    $id = Specific::Filter($_POST['id']);
-    $type = Specific::Filter($_POST['type']);
-    $name = Specific::Filter($_POST['name']);
-    if(!empty($name)){
-        if($type == 'add'){
-            if($dba->query('INSERT INTO subjects (name, `time`) VALUES ("'.$name.'",'.time().')')->returnStatus()){
-                $deliver['status'] = 200;
-            }
-        } else if(isset($id) && is_numeric($id)){
-            if($dba->query('UPDATE subjects SET name = "'.$name.'" WHERE id = '.$id)->returnStatus()){
-                $deliver['status'] = 200;
-            }
-        }
-    } else {
-        $deliver = array(
-            'status' => 200,
-            'empty' => 'true'
-        );
-    }
-} else if($one == 'get-sitems'){
-        $id = Specific::Filter($_POST['id']);
-        if(isset($id) && is_numeric($id)){
-            $item = $dba->query('SELECT name FROM subjects WHERE id = '.$id)->fetchArray();
-            if (!empty($item)) {
-                $deliver = array(
-                    'status' => 200,
-                    'item' => $item
-                );
-            }
-        }
-} else if($one == 'search-subjects') {
-    $keyword = Specific::Filter($_POST['keyword']);
-        $html = '';
-        $query = '';
-        if(!empty($keyword)){
-            $query .= " WHERE name LIKE '%$keyword%'";
-        }
-        $subjects = $dba->query('SELECT * FROM subjects'.$query.' LIMIT ? OFFSET ?', 10, 1)->fetchAll();
-        $deliver['total_pages'] = $dba->totalPages;
-        if (!empty($subjects)) {
-            foreach ($subjects as $subject) {
-                $TEMP['!id'] = $subject['id'];
-                $TEMP['!name'] = $subject['name'];
-                $TEMP['!time'] = Specific::DateFormat($subject['time']);
-                $html .= Specific::Maket('subjects/includes/subjects-list');
-            }
-            Specific::DestroyMaket();
-            $deliver['status'] = 200;
-        } else {
-            if(!empty($keyword)){
-                $TEMP['keyword'] = $keyword;
-                $html .= Specific::Maket('not-found/result-for');
-            } else {
-                $html .= Specific::Maket('not-found/programs');
-            }
-        }
-        $deliver['html'] = $html;
-} else if($one == 'delete-subject'){
-    $deliver['status'] = 400;
-    $id = Specific::Filter($_POST['id']);
-    if (isset($id) && is_numeric($id)) {
-        if($dba->query('DELETE FROM subjects WHERE id = '.$id)->returnStatus()){
-            $deliver['status'] = 200;
-        };
-    }
-} else if($one == 'table-subjects'){
-    $page = Specific::Filter($_POST['page_id']);
-    if(!empty($page) && is_numeric($page) && isset($page) && $page > 0){
-        $html = "";
-        $subjects = $dba->query('SELECT * FROM subjects'.$query.' LIMIT ? OFFSET ?', 10, $page)->fetchAll();
-        if (!empty($subjects)) {
-            foreach ($subjects as $key => $subject) {
-                $TEMP['!id'] = $subject['id'];
-                $TEMP['!name'] = $subject['name'];
-                $TEMP['!time'] = Specific::DateFormat($subject['time']);
-                $html .= Specific::Maket('subjects/includes/subjects-list');
-            }
-            Specific::DestroyMaket();
-            $deliver['status'] = 200;
-        }
-        $deliver['status'] = 200;
-        $deliver['html'] = $html;
-    }
 } else if($one == 'this-courses'){
     $deliver['status'] = 400;
     $subjects = $dba->query('SELECT id FROM subjects')->fetchAll(false);
@@ -349,18 +264,18 @@ if($one == 'this-program'){
         );
     }
 } else if($one == 'get-citems'){
-        $id = Specific::Filter($_POST['id']);
-        if(isset($id) && is_numeric($id)){
-            $items = $dba->query('SELECT subject_id, program_id, period_id, code, teacher, semester, credits, quota, type, schedule FROM courses WHERE id = '.$id)->fetchArray();
-            $teachers = $dba->query('SELECT names FROM users WHERE id IN ('.$items['teacher'].')')->fetchAll(false);
-            $items['teachers'] = implode(',', $teachers);
-            if (!empty($items)) {
-                $deliver = array(
-                    'status' => 200,
-                    'items' => $items
-                );
-            }
+    $id = Specific::Filter($_POST['id']);
+    if(isset($id) && is_numeric($id)){
+        $items = $dba->query('SELECT name, program_id, period_id, code, teacher, semester, credits, quota, type, schedule FROM courses WHERE id = '.$id)->fetchArray();
+        $teachers = $dba->query('SELECT names FROM users WHERE id IN ('.$items['teacher'].')')->fetchAll(false);
+        $items['teachers'] = implode(',', $teachers);
+        if (!empty($items)) {
+            $deliver = array(
+                'status' => 200,
+                'items' => $items
+            );
         }
+    }
 } else if($one == 'delete-course'){
     $deliver['status'] = 400;
     $id = Specific::Filter($_POST['id']);
@@ -368,93 +283,6 @@ if($one == 'this-program'){
         if($dba->query('DELETE FROM courses WHERE id = '.$id)->returnStatus()){
             $deliver['status'] = 200;
         };
-    }
-} else if($one == 'search-courses') {
-    $keyword = Specific::Filter($_POST['keyword']);
-        $html = '';
-        $query = '';
-        if(!empty($keyword)){
-            $query .= " WHERE code LIKE '%$keyword%'";
-        }
-        $TEMP['#periods'] = $dba->query('SELECT * FROM periods')->fetchAll();
-        $TEMP['#programs'] = $dba->query('SELECT * FROM programs')->fetchAll();
-        $TEMP['#subjects'] = $dba->query('SELECT * FROM subjects')->fetchAll();
-        $courses = $dba->query('SELECT * FROM courses'.$query.' LIMIT ? OFFSET ?', 10, 1)->fetchAll();
-        $deliver['total_pages'] = $dba->totalPages;
-        if (!empty($courses)) {
-            foreach ($courses as $course) {
-                $teachers = $dba->query('SELECT names FROM users WHERE id IN ('.$course['teacher'].')')->fetchAll(false);
-                if(count($teachers) == 2){
-                    $teachers = $teachers[0]. ' y ' .$teachers[1];
-                } else if(count($teachers) > 2){
-                    $and = end($teachers);
-                    array_pop($teachers);
-                    $teachers = implode(', ', $teachers). ' y '. $and;
-                } else {
-                    $teachers = $teachers[0];
-                }
-                $TEMP['!id'] = $course['id'];
-                $TEMP['!subject'] = $dba->query('SELECT name FROM subjects WHERE id = '.$course['subject_id'])->fetchArray();
-                $TEMP['!program'] = $dba->query('SELECT name FROM programs WHERE id = '.$course['program_id'])->fetchArray();
-                $TEMP['!period'] = $dba->query('SELECT name FROM periods WHERE id = '.$course['period_id'])->fetchArray();
-                $TEMP['!teacher'] = $teachers;
-                $TEMP['!semester'] = $course['semester'];
-                $TEMP['!credits'] = $course['credits'];
-                $TEMP['!quota'] = $course['quota'];
-                $TEMP['!type'] = $TEMP['#word'][$course['type']];
-                $TEMP['!schedule'] = $TEMP['#word'][$course['schedule']];
-                $TEMP['!time'] = Specific::DateFormat($course['time']);
-                $html .= Specific::Maket('courses/includes/courses-list');
-            }
-            Specific::DestroyMaket();
-            $deliver['status'] = 200;
-        } else {
-            if(!empty($keyword)){
-                $TEMP['keyword'] = $keyword;
-                $html .= Specific::Maket('not-found/result-for');
-            } else {
-                $html .= Specific::Maket('not-found/courses');
-            }
-        }
-        $deliver['html'] = $html;
-} else if($one == 'table-courses'){
-    $page = Specific::Filter($_POST['page_id']);
-    if(!empty($page) && is_numeric($page) && isset($page) && $page > 0){
-        $html = "";
-        $TEMP['#periods'] = $dba->query('SELECT * FROM periods')->fetchAll();
-        $TEMP['#programs'] = $dba->query('SELECT * FROM programs')->fetchAll();
-        $TEMP['#subjects'] = $dba->query('SELECT * FROM subjects')->fetchAll();
-        $courses = $dba->query('SELECT * FROM courses'.$query.' LIMIT ? OFFSET ?', 10, $page)->fetchAll();
-        if (!empty($courses)) {
-            foreach ($courses as $course) {
-                $teachers = $dba->query('SELECT names FROM users WHERE id IN ('.$course['teacher'].')')->fetchAll(false);
-                if(count($teachers) == 2){
-                    $teachers = $teachers[0]. ' y ' .$teachers[1];
-                } else if(count($teachers) > 2){
-                    $and = end($teachers);
-                    array_pop($teachers);
-                    $teachers = implode(', ', $teachers). ' y '. $and;
-                } else {
-                    $teachers = $teachers[0];
-                }
-                $TEMP['!id'] = $course['id'];
-                $TEMP['!subject'] = $dba->query('SELECT name FROM subjects WHERE id = '.$course['subject_id'])->fetchArray();
-                $TEMP['!program'] = $dba->query('SELECT name FROM programs WHERE id = '.$course['program_id'])->fetchArray();
-                $TEMP['!period'] = $dba->query('SELECT name FROM periods WHERE id = '.$course['period_id'])->fetchArray();
-                $TEMP['!teacher'] = $teachers;
-                $TEMP['!semester'] = $course['semester'];
-                $TEMP['!credits'] = $course['credits'];
-                $TEMP['!quota'] = $course['quota'];
-                $TEMP['!type'] = $TEMP['#word'][$course['type']];
-                $TEMP['!schedule'] = $TEMP['#word'][$course['schedule']];
-                $TEMP['!time'] = Specific::DateFormat($course['time']);
-                $html .= Specific::Maket('courses/includes/courses-list');
-            }
-            Specific::DestroyMaket();
-            $deliver['status'] = 200;
-        }
-        $deliver['status'] = 200;
-        $deliver['html'] = $html;
     }
 } else if($one == 'search-user') {
     $keyword = Specific::Filter($_POST['keyword']);

@@ -19,7 +19,7 @@
                                             {$word->code}
                                         </div>
                                         <div class="cont-cell-header padding-lr20 color-black">
-                                            {$word->subject}
+                                            {$word->name}
                                         </div>
                                         <div class="cont-cell-header padding-lr20 color-black">
                                             {$word->program}
@@ -48,9 +48,11 @@
                                         <div class="cont-cell-header padding-lr20 color-black">
                                             {$word->date}
                                         </div>
+                                        <?php if($TEMP['#academic'] == true){ ?>
                                         <div class="cont-cell-header padding-lr20 color-black text-center">
                                             {$word->action}
                                         </div>
+                                        <?php } ?>
                                     </div>
                                 </div>
                                 <div id="container-pages" class="display-inline-block">
@@ -133,17 +135,13 @@
                         </div>
                     </div>
                 </div>
-                <div class="group-validate display-block margin-t15 position-relative w-100 padding-25">
+                <div class="group-validate display-block position-relative w-100 padding-25">
                     <div class="display-flex flex-wrap">
                         <div class="cont-label dv-vertical-center">
-                            <label class="color-black">{$word->subject}</label>
+                            <label class="color-black">{$word->name}</label>
                         </div>
                         <div class="flex-grow">
-                            <select id="subject_id" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue area_changed caret-down area_validate background-grely color-black">
-                                <?php foreach($TEMP['#subjects'] as $subject){ ?>
-                                <option value="<?php echo $subject['id']; ?>"><?php echo $subject['name']; ?></option>
-                                <?php } ?>
-                            </select>
+                            <input id="name" type="text" class="cont-input h-50 border-radius-12 area_validate animated-easy border-focus-blue background-grely color-black"/>
                             <div class="color-red text-left text-error font-low margin-t5"></div>
                         </div>
                     </div>
@@ -313,7 +311,7 @@ var GE = D.querySelectorAll('.show_emodal'),
     GI = D.querySelector('#alert-courses'),
     GT = D.querySelector('#alert-delete'),
     GM = D.querySelector('#code'),
-    GU = D.querySelector('#subject_id'),
+    GU = D.querySelector('#name'),
     GF = D.querySelector('#program_id'),
     GG = D.querySelector('#period_id'),
     GP = D.querySelector('#teacher'),
@@ -421,7 +419,7 @@ addEvent(D.querySelector('#tips-val'), "keyup", function(e){
     GI.style.display = "", D.body.style.overflow = "";
 }), addEvent(D.querySelector('#cancel-dalert'), 'click', function(){
     GT.style.display = "", D.body.style.overflow = "";
-}), addEvent(GB, 'click', function(){
+})<?php if($TEMP['#academic'] == true){ ?>, addEvent(GB, 'click', function(){
     var self = this,
         type = self.getAttribute('data-type');
     if(GM.value == '' || GU.value == '' || GF.value == '' || GG.value == '' || GP.value == '' || GJ.value == '' || GK.value == '' || GN.value == '' || GO.value == '' || GY.value == ''){
@@ -485,7 +483,7 @@ addEvent(D.querySelector('#tips-val'), "keyup", function(e){
             }
             GB.removeAttribute('disabled'), removeClass(GB, 'spinner-is-loading');
         }
-    }, "POST", "&type=" + type + "&id=" + self.getAttribute('data-id') + "&code=" + GM.value + "&subject_id=" + GU.value + "&program_id=" + GF.value + "&period_id=" + GG.value + "&teacher=" + GP.value + "&semester=" + GJ.value + "&credits=" + GK.value + "&quota=" + GN.value + "&typec=" + GO.value + "&schedule=" + GY.value)
+    }, "POST", "&type=" + type + "&id=" + self.getAttribute('data-id') + "&code=" + GM.value + "&name=" + GU.value + "&program_id=" + GF.value + "&period_id=" + GG.value + "&teacher=" + GP.value + "&semester=" + GJ.value + "&credits=" + GK.value + "&quota=" + GN.value + "&typec=" + GO.value + "&schedule=" + GY.value)
 }), addEvent(GQ, "click", function(){
     var self = this; 
     self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
@@ -496,24 +494,29 @@ addEvent(D.querySelector('#tips-val'), "keyup", function(e){
             self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
         }
     }, "POST", "&id=" + self.getAttribute('data-id'));
-}), addEvent(GA, 'keyup', function(){
+})<?php } ?>, addEvent(GA, 'keyup', function(){
     var self = this,
         TZ = D.querySelector('#table-footer');
-    Req('{$url->{req/rol-academic/search-courses}}', function(e){
+    Req('{$url->{req/rol-teacher/search-courses}}', function(e){
         if(e.status == 200){
-            <?php echo($TEMP['#total_pages'] > 1) ? "TT = e.total_pages, TA = 1, TO.setAttribute('disabled', true), TR.setAttribute('disabled', true), TE.removeAttribute('disabled'), TS.removeAttribute('disabled'), D.querySelector('#total-pages').innerText = TT, TN.innerText = TA, TZ && (TT <= 1 ? TZ.style.display = 'none' : TZ.removeAttribute('style')), " : ""?>D.querySelector('#container-pages').innerHTML = e.html, loadPage(D.querySelectorAll('a[target="_self"]')), GE = D.querySelectorAll('.show_emodal'), GW = D.querySelectorAll('.show_dmodal');
+            <?php echo($TEMP['#total_pages'] > 1) ? "TT = e.total_pages, TA = 1, TO.setAttribute('disabled', true), TR.setAttribute('disabled', true), TE.removeAttribute('disabled'), TS.removeAttribute('disabled'), D.querySelector('#total-pages').innerText = TT, TN.innerText = TA, TZ && (TT <= 1 ? TZ.style.display = 'none' : TZ.removeAttribute('style')), " : ""?>D.querySelector('#container-pages').innerHTML = e.html, loadPage(D.querySelectorAll('a[target="_self"]'));
+            <?php if($TEMP['#academic'] == true){ ?>
+            GE = D.querySelectorAll('.show_emodal'), GW = D.querySelectorAll('.show_dmodal');
             for(var j = 0, i = GE.length; j < i; j++) addEvent(GE[j], "click", GS);
             for(var j = 0, i = GW.length; j < i; j++) addEvent(GW[j], "click", GD);
+            <?php } ?>
         } else {
             D.querySelector('#container-pages').innerHTML = e.html<?php echo($TEMP['#total_pages'] > 1) ? ', TZ.style.display = "none"' : '';?>; 
         }
     }, "POST", "&keyword=" + self.value)
 });
 
+<?php if($TEMP['#academic'] == true){ ?>
 for(var j = 0, i = GE.length; j < i; j++) addEvent(GE[j], "click", GS);
 for(var j = 0, i = GW.length; j < i; j++) addEvent(GW[j], "click", GD);
 for (var j = 0, i = GR.length; j < i; j++) addEvent(GR[j], 'change', bDisabled);
 for (var j = 0, i = GC.length; j < i; j++) addEvent(GC[j], 'keyup', bDisabled);
+<?php } ?>
 for (var j = 0, i = GL.length; j < i; j++) addEvent(GL[j], "click", function(){
     var self = this,
         type = self.getAttribute('data-type');
@@ -551,11 +554,14 @@ for (var j = 0, i = GL.length; j < i; j++) addEvent(GL[j], "click", function(){
         TS.setAttribute('disabled', true);
         TE.setAttribute('disabled', true);
     }
-    Req("{$url->{req/rol-academic/table-courses}}", function(e){
+    Req("{$url->{req/rol-teacher/table-courses}}", function(e){
         if(e.status == 200){
-            D.querySelector('#container-pages').innerHTML = e.html, GE = D.querySelectorAll('.show_emodal'), GW = D.querySelectorAll('.show_dmodal');
+            D.querySelector('#container-pages').innerHTML = e.html;
+            <?php if($TEMP['#academic'] == true){ ?>
+            GE = D.querySelectorAll('.show_emodal'), GW = D.querySelectorAll('.show_dmodal');
             for(var j = 0, i = GE.length; j < i; j++) addEvent(GE[j], "click", GS);
             for(var j = 0, i = GW.length; j < i; j++) addEvent(GW[j], "click", GD);
+            <?php } ?>
         } else {
             TE.setAttribute('disabled', true), TO.setAttribute('disabled', true), TR.setAttribute('disabled', true), TS.setAttribute('disabled', true), TA = 1, loadAlert('{$word->error}', 1);
         }

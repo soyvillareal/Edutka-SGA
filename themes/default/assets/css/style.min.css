@@ -758,6 +758,14 @@ h5 {
     padding: 0;
     background-color: transparent;
 }
+.content-eperiod {
+    width: 140px;
+    left: calc(50% - 70px);
+}
+
+
+
+
 
 
 
@@ -1476,8 +1484,12 @@ h5 {
     color: #45a6d6;
 }
 
-.color-bluely {
+.color-blud {
     color: #005ec9;
+}
+
+.color-bluely {
+    color: #5c83c5;
 }
 
 .color-purple {

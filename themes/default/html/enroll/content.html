@@ -1,0 +1,151 @@
+<div class="display-flex">
+	<div class="content-notes margin-auto">
+		<div class="margin-t10 margin-t50 padding-b50">
+			<div class="text-center background-white border-radius-12 padding-25 margin-b10">
+				<div class="max-w-900 border-top-left-radius border-top-right-radius">
+					<div class="font-medium color-black">{$word->current_license_plates}</div>
+					<div class="display-flex margin-t15">
+						<div class="font-mediumly font-bold margin-left-auto margin-r15">{$programs}</div>
+						<div class="font-mediumly font-bold margin-right-auto">{$courses}</div>
+					</div>
+				</div>
+			</div>
+			<div class="background-white border-radius-12 padding-25 margin-b10">
+				<label class="color-black">{$word->type}</label>
+			    <div class="content-types position-relative margin-b10">
+			    	<select id="type" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue area_changed caret-down background-grely color-black">
+			            <option value="programs">{$word->program}</option>
+			            <option value="courses">{$word->course}</option>
+			        </select>
+			    	<div class="color-red text-left text-error font-low margin-t5"></div>
+			    </div>
+				<label class="color-black">{$word->search}</label>
+				<div class="content-search-notes position-relative margin-b10">
+					<div class="display-flex margin-auto border-radius-4">
+				        <input class="background-grely padding-10 border-focus-blue border-all border-grey border-top-left-radius border-top-right-radius border-bottom-left-radius border-bottom-right-radius w-100 color-black" type="text" id="search-enrolled" name="keyword" autocomplete="off" value="{#keyword_notes}"> 
+			        </div>
+			        <div class="search-down z-index-first position-absolute background-white"></div>
+			    </div>
+			</div>
+	   	    <div class="background-white border-radius-12 padding-25">
+			    <div class="max-w-900 border-top-left-radius border-top-right-radius" id="container-enrolled">
+			    	{$enrolled}
+			    </div>
+			</div>
+		</div>
+		<div class="clear"></div>
+	</div>
+</div>
+<div class="cont-alert" id="alert-enrollp">
+   <h2 class="color-red">{$word->enroll} {$word->program}</h2>
+   <p>¿Esta seguro de que desea matricular este programa?</p>
+   <div class="padding-t25">
+      <button class="btn-noway background-grely border-radius-4 padding-10 color-black hover-button font-uppercase" id="cancel-epalert">{$word->cancel}</button>
+      <button class="btn-noway background-red border-radius-4 padding-10 color-black hover-opacity font-uppercase" id="register-epnroll">
+        <span class="color-white">{$word->enroll}</span>
+        <div class="content-spinner-circle">
+            <div class="spinner-circle"></div>
+        </div>
+    </button>
+   </div>
+</div>
+<div class="background-pointer"></div>
+<div class="cont-alert" id="alert-enrollc">
+   <h2 class="no-margin padding-b10 color-red">Introduce el codigo del curso</h2>
+   <input id="course-code" class="cont-input number h-50 border-radius-12 animated-easy border-focus-blue background-grely color-black" />
+   <div class="padding-t25">
+      <button class="btn-noway background-grely border-radius-4 padding-10 color-black hover-button font-uppercase" id="cancel-ecalert">{$word->cancel}</button>
+      <button class="btn-noway background-red border-radius-4 padding-10 color-black hover-opacity font-uppercase" id="register-ecnroll">
+        <span class="color-white">{$word->enroll}</span>
+        <div class="content-spinner-circle">
+            <div class="spinner-circle"></div>
+        </div>
+    </button>
+   </div>
+</div>
+<div class="background-pointer"></div>
+<div class="cont-alert" id="alert-cancel">
+   <h2 class="color-red">{$word->cancel} {$word->enrollment}</h2>
+   <p>{$word->this_action_cannot_undone_continue}</p>
+   <div class="padding-t25">
+      <button class="btn-noway background-grely border-radius-4 padding-10 color-black hover-button font-uppercase" id="close-ealert">{$word->close}</button>
+      <button class="btn-noway background-red border-radius-4 padding-10 color-black hover-opacity font-uppercase" id="cancel-enroll">
+        <span class="color-white">{$word->cancel}</span>
+        <div class="content-spinner-circle">
+            <div class="spinner-circle"></div>
+        </div>
+    </button>
+   </div>
+</div>
+<div class="background-pointer"></div>
+<script type="text/javascript">
+var GA = D.querySelectorAll('.show_cmodal'),
+	GB = D.querySelectorAll('.show_rcmodal'),
+	GK = D.querySelectorAll('.show_rpmodal'),
+	GI = D.querySelector('#register-ecnroll'),
+	GL = D.querySelector('#register-epnroll'),
+	GJ = D.querySelector('#alert-enrollc'),
+	GN = D.querySelector('#alert-enrollp'),
+	GG = D.querySelector('#cancel-enroll'),
+	GE = D.querySelector('#alert-cancel'),
+	GC = function(){
+		GJ.style.display = "block", D.body.style.overflow = "hidden", GI.setAttribute('data-id', this.getAttribute('data-id'));
+	},
+    GH = function(){
+        GE.style.display = "block", D.body.style.overflow = "hidden", GG.setAttribute('data-id', this.getAttribute('data-id'));
+    },
+    GM = function(){
+        GN.style.display = "block", D.body.style.overflow = "hidden", GL.setAttribute('data-id', this.getAttribute('data-id'));
+    };
+
+
+addEvent(D.querySelector('#close-ealert'), 'click', function(){
+    GE.style.display = "", D.body.style.overflow = "";
+}), addEvent(D.querySelector('#cancel-ecalert'), 'click', function(){
+    GJ.style.display = "", D.body.style.overflow = "";
+}), addEvent(D.querySelector('#cancel-epalert'), 'click', function(){
+    GN.style.display = "", D.body.style.overflow = "";
+}), addEvent(D.querySelector('#search-enrolled'), "keyup", function(e){
+	var self = this;
+    Req('{$url->{req/rol-student/search-enrolled}}', function(e){
+        D.querySelector('#container-enrolled').innerHTML = e.html;
+        GA = D.querySelectorAll('.show_cmodal'), GB = D.querySelectorAll('.show_rcmodal'), GK = D.querySelectorAll('.show_rpmodal');
+		for(var j = 0, i = GB.length; j < i; j++) addEvent(GB[j], "click", GC);
+        for(var j = 0, i = GA.length; j < i; j++) addEvent(GA[j], "click", GH);
+		for(var j = 0, i = GK.length; j < i; j++) addEvent(GK[j], "click", GM);
+    }, "POST", "&keyword=" + self.value + "&id={#user_id}&type=" + D.querySelector('#type').value)
+}), addEvent(GG, "click", function(){
+    var self = this; 
+    self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
+	Req('{$url->{req/rol-student/cancel-enroll}}', function(e){
+        if(e.status == 200){
+	        loadAlert("{$word->registration_canceled_successfully}", 1), preloadPage('&one=enroll');
+	    } else {
+	        self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
+        }
+	}, "POST", "&id=" + self.getAttribute('data-id'));
+}), addEvent(GI, "click", function(){
+    var self = this; 
+    self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
+	Req('{$url->{req/rol-student/register-ecnroll}}', function(e){
+        if(e.status == 200){
+	        loadAlert("{$word->you_have_successfully_enrolled}"), preloadPage('&one=enroll');
+	    } else {
+	        loadAlert("{$word->wrong_code}", 1), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
+        }
+	}, "POST", "&id=" + self.getAttribute('data-id') + "&user_id={#user_id}&code="+D.querySelector('#course-code').value);
+}), addEvent(GL, "click", function(){
+    var self = this; 
+    self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
+	Req('{$url->{req/rol-student/register-epnroll}}', function(e){
+        if(e.status == 200){
+	        loadAlert("{$word->you_have_successfully_enrolled}"), preloadPage('&one=enroll');
+	    } else {
+	        loadAlert("{$word->wrong_code}", 1), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
+        }
+	}, "POST", "&id=" + self.getAttribute('data-id') + "&user_id={#user_id}");
+});
+for(var j = 0, i = GB.length; j < i; j++) addEvent(GB[j], "click", GC);
+for(var j = 0, i = GA.length; j < i; j++) addEvent(GA[j], "click", GH);
+for(var j = 0, i = GK.length; j < i; j++) addEvent(GK[j], "click", GM);
+</script>

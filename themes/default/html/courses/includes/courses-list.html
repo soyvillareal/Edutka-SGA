@@ -1,9 +1,9 @@
 <div class="content-row-table dv-vertical-center padding-t15 padding-b15 border-bottom border-grey">
 	<div class="cont-cell-header padding-lr20 color-black">
-        {!id}
+        {!code}
 	</div>
 	<div class="cont-cell-header padding-lr20 color-black">
-		{!subject}
+		{!name}
 	</div>
 	<div class="cont-cell-header padding-lr20 color-black">
 		{!program}
@@ -32,6 +32,7 @@
 	<div class="cont-cell-header padding-lr20 color-black">
 		{!time}
 	</div>
+	<?php if($TEMP['#academic'] == true){ ?>
 	<div class="cont-cell-header padding-lr20 text-center">
 		<button class="show_emodal btn-noway" data-id="{!id}">
 			<span class="color-blue">
@@ -49,4 +50,5 @@
 			</svg>
         </button>
 	</div>
+	<?php } ?>
 </div>

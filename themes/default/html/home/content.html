@@ -1,5 +1,5 @@
 <div class="slots-container padding-t25 padding-b15">
-    <h2 class="font-supraly text-center margin-t5 margin-b15">{$word->modules}</h2>
+    <h2 class="font-supraly text-center margin-t5 margin-b15">{$word->modules} - Rol ({$rol})</h2>
     <div class="cont-slots-two display-flex margin-b20 margin-right-auto margin-left-auto">
         <div class="contsub-slots-two display-flex dv-vertical-slots margin-l20">
             <?php if(Specific::Academic() == true || Specific::Student() == true) { ?>
@@ -12,15 +12,15 @@
             <a class="item-slot-two position-relative margin-r20 margin-b20" href="{$url->{enroll}}" target="_self">
                 <img class="border-radius-12" src="{$theme->{images/navigation/enroll.png}}" />
                 <div class="item-slot-title position-absolute pos-bottom w-100 background-white margin-b10">
-                    <h3 class="font-mediumly font-bold color-bluely text-center text-uppercase no-margin">{$word->enroll}</h3>
+                    <h3 class="font-mediumly font-bold color-blud text-center text-uppercase no-margin">{$word->enroll}</h3>
                 </div>
             </a>
             <?php } ?>
             <?php if(Specific::Academic() == true || Specific::Teacher() == true) { ?>
             <a class="item-slot-two position-relative margin-r20 margin-b20" href="{$url->{courses}}" target="_self">
-                <img class="border-radius-12" src="{$theme->{images/navigation/certificate.png}}" />
+                <img class="border-radius-12" src="{$theme->{images/navigation/courses.png}}" />
                 <div class="item-slot-title position-absolute pos-bottom w-100 background-white margin-b10">
-                    <h3 class="font-mediumly font-bold color-orange text-center text-uppercase no-margin">{$word->courses}</h3>
+                    <h3 class="font-mediumly font-bold color-purple text-center text-uppercase no-margin">{$word->courses}</h3>
                 </div>
             </a>
             <?php } ?>
@@ -31,16 +31,10 @@
                     <h3 class="font-mediumly font-bold color-green text-center text-uppercase no-margin">{$word->programs}</h3>
                 </div>
             </a>
-            <a class="item-slot-two position-relative margin-r20 margin-b20" href="{$url->{subjects}}" target="_self">
-                <img class="border-radius-12" src="{$theme->{images/navigation/asignaturas.png}}" />
-                <div class="item-slot-title position-absolute pos-bottom w-100 background-white margin-b10">
-                    <h3 class="font-mediumly font-bold color-purple text-center text-uppercase no-margin">{$word->subjects}</h3>
-                </div>
-            </a>
             <a class="item-slot-two position-relative margin-r20 margin-b20" href="{$url->{faculties}}" target="_self">
-                <img class="border-radius-12" src="{$theme->{images/navigation/certificate.png}}" />
+                <img class="border-radius-12" src="{$theme->{images/navigation/faculties.png}}" />
                 <div class="item-slot-title position-absolute pos-bottom w-100 background-white margin-b10">
-                    <h3 class="font-mediumly font-bold color-orange text-center text-uppercase no-margin">{$word->faculties}</h3>
+                    <h3 class="font-mediumly font-bold color-bluely text-center text-uppercase no-margin">{$word->faculties}</h3>
                 </div>
             </a>
             <a class="item-slot-two position-relative margin-r20 margin-b20" href="#">
