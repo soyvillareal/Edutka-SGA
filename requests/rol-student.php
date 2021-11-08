@@ -17,6 +17,10 @@ if($one == 'search-enrolled'){
     $query = '';
     if(!empty($keyword)){
         $query .= " WHERE name LIKE '%$keyword%'";
+        if($type == 'courses'){
+        	$enrolled_programs = $dba->query('SELECT program_id FROM enrolled WHERE user_id = '.$id.' AND type = "program"')->fetchAll(false);
+        	$query .= " AND program_id IN (".implode(',', $enrolled_programs).")";
+        }
        	$searchs = $dba->query('SELECT * FROM '.$type.$query)->fetchAll();
 
        	$type = substr($type, 0, -1);
@@ -25,7 +29,7 @@ if($one == 'search-enrolled'){
 	            if($type == 'course'){
 					$periodc = $dba->query('SELECT name FROM periods p WHERE (SELECT period_id FROM courses WHERE id = '.$search['id'].' AND period_id = p.id)')->fetchArray();
 					$TEMP['!name'] = "{$search['name']} ($periodc)";
-					$TEMP['!color'] = 'orange';
+					$TEMP['!color'] = 'purple';
 					$search_id = 'course_id';
 				} else {
 					$TEMP['!name'] = $search['name'];

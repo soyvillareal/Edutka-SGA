@@ -330,7 +330,7 @@ var GE = D.querySelectorAll('.show_emodal'),
     ga = D.querySelector('#tips-val'),
     gl = D.querySelector('.search-down'),
     bDisabled = function(){
-        if(GM.value != '' && GU.value != '' && GF.value != '' && GG.value != '' && GP.value != '' && GJ.value != '' && GK.value != '' && GN.value != '' && GO.value != '' && GY.value != ''){
+        if(GM.value != '' && GU.value != '' && GF.value != '' && GG.value != '' && (GP.value != '' || ga.value != '') && GJ.value != '' && GK.value != '' && GN.value != '' && GO.value != '' && GY.value != ''){
             GB.removeAttribute('disabled');
         } else {
             GB.setAttribute('disabled', true);
@@ -341,15 +341,15 @@ var GE = D.querySelectorAll('.show_emodal'),
             course_id = self.getAttribute('data-id');
         self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
         Req('{$url->{req/rol-academic/get-citems}}', function(e){
+            console.log(e);
             if(e.status == 200){
                 for (var key in e.items) {
                     var ge = e.items,
                         gj = ge[key];
                     if(key != 'teachers'){
-                        (key == 'teacher') && (GX = gj.replace(" ", "").split(',')), D.querySelector('#'+key).value = gj; 
+                        D.querySelector('#'+key).value = gj; 
                     } else {
-                        var gc = gj.split(',');
-                        for (var j = 0, i = gc.length; j < i; j++) createTag(gc[j]);
+                        for (var j = 0, i = gj.length; j < i; j++) createTag(gj[j]['name'], gj[j]['id']);
                     }
                 }
                 GI.style.display = "block", D.body.style.overflow = "hidden", GB.setAttribute('data-id', course_id), GB.setAttribute('data-type', 'edit'), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
@@ -361,14 +361,14 @@ var GE = D.querySelectorAll('.show_emodal'),
     GD = function(){
         GT.style.display = "block", D.body.style.overflow = "hidden", GQ.setAttribute('data-id', this.getAttribute('data-id'));
     },
-    createTag = function(gf, gi = -1){
+    createTag = function(gf, gi){
         var FU = D.createElement("li"),
-            gk = gi != -1 ? gi : gf,
-            zp = GX.indexOf(gk, 0);
+            gi = parseInt(gi),
+            zp = GX.indexOf(gi, 0);
         removeClass(ZO, 'border-red'), removeClass(ZO, 'boxshadow-red'), ZO.parentNode.querySelector('.text-error').innerText = '';
         if(zp == -1){
-            FU.className = 'border-grey tipsit-choice', FU.innerHTML = '<span class="color-black tipsit-label">' + gf + '</span><span class="tipsit_close"></span>', ZO.insertBefore(FU, D.querySelector('.tipsit-new')), (gi != -1) && (GX.push(gi), GP.value = GX.join(), gl.innerHTML = ""), ga.value = "", addEvent(FU.querySelector('.tipsit_close'), "click", function(){
-                FU.remove(), GX.splice(GX.indexOf(FU.querySelector('.tipsit-label').innerText), 1), GP.value = GX;
+            FU.className = 'border-grey tipsit-choice', FU.setAttribute('data-id', gi), FU.innerHTML = '<span class="color-black tipsit-label">' + gf + '</span><span class="tipsit_close"></span>', ZO.insertBefore(FU, D.querySelector('.tipsit-new')), GX.push(gi), GP.value = GX.join(), gl.innerHTML = "", ga.value = "", addEvent(FU.querySelector('.tipsit_close'), "click", function(){
+                FU.remove(), GX.splice(GX.indexOf(parseInt(FU.getAttribute('data-id'))), 1), GP.value = GX;
             });
         } else {
             var zy = D.querySelectorAll('.tipsit-choice');
@@ -498,6 +498,7 @@ addEvent(D.querySelector('#tips-val'), "keyup", function(e){
     var self = this,
         TZ = D.querySelector('#table-footer');
     Req('{$url->{req/rol-teacher/search-courses}}', function(e){
+        console.log(e);
         if(e.status == 200){
             <?php echo($TEMP['#total_pages'] > 1) ? "TT = e.total_pages, TA = 1, TO.setAttribute('disabled', true), TR.setAttribute('disabled', true), TE.removeAttribute('disabled'), TS.removeAttribute('disabled'), D.querySelector('#total-pages').innerText = TT, TN.innerText = TA, TZ && (TT <= 1 ? TZ.style.display = 'none' : TZ.removeAttribute('style')), " : ""?>D.querySelector('#container-pages').innerHTML = e.html, loadPage(D.querySelectorAll('a[target="_self"]'));
             <?php if($TEMP['#academic'] == true){ ?>

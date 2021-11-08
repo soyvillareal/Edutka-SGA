@@ -12,7 +12,7 @@ if(isset($_GET['user']) && Specific::Academic() == true){
 $user_data = Specific::Data($TEMP['#user_id']);
 
 $TEMP['#program_id'] = !empty($_GET['program']) ? Specific::Filter($_GET['program']) : $user_data['program'];
-$TEMP['#period_id'] = !empty($_GET['period']) ? Specific::Filter($_GET['period']) : $user_data['period'];
+$TEMP['#period_id'] = !empty($_GET['period']) ? Specific::Filter($_GET['period']) : $user_data['last_cenrolled'];
 $TEMP['#keyword_notes'] = Specific::Filter($_GET['keyword']);
 
 $params = "";
@@ -20,8 +20,12 @@ $sqls = '';
 $TEMP['average'] = '- -';
 
 if(Specific::Academic() == false){
-	$sqls .= ' AND program_id = '.$TEMP['#program_id'];
-	$sqls .= ' AND period_id = '.$TEMP['#period_id'];
+	if(!isset($_GET['program'])){
+		$sqls .= ' AND program_id = '.$TEMP['#program_id'];
+	}
+	if(!isset($_GET['period'])){
+		$sqls .= ' AND period_id = '.$TEMP['#period_id'];
+	}
 } else {
 	if(isset($_GET['keyword'])){
 		$params .= "?keyword=".$TEMP['#keyword_notes'];
@@ -41,7 +45,6 @@ if(isset($_GET['period'])){
 }
 
 $TEMP['#load_url'] = Specific::Url("notes$params");
-
 $TEMP['#notes'] = $dba->query('SELECT * FROM notes WHERE user_id = '.$TEMP['#user_id'].$sqls)->fetchAll();
 
 if(!empty($TEMP['#notes'])){
@@ -49,18 +52,30 @@ if(!empty($TEMP['#notes'])){
 		$notes = json_decode($note['notes'], true);
 
 		$period = $dba->query('SELECT * FROM periods WHERE id = '.$note['period_id'])->fetchArray();
-		$subject = $dba->query('SELECT * FROM subjects WHERE id = '.$note['subject_id'])->fetchArray();
+		$course = $dba->query('SELECT * FROM courses WHERE id = '.$note['course_id'])->fetchArray();
+
+
+		$teachers = $dba->query('SELECT names FROM users u WHERE (SELECT user_id FROM teacher WHERE user_id = u.id AND course_id = '.$note['course_id'].') = id')->fetchAll(false);
+		if(count($teachers) == 2){
+			$teachers = "{$teachers[0]} {$TEMP['#word']['and']} {$teachers[1]}";
+		} else if(count($teachers) > 2){
+			$end = end($teachers);
+			array_pop($teachers);
+			$teachers = implode(', ', $teachers)." {$TEMP['#word']['and']} $end";
+		} else {
+			$teachers = $teachers[0];
+		}
 
 	    $TEMP['!period'] = $period['name'];
-	    $TEMP['!subject'] = $subject['name'];
+	    $TEMP['!course'] = $course['name'];
 
 		$TEMP['!first'] = $notes[0];
 	    $TEMP['!second'] = $notes[1];
 	    $TEMP['!third'] = $notes[2];
 	    $TEMP['!average'] = $average[] = round((($notes[0]*0.3)+($notes[1]*0.3)+($notes[2]*0.4)), 2);
-	    $TEMP['!teacher'] = Specific::Data($subject['user_id'])['full_name'];
+	    $TEMP['!teacher'] = $teachers;
 
-	    $TEMP['!approved'] = ($subject['type'] == 'practice' && $TEMP['!average'] > 3.5) || ($subject['type'] == 'theoretical' && $TEMP['!average'] > 3.0) ? true : false;
+	    $TEMP['!approved'] = ($course['type'] == 'practice' && $TEMP['!average'] > 3.5) || ($course['type'] == 'theoretical' && $TEMP['!average'] > 3.0) ? true : false;
 	    $TEMP['!status'] = ($period['status'] == 0) ? $TEMP['#word']['finalized'] : $TEMP['#word']['in_progress'];
 
 	    $TEMP['notes'] .= Specific::Maket("notes/includes/notes");
@@ -70,10 +85,10 @@ if(!empty($TEMP['#notes'])){
 	$TEMP['average'] = round(array_sum($average)/count($average), 2);
 
 	$TEMP['#programs'] = $dba->query('SELECT * FROM programs p WHERE (SELECT program_id FROM enrolled WHERE user_id = '.$TEMP['#user_id'].' AND program_id = p.id) = id')->fetchAll();
-	$TEMP['#periods'] = $dba->query('SELECT * FROM periods p WHERE (SELECT period_id FROM enrolled WHERE user_id = '.$TEMP['#user_id'].' AND period_id = p.id) = id')->fetchAll();
-
-	} else {
-		$TEMP['notes'] .= Specific::Maket("not-found/notes");
+	$periods = $dba->query('SELECT period_id FROM courses c WHERE (SELECT course_id FROM enrolled WHERE user_id = '.$TEMP['#user_id'].' AND course_id = c.id) = id')->fetchAll(false);
+	$TEMP['#periods'] = $dba->query('SELECT * FROM periods WHERE id IN ('.implode(',', $periods).')')->fetchAll();
+} else {
+	$TEMP['notes'] .= Specific::Maket("not-found/notes");
 }
 
 

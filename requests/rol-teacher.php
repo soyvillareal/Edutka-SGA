@@ -17,18 +17,22 @@ if($one == 'search-courses') {
         }
         $TEMP['#periods'] = $dba->query('SELECT * FROM periods')->fetchAll();
         $TEMP['#programs'] = $dba->query('SELECT * FROM programs')->fetchAll();
+        if(Specific::Teacher() == true){
+            $teachers = $dba->query('SELECT course_id FROM teacher WHERE user_id = '.$TEMP['#user']['id'])->fetchAll(false);
+            $query .= (!empty($keyword) ? ' AND' : ' WHERE').' id IN ('.implode(',', $teachers).')';
+        }
         $courses = $dba->query('SELECT * FROM courses'.$query.' LIMIT ? OFFSET ?', 10, 1)->fetchAll();
         $deliver['total_pages'] = $dba->totalPages;
         if (!empty($courses)) {
             foreach ($courses as $course) {
-                $teachers = $dba->query('SELECT names FROM users WHERE id IN ('.$course['teacher'].')')->fetchAll(false);
-				$enrolled = $dba->query('SELECT COUNT(*) FROM enrolled WHERE course_id = '.$course['id'])->fetchArray();
+                $teachers = $dba->query('SELECT names FROM users u WHERE (SELECT user_id FROM teacher WHERE user_id = u.id AND course_id = '.$course['id'].') = id')->fetchAll(false);
+                $enrolled = $dba->query('SELECT COUNT(*) FROM enrolled WHERE course_id = '.$course['id'])->fetchArray();
                 if(count($teachers) == 2){
-                    $teachers = $teachers[0]. ' y ' .$teachers[1];
+                    $teachers = "{$teachers[0]} {$TEMP['#word']['and']} {$teachers[1]}";
                 } else if(count($teachers) > 2){
-                    $and = end($teachers);
+                    $end = end($teachers);
                     array_pop($teachers);
-                    $teachers = implode(', ', $teachers). ' y '. $and;
+                    $teachers = implode(', ', $teachers)." {$TEMP['#word']['and']} $end";
                 } else {
                     $teachers = $teachers[0];
                 }
@@ -61,19 +65,24 @@ if($one == 'search-courses') {
     $page = Specific::Filter($_POST['page_id']);
     if(!empty($page) && is_numeric($page) && isset($page) && $page > 0){
         $html = "";
+        $query = "";
         $TEMP['#periods'] = $dba->query('SELECT * FROM periods')->fetchAll();
         $TEMP['#programs'] = $dba->query('SELECT * FROM programs')->fetchAll();
+        if(Specific::Teacher() == true){
+            $teachers = $dba->query('SELECT course_id FROM teacher WHERE user_id = '.$TEMP['#user']['id'])->fetchAll(false);
+            $query .= (!empty($keyword) ? ' AND' : ' WHERE').' id IN ('.implode(',', $teachers).')';
+        }
         $courses = $dba->query('SELECT * FROM courses'.$query.' LIMIT ? OFFSET ?', 10, $page)->fetchAll();
         if (!empty($courses)) {
             foreach ($courses as $course) {
-                $teachers = $dba->query('SELECT names FROM users WHERE id IN ('.$course['teacher'].')')->fetchAll(false);
-				$enrolled = $dba->query('SELECT COUNT(*) FROM enrolled WHERE course_id = '.$course['id'])->fetchArray();
+                $teachers = $dba->query('SELECT names FROM users u WHERE (SELECT user_id FROM teacher WHERE user_id = u.id AND course_id = '.$course['id'].') = id')->fetchAll(false);
+                $enrolled = $dba->query('SELECT COUNT(*) FROM enrolled WHERE course_id = '.$course['id'])->fetchArray();
                 if(count($teachers) == 2){
-                    $teachers = $teachers[0]. ' y ' .$teachers[1];
+                    $teachers = "{$teachers[0]} {$TEMP['#word']['and']} {$teachers[1]}";
                 } else if(count($teachers) > 2){
-                    $and = end($teachers);
+                    $end = end($teachers);
                     array_pop($teachers);
-                    $teachers = implode(', ', $teachers). ' y '. $and;
+                    $teachers = implode(', ', $teachers)." {$TEMP['#word']['and']} $end";
                 } else {
                     $teachers = $teachers[0];
                 }

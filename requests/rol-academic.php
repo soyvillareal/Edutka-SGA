@@ -164,7 +164,6 @@ if($one == 'this-program'){
     }
 } else if($one == 'this-courses'){
     $deliver['status'] = 400;
-    $subjects = $dba->query('SELECT id FROM subjects')->fetchAll(false);
     $programs = $dba->query('SELECT id FROM programs')->fetchAll(false);
     $periods = $dba->query('SELECT id FROM periods')->fetchAll(false);
     $semesters  = array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
@@ -178,10 +177,10 @@ if($one == 'this-program'){
     $type = Specific::Filter($_POST['type']);
     $id = Specific::Filter($_POST['id']);
     $code = Specific::Filter($_POST['code']);
-    $subject_id = Specific::Filter($_POST['subject_id']);
+    $name = Specific::Filter($_POST['name']);
     $program_id = Specific::Filter($_POST['program_id']);
     $period_id = Specific::Filter($_POST['period_id']);
-    $teacher = Specific::Filter($_POST['teacher']);
+    $teachers = Specific::Filter($_POST['teacher']);
     $semester = Specific::Filter($_POST['semester']);
     $credit = Specific::Filter($_POST['credits']);
     $quota = Specific::Filter($_POST['quota']);
@@ -191,8 +190,8 @@ if($one == 'this-program'){
     if(empty($code)){
         $emptys[] = 'code';
     }
-    if(empty($subject_id)){
-        $emptys[] = 'subject_id';
+    if(empty($name)){
+        $emptys[] = 'name';
     }
     if(empty($program_id)){
         $emptys[] = 'program_id';
@@ -200,8 +199,8 @@ if($one == 'this-program'){
     if(empty($period_id)){
         $emptys[] = 'period_id';
     }
-    if(empty($teacher)){
-        $emptys[] = 'teacher';
+    if(empty($teachers)){
+        $emptys[] = 'teachers';
     }
     if(empty($semester)){
         $emptys[] = 'semester';
@@ -220,9 +219,6 @@ if($one == 'this-program'){
     }
 
     if(empty($emptys)){
-        if(!in_array($subject_id, array_values($subjects))){
-            $errors[] = 'subject_id';
-        }
         if(!in_array($program_id, array_values($programs))){
             $errors[] = 'program_id';
         }
@@ -242,13 +238,38 @@ if($one == 'this-program'){
             $errors[] = 'schedule';
         }
         if (empty($errors)) {
+            $teachers = explode(',', $teachers);
             if($type == 'add'){
-                if($dba->query('INSERT INTO courses (code, subject_id, program_id, period_id, teacher, semester, credits, quota, type, schedule, `time`) VALUES ("'.$code.'", '.$subject_id.', '.$program_id.','.$period_id.',"'.$teacher.'",'.$semester.','.$credit.','.$quota.',"'.$typec.'","'.$schedule.'",'.time().')')->returnStatus()){
-                    $deliver['status'] = 200;
+                $course_id = $dba->query('INSERT INTO courses (code, name, program_id, period_id, semester, credits, quota, type, schedule, `time`) VALUES ("'.$code.'", '.$name.', '.$program_id.','.$period_id.','.$semester.','.$credit.','.$quota.',"'.$typec.'","'.$schedule.'",'.time().')')->insertId();
+                if(isset($course_id)){
+                    foreach ($teachers as $teacher_id) {
+                        if($teacher_id == end($teachers) && $dba->query('INSERT INTO teacher (user_id, course_id, `time`) VALUES ('.$teacher_id.','.$course_id.','.time().')')->returnStatus()){
+                             $deliver['status'] = 200;
+                        }
+                    }
                 }
             } else if(isset($id) && is_numeric($id)){
-                if($dba->query('UPDATE courses SET code = ?, subject_id = ?, program_id = ?, period_id = ?, teacher= ?, semester = ?, credits = ?, quota = ?, type = ?, schedule = ? WHERE id = '.$id, $code, $subject_id, $program_id, $period_id, $teacher, $semester, $credit, $quota, $typec, $schedule)->returnStatus()){
-                    $deliver['status'] = 200;
+                if($dba->query('UPDATE courses SET code = ?, name = ?, program_id = ?, period_id = ?, semester = ?, credits = ?, quota = ?, type = ?, schedule = ? WHERE id = '.$id, $code, $name, $program_id, $period_id, $semester, $credit, $quota, $typec, $schedule)->returnStatus()){
+                    $teachers_all = $dba->query('SELECT user_id FROM teacher WHERE course_id = '.$id)->fetchAll(false);
+                    $deleted = array_diff($teachers_all, $teachers);
+                    $addf = array_diff($teachers, $teachers_all);
+                    $adds = explode(',', implode(',', $addf));
+                    if(count($addf) > 0 || count($deleted) > 0){
+                        if(count($addf) > 0){
+                            for ($i=0; $i < count($adds); $i++) {
+                                if($dba->query('INSERT INTO teacher (user_id, course_id, `time`) VALUES ('.$adds[$i].','.$id.','.time().')')->returnStatus()){
+                                    $deliver['status'] = 200;
+                                }
+                            }
+                        }
+                        if(count($deleted) > 0){
+                            if($dba->query('DELETE FROM teacher WHERE user_id IN ('.implode(',', $deleted).')')->returnStatus()){    
+                                $deliver['status'] = 200;
+                            }
+                        }
+                    } else {
+                        $deliver['status'] = 200;
+                    }
                 }
             }
         } else {
@@ -266,9 +287,12 @@ if($one == 'this-program'){
 } else if($one == 'get-citems'){
     $id = Specific::Filter($_POST['id']);
     if(isset($id) && is_numeric($id)){
-        $items = $dba->query('SELECT name, program_id, period_id, code, teacher, semester, credits, quota, type, schedule FROM courses WHERE id = '.$id)->fetchArray();
-        $teachers = $dba->query('SELECT names FROM users WHERE id IN ('.$items['teacher'].')')->fetchAll(false);
-        $items['teachers'] = implode(',', $teachers);
+        $items = $dba->query('SELECT name, program_id, period_id, code, semester, credits, quota, type, schedule FROM courses WHERE id = '.$id)->fetchArray();
+        $teachers = $dba->query('SELECT * FROM teacher WHERE course_id = '.$id)->fetchAll();
+        foreach ($teachers as $teacher) {
+            $names = $dba->query('SELECT names FROM users WHERE id = '.$teacher['user_id'])->fetchArray();
+            $items['teachers'][] = array('id' => $teacher['user_id'], 'name' => $names);   
+        }
         if (!empty($items)) {
             $deliver = array(
                 'status' => 200,
@@ -292,7 +316,6 @@ if($one == 'this-program'){
         $query .= " WHERE names LIKE '%$keyword%' OR surnames LIKE '%$keyword%' OR dni LIKE '%$keyword%'";
     }
     $users = $dba->query('SELECT * FROM users'.$query.' LIMIT 5')->fetchAll();
-    $deliver['XD'] = $users;
     if (!empty($users)) {
         foreach ($users as $user) {
             $html .= "<button class='tipsit-search display-flex btn-noway border-bottom border-grey padding-10 background-hover' data-id='".$user['id']."' data-name='".$user['names'].' '.$user['surnames']."'>".$user['names'].' '.$user['surnames']."</button>";
@@ -304,19 +327,6 @@ if($one == 'this-program'){
     }
     $deliver['html'] = $html;
 } else if($one == 'this-faculty'){
-
-
-
-
-
-
-
-
-
-
-
-
-
     $deliver['status'] = 400;
     $statusa = array('activated', 'deactivated');
     $id = Specific::Filter($_POST['id']);

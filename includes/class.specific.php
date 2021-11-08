@@ -160,7 +160,10 @@ class Specific {
 	    $user['municipalities']  = $TEMP['#municipalities'][$user['municipality']];
 
 
-	    $user['program'] = $dba->query('SELECT max(id) FROM enrolled e WHERE user_id = '.$user['id'].' AND (SELECT id FROM programs WHERE id = e.program_id) = id LIMIT 1')->fetchArray();
+	    $user['program'] = $dba->query('SELECT max(program_id) FROM enrolled e WHERE user_id = '.$user['id'].' AND type = "program" AND (SELECT id FROM programs WHERE id = e.program_id) = program_id')->fetchArray();
+
+	    $user['last_cenrolled'] = $dba->query('SELECT period_id FROM courses c WHERE (SELECT course_id FROM enrolled WHERE type = "course" AND user_id = '.$user['id'].' AND course_id = c.id) = id ORDER BY id DESC LIMIT 1')->fetchArray();
+
 
 	    $gender = $TEMP['#word']['male'];
 	    if($user['gender'] == 2){
