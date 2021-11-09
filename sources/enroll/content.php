@@ -7,6 +7,9 @@ if ($TEMP['#loggedin'] === false) {
 $TEMP['#user_id'] = $TEMP['#user']['id'];
 if(isset($_GET['user']) && Specific::Academic() == true){
 	$TEMP['#user_id'] = Specific::Filter($_GET['user']);
+	if(Specific::Academic() == true){
+		$TEMP['user'] = Specific::Data($TEMP['#user_id'])['full_name'];
+	}
 }
 
 $type = Specific::Filter($_GET['program']);
@@ -27,6 +30,8 @@ if(isset($_GET['type'])){
 	$params .= (!empty($params) ? "&" : "?")."program=$type";
 }
 
+
+$TEMP['#url_params'] = str_replace('?', '&', "&one=enroll$params");
 $TEMP['#load_url'] = Specific::Url("enroll$params");
 
 $TEMP['#enrolled'] = $dba->query('SELECT * FROM enrolled WHERE user_id = '.$TEMP['#user_id'].$sqls)->fetchAll();
@@ -48,7 +53,6 @@ if(!empty($TEMP['#enrolled'])){
 			$TEMP['!name'] = $program['name'];
 			$TEMP['!color'] = 'green';
 		}
-
 		if($enroll['status'] == 'registered'){
 			$TEMP['!id'] = $enroll['id'];
 			$TEMP['!text'] = $TEMP['#word']['cancel'];
@@ -59,6 +63,14 @@ if(!empty($TEMP['#enrolled'])){
 				$TEMP['!id'] = $enroll['program_id'];
 			}
 			$TEMP['!text'] = $TEMP['#word']['enroll'];
+		}
+		$TEMP['!class_event'] = $enroll['type'] == 'course' ? 'show_rcmodal"' : 'show_rpmodal"';
+		if($enroll['status'] == 'cancelled'){
+			if(Specific::Academic() == false){
+				$TEMP['!class_event'] = 'cursor-disabled" disabled';
+			}
+		} else {
+			$TEMP['!class_event'] = 'show_cmodal"';
 		}
 		$TEMP['!status'] = $enroll['status'];
 	    $TEMP['!type'] = "{$TEMP['#word'][$enroll['type']]} ({$TEMP['#word'][$enroll['status']]})";

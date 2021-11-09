@@ -1,6 +1,17 @@
 <div class="display-flex">
 	<div class="content-notes margin-auto">
 		<div class="margin-t10 margin-t50 padding-b50">
+			<?php if($TEMP['#academic'] == true) { ?>
+			<div class="background-white border-radius-12 padding-25 margin-b10">
+				<label class="color-black">{$word->search}</label>
+				<div class="content-search-notes position-relative margin-b10">
+					<div class="display-flex margin-auto border-radius-4">
+				        <input class="background-grely padding-10 border-focus-blue border-all border-grey border-top-left-radius border-top-right-radius w-100 color-black" type="text" id="search-users" name="keyword" autocomplete="off" value="{#keyword_notes}"> 
+				    </div>
+			        <div class="search-down w-100 z-index-first position-absolute background-white"></div>
+			    </div>
+			</div>
+			<?php } ?>
 			<div class="text-center background-white border-radius-12 padding-25 margin-b10">
 				<div class="max-w-900 border-top-left-radius border-top-right-radius">
 					<div class="font-medium color-black">{$word->current_license_plates}</div>
@@ -28,6 +39,9 @@
 			    </div>
 			</div>
 	   	    <div class="background-white border-radius-12 padding-25">
+	   	   		<?php if($TEMP['#academic'] == true && !empty($TEMP['#enrolled'])) { ?>
+	   	    	<div class="font-medium text-center margin-t15 margin-b15">Matriculas de <span class="color-black font-bold">{$user}</span></div>
+	   	    	<?php } ?>
 			    <div class="max-w-900 border-top-left-radius border-top-right-radius" id="container-enrolled">
 			    	{$enrolled}
 			    </div>
@@ -38,7 +52,7 @@
 </div>
 <div class="cont-alert" id="alert-enrollp">
    <h2 class="color-red">{$word->enroll} {$word->program}</h2>
-   <p>¿Esta seguro de que desea matricular este programa?</p>
+   <p>¿Esta seguro de que desea realizar esta matricula?</p>
    <div class="padding-t25">
       <button class="btn-noway background-grely border-radius-4 padding-10 color-black hover-button font-uppercase" id="cancel-epalert">{$word->cancel}</button>
       <button class="btn-noway background-red border-radius-4 padding-10 color-black hover-opacity font-uppercase" id="register-epnroll">
@@ -51,8 +65,12 @@
 </div>
 <div class="background-pointer"></div>
 <div class="cont-alert" id="alert-enrollc">
-   <h2 class="no-margin padding-b10 color-red">Introduce el codigo del curso</h2>
+   <h2 class="<?php echo($TEMP['#academic'] == false) ? 'no-margin ' : ''?>padding-b10 color-red">Introduce el codigo del curso</h2>
+   <?php if($TEMP['#academic'] == false) { ?>
    <input id="course-code" class="cont-input number h-50 border-radius-12 animated-easy border-focus-blue background-grely color-black" />
+   <?php } else { ?>
+   <p>¿Esta seguro de que desea realizar esta matricula?</p>
+   <?php } ?>
    <div class="padding-t25">
       <button class="btn-noway background-grely border-radius-4 padding-10 color-black hover-button font-uppercase" id="cancel-ecalert">{$word->cancel}</button>
       <button class="btn-noway background-red border-radius-4 padding-10 color-black hover-opacity font-uppercase" id="register-ecnroll">
@@ -96,7 +114,8 @@ var GA = D.querySelectorAll('.show_cmodal'),
     },
     GM = function(){
         GN.style.display = "block", D.body.style.overflow = "hidden", GL.setAttribute('data-id', this.getAttribute('data-id'));
-    };
+    },
+	keyword = "{#keyword_notes}";
 
 
 addEvent(D.querySelector('#close-ealert'), 'click', function(){
@@ -120,32 +139,55 @@ addEvent(D.querySelector('#close-ealert'), 'click', function(){
     self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
 	Req('{$url->{req/rol-student/cancel-enroll}}', function(e){
         if(e.status == 200){
-	        loadAlert("{$word->registration_canceled_successfully}", 1), preloadPage('&one=enroll');
+	        loadAlert("{$word->registration_canceled_successfully}", 1), preloadPage("{#url_params}");
 	    } else {
 	        self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
         }
 	}, "POST", "&id=" + self.getAttribute('data-id'));
-}), addEvent(GI, "click", function(){
+})<?php if($TEMP['!status'] != 'cancelled' || $TEMP['#academic'] == true){ ?>, addEvent(GI, "click", function(){
     var self = this; 
     self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
 	Req('{$url->{req/rol-student/register-ecnroll}}', function(e){
+		console.log(e);
         if(e.status == 200){
-	        loadAlert("{$word->you_have_successfully_enrolled}"), preloadPage('&one=enroll');
+	        loadAlert("{$word->you_have_successfully_enrolled}"), preloadPage("{#url_params}");
 	    } else {
-	        loadAlert("{$word->wrong_code}", 1), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
+	        loadAlert(e.error, 1), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
         }
-	}, "POST", "&id=" + self.getAttribute('data-id') + "&user_id={#user_id}&code="+D.querySelector('#course-code').value);
+	}, "POST", "&id=" + self.getAttribute('data-id') + "&user_id={#user_id}<?php echo($TEMP['#academic'] == false) ? '&code="+D.querySelector("#course-code").value' : '"'?>);
 }), addEvent(GL, "click", function(){
     var self = this; 
     self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
 	Req('{$url->{req/rol-student/register-epnroll}}', function(e){
+		console.log(e);
         if(e.status == 200){
-	        loadAlert("{$word->you_have_successfully_enrolled}"), preloadPage('&one=enroll');
+	        loadAlert("{$word->you_have_successfully_enrolled}"), preloadPage("{#url_params}");
 	    } else {
 	        loadAlert("{$word->wrong_code}", 1), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
         }
 	}, "POST", "&id=" + self.getAttribute('data-id') + "&user_id={#user_id}");
-});
+})<?php } if($TEMP['#academic'] == true) { ?>, addEvent(D.querySelector('#search-users'), "keyup", function(e){
+	let SV = this.value,
+		SD = D.querySelector('.search-down');
+	if (SV == '') {
+		addClass(SD, 'hidden');
+		SD.innerHTML = "";
+		return false;
+	} else if(e.which != 13 || e.keyCode != 13){
+		removeClass(SD, 'hidden');
+	}
+	keyword = SV;
+	Req('{$url->{req/rol-teacher/search-users}}', function(e) {
+		console.log(e);
+	    if (e.status == 200) {
+	   		SD.innerHTML = e.html, loadPage(SD.querySelectorAll('a[target="_self"]'));
+	    } else {
+		    addClass(SD, 'hidden');
+		   	SD.innerHTML = "";
+		   	return false;
+	    }
+	}, "POST", "&type=enroll&keyword=" + SV);
+})<?php } ?>;
 for(var j = 0, i = GB.length; j < i; j++) addEvent(GB[j], "click", GC);
 for(var j = 0, i = GA.length; j < i; j++) addEvent(GA[j], "click", GH);
 for(var j = 0, i = GK.length; j < i; j++) addEvent(GK[j], "click", GM);

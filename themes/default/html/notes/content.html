@@ -1,19 +1,14 @@
 <div class="display-flex">
 	<div class="content-notes margin-auto">
 		<div class="margin-t10 margin-t50 padding-b50">
-			<?php if($TEMP['#academic'] == true) { ?>
+			<?php if($TEMP['#academic'] == true || $TEMP['#teacher'] == true) { ?>
 			<div class="background-white border-radius-12 padding-25 margin-b10">
 				<label class="color-black">{$word->search}</label>
 				<div class="content-search-notes position-relative margin-b10">
 					<div class="display-flex margin-auto border-radius-4">
-				        <input class="background-grely padding-10 border-focus-blue border-all border-grey border-top-left-radius w-100 color-black" type="text" id="search-notes" name="keyword" autocomplete="off" value="{#keyword_notes}"> 
-			            <button class="border-left-none background-grely display-flex border-all border-grey border-top-right-radius border-bottom-right-radius padding-5 w-10" id="submit-search">
-						    <svg class="dv-icon margin-auto hover-button" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-							  	<path fill="currentColor" d="M 15.077 10.769 C 15.077 9.583 14.655 8.569 13.812 7.726 C 12.97 6.883 11.956 6.461 10.769 6.461 C 9.583 6.461 8.569 6.883 7.726 7.726 C 6.883 8.569 6.461 9.583 6.461 10.769 C 6.461 11.956 6.883 12.97 7.726 13.812 C 8.569 14.655 9.583 15.077 10.769 15.077 C 11.956 15.077 12.97 14.655 13.812 13.812 C 14.655 12.97 15.077 11.956 15.077 10.769 Z M 20 18.769 C 20 19.102 19.878 19.391 19.635 19.635 C 19.391 19.878 19.102 20 18.769 20 C 18.423 20 18.134 19.878 17.904 19.635 L 14.605 16.346 C 13.459 17.141 12.18 17.539 10.769 17.539 C 9.852 17.539 8.976 17.361 8.14 17.004 C 7.303 16.649 6.581 16.168 5.976 15.563 C 5.37 14.956 4.89 14.236 4.533 13.399 C 4.178 12.563 4 11.686 4 10.769 C 4 9.852 4.178 8.976 4.533 8.14 C 4.89 7.303 5.37 6.581 5.976 5.976 C 6.581 5.37 7.303 4.89 8.14 4.533 C 8.976 4.178 9.852 4 10.769 4 C 11.686 4 12.563 4.178 13.399 4.533 C 14.236 4.89 14.956 5.37 15.563 5.976 C 16.168 6.581 16.649 7.303 17.004 8.14 C 17.361 8.976 17.539 9.852 17.539 10.769 C 17.539 12.18 17.141 13.459 16.346 14.605 L 19.644 17.904 C 19.882 18.141 20 18.429 20 18.769 Z"/>
-							</svg>
-						</button>
+				        <input class="background-grely padding-10 border-focus-blue border-all border-grey border-top-left-radius border-top-right-radius w-100 color-black" type="text" id="search-users" name="keyword" autocomplete="off" value="{#keyword_notes}"> 
 				    </div>
-			        <div class="search-down position-absolute background-white"></div>
+			        <div class="search-down w-100 z-index-first position-absolute background-white"></div>
 			    </div>
 			</div>
 			<?php } ?>
@@ -38,12 +33,14 @@
 			    </div>
 			</div>
 			<?php } ?>
+			<?php if($TEMP['#teacher'] == false){ ?>
 			<div class="text-center background-white border-radius-12 padding-25 margin-b10">
 				<div class="max-w-900 border-top-left-radius border-top-right-radius">
 					<div class="font-medium color-black">{$word->global_average}</div>
 					<div class="font-supraly font-bold">{$average}</div>
 				</div>
 			</div>
+			<?php } ?>
 			<?php if(count($TEMP['#periods']) > 1){ ?>
 			<div class="text-center background-white border-radius-12 padding-25 margin-b10">
 				<div class="max-w-900 border-top-left-radius border-top-right-radius">
@@ -74,33 +71,70 @@
 		<div class="clear"></div>
 	</div>
 </div>
+<div class="content-modal" id="alert-programs">
+    <div class="cont-dialog">
+        <div class="cont-popup background-white">
+            <div class="top-header">
+                <div class="padding-t15 padding-b15 w-100 font-lowly color-black">
+                    {$word->add_new_program}
+                </div>
+            </div>
+            <div class="content-modal-body color-grey">
+                <div class="group-validate display-block margin-t15 position-relative w-100 padding-25">
+                    <div class="display-flex flex-wrap">
+                        <div class="cont-label dv-vertical-center">
+                            <label class="color-black">{$word->snies_code}</label>
+                        </div>
+                        <div class="flex-grow">
+                            <input id="snies" type="number" class="cont-input number h-50 border-radius-12 animated-easy border-focus-blue area_validate background-grely color-black" value="{$data->dni}" />
+                            <div class="color-red text-left text-error font-low margin-t5"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="display-flex">
+                <div class="margin-left-auto margin-r25 margin-b15">
+                    <button class="btn-noway background-grely border-radius-4 padding-10 color-black hover-button font-uppercase" id="cancel-alert">{$word->cancel}</button>
+                    <button class="btn-noway background-blue border-radius-4 padding-10 color-black hover-opacity font-uppercase" data-type="add" id="this-program">
+                        <span class="color-white">{$word->save}</span>
+                        <div class="content-spinner-circle">
+                            <div class="spinner-circle"></div>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="background-pointer"></div>
 <script type="text/javascript">
-var count = 0,
-	timeSearch = 0,
+var NF = D.querySelectorAll('.upload_note_first'),
+	NS = D.querySelectorAll('.upload_note_second'),
+	NT = D.querySelectorAll('.upload_note_third'),
+	NA = function(){
+		GJ.style.display = "block", D.body.style.overflow = "hidden", GI.setAttribute('data-id', this.getAttribute('data-id'));
+	},
+    NB = function(){
+        GE.style.display = "block", D.body.style.overflow = "hidden", GG.setAttribute('data-id', this.getAttribute('data-id'));
+    },
+    NC = function(){
+        GN.style.display = "block", D.body.style.overflow = "hidden", GL.setAttribute('data-id', this.getAttribute('data-id'));
+    },
 	keyword = "{#keyword_notes}";
 <?php if(count($TEMP['#programs']) > 1){ ?>
 addEvent(D.querySelector('#programs'), 'change', function(){
-    preloadPage('&one=notes<?php echo($TEMP['#academic'] == true) ? "&user={#user_id}" : "" ;?>&program='+this.value);
+    preloadPage('&one=notes<?php echo($TEMP['#academic'] == true || $TEMP['#teacher'] == true) ? "&user={#user_id}" : "" ;?>&program='+this.value);
 }), <?php } if(count($TEMP['#periods']) > 1){ ?>addEvent(D.querySelector('#periods'), 'change', function(){
-    preloadPage('&one=notes<?php echo($TEMP['#academic'] == true) ? "&user={#user_id}" : "" ;?>&program={#program_id}&period='+this.value);
+    preloadPage('&one=notes<?php echo($TEMP['#academic'] == true || $TEMP['#teacher'] == true) ? "&user={#user_id}" : "" ;?>&program={#program_id}&period='+this.value);
 })
-<?php } if($TEMP['#academic'] == true) { ?>
-addEvent(D, "keydown", function(e){
-	var P = e.which || e.keyCode;
-	if(P == 40){
-		var allK = D.querySelector('.search-down').querySelectorAll('a');
-		D.body.style.overflow = "hidden", clearTimeout(timeSearch), (count == allK.length) ? (D.querySelector('#search-bar').focus(), D.querySelector('#search-bar').value = keyword, count = 0) : (allK.length > 0) && (allK[count].focus(), D.querySelector('#search-bar').value = allK[count].innerText), timeSearch = setTimeout(function(){
-			D.body.style.overflow = ""
-		}, 300);
-		count++;
-	} else if(P == 38){
-		var allK = Array.prototype.slice.call(D.querySelector('.search-down').querySelectorAll('a'));
-		D.body.style.overflow = "hidden", clearTimeout(timeSearch), allK.unshift(D.querySelector('#search-bar')), (count == 0) && (count = allK.length), (count > 1 && allK[count-1]) ? (allK[count-1].focus(), D.querySelector('#search-bar').value = allK[count-1].innerText) : (D.querySelector('#search-bar').focus(), D.querySelector('#search-bar').value = keyword), timeSearch = setTimeout(function(){
-			D.body.style.overflow = ""
-		}, 300);
-		count--;	
-	}
-}), addEvent(D.querySelector('#search-notes'), "keyup", function(e){
+<?php } ?>
+
+<?php if($TEMP['#academic'] == true){ ?>
+for(var j = 0, i = NF.length; j < i; j++) addEvent(NF[j], "click", NA);
+for(var j = 0, i = NS.length; j < i; j++) addEvent(NS[j], "click", NB);
+for(var j = 0, i = NT.length; j < i; j++) addEvent(NT[j], "click", NC);	
+<?php if($TEMP['#teacher'] == true) { ?>
+addEvent(D.querySelector('#search-users'), "keyup", function(e){
 	let SV = this.value,
 		SD = D.querySelector('.search-down');
 	if (SV == '') {
@@ -111,15 +145,17 @@ addEvent(D, "keydown", function(e){
 		removeClass(SD, 'hidden');
 	}
 	keyword = SV;
-	Req('{$url->{req/search/notes}}', function(e) {
+	Req('{$url->{req/rol-teacher/search-users}}', function(e) {
+		console.log(e);
 	    if (e.status == 200) {
-	   		SD.innerHTML = e.html, count = 0, loadPage(SD.querySelectorAll('a[target="_self"]'));
+	   		SD.innerHTML = e.html, loadPage(SD.querySelectorAll('a[target="_self"]'));
 	    } else {
 		    addClass(SD, 'hidden');
-		   	SD.innerHTML = "", count = 0;
+		   	SD.innerHTML = "";
 		   	return false;
 	    }
-	}, "POST", "&keyword=" + SV);
+	}, "POST", "&type=notes&keyword=" + SV);
 })
+<?php } ?>
 <?php } ?>
 </script>

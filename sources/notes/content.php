@@ -5,7 +5,7 @@ if ($TEMP['#loggedin'] === false) {
 }
 
 $TEMP['#user_id'] = $TEMP['#user']['id'];
-if(isset($_GET['user']) && Specific::Academic() == true){
+if(isset($_GET['user']) && (Specific::Academic() == true || Specific::Teacher() == true)){
 	$TEMP['#user_id'] = Specific::Filter($_GET['user']);
 }
 
@@ -19,14 +19,18 @@ $params = "";
 $sqls = '';
 $TEMP['average'] = '- -';
 
-if(Specific::Academic() == false){
-	if(!isset($_GET['program'])){
-		$sqls .= ' AND program_id = '.$TEMP['#program_id'];
-	}
-	if(!isset($_GET['period'])){
-		$sqls .= ' AND period_id = '.$TEMP['#period_id'];
-	}
-} else {
+
+if(Specific::Teacher() == true){
+    $my_courses = $dba->query('SELECT course_id FROM teacher WHERE user_id = '.$TEMP['#user']['id'])->fetchAll(false);
+}
+
+$TEMP['#programs'] = $dba->query('SELECT * FROM programs p WHERE (SELECT program_id FROM enrolled WHERE user_id = '.$TEMP['#user_id'].' AND program_id = p.id) = id')->fetchAll();
+$periods = $dba->query('SELECT period_id FROM courses c WHERE (SELECT course_id FROM enrolled WHERE user_id = '.$TEMP['#user_id'].' AND course_id = c.id) = id')->fetchAll(false);
+if(!empty($periods)){
+	$TEMP['#periods'] = $dba->query('SELECT * FROM periods WHERE id IN ('.implode(',', $periods).')')->fetchAll();
+}
+
+if(Specific::Academic() == true || Specific::Teacher() == true){
 	if(isset($_GET['keyword'])){
 		$params .= "?keyword=".$TEMP['#keyword_notes'];
 	}
@@ -35,16 +39,26 @@ if(Specific::Academic() == false){
 	}
 }
 
-if(isset($_GET['program'])){
+if(Specific::Teacher() == true){
+    $sqls .= ' AND course_id IN ('.implode(',', $my_courses).')';
+    if(empty($_GET['period'])){
+    	$TEMP['#period_id'] = $dba->query('SELECT max(period_id) FROM notes WHERE user_id = '.$TEMP['#user_id'].' AND course_id = '.end($my_courses))->fetchArray();
+    }
+}
+
+if(!empty($TEMP['#program_id'])){
 	$sqls .= ' AND program_id = '.$TEMP['#program_id'];
 	$params .= (!empty($params) ? "&" : "?")."program={$TEMP['#program_id']}";
 }
-if(isset($_GET['period'])){
+if(!empty($TEMP['#period_id'])){
 	$sqls .= ' AND period_id = '.$TEMP['#period_id'];
 	$params .= "&period={$TEMP['#period_id']}";
 }
 
+
+
 $TEMP['#load_url'] = Specific::Url("notes$params");
+
 $TEMP['#notes'] = $dba->query('SELECT * FROM notes WHERE user_id = '.$TEMP['#user_id'].$sqls)->fetchAll();
 
 if(!empty($TEMP['#notes'])){
@@ -66,6 +80,7 @@ if(!empty($TEMP['#notes'])){
 			$teachers = $teachers[0];
 		}
 
+		$TEMP['!id'] = $note['id'];
 	    $TEMP['!period'] = $period['name'];
 	    $TEMP['!course'] = $course['name'];
 
@@ -75,7 +90,7 @@ if(!empty($TEMP['#notes'])){
 	    $TEMP['!average'] = $average[] = round((($notes[0]*0.3)+($notes[1]*0.3)+($notes[2]*0.4)), 2);
 	    $TEMP['!teacher'] = $teachers;
 
-	    $TEMP['!approved'] = ($course['type'] == 'practice' && $TEMP['!average'] > 3.5) || ($course['type'] == 'theoretical' && $TEMP['!average'] > 3.0) ? true : false;
+	    $TEMP['!approved'] = ($course['type'] == 'practice' && $TEMP['!average'] >= 3.5) || ($course['type'] == 'theoretical' && $TEMP['!average'] >= 3.0) ? true : false;
 	    $TEMP['!status'] = ($period['status'] == 0) ? $TEMP['#word']['finalized'] : $TEMP['#word']['in_progress'];
 
 	    $TEMP['notes'] .= Specific::Maket("notes/includes/notes");
@@ -83,10 +98,6 @@ if(!empty($TEMP['#notes'])){
 	Specific::DestroyMaket();
 
 	$TEMP['average'] = round(array_sum($average)/count($average), 2);
-
-	$TEMP['#programs'] = $dba->query('SELECT * FROM programs p WHERE (SELECT program_id FROM enrolled WHERE user_id = '.$TEMP['#user_id'].' AND program_id = p.id) = id')->fetchAll();
-	$periods = $dba->query('SELECT period_id FROM courses c WHERE (SELECT course_id FROM enrolled WHERE user_id = '.$TEMP['#user_id'].' AND course_id = c.id) = id')->fetchAll(false);
-	$TEMP['#periods'] = $dba->query('SELECT * FROM periods WHERE id IN ('.implode(',', $periods).')')->fetchAll();
 } else {
 	$TEMP['notes'] .= Specific::Maket("not-found/notes");
 }

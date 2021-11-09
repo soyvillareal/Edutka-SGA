@@ -284,22 +284,6 @@ if($one == 'this-program'){
             'emptys' => $emptys
         );
     }
-} else if($one == 'get-citems'){
-    $id = Specific::Filter($_POST['id']);
-    if(isset($id) && is_numeric($id)){
-        $items = $dba->query('SELECT name, program_id, period_id, code, semester, credits, quota, type, schedule FROM courses WHERE id = '.$id)->fetchArray();
-        $teachers = $dba->query('SELECT * FROM teacher WHERE course_id = '.$id)->fetchAll();
-        foreach ($teachers as $teacher) {
-            $names = $dba->query('SELECT names FROM users WHERE id = '.$teacher['user_id'])->fetchArray();
-            $items['teachers'][] = array('id' => $teacher['user_id'], 'name' => $names);   
-        }
-        if (!empty($items)) {
-            $deliver = array(
-                'status' => 200,
-                'items' => $items
-            );
-        }
-    }
 } else if($one == 'delete-course'){
     $deliver['status'] = 400;
     $id = Specific::Filter($_POST['id']);

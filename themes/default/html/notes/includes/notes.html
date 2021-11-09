@@ -22,7 +22,11 @@
                   {$word->first}
                </div>
                <div class="cont-cell-header padding-lr20 color-black">
+                  <?php if($TEMP[!first] == 0.0){ ?>
+                  <button class="upload_note_first btn-noway color-blue underline-hover" data-id="{!id}">Subir nota</button>
+                  <?php } else { ?>
                   {!first}
+                  <?php } ?>
                </div>
                <div class="cont-cell-header padding-lr20 color-black">
                   30%
@@ -33,7 +37,11 @@
                   {$word->second}
                </div>
                <div class="cont-cell-header padding-lr20 color-black">
+                  <?php if($TEMP[!first] == 0.0){ ?>
+                  <button class="upload_note_second btn-noway color-blue underline-hover" data-id="{!id}">Subir nota</button>
+                  <?php } else { ?>
                   {!second}
+                  <?php } ?>
                </div>
                <div class="cont-cell-header padding-lr20 color-black">
                   30%
@@ -44,7 +52,11 @@
                   {$word->third}
                </div>
                <div class="cont-cell-header padding-lr20 color-black">
+                  <?php if($TEMP[!first] == 0.0){ ?>
+                  <button class="upload_note_third btn-noway color-blue underline-hover" data-id="{!id}">Subir nota</button>
+                  <?php } else { ?>
                   {!third}
+                  <?php } ?>
                </div>
                <div class="cont-cell-header padding-lr20 color-black">
                   40%

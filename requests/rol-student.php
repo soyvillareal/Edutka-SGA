@@ -19,7 +19,8 @@ if($one == 'search-enrolled'){
         $query .= " WHERE name LIKE '%$keyword%'";
         if($type == 'courses'){
         	$enrolled_programs = $dba->query('SELECT program_id FROM enrolled WHERE user_id = '.$id.' AND type = "program"')->fetchAll(false);
-        	$query .= " AND program_id IN (".implode(',', $enrolled_programs).")";
+        	$enrolled_programs = !empty($enrolled_programs) ? implode(',', $enrolled_programs) : 0;
+        	$query .= " AND program_id IN (".$enrolled_programs.")";
         }
        	$searchs = $dba->query('SELECT * FROM '.$type.$query)->fetchAll();
 
@@ -36,13 +37,13 @@ if($one == 'search-enrolled'){
 					$TEMP['!color'] = 'green';
 					$search_id = 'program_id';
 				}
-
 				$TEMP['!id'] = $search['id'];
-				$TEMP['#enrolled'] = $dba->query('SELECT * FROM enrolled WHERE '.$search_id.' = '.$search['id'])->fetchArray();
+				$TEMP['#enrolled'] = $dba->query('SELECT * FROM enrolled WHERE user_id = '.$id.' AND '.$search_id.' = '.$search['id'])->fetchArray();
 				$TEMP['!text'] = $TEMP['#word']['enroll'];
 				$TEMP['!status'] = 'unregistered';
 				$TEMP['!type'] = $TEMP['#word'][$type];
 				$TEMP['!typet'] = $type;
+				$TEMP['!class_event'] = $type == 'course' ? 'show_rcmodal"' : 'show_rpmodal"';
 				if(!empty($TEMP['#enrolled'])){
 					if($TEMP['#enrolled']['status'] == 'registered'){
 						$TEMP['!id'] = $TEMP['#enrolled']['id'];
@@ -91,6 +92,14 @@ if($one == 'search-enrolled'){
 					}
 					$TEMP['!text'] = $TEMP['#word']['enroll'];
 				}
+				$TEMP['!class_event'] = $enroll['type'] == 'course' ? 'show_rcmodal"' : 'show_rpmodal"';
+				if($enroll['status'] == 'cancelled'){
+					if(Specific::Academic() == false){
+						$TEMP['!class_event'] = 'cursor-disabled" disabled';
+					}
+				} else {
+					$TEMP['!class_event'] = 'show_cmodal"';
+				}
 				$TEMP['!status'] = $enroll['status'];
 			    $TEMP['!type'] = "{$TEMP['#word'][$enroll['type']]} ({$TEMP['#word'][$enroll['status']]})";
 			    $TEMP['!typet'] = $enroll['type'];
@@ -116,26 +125,60 @@ if($one == 'search-enrolled'){
     $id = Specific::Filter($_POST['id']);
     $user_id = Specific::Filter($_POST['user_id']);
     $code = Specific::Filter($_POST['code']);
-    if (isset($id) && is_numeric($id) && !empty($code)) {
-    	$courses = $dba->query('SELECT * FROM courses WHERE id = "'.$id.'"')->fetchArray();
-        if($courses['code'] === $code){
-        	if($dba->query('INSERT INTO enrolled (user_id, course_id, program_id, type, status, `time`) VALUES ('.$user_id.', '.$id.', 0, "course", "registered",'.time().')')->returnStatus()){
-        		$deliver['status'] = 200;
-        	}
-        } else {
-        	$deliver['status'] = 400;
-        }
+
+    if (isset($id) && is_numeric($id)) {
+    	$enrolled_courses = $dba->query('SELECT COUNT(*) FROM enrolled WHERE user_id = '.$user_id.' AND course_id = '.$id)->fetchArray();
+    	if($enrolled_courses == 0){
+	    	if(Specific::Academic() == true || !empty($code)){
+	    		$courses = $dba->query('SELECT * FROM courses WHERE id = "'.$id.'"')->fetchArray();
+		        if(Specific::Academic() == true || $courses['code'] === $code){
+		        	if($dba->query('INSERT INTO enrolled (user_id, course_id, program_id, type, status, `time`) VALUES ('.$user_id.', '.$id.', 0, "course", "registered",'.time().')')->returnStatus()){
+		        		$deliver['status'] = 200;
+		        	}
+		        } else {
+		        	$deliver = array(
+		        		'status' => 400,
+		        		'error' => $TEMP['#word']['wrong_code']
+		        	);
+		        }
+	    	} else {
+	    		$deliver = array(
+		       		'status' => 400,
+		       		'error' => $TEMP['#word']['please_enter__code_this_course']
+		       	);
+	    	}
+	    } else {
+	    	$enrolled_courses = $dba->query('SELECT * FROM enrolled WHERE user_id = '.$user_id.' AND course_id = '.$id)->fetchArray();
+	    	if(!empty($enrolled_courses) && $enrolled_courses['status'] == 'cancelled'){
+	    		if($dba->query('UPDATE enrolled SET status = "registered" WHERE id = '.$enrolled_courses['id'])->returnStatus()){
+	    			$deliver['status'] = 200;
+	    		}
+	    	} else {
+		   		$deliver = array(
+		       		'status' => 400,
+		       		'error' => $TEMP['#word']['error']
+			    );
+	    	}
+	    }
+    } else {
+   		$deliver = array(
+       		'status' => 400,
+       		'error' => $TEMP['#word']['error']
+        );
     }
 } else if($one == 'register-epnroll'){
 	$deliver['status'] = 400;
     $id = Specific::Filter($_POST['id']);
     $user_id = Specific::Filter($_POST['user_id']);
     if (isset($id) && is_numeric($id)) {
-        if($dba->query('INSERT INTO enrolled (user_id, course_id, program_id, type, status, `time`) VALUES ('.$user_id.', 0, '.$id.', "program", "registered",'.time().')')->returnStatus()){
-        	$deliver['status'] = 200;
-        } else {
-        	$deliver['status'] = 400;
-        }
+    	$enrolled_programs = $dba->query('SELECT COUNT(*) FROM user_id = '.$user_id.' AND enrolled WHERE program_id = '.$id)->fetchArray();
+    	if(count($enrolled_programs) == 0){
+	        if($dba->query('INSERT INTO enrolled (user_id, course_id, program_id, type, status, `time`) VALUES ('.$user_id.', 0, '.$id.', "program", "registered",'.time().')')->returnStatus()){
+	        	$deliver['status'] = 200;
+	        } else {
+	        	$deliver['status'] = 400;
+	        }
+	    }
     }
 }
 ?>

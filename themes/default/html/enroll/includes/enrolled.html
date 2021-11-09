@@ -2,11 +2,11 @@
    <div class="background-{!color} position-absolute pos-top pos-left pos-right font-medium text-center">{!type}</div>
    <div class="dv-vertical-center margin-t15">
       <span class="font-medium color-black margin-r25">{!name}</span>
-      <button class="btn-noway background-red hover-opacity color-white padding-10 border-radius-12 margin-left-auto<?php echo($TEMP['!status'] == 'cancelled') ? ' cursor-disabled" disabled' : ($TEMP['!status'] == 'unregistered' ? ($TEMP['!typet'] == 'course' ? ' show_rcmodal"' : ' show_rpmodal"') : ' show_cmodal"');?> data-id="{!id}">{!text}</button>
+      <button class="{!status} btn-noway background-red hover-opacity color-white padding-10 border-radius-12 margin-left-auto {!class_event} data-id="{!id}">{!text}</button>
    </div>
    <?php if(!empty($TEMP['#enrolled'])){ ?>
    <div class="content-eperiod position-absolute background-blue padding-5 border-radius-4 font-medium text-center color-white">
-         {!time}
+      {!time}
    </div>
    <?php } ?>
 </div>

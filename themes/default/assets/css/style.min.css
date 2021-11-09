@@ -835,6 +835,14 @@ h5 {
     background-clip: padding-box;
     background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3e%3cg transform='matrix(0.068408, 0, 0, 0.079048, 2.000049, 0.444643)'%3e%3cpath d='M286.935,69.377c-3.614-3.617-7.898-5.424-12.848-5.424H18.274c-4.952,0-9.233,1.807-12.85,5.424 C1.807,72.998,0,77.279,0,82.228c0,4.948,1.807,9.229,5.424,12.847l127.907,127.907c3.621,3.617,7.902,5.428,12.85,5.428 s9.233-1.811,12.847-5.428L286.935,95.074c3.613-3.617,5.427-7.898,5.427-12.847C292.362,77.279,290.548,72.998,286.935,69.377z'/%3e%3c/g%3e%3c/svg%3e")
 }
+.percent-gadget::after {
+    content: '%';
+    position: absolute;
+    top: 20%;
+    right: 15%;
+    font-size: 20px;
+    color: #000;
+}
 .binput-inleft {
     position: absolute;
     top: 0;
@@ -936,7 +944,7 @@ h5 {
     margin-left: -100px;
 }
 .content-search-notes .search-down a:last-child, .tipsit-new .search-down button:last-child {
-    border-bottom: 0;
+    border-radius: 0 0 12px 12px;
 }
 .content-search-notes .search-down a, .tipsit-new .search-down button {
     display: flex;
@@ -944,9 +952,6 @@ h5 {
     padding: 4px 15px 4px 10px;
     outline: 0;
     z-index: 9999
-}
-.content-search-notes .search-down {
-    width: calc(100% - 35px);
 }
 .content-modal {
     display: none;
@@ -1008,6 +1013,10 @@ h5 {
     z-index: 9998;
     background: #000;
     opacity: .8;
+}
+.delete-parameter {
+    top: -80px;
+    right: 15px;
 }
 
 
@@ -1367,6 +1376,10 @@ h5 {
     padding-left: 10px
 }
 
+.padding-r10 {
+    padding-right: 10px
+}
+
 .padding-15 {
     padding: 15px
 }
@@ -1435,11 +1448,15 @@ h5 {
 }
 
 .mw-w-100 {
-    max-width: 100px
+    max-width: 100px !important
 }
 
 .h-8 {
     height: 8px
+}
+
+.w-50 {
+    width: 50px;
 }
 
 .h-50 {
