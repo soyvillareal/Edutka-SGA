@@ -42,31 +42,33 @@ if(Specific::Academic() == true || Specific::Teacher() == true){
 if(Specific::Teacher() == true){
     $sqls .= ' AND course_id IN ('.implode(',', $my_courses).')';
     if(empty($_GET['period'])){
-    	$TEMP['#period_id'] = $dba->query('SELECT max(period_id) FROM notes WHERE user_id = '.$TEMP['#user_id'].' AND course_id = '.end($my_courses))->fetchArray();
+    	$TEMP['#period_id'] = $dba->query('SELECT max(period_id) FROM courses WHERE (SELECT course_id FROM notes WHERE user_id = '.$TEMP['#user_id'].' AND course_id = '.end($my_courses).') = id')->fetchArray();
     }
 }
 
 if(!empty($TEMP['#program_id'])){
-	$sqls .= ' AND program_id = '.$TEMP['#program_id'];
+	$sqls .= ' AND (SELECT id FROM courses WHERE program_id = '.$TEMP['#program_id'].' AND id = n.course_id) = course_id';
 	$params .= (!empty($params) ? "&" : "?")."program={$TEMP['#program_id']}";
 }
 if(!empty($TEMP['#period_id'])){
-	$sqls .= ' AND period_id = '.$TEMP['#period_id'];
+	$sqls .= ' AND (SELECT id FROM courses WHERE period_id = '.$TEMP['#period_id'].' AND id = n.course_id) = course_id';
+
 	$params .= "&period={$TEMP['#period_id']}";
 }
 
-
-
+$TEMP['#url_params'] = str_replace('?', '&', "&one=notes$params");
 $TEMP['#load_url'] = Specific::Url("notes$params");
 
-$TEMP['#notes'] = $dba->query('SELECT * FROM notes WHERE user_id = '.$TEMP['#user_id'].$sqls)->fetchAll();
+$TEMP['#notes'] = $dba->query('SELECT * FROM notes'.(!empty($TEMP['#period_id']) ? ' n ' : ' ').'WHERE user_id = '.$TEMP['#user_id'].$sqls)->fetchAll();
 
 if(!empty($TEMP['#notes'])){
 	foreach ($TEMP['#notes'] as $note) {
 		$notes = json_decode($note['notes'], true);
 
-		$period = $dba->query('SELECT * FROM periods WHERE id = '.$note['period_id'])->fetchArray();
+
+		
 		$course = $dba->query('SELECT * FROM courses WHERE id = '.$note['course_id'])->fetchArray();
+		$period = $dba->query('SELECT * FROM periods WHERE id = '.$course['period_id'])->fetchArray();
 
 
 		$teachers = $dba->query('SELECT names FROM users u WHERE (SELECT user_id FROM teacher WHERE user_id = u.id AND course_id = '.$note['course_id'].') = id')->fetchAll(false);
@@ -83,6 +85,18 @@ if(!empty($TEMP['#notes'])){
 		$TEMP['!id'] = $note['id'];
 	    $TEMP['!period'] = $period['name'];
 	    $TEMP['!course'] = $course['name'];
+	    $TEMP['!parameters'] = $course['parameters'];
+
+
+	    for ($i=0; $i < 3; $i++) { 
+	    	$anotes = array();
+		    $rnotes = json_decode($notes[$i], true);
+	        $parameters = json_decode($course['parameters'], true)[$i];
+	        foreach ($parameters as $key => $param) {
+	        	$anotes[] = (($rnotes[$key]/100)*$param['percent']);
+	        }
+	        $notes[$i] = array_sum($anotes);
+	    }
 
 		$TEMP['!first'] = $notes[0];
 	    $TEMP['!second'] = $notes[1];

@@ -163,7 +163,7 @@ addEvent(D.querySelector('#close-ealert'), 'click', function(){
         if(e.status == 200){
 	        loadAlert("{$word->you_have_successfully_enrolled}"), preloadPage("{#url_params}");
 	    } else {
-	        loadAlert("{$word->wrong_code}", 1), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
+	        loadAlert("{$word->error}", 1), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
         }
 	}, "POST", "&id=" + self.getAttribute('data-id') + "&user_id={#user_id}");
 })<?php } if($TEMP['#academic'] == true) { ?>, addEvent(D.querySelector('#search-users'), "keyup", function(e){

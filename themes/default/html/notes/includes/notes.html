@@ -22,8 +22,12 @@
                   {$word->first}
                </div>
                <div class="cont-cell-header padding-lr20 color-black">
-                  <?php if($TEMP[!first] == 0.0){ ?>
-                  <button class="upload_note_first btn-noway color-blue underline-hover" data-id="{!id}">Subir nota</button>
+                  <?php if($TEMP['#teacher'] == true || $TEMP['#academic'] == true) { ?>
+                  <?php if($TEMP['!first'] == 0){ ?>
+                  <button class="upload_note btn-noway color-blue underline-hover<?php echo(empty($TEMP['!parameters'])) ? ' cursor-disabled" disabled' : '"';?> data-pos="0" data-id="{!id}">Subir nota</button>
+                  <?php } else { ?>
+                  <button class="upload_note btn-noway color-blue underline-hover" data-pos="0" data-id="{!id}">{!first}</button>
+                  <?php } ?>
                   <?php } else { ?>
                   {!first}
                   <?php } ?>
@@ -37,8 +41,12 @@
                   {$word->second}
                </div>
                <div class="cont-cell-header padding-lr20 color-black">
-                  <?php if($TEMP[!first] == 0.0){ ?>
-                  <button class="upload_note_second btn-noway color-blue underline-hover" data-id="{!id}">Subir nota</button>
+                  <?php if($TEMP['#teacher'] == true || $TEMP['#academic'] == true) { ?>
+                  <?php if($TEMP['!second'] == 0){ ?>
+                  <button class="upload_note btn-noway color-blue underline-hover<?php echo(empty($TEMP['!parameters'])) ? ' cursor-disabled" disabled' : '"';?> data-pos="1" data-id="{!id}">Subir nota</button>
+                  <?php } else { ?>
+                  <button class="upload_note btn-noway color-blue underline-hover" data-pos="1" data-id="{!id}">{!second}</button>
+                  <?php } ?>
                   <?php } else { ?>
                   {!second}
                   <?php } ?>
@@ -52,8 +60,12 @@
                   {$word->third}
                </div>
                <div class="cont-cell-header padding-lr20 color-black">
-                  <?php if($TEMP[!first] == 0.0){ ?>
-                  <button class="upload_note_third btn-noway color-blue underline-hover" data-id="{!id}">Subir nota</button>
+                  <?php if($TEMP['#teacher'] == true || $TEMP['#academic'] == true) { ?>
+                  <?php if($TEMP['!third'] == 0){ ?>
+                  <button class="upload_note btn-noway color-blue underline-hover<?php echo(empty($TEMP['!parameters'])) ? ' cursor-disabled" disabled' : '"';?> data-pos="2" data-id="{!id}">Subir nota</button>
+                  <?php } else { ?>
+                  <button class="upload_note btn-noway color-blue underline-hover" data-pos="2" data-id="{!id}">{!third}</button>
+                  <?php } ?>
                   <?php } else { ?>
                   {!third}
                   <?php } ?>

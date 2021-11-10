@@ -127,12 +127,12 @@ if($one == 'search-enrolled'){
     $code = Specific::Filter($_POST['code']);
 
     if (isset($id) && is_numeric($id)) {
-    	$enrolled_courses = $dba->query('SELECT COUNT(*) FROM enrolled WHERE user_id = '.$user_id.' AND course_id = '.$id)->fetchArray();
+    	$enrolled_courses = $dba->query('SELECT COUNT(*) FROM enrolled WHERE type = "program" AND user_id = '.$user_id.' AND course_id = '.$id)->fetchArray();
     	if($enrolled_courses == 0){
 	    	if(Specific::Academic() == true || !empty($code)){
 	    		$courses = $dba->query('SELECT * FROM courses WHERE id = "'.$id.'"')->fetchArray();
 		        if(Specific::Academic() == true || $courses['code'] === $code){
-		        	if($dba->query('INSERT INTO enrolled (user_id, course_id, program_id, type, status, `time`) VALUES ('.$user_id.', '.$id.', 0, "course", "registered",'.time().')')->returnStatus()){
+		        	if($dba->query('INSERT INTO enrolled (user_id, course_id, program_id, type, status, `time`) VALUES ('.$user_id.', '.$id.', 0, "course", "registered",'.time().')')->returnStatus() && $dba->query('INSERT INTO notes (user_id, period_id, course_id, program_id, notes, `time`) VALUES ('.$user_id.','.$courses['period_id'].','.$id.','.$courses['program_id'].', "'.json_encode(array(0.0, 0.0, 0.0)).'",'.time().')')->returnStatus()){
 		        		$deliver['status'] = 200;
 		        	}
 		        } else {
@@ -171,8 +171,8 @@ if($one == 'search-enrolled'){
     $id = Specific::Filter($_POST['id']);
     $user_id = Specific::Filter($_POST['user_id']);
     if (isset($id) && is_numeric($id)) {
-    	$enrolled_programs = $dba->query('SELECT COUNT(*) FROM user_id = '.$user_id.' AND enrolled WHERE program_id = '.$id)->fetchArray();
-    	if(count($enrolled_programs) == 0){
+    	$enrolled_programs = $dba->query('SELECT COUNT(*) FROM enrolled WHERE type = "course" AND user_id = '.$user_id.' AND program_id = '.$id)->fetchArray();
+    	if($enrolled_programs == 0){
 	        if($dba->query('INSERT INTO enrolled (user_id, course_id, program_id, type, status, `time`) VALUES ('.$user_id.', 0, '.$id.', "program", "registered",'.time().')')->returnStatus()){
 	        	$deliver['status'] = 200;
 	        } else {

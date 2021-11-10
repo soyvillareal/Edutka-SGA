@@ -71,31 +71,22 @@
 		<div class="clear"></div>
 	</div>
 </div>
-<div class="content-modal" id="alert-programs">
+<?php if($TEMP['#teacher'] == true || $TEMP['#academic'] == true){ ?>
+<div class="content-modal" id="alert-notes">
     <div class="cont-dialog">
         <div class="cont-popup background-white">
             <div class="top-header">
                 <div class="padding-t15 padding-b15 w-100 font-lowly color-black">
-                    {$word->add_new_program}
+                    {$word->notes}
                 </div>
             </div>
             <div class="content-modal-body color-grey">
-                <div class="group-validate display-block margin-t15 position-relative w-100 padding-25">
-                    <div class="display-flex flex-wrap">
-                        <div class="cont-label dv-vertical-center">
-                            <label class="color-black">{$word->snies_code}</label>
-                        </div>
-                        <div class="flex-grow">
-                            <input id="snies" type="number" class="cont-input number h-50 border-radius-12 animated-easy border-focus-blue area_validate background-grely color-black" value="{$data->dni}" />
-                            <div class="color-red text-left text-error font-low margin-t5"></div>
-                        </div>
-                    </div>
-                </div>
+                <div id="container-parameters"></div>
             </div>
             <div class="display-flex">
                 <div class="margin-left-auto margin-r25 margin-b15">
                     <button class="btn-noway background-grely border-radius-4 padding-10 color-black hover-button font-uppercase" id="cancel-alert">{$word->cancel}</button>
-                    <button class="btn-noway background-blue border-radius-4 padding-10 color-black hover-opacity font-uppercase" data-type="add" id="this-program">
+                    <button class="btn-noway background-blue border-radius-4 padding-10 color-black hover-opacity font-uppercase" id="this-note">
                         <span class="color-white">{$word->save}</span>
                         <div class="content-spinner-circle">
                             <div class="spinner-circle"></div>
@@ -107,18 +98,30 @@
     </div>
 </div>
 <div class="background-pointer"></div>
+<?php } ?>
 <script type="text/javascript">
-var NF = D.querySelectorAll('.upload_note_first'),
-	NS = D.querySelectorAll('.upload_note_second'),
-	NT = D.querySelectorAll('.upload_note_third'),
-	NA = function(){
-		GJ.style.display = "block", D.body.style.overflow = "hidden", GI.setAttribute('data-id', this.getAttribute('data-id'));
-	},
-    NB = function(){
-        GE.style.display = "block", D.body.style.overflow = "hidden", GG.setAttribute('data-id', this.getAttribute('data-id'));
-    },
-    NC = function(){
-        GN.style.display = "block", D.body.style.overflow = "hidden", GL.setAttribute('data-id', this.getAttribute('data-id'));
+var NU = D.querySelectorAll('.upload_note'),
+	NN = D.querySelector('#alert-notes'),
+	NT = D.querySelector('#this-note'),
+	NK = D.querySelector('#container-parameters'),
+    NA = function(){
+        var self = this,
+            note_id = self.getAttribute('data-id'),
+            pos = self.getAttribute('data-pos');
+        self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
+        Req('{$url->{req/rol-teacher/get-citems}}', function(e){
+            console.log(e);
+            if(e.status == 200){
+                for(var j = 0, i = e.items['parameters'].length; j < i; j++){
+                    var el = e.items['parameters'][j],
+                        element = D.createElement('div');
+                    element.className = 'group-validate display-block position-relative w-100 padding-25 border-all border-blue margin-b20', element.id = "parameter_"+j, element.innerHTML = '<h3 class="text-center" id="text-parameter">'+el['name']+'</h3><div class="display-flex"><div class="margin-auto margin-b15 margin-t15 padding-r10"><input id="param_note_'+j+'" type="text" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue background-grely color-black" placeholder="{$word->note}" '+(e.items['notes'] != 0 ? 'value="'+e.items['notes'][j]+'"' : '')+'/></div><div class="position-relative margin-auto margin-b15 margin-t15 percent-gadget percent-gadget-disabled"><input type="text" readonly="true" class="cont-input mw-w-100 h-50 border-radius-12 animated-easy border-focus-blue margin-left-auto background-grely color-black text-center" placeholder="{$word->percentage}" value="'+el['percent']+'"/></div></div><div class="text-error color-red text-center font-low margin-t5"></div>', NK.appendChild(element);
+                }
+                NN.style.display = "block", D.body.style.overflow = "hidden", NT.setAttribute('data-pos', pos), NT.setAttribute('data-id', note_id), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
+            } else {
+                self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
+            }
+        }, "POST", "&type=notes&id=" + note_id + "&pos=" + pos)
     },
 	keyword = "{#keyword_notes}";
 <?php if(count($TEMP['#programs']) > 1){ ?>
@@ -128,13 +131,63 @@ addEvent(D.querySelector('#programs'), 'change', function(){
     preloadPage('&one=notes<?php echo($TEMP['#academic'] == true || $TEMP['#teacher'] == true) ? "&user={#user_id}" : "" ;?>&program={#program_id}&period='+this.value);
 })
 <?php } ?>
-
-<?php if($TEMP['#academic'] == true){ ?>
-for(var j = 0, i = NF.length; j < i; j++) addEvent(NF[j], "click", NA);
-for(var j = 0, i = NS.length; j < i; j++) addEvent(NS[j], "click", NB);
-for(var j = 0, i = NT.length; j < i; j++) addEvent(NT[j], "click", NC);	
-<?php if($TEMP['#teacher'] == true) { ?>
-addEvent(D.querySelector('#search-users'), "keyup", function(e){
+<?php if($TEMP['#teacher'] == true || $TEMP['#academic'] == true) { ?>
+<?php if(!empty($TEMP['#notes'])){ ?>
+addEvent(D.querySelector('#cancel-alert'), 'click', function(){
+    NN.style.display = "", D.body.style.overflow = "", NK.innerHTML = "";
+}), addEvent(NT, 'click', function(){
+    var self = this,
+        GO = [],
+        sum = 0,
+        GC = NK.children;
+    for (var j = 0, i = GC.length; j < i; j++){
+        var el = D.querySelector('#param_note_'+j),
+            GZ = D.querySelector('#parameter_'+j);
+        if(el.value == '' || el.value > 5 || el.value < 0){
+            addClass(el, 'border-red'), addClass(el, 'boxshadow-red');
+            GZ.querySelector('.text-error').innerText = (el.value == '' ? '*{$word->this_field_is_empty}' : (el.value < 5 ? '{$word->please_enter_valid_value}' : 'La nota maxima es 5')), timeDelay(function(){
+                addClass(NN, 'efect-boom'), timeDelay(function(){
+                    removeClass(NN, 'efect-boom')
+                }, 200)
+            }, 700);
+            if(GC[GC.length-1] == GZ) return false;
+        } else {
+            removeClass(el, 'border-red'), removeClass(el, 'boxshadow-red'), GZ.querySelector('.text-error').innerText = "", GO.push(el.value);
+        }
+    }
+    NT.setAttribute('disabled', true), addClass(NT, 'spinner-is-loading');
+    Req('{$url->{req/rol-teacher/this-notes}}', function(e){
+    	console.log(e);
+        if(e.status == 200){
+            NN.style.display = "", loadAlert("{$word->course_updated_successfully}"), preloadPage('{#url_params}');
+        } else {
+            if (e.errors != undefined) {
+                for (var j = 0, i = e.errors.length; j < i; j++){
+                    var el = D.querySelector('#'+e.errors[j]['class']+e.errors[j]['id']),
+                        GH = D.querySelector('#parameter_'+e.errors[j]['id']);
+                    addClass(el, 'border-red'), addClass(el, 'boxshadow-red'), GH.querySelector('.text-error').innerText = '*{$word->please_enter_valid_value}', timeDelay(function(){
+                        addClass(NN, 'efect-boom'), timeDelay(function(){
+                            removeClass(NN, 'efect-boom')
+                        }, 200)
+                    }, 700);
+                }
+            } else if(e.emptys != undefined){
+                for (var j = 0, i = e.emptys.length; j < i; j++){
+                    var el = D.querySelector('#'+e.emptys[j]['class']+e.emptys[j]['id']),
+                        GZ = D.querySelector('#parameter_'+e.emptys[j]['id']);
+                    GZ.querySelector('.text-error').innerText = '*{$word->this_field_is_empty}', addClass(el, 'border-red'), addClass(el, 'boxshadow-red'), timeDelay(function(){
+                            addClass(NN, 'efect-boom'), timeDelay(function(){
+                                removeClass(NN, 'efect-boom')
+                            }, 200)
+                        }, 700);
+                }
+            } else {
+                loadAlert("{$word->error}", 1)
+            }
+            NT.removeAttribute('disabled'), removeClass(NT, 'spinner-is-loading');
+        }
+    }, "POST", "&id=" + self.getAttribute('data-id') + "&params=" + JSON.stringify(GO) + "&pos=" + self.getAttribute('data-pos'))
+}), <?php } ?>addEvent(D.querySelector('#search-users'), "keyup", function(e){
 	let SV = this.value,
 		SD = D.querySelector('.search-down');
 	if (SV == '') {
@@ -156,6 +209,6 @@ addEvent(D.querySelector('#search-users'), "keyup", function(e){
 	    }
 	}, "POST", "&type=notes&keyword=" + SV);
 })
-<?php } ?>
+for(var j = 0, i = NU.length; j < i; j++) addEvent(NU[j], "click", NA);	
 <?php } ?>
 </script>

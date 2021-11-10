@@ -171,7 +171,7 @@
                             <label class="color-black">{$word->period}</label>
                         </div>
                         <div class="flex-grow">
-                            <select id="period_id" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue area_changed caret-down area_validate background-grely color-black">
+                            <select id="period_id" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue caret-down area_changed area_validate background-grely color-black">
                                 <?php foreach($TEMP['#periods'] as $period){ ?>
                                 <option value="<?php echo $period['id']; ?>"><?php echo $period['name']; ?></option>
                                 <?php } ?>
@@ -203,10 +203,9 @@
                             <label class="color-black">{$word->semester}</label>
                         </div>
                         <div class="flex-grow">
-                            <select id="semester" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue area_changed caret-down area_validate background-grely color-black">
-                                <option value="1">1 {$word->semester}</option>
-                                <?php for ($i=2; $i < 11; $i++) { ?>
-                                <option value="<?php echo $i; ?>"><?php echo $i; ?> {$word->semesters}</option>
+                            <select id="semester" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue caret-down area_changed area_validate background-grely color-black">
+                                <?php for ($i=1; $i < 11; $i++) { ?>
+                                <option value="<?php echo $i; ?>"><?php echo $i; ?> {$word->semester}</option>
                                 <?php } ?>
                             </select>
                             <div class="color-red text-left text-error font-low margin-t5"></div>
@@ -219,7 +218,7 @@
                             <label class="color-black">{$word->credits}</label>
                         </div>
                         <div class="flex-grow">
-                            <select id="credits" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue area_changed caret-down area_validate background-grely color-black">
+                            <select id="credits" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue caret-down area_changed area_validate background-grely color-black">
                                 <option value="1">1 {$word->credit}</option>
                                 <option value="2">2 {$word->credits}</option>
                                 <option value="3">3 {$word->credits}</option>
@@ -235,7 +234,7 @@
                             <label class="color-black">{$word->quotas}</label>
                         </div>
                         <div class="flex-grow">
-                            <select id="quota" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue area_changed caret-down area_validate background-grely color-black">
+                            <select id="quota" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue caret-down area_changed area_validate background-grely color-black">
                                 <option value="1">1 {$word->quota}</option>
                                 <?php for ($i=2; $i < 61; $i++) { ?>
                                 <option value="<?php echo $i; ?>"><?php echo $i; ?> {$word->quotas}</option>
@@ -251,7 +250,7 @@
                             <label class="color-black">{$word->type}</label>
                         </div>
                         <div class="flex-grow">
-                            <select id="type" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue area_changed caret-down area_validate background-grely color-black">
+                            <select id="type" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue caret-down area_changed area_validate background-grely color-black">
                                 <option value="practice">{$word->practice}</option>
                                 <option value="theoretical">{$word->theoretical}</option>
                             </select>
@@ -265,7 +264,7 @@
                             <label class="color-black">{$word->working_day}</label>
                         </div>
                         <div class="flex-grow">
-                            <select id="schedule" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue area_changed caret-down area_validate background-grely color-black">
+                            <select id="schedule" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue caret-down area_changed area_validate background-grely color-black">
                                 <option value="daytime">{$word->daytime}</option>
                                 <option value="nightly">{$word->nightly}</option>
                             </select>
@@ -296,12 +295,47 @@
                 <div class="padding-t15 padding-b15 w-100 font-lowly color-black">
                     {$word->parameters}
                 </div>
+                <?php if(true){ ?>
+                <div class="display-flex w-100 h-50">
+                    <div class="contsub-capoints dv-vertical-center margin-left-auto">
+                        <button class="item-capoint btn-noway dv-xs scale-1_5 animated-easy border-radius-med hover-button background-blue margin-r12 active" id="move-modal-left"></button>
+                        <button class="item-capoint btn-noway dv-xs scale-1_5 animated-easy border-radius-med hover-button background-blue margin-r12" id="move-modal-center"></button>
+                        <button class="item-capoint btn-noway dv-xs scale-1_5 animated-easy border-radius-med hover-button background-blue margin-r12" id="move-modal-right"></button>
+                    </div>
+                </div>
+                <?php } ?>
             </div>
             <div class="content-modal-body color-grey">
+                <?php if(false){ ?>
                 <div id="container-parameters"></div>
                 <div class="display-flex w-100">
                     <button class="btn-noway background-green hover-opacity w-50 h-50 border-radius-med margin-auto font-supraly color-white" id="add-parameter">+</button>
                 </div>
+                <?php } else { ?>
+                <div class="cont-body-modal display-flex animated-easy" id="body-modal-params">
+                    <div class="cont-left-modal w-100 margin-r25">
+                        <h3 class="font-medium color-black text-center">Primer corte</h3>
+                        <div id="container-parameters_0"></div>
+                        <div class="display-flex w-100">
+                            <button class="add_parameter btn-noway background-green hover-opacity w-50 h-50 border-radius-med margin-auto font-supraly color-white">+</button>
+                        </div>
+                    </div>
+                    <div class="cont-center-modal w-100">
+                        <h3 class="font-medium color-black text-center">Segundo corte</h3>
+                        <div id="container-parameters_1"></div>
+                        <div class="display-flex w-100">
+                            <button class="add_parameter btn-noway background-green hover-opacity w-50 h-50 border-radius-med margin-auto font-supraly color-white">+</button>
+                        </div>
+                    </div>
+                    <div class="cont-right-modal w-100">
+                        <h3 class="font-medium color-black text-center">Tercer corte</h3>
+                        <div id="container-parameters_2"></div>
+                        <div class="display-flex w-100">
+                            <button class="add_parameter btn-noway background-green hover-opacity w-50 h-50 border-radius-med margin-auto font-supraly color-white">+</button>
+                        </div>
+                    </div>
+                </div>
+                <?php } ?>
             </div>
             <div class="display-flex">
                 <div class="margin-left-auto margin-r25 margin-b15">
@@ -336,7 +370,7 @@
 var GE = D.querySelectorAll('.show_emodal'),
     GW = D.querySelectorAll('.show_dmodal'),
     GC = D.querySelectorAll('.area_validate'),
-    GR = D.querySelector('.area_changed'),
+    GR = D.querySelectorAll('.area_changed'),
     GL = D.querySelectorAll('.load-table-page'),
     GV = D.querySelector('.content-modal-body'),
     GA = D.querySelector('#search-courses'),
@@ -359,7 +393,25 @@ var GE = D.querySelectorAll('.show_emodal'),
     GX = GP.value ? GP.value.split(',') : Array(),
     ga = D.querySelector('#tips-val'),
     <?php } else { ?>
+    GF = D.querySelectorAll('.add_parameter'),
+    GJ = D.querySelector('#body-modal-params'),
     GK = D.querySelector('#container-parameters'),
+    GY = D.querySelector('#move-modal-left'),
+    GO = D.querySelector('#move-modal-center'),
+    GX = D.querySelector('#move-modal-right'),
+    GM = function(){
+        var GK = GJ.children;
+        for(let j = 0, i = GK.length; j < i; j++){
+            var el = D.querySelector('#container-parameters_'+j),
+                GC = el.children;
+            for (var n = 0, l = el.length; n < l; n++){
+                var elN = D.querySelector('#param_name_'+n),
+                    elP = D.querySelector('#param_percent_'+n),
+                    GZ = D.querySelector('#parameter_'+n);
+                removeClass(elN, 'border-red'), removeClass(elN, 'boxshadow-red'), removeClass(elP, 'border-red'), removeClass(elP, 'boxshadow-red'), GZ.querySelector('.text-error').innerText = "";
+            }
+        }
+    },
     <?php } ?>
     gl = D.querySelector('.search-down'),
     TE = D.querySelector('#navigation-after'),
@@ -369,7 +421,7 @@ var GE = D.querySelectorAll('.show_emodal'),
     TN = D.querySelector('#page-now'),
     bDisabled = function(){
         <?php if($TEMP['#academic'] == true){ ?>
-        if(GM.value != '' && GU.value != '' && GF.value != '' && GG.value != '' && (GP.value != '' || ga.value != '') && GJ.value != '' && GK.value != '' && GN.value != '' && GO.value != '' && GY.value != ''){
+        if(GM.value != '' && GU.value != '' && GF.value != '' && GG.value != '' && GP.value != '' && GJ.value != '' && GK.value != '' && GN.value != '' && GO.value != '' && GY.value != ''){
             GB.removeAttribute('disabled');
         } else {
             GB.setAttribute('disabled', true);
@@ -403,25 +455,29 @@ var GE = D.querySelectorAll('.show_emodal'),
                     }
                 }
                 <?php } else if($TEMP['#teacher'] == true) { ?>
-                    for(var j = 0, i = e.items.length; j < i; j++){
+                    for(let j = 0, i = e.items.length; j < i; j++){
                         var el = e.items[j],
-                            element = D.createElement('div');
-                        element.className = 'group-validate display-block position-relative w-100 padding-25 border-all border-blue margin-b20', element.id = "parameter_"+j, element.innerHTML = '<button class="delete-parameter position-absolute h-8 btn-noway hover-button font-ultraly color-red" id="delete-parameter">-</button><h3 class="text-center" id="text-parameter">{$word->parameter} #'+(j+1)+'</h3><div class="display-flex"><div class="margin-auto margin-b15 margin-t15 padding-r10"><input id="param_name_'+j+'" type="text" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue background-grely color-black" placeholder="{$word->name}" value="'+el['name']+'"/></div><div class="position-relative margin-auto margin-b15 margin-t15 percent-gadget"><input id="param_percent_'+j+'" type="text" class="cont-input mw-w-100 h-50 border-radius-12 animated-easy border-focus-blue margin-left-auto background-grely color-black text-center" placeholder="{$word->percentage}" value="'+el['percent']+'"/></div></div><div class="text-error color-red text-center font-low margin-t5"></div>', GK.appendChild(element), count = (j+1);
-                        addEvent(element.querySelector('#delete-parameter'), 'click', function(){
-                            this.parentNode.remove(), count = 0;
-                            var els = GK.children;
-                            for(var j = 0, i = els.length; j < i; j++){
-                                var tp = els[j].querySelector('#text-parameter');
-                                tp.innerText = "{$word->parameter} #"+(j+1), els[j].id = "parameter_"+j, count = (j+1);
-                            }
-                        });
+                            cp = D.querySelector('#container-parameters_'+j);
+                        for(var n = 0, l = el.length; n < l; n++){
+                            var el2 = el[n],
+                                element = D.createElement('div');
+                            element.className = 'group-validate display-block position-relative w-100 padding-25 border-all border-blue margin-b20', element.id = "parameter_"+n, element.innerHTML = '<button class="delete-parameter position-absolute h-8 btn-noway hover-button font-ultraly color-red" id="delete-parameter">-</button><h3 class="text-center" id="text-parameter">{$word->parameter} #'+(n+1)+'</h3><div class="display-flex"><div class="margin-auto margin-b15 margin-t15 padding-r10"><input id="param_name_'+n+'" type="text" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue background-grely color-black" placeholder="{$word->name}" value="'+el2['name']+'"/></div><div class="position-relative margin-auto margin-b15 margin-t15 percent-gadget"><input id="param_percent_'+n+'" type="text" class="cont-input mw-w-100 h-50 border-radius-12 animated-easy border-focus-blue margin-left-auto background-grely color-black text-center" placeholder="{$word->percentage}" value="'+el2['percent']+'"/></div></div><div class="text-error color-red text-center font-low margin-t5"></div>', cp.appendChild(element), count[j] = (n+1);
+                            addEvent(element.querySelector('#delete-parameter'), 'click', function(){
+                                this.parentNode.remove(), count[j] = 0;
+                                var els = cp.children;
+                                for(var m = 0, k = els.length; m < k; m++){
+                                    var tp = els[m].querySelector('#text-parameter');
+                                    tp.innerText = "{$word->parameter} #"+(m+1), els[m].id = "parameter_"+m, count[j] = (m+1);
+                                }
+                            });
+                        }
                     }
                 <?php } ?>
                 GI.style.display = "block", D.body.style.overflow = "hidden", GB.setAttribute('data-id', course_id), GB.setAttribute('data-type', 'edit'), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
             } else {
                 self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
             }
-        }, "POST", "&id=" + course_id)
+        }, "POST", "&type=courses&id=" + course_id)
     },
     GD = function(){
         GT.style.display = "block", D.body.style.overflow = "hidden", GQ.setAttribute('data-id', this.getAttribute('data-id'));
@@ -441,14 +497,14 @@ var GE = D.querySelectorAll('.show_emodal'),
                 zy[zp].removeAttribute('style');
             }, 500);
         }
+        bDisabled();
     },
     gh = function(){
         createTag(this.getAttribute('data-name'), this.getAttribute('data-id')); 
     },
-    count = 0,
+    count = [Number([]), Number([]), Number([])],
     TA = 1,
     TT = {#total_pages};
-
 <?php if($TEMP['#academic'] == true || $TEMP['#teacher'] == true){ ?>addEvent(D.querySelector('#cancel-alert'), 'click', function(){
     GI.style.display = "", D.body.style.overflow = "";
 }), <?php } if($TEMP['#academic'] == true){ ?>addEvent(D.querySelector('#tips-val'), "keyup", function(e){
@@ -560,42 +616,64 @@ var GE = D.querySelectorAll('.show_emodal'),
             self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
         }
     }, "POST", "&id=" + self.getAttribute('data-id'));
-}), <?php } else { ?>addEvent(GB, 'click', function(){
+}), <?php } else { ?>addEvent(GY, 'click', function(){
+    removeClass(GX, 'active'), removeClass(GO, 'active'), addClass(this, 'active'), removeClass(GJ, 'move-modal-left-last'), removeClass(GJ, 'move-modal-left-center'), GM();
+}), addEvent(GO, 'click', function(){
+    removeClass(GY, 'active'), removeClass(GX, 'active'), addClass(this, 'active'), removeClass(GJ, 'move-modal-left-last'), addClass(GJ, 'move-modal-left-center'), GM();
+}), addEvent(GX, 'click', function(){
+    removeClass(GY, 'active'), removeClass(GO, 'active'), addClass(this, 'active'), addClass(GJ, 'move-modal-left-center'), addClass(GJ, 'move-modal-left-last'), GM();
+}), addEvent(GB, 'click', function(){
     var self = this,
         type = self.getAttribute('data-type'),
-        GO = [],
-        sum = 0,
-        GC = GK.children;
-    for (var j = 0, i = GC.length; j < i; j++){
-        var el = GC[j],
-            elN = D.querySelector('#param_name_'+j),
-            elP = D.querySelector('#param_percent_'+j),
-            GZ = D.querySelector('#parameter_'+j);
-        if(elN.value == '' || elP.value == ''){
-            if(elN.value == '') addClass(elN, 'border-red'), addClass(elN, 'boxshadow-red');
-            if(elP.value == '') addClass(elP, 'border-red'), addClass(elP, 'boxshadow-red');
-            GZ.querySelector('.text-error').innerText = '*{$word->this_field_is_empty}', timeDelay(function(){
-                addClass(GI, 'efect-boom'), timeDelay(function(){
-                    removeClass(GI, 'efect-boom')
-                }, 200)
-            }, 700);
-            return false;
-        } else {
-            sum += Number(elP.value);
-            if(sum < 100 && GC.length-1 == j){
-                for (var j = 0, i = GC.length; j < i; j++){
-                    var elP = D.querySelector('#param_percent_'+j),
-                        GZ = D.querySelector('#parameter_'+j);
-                    addClass(elP, 'border-red'), addClass(elP, 'boxshadow-red'), GZ.querySelector('.text-error').innerText = "La suma de estos valores debe ser 100";
-                }
+        GO = [[], [], []],
+        sum = [Number([]), Number([]), Number([])],
+        GK = GJ.children;
+    for(let j = 0, i = GK.length; j < i; j++){
+        var el = D.querySelector('#container-parameters_'+j),
+            GC = el.children;
+
+        for (var n = 0, m = GC.length; n < m; n++){
+            var GZ = GC[n],
+                elN = el.querySelector('#param_name_'+n),
+                elP = el.querySelector('#param_percent_'+n);
+            if(elN.value == '' || elP.value == ''){
+                var points = D.querySelectorAll('.item-capoint');
+                removeClass(points[j], 'background-blue'), addClass(points[j], 'background-red'), addClass(points[j], 'alert-capoint'),
+                timeDelay(function(){
+                    addClass(points[j], 'background-blue'), removeClass(points[j], 'background-red'), removeClass(points[j], 'alert-capoint');
+                }, 1000);
+                if(elN.value == '') addClass(elN, 'border-red'), addClass(elN, 'boxshadow-red');
+                if(elP.value == '') addClass(elP, 'border-red'), addClass(elP, 'boxshadow-red');
+                GZ.querySelector('.text-error').innerText = '*{$word->this_field_is_empty}', timeDelay(function(){
+                    addClass(GI, 'efect-boom'), timeDelay(function(){
+                        removeClass(GI, 'efect-boom')
+                    }, 200)
+                }, 700);
+                return false;
             } else {
-                removeClass(elN, 'border-red'), removeClass(elN, 'boxshadow-red'), removeClass(elP, 'border-red'), removeClass(elP, 'boxshadow-red'), GZ.querySelector('.text-error').innerText = "", GO.push([elN.value, elP.value]);
+                sum[j] += Number(elP.value);
+                if((sum[j] < 100 || sum[j] > 100) && GC[GC.length-1] == GZ){
+                    var points = D.querySelectorAll('.item-capoint');
+                    removeClass(points[j], 'background-blue'), addClass(points[j], 'background-red'), addClass(points[j], 'alert-capoint'),
+                    timeDelay(function(){
+                        addClass(points[j], 'background-blue'), removeClass(points[j], 'background-red'), removeClass(points[j], 'alert-capoint');
+                    }, 1000);
+                    for (var k = 0, u = GC.length; k < u; k++){
+                        var el2 = GC[k],
+                            elP = el2.querySelector('#param_percent_'+k);
+                        addClass(elP, 'border-red'), addClass(elP, 'boxshadow-red'), el2.querySelector('.text-error').innerText = "La suma de estos valores debe ser 100";
+                    }
+                    return false;
+                } else {
+                    removeClass(elN, 'border-red'), removeClass(elN, 'boxshadow-red'), removeClass(elP, 'border-red'), removeClass(elP, 'boxshadow-red'), GZ.querySelector('.text-error').innerText = "", GO[j].push([elN.value, elP.value]);
+                }
             }
         }
     }
+
     GB.setAttribute('disabled', true), addClass(GB, 'spinner-is-loading');
     Req('{$url->{req/rol-teacher/this-courses}}', function(e){
-        console.log(e);
+
         if(e.status == 200){
             GI.style.display = "", loadAlert("{$word->course_updated_successfully}"), preloadPage('&one=courses');
         } else {
@@ -611,8 +689,8 @@ var GE = D.querySelectorAll('.show_emodal'),
                 }
             } else if(e.emptys != undefined){
                 for (var j = 0, i = e.emptys.length; j < i; j++){
-                    var el = D.querySelector('#'+e.emptys[j]),
-                        GZ = D.querySelector('#parameter_'+j);
+                    var el = D.querySelector('#'+e.emptys[j]['class']+e.emptys[j]['id']),
+                        GZ = D.querySelector('#parameter_'+e.emptys[j]['id']);
                     GZ.querySelector('.text-error').innerText = '*{$word->this_field_is_empty}', addClass(el, 'border-red'), addClass(el, 'boxshadow-red'), timeDelay(function(){
                             addClass(GI, 'efect-boom'), timeDelay(function(){
                                 removeClass(GI, 'efect-boom')
@@ -625,17 +703,6 @@ var GE = D.querySelectorAll('.show_emodal'),
             GB.removeAttribute('disabled'), removeClass(GB, 'spinner-is-loading');
         }
     }, "POST", "&id=" + self.getAttribute('data-id') + "&params=" + JSON.stringify(GO))
-}), addEvent(D.querySelector('#add-parameter'), 'click', function(){
-    var element = D.createElement('div');
-    element.className = 'group-validate display-block position-relative w-100 padding-25 border-all border-blue margin-b20', element.id = "parameter_"+count, element.innerHTML = '<button class="delete-parameter position-absolute h-8 btn-noway hover-button font-ultraly color-red" id="delete-parameter">-</button><h3 class="text-center" id="text-parameter">{$word->parameter} #'+(count+1)+'</h3><div class="display-flex"><div class="margin-auto margin-b15 margin-t15 padding-r10"><input id="param_name_'+count+'" type="text" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue background-grely color-black" placeholder="{$word->name}"/></div><div class="position-relative margin-auto margin-b15 margin-t15 percent-gadget"><input id="param_percent_'+count+'" type="text" class="cont-input mw-w-100 h-50 border-radius-12 animated-easy border-focus-blue margin-left-auto background-grely color-black text-center" placeholder="{$word->percentage}"/></div></div><div class="text-error color-red text-center font-low margin-t5"></div>', GK.appendChild(element), count++;
-    addEvent(element.querySelector('#delete-parameter'), 'click', function(){
-        this.parentNode.remove(), count = 0;
-        var els = GK.children;
-        for(var j = 0, i = els.length; j < i; j++){
-            var tp = els[j].querySelector('#text-parameter');
-            tp.innerText = "{$word->parameter} #"+(j+1), els[j].id = "parameter_"+j, count = (j+1);
-        }
-    });
 }), <?php } ?>addEvent(GA, 'keyup', function(){
     var self = this,
         TZ = D.querySelector('#table-footer');
@@ -659,6 +726,27 @@ for (var j = 0, i = GC.length; j < i; j++) addEvent(GC[j], 'keyup', bDisabled);
 <?php if($TEMP['#academic'] == true){ ?>
 for (var j = 0, i = GR.length; j < i; j++) addEvent(GR[j], 'change', bDisabled);
 for(var j = 0, i = GW.length; j < i; j++) addEvent(GW[j], "click", GD);
+<?php } else { ?>
+for(var j = 0, i = GF.length; j < i; j++) addEvent(GF[j], 'click', function(){
+    var points = D.querySelectorAll('.item-capoint'),
+        point = D.querySelector('.item-capoint.active'),
+        pos = Array.prototype.slice.call(points).indexOf(point),
+        element = D.createElement('div');
+    element.className = 'group-validate display-block position-relative w-100 padding-25 border-all border-blue margin-b20', element.id = "parameter_"+count[pos], element.innerHTML = '<button class="delete-parameter position-absolute h-8 btn-noway hover-button font-ultraly color-red" id="delete-parameter">-</button><h3 class="text-center" id="text-parameter">{$word->parameter} #'+(count[pos]+1)+'</h3><div class="display-flex"><div class="margin-auto margin-b15 margin-t15 padding-r10"><input id="param_name_'+count[pos]+'" type="text" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue background-grely color-black" placeholder="{$word->name}"/></div><div class="position-relative margin-auto margin-b15 margin-t15 percent-gadget"><input id="param_percent_'+count[pos]+'" type="text" class="cont-input mw-w-100 h-50 border-radius-12 animated-easy border-focus-blue margin-left-auto background-grely color-black text-center" placeholder="{$word->percentage}"/></div></div><div class="text-error color-red text-center font-low margin-t5"></div>', D.querySelector('#container-parameters_'+pos).appendChild(element), count[pos]++;
+
+    console.log(count);
+    addEvent(element.querySelector('#delete-parameter'), 'click', function(){
+        this.parentNode.remove(), count[pos] = 0;
+        var points = D.querySelectorAll('.item-capoint'),
+            point = D.querySelector('.item-capoint.active'),
+            pos = Array.prototype.slice.call(points).indexOf(point),
+            els = D.querySelector('#container-parameters_'+pos).children;
+        for(var j = 0, i = els.length; j < i; j++){
+            var tp = els[j].querySelector('#text-parameter');
+            tp.innerText = "{$word->parameter} #"+(j+1), els[j].id = "parameter_"+j, count[pos] = (j+1);
+        }
+    });
+})
 <?php } ?>
 for (var j = 0, i = GL.length; j < i; j++) addEvent(GL[j], "click", function(){
     var self = this,
