@@ -1532,11 +1532,15 @@ h5 {
 }
 
 .w-50 {
-    width: 50px;
+    width: 50px
 }
 
 .h-50 {
-    height: 50px;
+    height: 50px
+}
+
+.h-150 {
+    height: 150px
 }
 
 .h-250px {
@@ -1591,6 +1595,10 @@ h5 {
 
 .color-orange {
     color: #ee8133;
+}
+
+.color-rud {
+    color: #b6363a;
 }
 
 /* Tamaños de fuentes */
@@ -1780,10 +1788,6 @@ h5 {
 }
 
 @media(max-width:992px) {
-    .cont-contentheader .cont-site-logo {
-        margin: auto;
-        margin-top: 0
-    }
     .cont-contentheader .cont-header-wrapper {
         -webkit-box-orient: horizontal;
         -webkit-box-direction: normal;
@@ -1989,6 +1993,18 @@ h5 {
     .cont-slots-two .contsub-slots-two {
         margin-left: 40px
     }
+    #rc-imageselect, .g-recaptcha {
+        transform: scale(0.70);
+        -webkit-transform: scale(0.70);
+        transform-origin: center;
+        -webkit-transform-origin: center;
+    }
+    .g-recaptcha > div {
+        width: 100% !important;
+    }
+    .g-recaptcha iframe {
+        margin-left: -50px;
+    }
 }
 
 @media(min-width: 320px) and (max-width:450px) {
@@ -2041,5 +2057,14 @@ h5 {
     }
     .move-cube-left {
         margin-left: -176px
+    }
+    #rc-imageselect, .g-recaptcha {
+        transform: scale(0.50);
+        -webkit-transform: scale(0.50);
+        transform-origin: center;
+        -webkit-transform-origin: center;
+    }
+    .g-recaptcha iframe {
+        margin-left: -100px;
     }
 }

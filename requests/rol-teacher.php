@@ -68,6 +68,10 @@ if($one == 'search-courses') {
     if(!empty($page) && is_numeric($page) && isset($page) && $page > 0){
         $html = "";
         $query = "";
+        $keyword = Specific::Filter($_POST['keyword']);
+        if(!empty($keyword)){
+            $query .= " WHERE name LIKE '%$keyword%'";
+        }
         $TEMP['#periods'] = $dba->query('SELECT * FROM periods')->fetchAll();
         $TEMP['#programs'] = $dba->query('SELECT * FROM programs')->fetchAll();
         if(Specific::Teacher() == true){
@@ -119,10 +123,10 @@ if($one == 'search-courses') {
         if($type == 'notes' && Specific::Teacher() == true){
             $my_courses = $dba->query('SELECT course_id FROM teacher WHERE user_id = '.$TEMP['#user']['id'])->fetchAll(false);
             foreach ($my_courses as $course) {
-                $users = $dba->query('SELECT * FROM users u WHERE id != '.$TEMP['#user']['id'].' AND (names LIKE "%'.$keyword.'%" OR surnames LIKE "%'.$keyword.'%") AND (SELECT user_id FROM enrolled WHERE user_id = u.id AND type = "course" AND course_id = '.$course.') = id LIMIT 10')->fetchAll();
+                $users = $dba->query('SELECT * FROM users u WHERE id != '.$TEMP['#user']['id'].' AND role = 0 AND (names LIKE "%'.$keyword.'%" OR surnames LIKE "%'.$keyword.'%") AND (SELECT user_id FROM enrolled WHERE user_id = u.id AND type = "course" AND course_id = '.$course.') = id LIMIT 10')->fetchAll();
             }
         } else {
-            $users = $dba->query('SELECT * FROM users WHERE id != '.$TEMP['#user']['id'].' AND (names LIKE "%'.$keyword.'%" OR surnames LIKE "%'.$keyword.'%") LIMIT 10')->fetchAll();
+            $users = $dba->query('SELECT * FROM users WHERE id != '.$TEMP['#user']['id'].' AND role = 0 AND (names LIKE "%'.$keyword.'%" OR surnames LIKE "%'.$keyword.'%") LIMIT 10')->fetchAll();
         }
         
         if (!empty($users)) {

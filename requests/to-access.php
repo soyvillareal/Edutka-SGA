@@ -307,6 +307,7 @@ if ($TEMP['#loggedin'] === true && !in_array($one, array('verify-change-email', 
 	$dates 			= array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
 	$errors      	= array();
 	$emptys     	= array();
+	$form_key = Specific::Filter($_POST['form_key']);
 	$dni        = Specific::Filter($_POST['dni']);
 	$names        = Specific::Filter($_POST['names']);
 	$surnames        = Specific::Filter($_POST['surnames']);
@@ -348,6 +349,10 @@ if ($TEMP['#loggedin'] === true && !in_array($one, array('verify-change-email', 
 	if (empty($year)){
 		$emptys[] = 'year';
 	}
+
+	$access = $dba->query('SELECT access FROM forms WHERE form_key = "'.$form_key.'"')->fetchArray();
+	$access = json_decode($access, true);
+
 	if(empty($emptys)){
         if ($dba->query('SELECT COUNT(*) FROM users WHERE dni = "'.$dni.'"')->fetchArray() > 0) {
             $errors[] = array('error' => $TEMP['#word']['document_already_exists'], 'el' => 'dni');
@@ -389,82 +394,89 @@ if ($TEMP['#loggedin'] === true && !in_array($one, array('verify-change-email', 
         } 
 
         if (empty($errors)) {
-        	$date_birthday = DateTime::createFromFormat('d-m-Y H:i:s', "$day-$month-$year 00:00:00");
-            $code = rand(111111,999999);
-			$token = sha1($code);
-			$id = Specific::RandomKey(12, 16);
-			$ip = Specific::GetClientIp();
-			$password = sha1($password);
-            $insert_array = array(
-            	'user_id' => "'$id'",
-                'dni' => "'$dni'",
-                'names' => "'$names'",
-                'surnames' => "'$surnames'",
-                'password' => "'$password'",
-                'email' => "'$email'",
-                'ip' => "'$ip'",
-                'gender' => "'$gender'",
-                'status' => $TEMP['#settings']['validate_email'] == 'on' ? 0 : 1,
-                'token' => "'$token'",
-                'date_birthday' => $date_birthday->getTimestamp(),
-                'time' => time()
-            );
-            if ($gender == 1) {
-                $insert_array['avatar'] = "'images/default-avatar.jpg'";
-            }else{
-                $insert_array['avatar'] = "'images/default-favatar.jpg'";
-            }
-            $insert_array['language'] = "'{$TEMP['#settings']['language']}'";
-            if (!empty($_SESSION['language'])) {
-                if (in_array($_SESSION['language'], $TEMP['#languages'])) {
-                    $insert_array['language'] = "'{$_SESSION['language']}'";
-                }
-            }
-            $by_id = $dba->query('INSERT INTO users ('.implode(',', array_keys($insert_array)).') VALUES ('.implode(',', array_values($insert_array)).')')->insertId();
-            if($by_id) {
-	            if ($TEMP['#settings']['validate_email'] == 'on') {
-					$TEMP['id'] = $id;
-	            	$TEMP['token'] = $token;
-					$TEMP['code'] = $code;
-					$TEMP['name'] = $names;
-					$TEMP['text'] = $TEMP['#word']['verify_your_account'].' '.$TEMP['#word']['of'].' '.$TEMP['#settings']['title'];
-					$TEMP['footer'] = '<a target="_blank" href="'.Specific::Url("not-me/$token/$id").'" style="color: #999; text-decoration: underline;">'.$TEMP['#word']['let_us_know'].'</a>.';
-					$TEMP['type'] = 'verify';
-
-	                $send_email = Specific::SendEmail(array(
-	                    'from_email' => $TEMP['#settings']['smtp_username'],
-		                'from_name' => $TEMP['#settings']['name'],
-	                    'to_email' => $email,
-	                    'to_name' => $names,
-	                    'subject' => $TEMP['#word']['verify_your_account'],
-	                    'charSet' => 'UTF-8',
-				        'message_body' => Specific::Maket('emails/includes/verify-email'),
-	                    'is_html' => true
-	                ));
-	                if($send_email){
-		                $deliver = array(
-						    'status' => 200,
-						    'message' => $TEMP['#word']['successfully_joined_desc']
-						);
-	               	} else {
-						$deliver = array(
-						    'status' => 400,
-						    'message' => $TEMP['#word']['error_occurred_to_send_mail']
-						);
-					}
-	            } else {
-	                $session_id = sha1(Specific::RandomKey()) . md5(time());
-			        $session_details = json_encode(Specific::BrowserDetails()['details']);
-			        if($dba->query('INSERT INTO sessions (by_id, session_id, details, time) VALUES (?, ?, ?, ?)', $by_id, $session_id, $session_details, time())->insertId()){
-			        	$_SESSION['session_id'] = $session_id;
-		                setcookie("session_id", $session_id, time() + 315360000, "/");
-		                $deliver = array(
-							'status' => 200,
-							'url' => Specific::Url()
-						);
-			        }
+        	if(in_array($dni, $access)){
+	        	$date_birthday = DateTime::createFromFormat('d-m-Y H:i:s', "$day-$month-$year 00:00:00");
+	            $code = rand(111111,999999);
+				$token = sha1($code);
+				$id = Specific::RandomKey(12, 16);
+				$ip = Specific::GetClientIp();
+				$password = sha1($password);
+	            $insert_array = array(
+	            	'user_id' => "'$id'",
+	                'dni' => "'$dni'",
+	                'names' => "'$names'",
+	                'surnames' => "'$surnames'",
+	                'password' => "'$password'",
+	                'email' => "'$email'",
+	                'ip' => "'$ip'",
+	                'gender' => "'$gender'",
+	                'status' => $TEMP['#settings']['validate_email'] == 'on' ? 0 : 1,
+	                'token' => "'$token'",
+	                'date_birthday' => $date_birthday->getTimestamp(),
+	                'time' => time()
+	            );
+	            if ($gender == 1) {
+	                $insert_array['avatar'] = "'images/default-avatar.jpg'";
+	            }else{
+	                $insert_array['avatar'] = "'images/default-favatar.jpg'";
 	            }
-	        }
+	            $insert_array['language'] = "'{$TEMP['#settings']['language']}'";
+	            if (!empty($_SESSION['language'])) {
+	                if (in_array($_SESSION['language'], $TEMP['#languages'])) {
+	                    $insert_array['language'] = "'{$_SESSION['language']}'";
+	                }
+	            }
+	            $by_id = $dba->query('INSERT INTO users ('.implode(',', array_keys($insert_array)).') VALUES ('.implode(',', array_values($insert_array)).')')->insertId();
+	            if($by_id) {
+		            if ($TEMP['#settings']['validate_email'] == 'on') {
+						$TEMP['id'] = $id;
+		            	$TEMP['token'] = $token;
+						$TEMP['code'] = $code;
+						$TEMP['name'] = $names;
+						$TEMP['text'] = $TEMP['#word']['verify_your_account'].' '.$TEMP['#word']['of'].' '.$TEMP['#settings']['title'];
+						$TEMP['footer'] = '<a target="_blank" href="'.Specific::Url("not-me/$token/$id").'" style="color: #999; text-decoration: underline;">'.$TEMP['#word']['let_us_know'].'</a>.';
+						$TEMP['type'] = 'verify';
+
+		                $send_email = Specific::SendEmail(array(
+		                    'from_email' => $TEMP['#settings']['smtp_username'],
+			                'from_name' => $TEMP['#settings']['name'],
+		                    'to_email' => $email,
+		                    'to_name' => $names,
+		                    'subject' => $TEMP['#word']['verify_your_account'],
+		                    'charSet' => 'UTF-8',
+					        'message_body' => Specific::Maket('emails/includes/verify-email'),
+		                    'is_html' => true
+		                ));
+		                if($send_email){
+			                $deliver = array(
+							    'status' => 200,
+							    'message' => $TEMP['#word']['successfully_joined_desc']
+							);
+		               	} else {
+							$deliver = array(
+							    'status' => 400,
+							    'message' => $TEMP['#word']['error_occurred_to_send_mail']
+							);
+						}
+		            } else {
+		                $session_id = sha1(Specific::RandomKey()) . md5(time());
+				        $session_details = json_encode(Specific::BrowserDetails()['details']);
+				        if($dba->query('INSERT INTO sessions (by_id, session_id, details, time) VALUES (?, ?, ?, ?)', $by_id, $session_id, $session_details, time())->insertId()){
+				        	$_SESSION['session_id'] = $session_id;
+			                setcookie("session_id", $session_id, time() + 315360000, "/");
+			                $deliver = array(
+								'status' => 200,
+								'url' => Specific::Url()
+							);
+				        }
+		            }
+		        }
+		    } else {
+			    $deliver = array(
+					'status' => 400,
+				    'error' => $TEMP['#word']['you_do_not_have_access_this_form']
+				);
+			}
         } else {
         	$deliver = array(
 				'status' => 400,

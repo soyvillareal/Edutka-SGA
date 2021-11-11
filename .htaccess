@@ -9,26 +9,15 @@ RewriteRule ^authentication/([^/.]+)/([^\/]+)(\/|)?$ index.php?one=authenticatio
 RewriteRule ^change-email/([^/.]+)/([^\/]+)(\/|)?$ index.php?one=change-email&tokenu=$1&id=$2 [NC,QSA]
 RewriteRule ^not-me/([^/.]+)/([^\/]+)(\/|)?$ index.php?one=not-me&tokenu=$1&id=$2 [NC,QSA]
 RewriteRule ^register/([^/.]+)?$ index.php?one=register&form-key=$1 [NC,QSA]
+RewriteRule ^pages/([^\/]+)(\/|)$ index.php?one=pages&two=$1 [QSA]
 
 RewriteRule ^admin$ index.php?one=admin&two=manage-dashboard [NC,QSA]
 RewriteRule ^admin/([^/.]+)?$ index.php?one=admin&two=$1 [NC,QSA]
 RewriteRule ^admin/([^/.]+)/([^/.]+)?$ index.php?one=admin&two=$1&three=$2 [NC,QSA]
 
-RewriteRule ^user/([^/.]+)?$ index.php?one=user&two=$1 [NC,QSA]
 
-RewriteRule ^categories/([^/.]+)$ index.php?one=categories&two=$1 [NC,QSA]
-
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^req/([^/.]+)/?$ requests.php?request-name=$1 [L,QSA]
 RewriteRule ^req/([^/.]+)/([^/.]+)/?$ requests.php?request-name=$1&one=$2 [L,QSA]
-
-RewriteRule ^edit-video/(.*)?$ index.php?one=edit-video&two=$1 [L,QSA]
-RewriteRule ^download-video/([^/.]+)?$ index.php?one=download-video&video_id=$1 [NC,QSA]
-RewriteRule ^embed/(.*)?$ index.php?one=embed&two=$1 [L,QSA]
-RewriteRule ^pages/([^\/]+)(\/|)$ index.php?one=pages&two=$1 [QSA]
-
-
 
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d

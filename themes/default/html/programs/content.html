@@ -261,10 +261,9 @@
 var GE = D.querySelectorAll('.show_emodal'),
     GW = D.querySelectorAll('.show_dmodal'),
     GC = D.querySelectorAll('.area_validate'),
-    GR = D.querySelector('.area_changed'),
     GL = D.querySelectorAll('.load-table-page'),
+    GR = D.querySelector('.area_changed'),
     GV = D.querySelector('.content-modal-body'),
-    GO = D.querySelector('.number'),
     GA = D.querySelector('#search-programs'),
     GB = D.querySelector('#this-program'),
     GQ = D.querySelector('#delete-program'),
@@ -400,9 +399,7 @@ addEvent(D.querySelector('#show-pmodal'), 'click', function(){
             D.querySelector('#container-pages').innerHTML = e.html<?php echo($TEMP['#total_pages'] > 1) ? ', TZ.style.display = "none"' : '';?>; 
         }
     }, "POST", "&keyword=" + self.value)
-});
-
-for(var j = 0, i = GO.length; j < i; j++) addEvent(GO[j], 'input', function(){
+}), addEvent(D.querySelector('.number'), 'input', function(){
     this.value = this.value.replace(/[^0-9]/gi, '');
 });
 for(var j = 0, i = GE.length; j < i; j++) addEvent(GE[j], "click", GS);
@@ -454,6 +451,6 @@ for (var j = 0, i = GL.length; j < i; j++) addEvent(GL[j], "click", function(){
         } else {
             TE.setAttribute('disabled', true), TO.setAttribute('disabled', true), TR.setAttribute('disabled', true), TS.setAttribute('disabled', true), TA = 1, loadAlert('{$word->error}', 1);
         }
-    }, "POST", "&page_id=" + TA + "&type=admin-categories&total-pages={#total_pages}")
+    }, "POST", "&page_id=" + TA + "&total-pages={#total_pages}&keyword=" + GA.value)
 });
 </script>

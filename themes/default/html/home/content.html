@@ -3,9 +3,9 @@
     <div class="cont-slots-two display-flex margin-b20 margin-right-auto margin-left-auto">
         <div class="contsub-slots-two display-flex dv-vertical-slots margin-l20">
             <a class="item-slot-two position-relative margin-r20 margin-b20" href="{$url->{notes<?php echo($TEMP['#student'] == true) ? "?program={#program}" : "" ;?>}}" target="_self">
-                <img class="border-radius-12" src="{$theme->{images/navigation/results.png}}" />
+                <img class="border-radius-12" src="{$theme->{images/navigation/notes.png}}" />
                 <div class="item-slot-title position-absolute pos-bottom w-100 background-white margin-b10">
-                    <h3 class="font-mediumly font-bold color-greenly text-center text-uppercase no-margin">{$word->notes}</h3>
+                    <h3 class="font-mediumly font-bold color-orange text-center text-uppercase no-margin">{$word->notes}</h3>
                 </div>
             </a>
             <?php if($TEMP['#academic'] == true || $TEMP['#student'] == true) { ?>
@@ -37,16 +37,16 @@
                     <h3 class="font-mediumly font-bold color-bluely text-center text-uppercase no-margin">{$word->faculties}</h3>
                 </div>
             </a>
-            <a class="item-slot-two position-relative margin-r20 margin-b20" href="#">
-                <img class="border-radius-12" src="{$theme->{images/navigation/certificate.png}}" />
+            <a class="item-slot-two position-relative margin-r20 margin-b20" href="{$url->{forms}}" target="_self">
+                <img class="border-radius-12" src="{$theme->{images/navigation/forms.png}}" />
                 <div class="item-slot-title position-absolute pos-bottom w-100 background-white margin-b10">
-                    <h3 class="font-mediumly font-bold color-orange text-center text-uppercase no-margin">{$word->users}</h3>
+                    <h3 class="font-mediumly font-bold color-greenly text-center text-uppercase no-margin">{$word->forms}</h3>
                 </div>
             </a>
             <a class="item-slot-two position-relative margin-r20 margin-b20" href="#">
-                <img class="border-radius-12" src="{$theme->{images/navigation/certificate.png}}" />
+                <img class="border-radius-12" src="{$theme->{images/navigation/settings.png}}" />
                 <div class="item-slot-title position-absolute pos-bottom w-100 background-white margin-b10">
-                    <h3 class="font-mediumly font-bold color-orange text-center text-uppercase no-margin">{$word->more}</h3>
+                    <h3 class="font-mediumly font-bold color-rud text-center text-uppercase no-margin">{$word->more}</h3>
                 </div>
             </a>
             <?php } ?>

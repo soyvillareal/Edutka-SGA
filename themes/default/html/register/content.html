@@ -261,8 +261,9 @@ var GI = D.querySelectorAll('.input_key'),
 					window.location = e.url;
 				}
 			} else {
-				Gh(e.err), removeClass(GB, 'spinner-is-loading'), GB.removeAttribute('disabled');
+				removeClass(GB, 'spinner-is-loading'), GB.removeAttribute('disabled');
 				if(e.err != undefined){
+					Gh(e.err);
 					for (var j = 0, i = e.err.length; j < i; j++){
 						var els = e.err[j]['el'],
 							elp = els.split('-'),
@@ -285,9 +286,8 @@ var GI = D.querySelectorAll('.input_key'),
 							} 
 						}
 					}
-				} else if(e.message != undefined){
-					removeClass(GB, 'spinner-is-loading'), GB.removeAttribute('disabled'), GE.innerText = e.message;
-				} else {
+				} else if(e.emptys != undefined){
+					Gh(e.err);
 					for (var j = 0, i = e.emptys.length; j < i; j++){
 						var el = D.querySelector('#'+e.emptys[j]),
 							GZ = el.parentNode,
@@ -298,9 +298,11 @@ var GI = D.querySelectorAll('.input_key'),
 								}, 200)
 							}, 700);
 					}
+				} else {
+					removeClass(GB, 'spinner-is-loading'), GB.removeAttribute('disabled'), GE.innerText = e.error;
 				}
 			}
-		}, "POST", "&dni=" + GU.value + "&password=" + GP.value + "&re-password=" + GC.value + "&gender=" + GG.value + "&email=" + GM.value + "&day=" + GD.value + "&month=" + GJ.value + "&year=" + GR.value + "&names=" + GO.value + "&surnames=" + GY.value + "&province=" + Ga.value + "&municipality=" + Gb.value<?php echo $TEMP['#settings']['recaptcha'] == 'on' ? ' + "&recaptcha=" + D.querySelector("#g-recaptcha .g-recaptcha-response").value' : ''?>)
+		}, "POST", "&form_key={#form_key}&dni=" + GU.value + "&password=" + GP.value + "&re-password=" + GC.value + "&gender=" + GG.value + "&email=" + GM.value + "&day=" + GD.value + "&month=" + GJ.value + "&year=" + GR.value + "&names=" + GO.value + "&surnames=" + GY.value + "&province=" + Ga.value + "&municipality=" + Gb.value<?php echo $TEMP['#settings']['recaptcha'] == 'on' ? ' + "&recaptcha=" + D.querySelector("#g-recaptcha .g-recaptcha-response").value' : ''?>)
 	},
 	GX = !1,
 	Gi = [],

@@ -6,6 +6,7 @@
   <meta name="description" content="{$global_description}">
   <meta name="keywords" content="{$global_keywords}">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <meta name="format-detection" content="telephone=no">
   <link rel="shortcut icon" type="image/png" href="{$theme->{images/favicon.ico}}" />
   <link rel="stylesheet" type="text/css" href="{$theme->{assets/css/style.min.css}}" />
   <link href="https://fonts.googleapis.com/css2?family=Jost:wght@200;400;700&display=swap" rel="stylesheet">
@@ -62,7 +63,7 @@
         preloadPage = function(url){
           if(DOWN) return null;
           var DL = D.querySelector('#data-load');
-          DL.style.display = "block";
+          DL.style.display = "block", removeClass(D.body, 'side_untab'), removeClass(D.querySelector('#untab-menu'), 'toggle-guid');
           if("string" != typeof url){
             event.preventDefault();
             var url = UrlToParams(this.href);
@@ -271,8 +272,8 @@
         };
   </script>
 </head>
-<body>
-  <header class="cont-contentheader container position-relative">
+<body class="background-grely">
+  <header class="cont-contentheader container background-white position-relative">
     <div class="cont-header-wrapper padding-b15">
       <button class="btn-noway is-mobile" id="tab-menu">
         <svg class="dv-supra" viewBox="0 0 40 32" xmlns="http://www.w3.org/2000/svg">
@@ -283,7 +284,7 @@
          </g>
        </svg>
      </button>
-     <div class="cont-site-logo display-flex padding-l10 padding-b15 padding-t15">
+     <div class="cont-site-logo display-flex h-150 padding-l10 padding-b15 padding-t15">
       <a href="{$url->{home}}">
         <img class="display-block-desk" src="{$theme->{images/logo.png}}" alt="CENAUC" />
         <img class="display-block-mob" src="{$theme->{images/logo-only.png}}" alt="CENAUC" />
@@ -356,10 +357,10 @@
     </ul>
   </div>
 </aside>
-<div class="global-container background-grely container" id="global_content">
+<div class="global-container container" id="global_content">
   {$content}
 </div>
-<footer class="cont-contentfooter container position-relative padding-t25">
+<footer class="cont-contentfooter container background-white position-relative padding-t25">
   <div class="h-8 w-100 position-absolute pos-top background-blud row"></div>
   <div class="contsub-contentfooter padding-lr20">
     <div class="cont-footer content-10w margin-t15 margin-b50 float-left first">
@@ -369,9 +370,8 @@
             <img src="{$theme->{images/logo-only.png}}">
           </a>
         </div>
-
         <div class="display-flex margin-auto margin-t15">
-          <div class="text-center">
+          <div class="text-center w-100">
             <p class="font-cursive margin-b5">Estudia por pasión</p>
             <span class="font-bold">NIT: 891224762-9</span>
             <span class="font-bold"> SNIES: 3817</span>   
