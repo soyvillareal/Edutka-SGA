@@ -11,7 +11,7 @@ if($TEMP['#loggedin'] == true && $TEMP['#academic'] == false){
 
 $form = $dba->query('SELECT * FROM forms WHERE form_key = "'.$TEMP['#form_key'].'"')->fetchArray();
 
-$page = empty($form) || time() >= $form['expire'] ? 'invalid-auth' : 'register';
+$page = empty($form) || time() >= $form['expire'] || $form['status'] == 'deactivated' ? 'invalid-auth' : 'register';
 
 $TEMP['#bubbles'] = Specific::Bubbles();
 

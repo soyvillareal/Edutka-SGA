@@ -1,37 +1,34 @@
 <div class="display-flex">
     <div class="container-items margin-auto">
-        <h2 class="font-supraly text-center no-margin padding-t25 padding-b15">{$word->registration_forms}</h2>
+        <h2 class="font-supraly text-center no-margin padding-t25 padding-b15">{$word->academic_periods}</h2>
         <div class="background-white border-radius-12 padding-25 margin-b50">
             <div class="border-top-left-radius border-top-right-radius">
                 <label class="color-black">{$word->search}</label>
                 <div class="content-search-notes position-relative margin-b20">
                     <div class="display-flex margin-auto border-radius-4">
-                        <input id="search-forms" class="background-grely padding-10 border-focus-blue border-all border-grey border-top-left-radius border-top-right-radius border-bottom-right-radius border-bottom-left-radius w-100 color-black" type="text" autocomplete="off">
+                        <input id="search-periods" class="background-grely padding-10 border-focus-blue border-all border-grey border-top-left-radius border-top-right-radius border-bottom-right-radius border-bottom-left-radius w-100 color-black" type="text" autocomplete="off">
                     </div>
                 </div>
-                <div class="content-forms">
+                <div class="content-periods">
                     <div class="container-data-table">
                         <div class="cont-table-header">
                             <div class="scroll-table-header">
                                 <div class="display-inline-flex">
-                                    <div class="contsub-table-header w-100 display-flex padding-t15 padding-b15 border-bottom border-top border-grey" id="container-table-header">
+                                    <div class="contsub-table-header w-100 dv-vertical-center padding-t15 padding-b15 border-bottom border-top border-grey" id="container-table-header">
                                         <div class="cont-cell-header padding-lr20 color-black">
                                             ID
                                         </div>
                                         <div class="cont-cell-header padding-lr20 color-black">
-                                            {$word->user}
+                                            {$word->name}
                                         </div>
                                         <div class="cont-cell-header padding-lr20 color-black">
-                                            {$word->link}
+                                            {$word->start}
                                         </div>
                                         <div class="cont-cell-header padding-lr20 color-black">
-                                            {$word->access}
+                                            {$word->final}
                                         </div>
                                         <div class="cont-cell-header padding-lr20 color-black">
                                             {$word->status}
-                                        </div>
-                                        <div class="cont-cell-header padding-lr20 color-black">
-                                            {$word->expiration}
                                         </div>
                                         <div class="cont-cell-header padding-lr20 color-black">
                                             {$word->created}
@@ -42,7 +39,7 @@
                                     </div>
                                 </div>
                                 <div id="container-pages" class="display-inline-block">
-                                    {$forms}
+                                    {$periods}
                                 </div>
                             </div>
                         </div>
@@ -56,25 +53,33 @@
                                 </div>
                                 <button class="margin-r10 cursor-disabled color-black hover-button btn-noway load-table-page" id="navigation-first" data-type="first" disabled>
                                     <svg class="dv-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                        <path fill="currentColor" d="M 13.23 17.002 C 13.23 17.106 13.189 17.198 13.106 17.279 L 12.484 17.88 C 12.402 17.96 12.306 18 12.199 18 C 12.091 18 11.996 17.96 11.913 17.88 L 6.124 12.277 C 6.041 12.196 6 12.104 6 12 C 6 11.896 6.041 11.804 6.124 11.723 L 11.913 6.12 C 11.996 6.04 12.091 6 12.199 6 C 12.306 6 12.402 6.04 12.484 6.12 L 13.106 6.721 C 13.189 6.802 13.23 6.894 13.23 6.998 C 13.23 7.102 13.189 7.194 13.106 7.275 L 8.224 12 L 13.106 16.725 C 13.189 16.806 13.23 16.898 13.23 17.002 Z M 18 17.002 C 18 17.106 17.959 17.198 17.876 17.279 L 17.254 17.88 C 17.171 17.96 17.077 18 16.969 18 C 16.862 18 16.766 17.96 16.684 17.88 L 10.894 12.277 C 10.811 12.196 10.77 12.104 10.77 12 C 10.77 11.896 10.811 11.804 10.894 11.723 L 16.684 6.12 C 16.766 6.04 16.862 6 16.969 6 C 17.077 6 17.171 6.04 17.254 6.12 L 17.876 6.721 C 17.959 6.802 18 6.894 18 6.998 C 18 7.102 17.959 7.194 17.876 7.275 L 12.994 12 L 17.876 16.725 C 17.959 16.806 18 16.898 18 17.002 Z"
+                                        <path
+                                            fill="currentColor"
+                                            d="M 13.23 17.002 C 13.23 17.106 13.189 17.198 13.106 17.279 L 12.484 17.88 C 12.402 17.96 12.306 18 12.199 18 C 12.091 18 11.996 17.96 11.913 17.88 L 6.124 12.277 C 6.041 12.196 6 12.104 6 12 C 6 11.896 6.041 11.804 6.124 11.723 L 11.913 6.12 C 11.996 6.04 12.091 6 12.199 6 C 12.306 6 12.402 6.04 12.484 6.12 L 13.106 6.721 C 13.189 6.802 13.23 6.894 13.23 6.998 C 13.23 7.102 13.189 7.194 13.106 7.275 L 8.224 12 L 13.106 16.725 C 13.189 16.806 13.23 16.898 13.23 17.002 Z M 18 17.002 C 18 17.106 17.959 17.198 17.876 17.279 L 17.254 17.88 C 17.171 17.96 17.077 18 16.969 18 C 16.862 18 16.766 17.96 16.684 17.88 L 10.894 12.277 C 10.811 12.196 10.77 12.104 10.77 12 C 10.77 11.896 10.811 11.804 10.894 11.723 L 16.684 6.12 C 16.766 6.04 16.862 6 16.969 6 C 17.077 6 17.171 6.04 17.254 6.12 L 17.876 6.721 C 17.959 6.802 18 6.894 18 6.998 C 18 7.102 17.959 7.194 17.876 7.275 L 12.994 12 L 17.876 16.725 C 17.959 16.806 18 16.898 18 17.002 Z"
                                         />
                                     </svg>
                                 </button>
                                 <button class="margin-r10 cursor-disabled color-black hover-button btn-noway load-table-page" id="navigation-before" data-type="before">
                                     <svg class="dv-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                        <path fill="currentColor" d="M 15.7 6.998 C 15.7 7.102 15.658 7.194 15.573 7.275 L 10.576 12 L 15.573 16.725 C 15.658 16.806 15.7 16.898 15.7 17.002 C 15.7 17.106 15.658 17.198 15.573 17.279 L 14.937 17.88 C 14.852 17.96 14.755 18 14.645 18 C 14.534 18 14.437 17.96 14.352 17.88 L 8.427 12.277 C 8.342 12.196 8.3 12.104 8.3 12 C 8.3 11.896 8.342 11.804 8.427 11.723 L 14.352 6.12 C 14.437 6.04 14.534 6 14.645 6 C 14.755 6 14.852 6.04 14.937 6.12 L 15.573 6.721 C 15.658 6.802 15.7 6.894 15.7 6.998 Z"
+                                        <path
+                                            fill="currentColor"
+                                            d="M 15.7 6.998 C 15.7 7.102 15.658 7.194 15.573 7.275 L 10.576 12 L 15.573 16.725 C 15.658 16.806 15.7 16.898 15.7 17.002 C 15.7 17.106 15.658 17.198 15.573 17.279 L 14.937 17.88 C 14.852 17.96 14.755 18 14.645 18 C 14.534 18 14.437 17.96 14.352 17.88 L 8.427 12.277 C 8.342 12.196 8.3 12.104 8.3 12 C 8.3 11.896 8.342 11.804 8.427 11.723 L 14.352 6.12 C 14.437 6.04 14.534 6 14.645 6 C 14.755 6 14.852 6.04 14.937 6.12 L 15.573 6.721 C 15.658 6.802 15.7 6.894 15.7 6.998 Z"
                                         />
                                     </svg>
                                 </button>
                                 <button class="margin-r10 cursor-disabled color-black hover-button btn-noway load-table-page" id="navigation-after" data-type="after">
                                     <svg class="dv-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                        <path fill="currentColor" d="M 15.7 12 C 15.7 12.105 15.658 12.196 15.573 12.277 L 9.648 17.88 C 9.563 17.96 9.466 18 9.355 18 C 9.245 18 9.148 17.96 9.063 17.88 L 8.427 17.278 C 8.342 17.199 8.3 17.106 8.3 17.002 C 8.3 16.898 8.342 16.806 8.427 16.725 L 13.424 12 L 8.427 7.275 C 8.342 7.194 8.3 7.102 8.3 6.998 C 8.3 6.894 8.342 6.801 8.427 6.722 L 9.063 6.12 C 9.148 6.04 9.245 6 9.355 6 C 9.466 6 9.563 6.04 9.648 6.12 L 15.573 11.723 C 15.658 11.804 15.7 11.895 15.7 12 Z"
+                                        <path
+                                            fill="currentColor"
+                                            d="M 15.7 12 C 15.7 12.105 15.658 12.196 15.573 12.277 L 9.648 17.88 C 9.563 17.96 9.466 18 9.355 18 C 9.245 18 9.148 17.96 9.063 17.88 L 8.427 17.278 C 8.342 17.199 8.3 17.106 8.3 17.002 C 8.3 16.898 8.342 16.806 8.427 16.725 L 13.424 12 L 8.427 7.275 C 8.342 7.194 8.3 7.102 8.3 6.998 C 8.3 6.894 8.342 6.801 8.427 6.722 L 9.063 6.12 C 9.148 6.04 9.245 6 9.355 6 C 9.466 6 9.563 6.04 9.648 6.12 L 15.573 11.723 C 15.658 11.804 15.7 11.895 15.7 12 Z"
                                         />
                                     </svg>
                                 </button>
                                 <button class="margin-r10 cursor-disabled color-black hover-button btn-noway load-table-page" id="navigation-last" data-type="last">
                                     <svg class="dv-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                        <path fill="currentColor" d="M 13.23 12 C 13.23 12.104 13.188 12.196 13.106 12.277 L 7.317 17.88 C 7.234 17.96 7.139 18 7.031 18 C 6.923 18 6.828 17.96 6.745 17.88 L 6.124 17.279 C 6.041 17.198 6 17.106 6 17.002 C 6 16.898 6.041 16.806 6.124 16.725 L 11.006 12 L 6.124 7.275 C 6.041 7.194 6 7.102 6 6.998 C 6 6.894 6.041 6.802 6.124 6.721 L 6.745 6.12 C 6.828 6.04 6.923 6 7.031 6 C 7.139 6 7.234 6.04 7.317 6.12 L 13.106 11.723 C 13.188 11.804 13.23 11.896 13.23 12 Z M 18 12 C 18 12.104 17.959 12.196 17.876 12.277 L 12.087 17.88 C 12.004 17.96 11.909 18 11.801 18 C 11.694 18 11.598 17.96 11.516 17.88 L 10.894 17.279 C 10.812 17.198 10.77 17.106 10.77 17.002 C 10.77 16.898 10.812 16.806 10.894 16.725 L 15.776 12 L 10.894 7.275 C 10.812 7.194 10.77 7.102 10.77 6.998 C 10.77 6.894 10.812 6.802 10.894 6.721 L 11.516 6.12 C 11.598 6.04 11.694 6 11.801 6 C 11.909 6 12.004 6.04 12.087 6.12 L 17.876 11.723 C 17.959 11.804 18 11.896 18 12 Z"
+                                        <path
+                                            fill="currentColor"
+                                            d="M 13.23 12 C 13.23 12.104 13.188 12.196 13.106 12.277 L 7.317 17.88 C 7.234 17.96 7.139 18 7.031 18 C 6.923 18 6.828 17.96 6.745 17.88 L 6.124 17.279 C 6.041 17.198 6 17.106 6 17.002 C 6 16.898 6.041 16.806 6.124 16.725 L 11.006 12 L 6.124 7.275 C 6.041 7.194 6 7.102 6 6.998 C 6 6.894 6.041 6.802 6.124 6.721 L 6.745 6.12 C 6.828 6.04 6.923 6 7.031 6 C 7.139 6 7.234 6.04 7.317 6.12 L 13.106 11.723 C 13.188 11.804 13.23 11.896 13.23 12 Z M 18 12 C 18 12.104 17.959 12.196 17.876 12.277 L 12.087 17.88 C 12.004 17.96 11.909 18 11.801 18 C 11.694 18 11.598 17.96 11.516 17.88 L 10.894 17.279 C 10.812 17.198 10.77 17.106 10.77 17.002 C 10.77 16.898 10.812 16.806 10.894 16.725 L 15.776 12 L 10.894 7.275 C 10.812 7.194 10.77 7.102 10.77 6.998 C 10.77 6.894 10.812 6.802 10.894 6.721 L 11.516 6.12 C 11.598 6.04 11.694 6 11.801 6 C 11.909 6 12.004 6.04 12.087 6.12 L 17.876 11.723 C 17.959 11.804 18 11.896 18 12 Z"
                                         />
                                     </svg>
                                 </button>
@@ -84,7 +89,7 @@
                     </div>
                     <div class="display-flex flex-end margin-t50">
                         <span class="color-black dv-vertical-center margin-r10">
-                            {$word->if_you_want_add_form}
+                            {$word->if_you_want_add_period}
                         </span>
                         <button class="btn-noway background-blue border-radius-4 padding-10 cursor-disabled color-white hover-opacity" id="show-pmodal">{$word->add}</button>
                     </div>
@@ -93,38 +98,36 @@
         </div>
     </div>
 </div>
-<div class="content-modal" id="alert-forms">
+<div class="content-modal" id="alert-periods">
     <div class="cont-dialog">
         <div class="cont-popup background-white">
             <div class="top-header">
                 <div class="padding-t15 padding-b15 w-100 font-lowly color-black">
-                    {$word->add_new_form}
+                    {$word->add_new_academic_term}
                 </div>
             </div>
             <div class="content-modal-body color-grey">
                 <div class="group-validate display-block position-relative w-100 padding-25">
                     <div class="display-flex flex-wrap">
                         <div class="cont-label dv-vertical-center">
-                            <label class="color-black">{$word->link}</label>
+                            <label class="color-black">{$word->period}</label>
                         </div>
                         <div class="flex-grow">
-                            <a id="form_key" class="color-blue" href="#" target="_blank"></a>
+                            <div class="dv-vertical-center">
+                                <input id="year" type="text" class="cont-input mw-w-100 h-50 border-radius-12 background-grely color-black text-center margin-r10" readonly="true"/>
+                                <input id="period" type="number" class="cont-input w-50 h-50 border-radius-12 animated-easy border-focus-blue number area_validate background-grely color-black"/>
+                            </div>
+                            <div class="color-red text-left text-error font-low margin-t5"></div>  
                         </div>
                     </div>
                 </div>
-                <div class="group-validate display-block position-relative w-100 padding-25">
+                <div class="group-validate display-block margin-t15 position-relative w-100 padding-25">
                     <div class="display-flex flex-wrap">
                         <div class="cont-label dv-vertical-center">
-                            <label class="color-black">{$word->access}</label>
+                            <label class="color-black">{$word->start}</label>
                         </div>
                         <div class="flex-grow">
-                            <input id="access" class="hidden" type="text">
-                            <ul id="tips" class="content-tips cont-input h-100 background-grely border-radius-12 animated-easy color-black">
-                                <li class="tipsit-new">
-                                    <input id="tips-val" class="color-black number area_validate" type="number">
-                                    <div class="search-down position-absolute z-index-first background-white overflow-hidden border-all border-grey border-top-left-radius border-top-right-radius border-bottom-left-radius border-bottom-right-radius"></div>
-                                </li>
-                            </ul>
+                            <input id="start" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue area_changed area_validate background-grely color-black" type="date">
                             <div class="color-red text-left text-error font-low margin-t5"></div>
                         </div>
                     </div>
@@ -132,10 +135,10 @@
                 <div class="group-validate display-block margin-t15 position-relative w-100 padding-25">
                     <div class="display-flex flex-wrap">
                         <div class="cont-label dv-vertical-center">
-                            <label class="color-black">{$word->expiration}</label>
+                            <label class="color-black">{$word->final}</label>
                         </div>
                         <div class="flex-grow">
-                            <input id="expire" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue area_validate background-grely color-black" type="date" min="{$date_now}">
+                            <input id="final" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue area_changed area_validate background-grely color-black" type="date">
                             <div class="color-red text-left text-error font-low margin-t5"></div>
                         </div>
                     </div>
@@ -154,11 +157,12 @@
                         </div>
                     </div>
                 </div>
+
             </div>
             <div class="display-flex">
                 <div class="margin-left-auto margin-r25 margin-b15">
                     <button class="btn-noway background-grely border-radius-4 padding-10 color-black hover-button font-uppercase" id="cancel-alert">{$word->cancel}</button>
-                    <button class="btn-noway background-blue border-radius-4 padding-10 color-black hover-opacity font-uppercase" data-type="add" id="this-form">
+                    <button class="btn-noway background-blue border-radius-4 padding-10 color-black hover-opacity font-uppercase" data-type="add" id="this-period">
                         <span class="color-white">{$word->save}</span>
                         <div class="content-spinner-circle">
                             <div class="spinner-circle"></div>
@@ -170,11 +174,11 @@
     </div>
 </div>
 <div class="cont-alert" id="alert-delete">
-   <h2 class="color-red">{$word->delete} {$word->form}</h2>
+   <h2 class="color-red">{$word->delete} {$word->period}</h2>
    <p>{$word->this_action_cannot_undone_continue}</p>
    <div class="padding-t25">
       <button class="btn-noway background-grely border-radius-4 padding-10 color-black hover-button font-uppercase" id="cancel-dalert">{$word->cancel}</button>
-      <button class="btn-noway background-blue border-radius-4 padding-10 color-black hover-opacity font-uppercase" id="delete-form">
+      <button class="btn-noway background-blue border-radius-4 padding-10 color-black hover-opacity font-uppercase" id="delete-period">
         <span class="color-white">{$word->delete}</span>
         <div class="content-spinner-circle">
             <div class="spinner-circle"></div>
@@ -186,28 +190,27 @@
 <script>
 var GE = D.querySelectorAll('.show_emodal'),
     GW = D.querySelectorAll('.show_dmodal'),
-    GL = D.querySelectorAll('.load-table-page'),
     GC = D.querySelectorAll('.area_validate'),
+    GL = D.querySelectorAll('.load-table-page'),
+    GR = D.querySelectorAll('.area_changed'),
     GV = D.querySelector('.content-modal-body'),
-    GA = D.querySelector('#search-forms'),
-    GB = D.querySelector('#this-form'),
-    GQ = D.querySelector('#delete-form'),
-    GI = D.querySelector('#alert-forms'),
+    GA = D.querySelector('#search-periods'),
+    GB = D.querySelector('#this-period'),
+    GQ = D.querySelector('#delete-period'),
+    GI = D.querySelector('#alert-periods'),
     GT = D.querySelector('#alert-delete'),
-    GM = D.querySelector('#form_key'),
-    GP = D.querySelector('#access'),
-    GN = D.querySelector('#expire'),
-    GR = D.querySelector('#status'),
+    GO = D.querySelector('#year'),
+    GM = D.querySelector('#period'),
+    GU = D.querySelector('#start'),
+    GF = D.querySelector('#final'),
+    GG = D.querySelector('#status'),
     TE = D.querySelector('#navigation-after'),
     TO = D.querySelector('#navigation-before'),
     TR = D.querySelector('#navigation-first'),
     TS = D.querySelector('#navigation-last'),
     TN = D.querySelector('#page-now'),
-    GF = D.querySelector('#tips'),
-    GX = GP.value ? GP.value.split(',') : Array(),
-    ga = D.querySelector('#tips-val'),
     bDisabled = function(){
-        if(GP.value != '' && GR.value != ''){
+        if(GM.value != '' && GU.value != '' && GF.value != '' && GG.value != ''){
             GB.removeAttribute('disabled');
         } else {
             GB.setAttribute('disabled', true);
@@ -215,61 +218,30 @@ var GE = D.querySelectorAll('.show_emodal'),
     },
     GS = function(){
         var self = this,
-            form_id = self.getAttribute('data-id');
+            period_id = self.getAttribute('data-id');
         self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
-        Req('{$url->{req/rol-academic/get-foitems}}', function(e){
+        Req('{$url->{req/rol-academic/get-peitems}}', function(e){
             if(e.status == 200){
-                var ge = e.items;
-                D.querySelectorAll('.group-validate')[0].style.display = "", GM.href = "{$url->{register}}/"+ge['form_key'], GM.innerText = ge['form_key'], GN.value = ge['expire'], GR.value = ge['status'];
-                for (var j = 0, i = ge['access'].length; j < i; j++) createTag(ge['access'][j]);
-                GI.style.display = "block", D.body.style.overflow = "hidden", GB.setAttribute('data-id', form_id), GB.setAttribute('data-type', 'edit'), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
+                for (var key in e.items) D.querySelector('#'+key).value = e.items[key];
+                GI.style.display = "block", D.body.style.overflow = "hidden", GB.setAttribute('data-id', period_id), GB.setAttribute('data-type', 'edit'), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
             } else {
                 self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
             }
-        }, "POST", "&id=" + form_id)
+        }, "POST", "&id=" + period_id)
     },
     GD = function(){
         GT.style.display = "block", D.body.style.overflow = "hidden", GQ.setAttribute('data-id', this.getAttribute('data-id'));
     },
-    createTag = function(gi){
-        var FU = D.createElement("li"),
-            gi = parseInt(gi),
-            zp = GX.indexOf(gi, 0);
-        removeClass(GF, 'border-red'), removeClass(GF, 'boxshadow-red'), GF.parentNode.querySelector('.text-error').innerText = '';
-        if(zp == -1){
-            FU.className = 'border-grey tipsit-choice', FU.innerHTML = '<span class="color-black tipsit-label">' + gi + '</span><span class="tipsit_close"></span>', GF.insertBefore(FU, D.querySelector('.tipsit-new')), GX.push(gi), GP.value = GX.join(), ga.value = "", addEvent(FU.querySelector('.tipsit_close'), "click", function(){
-                FU.remove(), GX.splice(GX.indexOf(FU.querySelector('.tipsit_close-label').innerText), 1), GP.value = GX;
-            });
-        } else {
-            var zy = D.querySelectorAll('.tipsit-choice');
-            zy[zp].setAttribute('style', 'border-color: #c23321 !important;'), timeDelay(function(){
-                zy[zp].removeAttribute('style');
-            }, 500);
-        }
-        bDisabled();
-    },
     TA = 1,
     TT = {#total_pages};
 
-addEvent(D.querySelector('.number'), 'input', function(){
-    this.value = this.value.replace(/[^0-9]/gi, '');
-}), addEvent(ga, "keydown", function (c) {
-    var self = this;
-    if (c.which == 8 && "" === self.value) {
-        var GK = D.querySelectorAll('.tipsit-choice'),
-            GO = GK[GK.length - 1];
-        GO && (GO.remove(), GX.splice(GX.indexOf(GO.querySelector('.tipsit-label').innerText), 1), GP.value = GX);
-    }
-    if ("" !== self.value && self.value.trim().length != 0 && self.value.indexOf(',', 0) == -1 && ((c.which === 13 && !1 === c.shiftKey) || c.which === 13 || c.which == 9 || (c.which == 188 && (',' != self.value.trim().replace(/^s*/, "").charAt(0) || (',' == self.value.trim().charAt(0) && ',' == self.value.trim().charAt(self.value.trim().length - 1) && 0 !== self.value.trim().length - 1)))  )) {
-            (c.which === 13 && "" === self.value) || c.preventDefault(), createTag(self.value);
-    }
-}), addEvent(ga, "blur", function (c) {
-    if("" !== this.value) createTag(this.value);
+addEvent(GU, 'change', function(e){
+    GO.value = this.value.split('-')[0];
+}), addEvent(GU, 'keyup', function(e){
+    GO.value = this.value.split('-')[0];
 }), addEvent(D.querySelector('#show-pmodal'), 'click', function(){
-    var gf = D.querySelectorAll('.tipsit-choice');
     GI.style.display = "block", D.body.style.overflow = "hidden", GB.setAttribute('data-type', 'add'), GB.removeAttribute('data-id'), scrollTo(0, GV);
-    D.querySelectorAll('.group-validate')[0].style.display = "none", GP.value = "", GX = [], GN.value = "", GR.value = GR.children[0].getAttribute('value');
-    for(var j = 0, i = gf.length; j < i; j++) gf[j].remove();
+    for(var j = 0, i = GC.length; j < i; j++) GC[j].value = (GC[j].nodeName != 'SELECT') ? '' : GC[j].children[0].getAttribute('value');
 }), addEvent(D.querySelector('#cancel-alert'), 'click', function(){
     GI.style.display = "", D.body.style.overflow = "";
 }), addEvent(D.querySelector('#cancel-dalert'), 'click', function(){
@@ -277,18 +249,13 @@ addEvent(D.querySelector('.number'), 'input', function(){
 }), addEvent(GB, 'click', function(){
     var self = this,
         type = self.getAttribute('data-type');
-    if((new Date()).toISOString().split('T')[0] != GN.min) {
-        loadAlert("{$word->error}", 1);
-        return false;   
-    }
-    if(GP.value == '' || GR.value == ''){
+    if(GM.value == '' || GU.value == '' || GF.value == '' || GG.value == ''){
         for (var j = 0, i = GC.length; j < i; j++){
-            var el = GC[j].id == 'tips-val' ? GP : GC[j],
-                elb = GC[j].id == 'tips-val' ? GF : el,
+            var el = GC[j],
                 GZ = el.parentNode,
                 GH = hasClass(GZ, 'group-validate') ? GZ : GZ.parentNode;
             if(el.value == '' && !el.getAttribute('disabled')){
-                GH.querySelector('.text-error').innerText = '*{$word->this_field_is_empty}', addClass(elb, 'border-red'), addClass(elb, 'boxshadow-red'), timeDelay(function(){
+                GH.querySelector('.text-error').innerText = '*{$word->this_field_is_empty}', addClass(el, 'border-red'), addClass(el, 'boxshadow-red'), timeDelay(function(){
                     addClass(GI, 'efect-boom'), timeDelay(function(){
                         removeClass(GI, 'efect-boom')
                     }, 200)
@@ -298,28 +265,25 @@ addEvent(D.querySelector('.number'), 'input', function(){
         return false;
     } else {
         for (var j = 0, i = GC.length; j < i; j++) {
-            var el = GC[j].id == 'tips-val' ? GP : GC[j],
-                elb = GC[j].id == 'tips-val' ? GF : el,
+            var el = GC[j],
                 GZ = el.parentNode,
                 GH = hasClass(GZ, 'group-validate') ? GZ : GZ.parentNode;
             if(el.value != ''){
-                GH.querySelector('.text-error').innerText = "", removeClass(elb, 'border-red'), removeClass(elb, 'boxshadow-red');
+                GH.querySelector('.text-error').innerText = "", removeClass(el, 'border-red'), removeClass(el, 'boxshadow-red');
             }
         }
     }
-
     GB.setAttribute('disabled', true), addClass(GB, 'spinner-is-loading');
-    Req('{$url->{req/rol-academic/this-forms}}', function(e){
+    Req('{$url->{req/rol-academic/this-periods}}', function(e){
         if(e.status == 200){
-            GI.style.display = "", loadAlert((type == 'add' ? "{$word->form_added_successfully}" : "{$word->form_updated_successfully}")), preloadPage('&one=forms');
+            GI.style.display = "", loadAlert((type == 'add' ? "{$word->period_added_successfully}" : "{$word->period_updated_successfully}")), preloadPage('&one=periods');
         } else {
             if (e.errors != undefined) {
                 for (var j = 0, i = e.errors.length; j < i; j++){
-                    var el = e.errors[j] == 'tips-val' ? GP : D.querySelector('#'+e.errors[j]),
-                        elb = e.errors[j] == 'tips-val' ? GF : el,
+                    var el = D.querySelector('#'+e.errors[j]),
                         GZ = el.parentNode,
                         GH = hasClass(GZ, 'group-validate') ? GZ : GZ.parentNode;
-                    addClass(elb, 'border-red'), addClass(elb, 'boxshadow-red'), GH.querySelector('.text-error').innerText = '*{$word->please_enter_valid_value}', timeDelay(function(){
+                    addClass(el, 'border-red'), addClass(el, 'boxshadow-red'), GH.querySelector('.text-error').innerText = '*{$word->please_enter_valid_value}', timeDelay(function(){
                         addClass(GI, 'efect-boom'), timeDelay(function(){
                             removeClass(GI, 'efect-boom')
                         }, 200)
@@ -327,11 +291,10 @@ addEvent(D.querySelector('.number'), 'input', function(){
                 }
             } else if(e.emptys != undefined){
                 for (var j = 0, i = e.emptys.length; j < i; j++){
-                    var el = e.emptys[j] == 'tips-val' ? GP : D.querySelector('#'+e.emptys[j]),
-                        elb = e.emptys[j] == 'tips-val' ? GF : el,
+                    var el = D.querySelector('#'+e.emptys[j]),
                         GZ = el.parentNode,
                         GH = hasClass(GZ, 'group-validate') ? GZ : GZ.parentNode;
-                    if(!el.getAttribute('disabled')) GH.querySelector('.text-error').innerText = '*{$word->this_field_is_empty}', addClass(elb, 'border-red'), addClass(elb, 'boxshadow-red'), timeDelay(function(){
+                    if(!el.getAttribute('disabled')) GH.querySelector('.text-error').innerText = '*{$word->this_field_is_empty}', addClass(el, 'border-red'), addClass(el, 'boxshadow-red'), timeDelay(function(){
                             addClass(GI, 'efect-boom'), timeDelay(function(){
                                 removeClass(GI, 'efect-boom')
                             }, 200)
@@ -342,21 +305,21 @@ addEvent(D.querySelector('.number'), 'input', function(){
             }
             GB.removeAttribute('disabled'), removeClass(GB, 'spinner-is-loading');
         }
-    }, "POST", "&type=" + type + "&id=" + self.getAttribute('data-id') + "&access=" + GP.value + "&status=" + GR.value + "&expire=" + GN.value + "&min=" + GN.min)
+    }, "POST", "&type=" + type + "&id=" + self.getAttribute('data-id') + "&period=" + GM.value + "&start=" + GU.value + "&final=" + GF.value + "&status=" + GG.value)
 }), addEvent(GQ, "click", function(){
     var self = this; 
     self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
-    Req('{$url->{req/rol-academic/delete-form}}', function(e){
+    Req('{$url->{req/rol-academic/delete-period}}', function(e){
         if(e.status == 200){
-            GT.style.display = "", loadAlert("{$word->form_successfully_removed}", 1), preloadPage('&one=forms');
+            GT.style.display = "", loadAlert("{$word->period_removed_successfully}", 1), preloadPage('&one=periods');
         } else {
-            self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
+            self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading'), loadAlert(e.error, 1);
         }
     }, "POST", "&id=" + self.getAttribute('data-id'));
 }), addEvent(GA, 'keyup', function(){
     var self = this,
         TZ = D.querySelector('#table-footer');
-    Req('{$url->{req/rol-academic/search-forms}}', function(e){
+    Req('{$url->{req/rol-academic/search-periods}}', function(e){
         if(e.status == 200){
             <?php echo($TEMP['#total_pages'] > 1) ? "TT = e.total_pages, TA = 1, TO.setAttribute('disabled', true), TR.setAttribute('disabled', true), TE.removeAttribute('disabled'), TS.removeAttribute('disabled'), D.querySelector('#total-pages').innerText = TT, TN.innerText = TA, TZ && (TT <= 1 ? TZ.style.display = 'none' : TZ.removeAttribute('style')), " : ""?>D.querySelector('#container-pages').innerHTML = e.html, loadPage(D.querySelectorAll('a[target="_self"]')), GE = D.querySelectorAll('.show_emodal'), GW = D.querySelectorAll('.show_dmodal');
             for(var j = 0, i = GE.length; j < i; j++) addEvent(GE[j], "click", GS);
@@ -365,11 +328,13 @@ addEvent(D.querySelector('.number'), 'input', function(){
             D.querySelector('#container-pages').innerHTML = e.html<?php echo($TEMP['#total_pages'] > 1) ? ', TZ.style.display = "none"' : '';?>; 
         }
     }, "POST", "&keyword=" + self.value)
-}), addEvent(GR, 'change', bDisabled);
-
-for(var j = 0, i = GC.length; j < i; j++) addEvent(GC[j], 'keyup', bDisabled);
+}), addEvent(D.querySelector('.number'), 'input', function(){
+    this.value = this.value.replace(/[^0-9]/gi, '');
+});
 for(var j = 0, i = GE.length; j < i; j++) addEvent(GE[j], "click", GS);
 for(var j = 0, i = GW.length; j < i; j++) addEvent(GW[j], "click", GD);
+for (var j = 0, i = GR.length; j < i; j++) addEvent(GR[j], 'change', bDisabled);
+for (var j = 0, i = GC.length; j < i; j++) addEvent(GC[j], 'keyup', bDisabled);
 for (var j = 0, i = GL.length; j < i; j++) addEvent(GL[j], "click", function(){
     var self = this,
         type = self.getAttribute('data-type');
@@ -407,7 +372,7 @@ for (var j = 0, i = GL.length; j < i; j++) addEvent(GL[j], "click", function(){
         TS.setAttribute('disabled', true);
         TE.setAttribute('disabled', true);
     }
-    Req("{$url->{req/rol-academic/table-forms}}", function(e){
+    Req("{$url->{req/rol-academic/table-periods}}", function(e){
         if(e.status == 200){
             D.querySelector('#container-pages').innerHTML = e.html, GE = D.querySelectorAll('.show_emodal'), GW = D.querySelectorAll('.show_dmodal');
             for(var j = 0, i = GE.length; j < i; j++) addEvent(GE[j], "click", GS);

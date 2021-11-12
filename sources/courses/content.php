@@ -22,6 +22,7 @@ $TEMP['#total_pages'] = $dba->totalPages;
 if(!empty($courses)){
 	foreach ($courses as $course) {
 		$parameters = json_decode($course['parameters']);
+		$preknowledge = explode(',', $course['preknowledge']);
 		$teachers = $dba->query('SELECT names FROM users u WHERE (SELECT user_id FROM teacher WHERE user_id = u.id AND course_id = '.$course['id'].') = id')->fetchAll(false);
 		$enrolled = $dba->query('SELECT COUNT(*) FROM enrolled WHERE course_id = '.$course['id'])->fetchArray();
 		if(count($teachers) == 2){
@@ -36,6 +37,7 @@ if(!empty($courses)){
 		$TEMP['!id'] = $course['id'];
         $TEMP['!code'] = $course['code'];
 		$TEMP['!name'] = $course['name'];
+		$TEMP['!preknowledge'] = !empty($course['preknowledge']) ? count($preknowledge) : 0;
 		$TEMP['!parameters'] = count($parameters);
 		$TEMP['!program'] = $dba->query('SELECT name FROM programs WHERE id = '.$course['program_id'])->fetchArray();
 		$TEMP['!period'] = $dba->query('SELECT name FROM periods WHERE id = '.$course['period_id'])->fetchArray();

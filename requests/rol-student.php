@@ -127,13 +127,38 @@ if($one == 'search-enrolled'){
     $code = Specific::Filter($_POST['code']);
 
     if (isset($id) && is_numeric($id)) {
-    	$enrolled_courses = $dba->query('SELECT COUNT(*) FROM enrolled WHERE type = "program" AND user_id = '.$user_id.' AND course_id = '.$id)->fetchArray();
+    	$enrolled_courses = $dba->query('SELECT COUNT(*) FROM enrolled WHERE type = "course" AND user_id = '.$user_id.' AND course_id = '.$id)->fetchArray();
     	if($enrolled_courses == 0){
 	    	if(Specific::Academic() == true || !empty($code)){
 	    		$courses = $dba->query('SELECT * FROM courses WHERE id = "'.$id.'"')->fetchArray();
 		        if(Specific::Academic() == true || $courses['code'] === $code){
-		        	if($dba->query('INSERT INTO enrolled (user_id, course_id, program_id, type, status, `time`) VALUES ('.$user_id.', '.$id.', 0, "course", "registered",'.time().')')->returnStatus() && $dba->query('INSERT INTO notes (user_id, period_id, course_id, program_id, notes, `time`) VALUES ('.$user_id.','.$courses['period_id'].','.$id.','.$courses['program_id'].', "'.json_encode(array(0.0, 0.0, 0.0)).'",'.time().')')->returnStatus()){
-		        		$deliver['status'] = 200;
+		        	$prektrues = array();
+		        	$preknowledges = explode(',', $courses['preknowledge']);
+		        	foreach ($preknowledges as $prek) {
+		        		$course = $dba->query('SELECT * FROM courses WHERE id = '.$prek)->fetchArray();
+		        		$notes = $dba->query('SELECT notes FROM notes WHERE user_id = '.$user_id.' AND course_id = '.$prek)->fetchArray();
+		        		$notes = json_decode($notes, true);
+		        		for ($i=0; $i < 3; $i++) { 
+					    	$anotes = array();
+						    $rnotes = json_decode($notes[$i], true);
+					        $parameters = json_decode($course['parameters'], true)[$i];
+					        foreach ($parameters as $key => $param) {
+					        	$anotes[] = (($rnotes[$key]/100)*$param['percent']);
+					        }
+					        $notes[$i] = array_sum($anotes);
+					    }
+					    $average = round((($notes[0]*0.3)+($notes[1]*0.3)+($notes[2]*0.4)), 2);
+					    $prektrues[] = ($course['type'] == 'practice' && $average >= 3.5) || ($course['type'] == 'theoretical' && $average >= 3.0) ? true : false;
+		        	}
+		        	if(!in_array(false, $prektrues)){
+		        		if($dba->query('INSERT INTO enrolled (user_id, course_id, program_id, type, status, `time`) VALUES ('.$user_id.', '.$id.', 0, "course", "registered",'.time().')')->returnStatus() && $dba->query('INSERT INTO notes (user_id, course_id, notes, `time`) VALUES ('.$user_id.','.$id.', "'.json_encode(array(0.0, 0.0, 0.0)).'",'.time().')')->returnStatus()){
+			        		$deliver['status'] = 200;
+			        	}
+		        	} else {
+		        		$deliver = array(
+		        			'status' => 400,
+		        			'error' => $TEMP['#word']['you_must_first_approve_prequalifications']
+		        		);
 		        	}
 		        } else {
 		        	$deliver = array(

@@ -17,6 +17,7 @@ if(!empty($forms)){
 		$TEMP['!form_key'] = $form['form_key'];
 		$TEMP['!access'] = count($access);
 		$TEMP['!status'] = $TEMP['#word'][$form['status']];
+		$TEMP['!expire'] = Specific::DateFormat($form['expire']);
 		$TEMP['!time'] = Specific::DateFormat($form['time']);
 		$TEMP['forms'] .= Specific::Maket('forms/includes/forms-list');
 	}
@@ -24,6 +25,8 @@ if(!empty($forms)){
 } else {
 	$TEMP['forms'] .= Specific::Maket('not-found/forms');
 }
+
+$TEMP['date_now'] = date("Y-m-d");
 
 $TEMP['#page']        = 'forms';
 $TEMP['#title']       = $TEMP['#word']['forms'] . ' - ' . $TEMP['#settings']['title'];

@@ -26,6 +26,7 @@ if($one == 'search-courses') {
         if (!empty($courses)) {
             foreach ($courses as $course) {
                 $parameters = json_decode($course['parameters']);
+                $preknowledge = explode(',', $course['preknowledge']);
                 $teachers = $dba->query('SELECT names FROM users u WHERE (SELECT user_id FROM teacher WHERE user_id = u.id AND course_id = '.$course['id'].') = id')->fetchAll(false);
                 $enrolled = $dba->query('SELECT COUNT(*) FROM enrolled WHERE course_id = '.$course['id'])->fetchArray();
                 if(count($teachers) == 2){
@@ -40,6 +41,7 @@ if($one == 'search-courses') {
                 $TEMP['!id'] = $course['id'];
                 $TEMP['!code'] = $course['code'];
                 $TEMP['!name'] = $course['name'];
+                $TEMP['!preknowledge'] = !empty($course['preknowledge']) ? count($preknowledge) : 0;
                 $TEMP['!parameters'] = count($parameters);
                 $TEMP['!program'] = $dba->query('SELECT name FROM programs WHERE id = '.$course['program_id'])->fetchArray();
                 $TEMP['!period'] = $dba->query('SELECT name FROM periods WHERE id = '.$course['period_id'])->fetchArray();
@@ -82,6 +84,7 @@ if($one == 'search-courses') {
         if (!empty($courses)) {
             foreach ($courses as $course) {
                 $parameters = json_decode($course['parameters']);
+                $preknowledge = explode(',', $course['preknowledge']);
                 $teachers = $dba->query('SELECT names FROM users u WHERE (SELECT user_id FROM teacher WHERE user_id = u.id AND course_id = '.$course['id'].') = id')->fetchAll(false);
                 $enrolled = $dba->query('SELECT COUNT(*) FROM enrolled WHERE course_id = '.$course['id'])->fetchArray();
                 if(count($teachers) == 2){
@@ -96,6 +99,7 @@ if($one == 'search-courses') {
                 $TEMP['!id'] = $course['id'];
                 $TEMP['!code'] = $course['code'];
                 $TEMP['!name'] = $course['name'];
+                $TEMP['!preknowledge'] = !empty($course['preknowledge']) ? count($preknowledge) : 0;
                 $TEMP['!parameters'] = count($parameters);
                 $TEMP['!program'] = $dba->query('SELECT name FROM programs WHERE id = '.$course['program_id'])->fetchArray();
                 $TEMP['!period'] = $dba->query('SELECT name FROM periods WHERE id = '.$course['period_id'])->fetchArray();
@@ -215,37 +219,39 @@ if($one == 'search-courses') {
             $errors[] = 'schedule';
         }
         if (empty($errors)) {
-            $teachers = explode(',', $teachers);
-            if($type == 'add'){
-                $course_id = $dba->query('INSERT INTO courses (code, name, program_id, period_id, semester, credits, quota, type, schedule, `time`) VALUES ("'.$code.'", '.$name.', '.$program_id.','.$period_id.','.$semester.','.$credit.','.$quota.',"'.$typec.'","'.$schedule.'",'.time().')')->insertId();
-                if(isset($course_id)){
-                    foreach ($teachers as $teacher_id) {
-                        if($teacher_id == end($teachers) && $dba->query('INSERT INTO teacher (user_id, course_id, `time`) VALUES ('.$teacher_id.','.$course_id.','.time().')')->returnStatus()){
-                             $deliver['status'] = 200;
+            if(!empty($type)){
+                $teachers = explode(',', $teachers);
+                if($type == 'add'){
+                    $course_id = $dba->query('INSERT INTO courses (code, name, program_id, period_id, semester, credits, quota, type, schedule, `time`) VALUES ("'.$code.'", '.$name.', '.$program_id.','.$period_id.','.$semester.','.$credit.','.$quota.',"'.$typec.'","'.$schedule.'",'.time().')')->insertId();
+                    if(isset($course_id)){
+                        foreach ($teachers as $teacher_id) {
+                            if($teacher_id == end($teachers) && $dba->query('INSERT INTO teacher (user_id, course_id, `time`) VALUES ('.$teacher_id.','.$course_id.','.time().')')->returnStatus()){
+                                 $deliver['status'] = 200;
+                            }
                         }
                     }
-                }
-            } else if(isset($id) && is_numeric($id)){
-                if($dba->query('UPDATE courses SET code = ?, name = ?, program_id = ?, period_id = ?, semester = ?, credits = ?, quota = ?, type = ?, schedule = ? WHERE id = '.$id, $code, $name, $program_id, $period_id, $semester, $credit, $quota, $typec, $schedule)->returnStatus()){
-                    $teachers_all = $dba->query('SELECT user_id FROM teacher WHERE course_id = '.$id)->fetchAll(false);
-                    $deleted = array_diff($teachers_all, $teachers);
-                    $addf = array_diff($teachers, $teachers_all);
-                    $adds = explode(',', implode(',', $addf));
-                    if(count($addf) > 0 || count($deleted) > 0){
-                        if(count($addf) > 0){
-                            for ($i=0; $i < count($adds); $i++) {
-                                if($dba->query('INSERT INTO teacher (user_id, course_id, `time`) VALUES ('.$adds[$i].','.$id.','.time().')')->returnStatus()){
+                } else if(isset($id) && is_numeric($id)){
+                    if($dba->query('UPDATE courses SET code = ?, name = ?, program_id = ?, period_id = ?, semester = ?, credits = ?, quota = ?, type = ?, schedule = ? WHERE id = '.$id, $code, $name, $program_id, $period_id, $semester, $credit, $quota, $typec, $schedule)->returnStatus()){
+                        $teachers_all = $dba->query('SELECT user_id FROM teacher WHERE course_id = '.$id)->fetchAll(false);
+                        $deleted = array_diff($teachers_all, $teachers);
+                        $addf = array_diff($teachers, $teachers_all);
+                        $adds = explode(',', implode(',', $addf));
+                        if(count($addf) > 0 || count($deleted) > 0){
+                            if(count($addf) > 0){
+                                for ($i=0; $i < count($adds); $i++) {
+                                    if($dba->query('INSERT INTO teacher (user_id, course_id, `time`) VALUES ('.$adds[$i].','.$id.','.time().')')->returnStatus()){
+                                        $deliver['status'] = 200;
+                                    }
+                                }
+                            }
+                            if(count($deleted) > 0){
+                                if($dba->query('DELETE FROM teacher WHERE user_id IN ('.implode(',', $deleted).')')->returnStatus()){    
                                     $deliver['status'] = 200;
                                 }
                             }
+                        } else {
+                            $deliver['status'] = 200;
                         }
-                        if(count($deleted) > 0){
-                            if($dba->query('DELETE FROM teacher WHERE user_id IN ('.implode(',', $deleted).')')->returnStatus()){    
-                                $deliver['status'] = 200;
-                            }
-                        }
-                    } else {
-                        $deliver['status'] = 200;
                     }
                 }
             }
@@ -272,22 +278,28 @@ if($one == 'search-courses') {
         }
         if(Specific::Academic() == true || Specific::Teacher() == true){
             if(Specific::Academic() == true){
-                $items = $dba->query('SELECT name, program_id, period_id, code, semester, credits, quota, type, schedule FROM courses WHERE id = '.$id)->fetchArray();
+                $items = $dba->query('SELECT name, preknowledge, program_id, period_id, code, semester, credits, quota, type, schedule FROM courses WHERE id = '.$id)->fetchArray();
                 $teachers = $dba->query('SELECT * FROM teacher WHERE course_id = '.$id)->fetchAll();
                 foreach ($teachers as $teacher) {
                     $names = $dba->query('SELECT names FROM users WHERE id = '.$teacher['user_id'])->fetchArray();
                     $items['teachers'][] = array('id' => $teacher['user_id'], 'name' => $names);   
                 }
-
+                $preknowledge = array();
+                $preknowledges = explode(',', $items['preknowledge']);
+                foreach ($preknowledges as $prek) {
+                    $name = $dba->query('SELECT name FROM courses WHERE id = '.$prek)->fetchArray();
+                    $preknowledge[] = array('id' => $prek, 'name' => $name);   
+                }
+                $items['preknowledge'] = $preknowledge;
             } else {
                 $items = array();
-            } 
+            }
             $parameters = $dba->query('SELECT parameters FROM courses WHERE id = '.$id)->fetchArray();
             if($type == 'notes'){
                 $items['parameters'] = json_decode($parameters, true)[$pos];
                 $notes = json_decode($note['notes'], true)[$pos];
                 $items['notes'] = json_decode($notes, true);
-            } else {
+            } else if(Specific::Teacher() == true){
                 if(!empty($parameters)){
                    $items = json_decode($parameters, true); 
                 } else {
@@ -397,9 +409,7 @@ if($one == 'search-courses') {
                 'status' => 400,
                 'emptys' => $emptys
             );
-        }
-
-        
+        } 
     }
 }
 ?>
