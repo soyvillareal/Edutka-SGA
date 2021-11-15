@@ -1137,6 +1137,15 @@ h5 {
     overflow: hidden;
     white-space: nowrap;
 }
+.ellipsis-vertical-2 {
+    white-space: normal;
+    -webkit-line-clamp: 2;
+    display: block;
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    word-wrap: break-word;
+}
 .animated-easy {  
     -webkit-transition: all .3s ease;
     -o-transition: all .3s ease;
@@ -1956,6 +1965,23 @@ h5 {
     }
     .cont-dialog {
         width: 95%;
+    }
+    .content-enroll {
+        display: flex;
+    }
+    .item-enroll {
+        display: block;
+    }
+    .item-enroll .show_cmodal {
+        margin: auto;
+        margin-top: 15px;
+        margin-bottom: 15px;
+    }
+    .item-enroll .ellipsis-vertical-2 {
+        -webkit-line-clamp: 3;
+    }
+    .content-eperiod {
+        bottom: -14px;
     }
 }
 

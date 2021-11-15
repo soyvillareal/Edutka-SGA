@@ -102,12 +102,14 @@
                         </div>
                         <?php } ?>
                     </div>
+                    <?php if($TEMP['#academic']){ ?>
                     <div class="display-flex flex-end margin-t50">
                         <span class="color-black dv-vertical-center margin-r10">
                             {$word->if_you_want_add_course}
                         </span>
                         <button class="btn-noway background-blue border-radius-4 padding-10 cursor-disabled color-white hover-opacity" id="show-pmodal">{$word->add}</button>
                     </div>
+                    <?php } ?>
                 </div>
             </div>
         </div>
@@ -184,7 +186,7 @@
                             <input id="teacher" class="hidden" type="text">
                             <ul id="tips-teacher" class="content-tips cont-input h-100 background-grely border-radius-12 animated-easy color-black">
                                 <li class="tipsit-new">
-                                    <input id="tips-val-tea" class="color-black area_validate" type="text">
+                                    <input id="tips-val-tea" class="color-black area_validate" type="text" autocomplete="off">
                                     <div class="search-down position-absolute z-index-first background-white overflow-hidden border-all border-grey border-top-left-radius border-top-right-radius border-bottom-left-radius border-bottom-right-radius"></div>
                                 </li>
                             </ul>
@@ -201,7 +203,7 @@
                             <input id="preknowledge" class="hidden" type="text">
                             <ul id="tips-preknowledge" class="content-tips cont-input h-100 background-grely border-radius-12 animated-easy color-black">
                                 <li class="tipsit-new">
-                                    <input id="tips-val-prek" class="color-black area_validate" type="text">
+                                    <input id="tips-val-prek" class="color-black area_validate" type="text" autocomplete="off">
                                     <div class="search-down position-absolute z-index-first background-white overflow-hidden border-all border-grey border-top-left-radius border-top-right-radius border-bottom-left-radius border-bottom-right-radius"></div>
                                 </li>
                             </ul>
@@ -307,24 +309,22 @@
                 <div class="padding-t15 padding-b15 w-100 font-lowly color-black">
                     {$word->parameters}
                 </div>
-                <?php if(true){ ?>
-                <div class="display-flex w-100 h-50">
+                <div id="header-catips" class="display-flex w-100 h-50">
                     <div class="contsub-capoints dv-vertical-center margin-left-auto">
                         <button class="item-capoint btn-noway dv-xs scale-1_5 animated-easy border-radius-med hover-button background-blue margin-r12 active" id="move-modal-left"></button>
                         <button class="item-capoint btn-noway dv-xs scale-1_5 animated-easy border-radius-med hover-button background-blue margin-r12" id="move-modal-center"></button>
                         <button class="item-capoint btn-noway dv-xs scale-1_5 animated-easy border-radius-med hover-button background-blue margin-r12" id="move-modal-right"></button>
                     </div>
                 </div>
-                <?php } ?>
             </div>
             <div class="content-modal-body color-grey">
-                <?php if(false){ ?>
-                <div id="container-parameters"></div>
-                <div class="display-flex w-100">
-                    <button class="btn-noway background-green hover-opacity w-50 h-50 border-radius-med margin-auto font-supraly color-white" id="add-parameter">+</button>
+                <div id="body-modal" class="hidden">
+                    <div id="container-parameters"></div>
+                    <div class="display-flex w-100">
+                        <button class="btn-noway background-green hover-opacity w-50 h-50 border-radius-med margin-auto font-supraly color-white" id="add-parameter">+</button>
+                    </div>
                 </div>
-                <?php } else { ?>
-                <div class="cont-body-modal display-flex animated-easy" id="body-modal-params">
+                <div id="body-modal-params" class="cont-body-modal display-flex animated-easy">
                     <div class="cont-left-modal w-100 margin-r25">
                         <h3 class="font-medium color-black text-center">Primer corte</h3>
                         <div id="container-parameters_0"></div>
@@ -347,7 +347,6 @@
                         </div>
                     </div>
                 </div>
-                <?php } ?>
             </div>
             <div class="display-flex">
                 <div class="margin-left-auto margin-r25 margin-b15">
@@ -408,7 +407,11 @@ var GE = D.querySelectorAll('.show_emodal'),
     gw = D.querySelector('#tips-preknowledge'),
     gx = gq.value ? gq.value.split(',') : Array(),
     gp = gw.querySelector('#tips-val-prek'),
+    gl = ZO.querySelector('.search-down'),
+    gn = gw.querySelector('.search-down'),
     <?php } else { ?>
+    gv = D.querySelector('#header-catips'),
+    gb = D.querySelector('#body-modal'),
     GF = D.querySelectorAll('.add_parameter'),
     GJ = D.querySelector('#body-modal-params'),
     GK = D.querySelector('#container-parameters'),
@@ -428,9 +431,8 @@ var GE = D.querySelectorAll('.show_emodal'),
             }
         }
     },
+    mode = '100',
     <?php } ?>
-    gl = ZO.querySelector('.search-down'),
-    gn = gw.querySelector('.search-down'),
     TE = D.querySelector('#navigation-after'),
     TO = D.querySelector('#navigation-before'),
     TR = D.querySelector('#navigation-first'),
@@ -438,7 +440,7 @@ var GE = D.querySelectorAll('.show_emodal'),
     TN = D.querySelector('#page-now'),
     bDisabled = function(){
         <?php if($TEMP['#academic'] == true){ ?>
-        if(GM.value != '' && GU.value != '' && GF.value != '' && GG.value != '' && GP.value != '' && gq.value != '' && GJ.value != '' && GK.value != '' && GN.value != '' && GO.value != '' && GY.value != ''){
+        if(GM.value != '' && GU.value != '' && GF.value != '' && GG.value != '' && GP.value != '' && GJ.value != '' && GK.value != '' && GN.value != '' && GO.value != '' && GY.value != ''){
             GB.removeAttribute('disabled');
         } else {
             GB.setAttribute('disabled', true);
@@ -459,6 +461,7 @@ var GE = D.querySelectorAll('.show_emodal'),
             course_id = self.getAttribute('data-id');
         self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
         Req('{$url->{req/rol-teacher/get-citems}}', function(e){
+            console.log(e);
             if(e.status == 200){
                 <?php if($TEMP['#academic'] == true){ ?>
                 for (var key in e.items) {
@@ -473,21 +476,41 @@ var GE = D.querySelectorAll('.show_emodal'),
                     }
                 }
                 <?php } else if($TEMP['#teacher'] == true) { ?>
-                    for(let j = 0, i = e.items.length; j < i; j++){
-                        var el = e.items[j],
-                            cp = D.querySelector('#container-parameters_'+j);
-                        for(var n = 0, l = el.length; n < l; n++){
-                            var el2 = el[n],
+                    mode = e.mode;
+                    if(mode == '100'){
+                        addClass(gv, 'hidden'), addClass(GJ, 'hidden'), removeClass(gb, 'hidden');
+                        for(var j = 0, i = e.items.length; j < i; j++){
+                            var el = e.items[j],
                                 element = D.createElement('div');
-                            element.className = 'group-validate display-block position-relative w-100 padding-25 border-all border-blue margin-b20', element.id = "parameter_"+n, element.innerHTML = '<button class="delete-parameter position-absolute h-8 btn-noway hover-button font-ultraly color-red" id="delete-parameter">-</button><h3 class="text-center" id="text-parameter">{$word->parameter} #'+(n+1)+'</h3><div class="display-flex"><div class="margin-auto margin-b15 margin-t15 padding-r10"><input id="param_name_'+n+'" type="text" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue background-grely color-black" placeholder="{$word->name}" value="'+el2['name']+'"/></div><div class="position-relative margin-auto margin-b15 margin-t15 percent-gadget"><input id="param_percent_'+n+'" type="text" class="cont-input mw-w-100 h-50 border-radius-12 animated-easy border-focus-blue margin-left-auto background-grely color-black text-center" placeholder="{$word->percentage}" value="'+el2['percent']+'"/></div></div><div class="text-error color-red text-center font-low margin-t5"></div>', cp.appendChild(element), count[j] = (n+1);
+                            console.log(el);
+                            element.className = 'group-validate display-block position-relative w-100 padding-25 border-all border-blue margin-b20', element.id = "parameter_"+j, element.innerHTML = '<button class="delete-parameter position-absolute h-8 btn-noway hover-button font-ultraly color-red" id="delete-parameter">-</button><h3 class="text-center" id="text-parameter">{$word->parameter} #'+(j+1)+'</h3><div class="display-flex"><div class="margin-auto margin-b15 margin-t15 padding-r10"><input id="param_name_'+j+'" type="text" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue background-grely color-black" placeholder="{$word->name}" value="'+el['name']+'"/></div><div class="position-relative margin-auto margin-b15 margin-t15 percent-gadget"><input id="param_percent_'+j+'" type="text" class="cont-input mw-w-100 h-50 border-radius-12 animated-easy border-focus-blue margin-left-auto background-grely color-black text-center" placeholder="{$word->percentage}" value="'+el['percent']+'"/></div></div><div class="text-error color-red text-center font-low margin-t5"></div>', GK.appendChild(element), count = (j+1);
                             addEvent(element.querySelector('#delete-parameter'), 'click', function(){
-                                this.parentNode.remove(), count[j] = 0;
-                                var els = cp.children;
-                                for(var m = 0, k = els.length; m < k; m++){
-                                    var tp = els[m].querySelector('#text-parameter');
-                                    tp.innerText = "{$word->parameter} #"+(m+1), els[m].id = "parameter_"+m, count[j] = (m+1);
+                                this.parentNode.remove(), count = 0;
+                                var els = GK.children;
+                                for(var j = 0, i = els.length; j < i; j++){
+                                    var tp = els[j].querySelector('#text-parameter');
+                                    tp.innerText = "{$word->parameter} #"+(j+1), els[j].id = "parameter_"+j, count = (j+1);
                                 }
                             });
+                        }
+                    } else {
+                        removeClass(gv, 'hidden'), removeClass(GJ, 'hidden'), addClass(gb, 'hidden');
+                        for(let j = 0, i = e.items.length; j < i; j++){
+                            var el = e.items[j],
+                                cp = D.querySelector('#container-parameters_'+j);
+                            for(var n = 0, l = el.length; n < l; n++){
+                                var el2 = el[n],
+                                    element = D.createElement('div');
+                                element.className = 'group-validate display-block position-relative w-100 padding-25 border-all border-blue margin-b20', element.id = "parameter_"+n, element.innerHTML = '<button class="delete-parameter position-absolute h-8 btn-noway hover-button font-ultraly color-red" id="delete-parameter">-</button><h3 class="text-center" id="text-parameter">{$word->parameter} #'+(n+1)+'</h3><div class="display-flex"><div class="margin-auto margin-b15 margin-t15 padding-r10"><input id="param_name_'+n+'" type="text" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue background-grely color-black" placeholder="{$word->name}" value="'+el2['name']+'"/></div><div class="position-relative margin-auto margin-b15 margin-t15 percent-gadget"><input id="param_percent_'+n+'" type="text" class="cont-input mw-w-100 h-50 border-radius-12 animated-easy border-focus-blue margin-left-auto background-grely color-black text-center" placeholder="{$word->percentage}" value="'+el2['percent']+'"/></div></div><div class="text-error color-red text-center font-low margin-t5"></div>', cp.appendChild(element), count[j] = (n+1);
+                                addEvent(element.querySelector('#delete-parameter'), 'click', function(){
+                                    this.parentNode.remove(), count[j] = 0;
+                                    var els = cp.children;
+                                    for(var m = 0, k = els.length; m < k; m++){
+                                        var tp = els[m].querySelector('#text-parameter');
+                                        tp.innerText = "{$word->parameter} #"+(m+1), els[m].id = "parameter_"+m, count[j] = (m+1);
+                                    }
+                                });
+                            }
                         }
                     }
                 <?php } ?>
@@ -546,10 +569,12 @@ var GE = D.querySelectorAll('.show_emodal'),
         removeClass(gl, 'hidden');
     }
     Req('{$url->{req/rol-academic/search-teacher}}', function(e) {
-        if (e.status == 200) {
+        if(e.html != ''){
             gl.innerHTML = e.html;
-            var gg = ZO.querySelectorAll('.tipsit-search');
-            for(var j = 0, i = gg.length; j < i; j++) addEvent(gg[j], 'click', gh);
+            if (e.status == 200) {
+                var gg = ZO.querySelectorAll('.tipsit-search');
+                for(var j = 0, i = gg.length; j < i; j++) addEvent(gg[j], 'click', gh);
+            }
         } else {
             addClass(gl, 'hidden');
             gl.innerHTML = "";
@@ -566,10 +591,12 @@ var GE = D.querySelectorAll('.show_emodal'),
         removeClass(gn, 'hidden');
     }
     Req('{$url->{req/rol-academic/search-course}}', function(e) {
-        if (e.status == 200) {
+        if(e.html != ''){
             gn.innerHTML = e.html;
-            var gg = gw.querySelectorAll('.tipsit-search');
-            for(var j = 0, i = gg.length; j < i; j++) addEvent(gg[j], 'click', gm);
+            if (e.status == 200) {
+                var gg = gw.querySelectorAll('.tipsit-search');
+                for(var j = 0, i = gg.length; j < i; j++) addEvent(gg[j], 'click', gm);
+            }
         } else {
             addClass(gn, 'hidden');
             gn.innerHTML = "";
@@ -590,7 +617,7 @@ var GE = D.querySelectorAll('.show_emodal'),
 }), addEvent(GB, 'click', function(){
     var self = this,
         type = self.getAttribute('data-type');
-    if(GM.value == '' || GU.value == '' || GF.value == '' || GG.value == '' || GP.value == '' || gq.value == '' || GJ.value == '' || GK.value == '' || GN.value == '' || GO.value == '' || GY.value == ''){
+    if(GM.value == '' || GU.value == '' || GF.value == '' || GG.value == '' || GP.value == '' || GJ.value == '' || GK.value == '' || GN.value == '' || GO.value == '' || GY.value == ''){
         for (var j = 0, i = GC.length; j < i; j++){
             var el = GC[j].id == 'tips-val-tea' ? GP : (GC[j].id == 'tips-val-prek' ? gq : GC[j]),
                 elb = GC[j].id == 'tips-val-tea' ? ZO : (GC[j].id == 'tips-val-prek' ? gw : el),
@@ -618,6 +645,7 @@ var GE = D.querySelectorAll('.show_emodal'),
     }
     GB.setAttribute('disabled', true), addClass(GB, 'spinner-is-loading');
     Req('{$url->{req/rol-academic/this-courses}}', function(e){
+        console.log(e);
         if(e.status == 200){
             GI.style.display = "", loadAlert((type == 'add' ? "{$word->course_added_successfully}" : "{$word->course_updated_successfully}")), preloadPage('&one=courses');
         } else {
@@ -667,50 +695,121 @@ var GE = D.querySelectorAll('.show_emodal'),
     removeClass(GY, 'active'), removeClass(GX, 'active'), addClass(this, 'active'), removeClass(GJ, 'move-modal-left-last'), addClass(GJ, 'move-modal-left-center'), GM();
 }), addEvent(GX, 'click', function(){
     removeClass(GY, 'active'), removeClass(GO, 'active'), addClass(this, 'active'), addClass(GJ, 'move-modal-left-center'), addClass(GJ, 'move-modal-left-last'), GM();
+}), addEvent(D.querySelector('#add-parameter'), 'click', function(){
+    var element = D.createElement('div');
+    element.className = 'group-validate display-block position-relative w-100 padding-25 border-all border-blue margin-b20', element.id = "parameter_"+count, element.innerHTML = '<button class="delete-parameter position-absolute h-8 btn-noway hover-button font-ultraly color-red" id="delete-parameter">-</button><h3 class="text-center" id="text-parameter">{$word->parameter} #'+(count+1)+'</h3><div class="display-flex"><div class="margin-auto margin-b15 margin-t15 padding-r10"><input id="param_name_'+count+'" type="text" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue background-grely color-black" placeholder="{$word->name}"/></div><div class="position-relative margin-auto margin-b15 margin-t15 percent-gadget"><input id="param_percent_'+count+'" type="text" class="cont-input mw-w-100 h-50 border-radius-12 animated-easy border-focus-blue margin-left-auto background-grely color-black text-center" placeholder="{$word->percentage}"/></div></div><div class="text-error color-red text-center font-low margin-t5"></div>', GK.appendChild(element), count++;
+    addEvent(element.querySelector('#delete-parameter'), 'click', function(){
+        this.parentNode.remove(), count = 0;
+        var els = GK.children;
+        for(var j = 0, i = els.length; j < i; j++){
+            var tp = els[j].querySelector('#text-parameter');
+            tp.innerText = "{$word->parameter} #"+(j+1), els[j].id = "parameter_"+j, count = (j+1);
+        }
+    });
 }), addEvent(GB, 'click', function(){
     var self = this,
         type = self.getAttribute('data-type'),
-        GO = [[], [], []],
-        sum = [Number([]), Number([]), Number([])],
-        GK = GJ.children;
-    for(let j = 0, i = GK.length; j < i; j++){
-        var el = D.querySelector('#container-parameters_'+j),
-            GC = el.children;
-
-        for (var n = 0, m = GC.length; n < m; n++){
-            var GZ = GC[n],
-                elN = el.querySelector('#param_name_'+n),
-                elP = el.querySelector('#param_percent_'+n);
+        GO = mode == '100' ? [] : [[], [], []],
+        sum = mode == '100' ? 0 : [Number([]), Number([]), Number([])],
+        gs = mode == '100' ? GK.children : GJ.children;
+    for(let j = 0, i = gs.length; j < i; j++){
+        if(mode == '100'){
+            var el = gs[j],
+                elN = D.querySelector('#param_name_'+j),
+                elP = D.querySelector('#param_percent_'+j),
+                GZ = D.querySelector('#parameter_'+j);
             if(elN.value == '' || elP.value == ''){
-                var points = D.querySelectorAll('.item-capoint');
-                removeClass(points[j], 'background-blue'), addClass(points[j], 'background-red'), addClass(points[j], 'alert-capoint'),
-                timeDelay(function(){
-                    addClass(points[j], 'background-blue'), removeClass(points[j], 'background-red'), removeClass(points[j], 'alert-capoint');
-                }, 1000);
-                if(elN.value == '') addClass(elN, 'border-red'), addClass(elN, 'boxshadow-red');
-                if(elP.value == '') addClass(elP, 'border-red'), addClass(elP, 'boxshadow-red');
+                if(elN.value == '') {
+                    addClass(elN, 'border-red'), addClass(elN, 'boxshadow-red');   
+                } else {
+                    removeClass(elN, 'border-red'), removeClass(elN, 'boxshadow-red');
+                }
+                if(elP.value == '') {
+                    addClass(elP, 'border-red'), addClass(elP, 'boxshadow-red');
+                } else {
+                    removeClass(elP, 'border-red'), removeClass(elP, 'boxshadow-red');
+                }
                 GZ.querySelector('.text-error').innerText = '*{$word->this_field_is_empty}', timeDelay(function(){
                     addClass(GI, 'efect-boom'), timeDelay(function(){
                         removeClass(GI, 'efect-boom')
                     }, 200)
                 }, 700);
-                return false;
+                if(gs[gs.length-1] == el) return false;
             } else {
-                sum[j] += Number(elP.value);
-                if((sum[j] < 100 || sum[j] > 100) && GC[GC.length-1] == GZ){
+                sum += Number(elP.value);
+                if((sum < 100 || sum > 100) && gs.length-1 == j){
+                    for (var k = 0, u = gs.length; k < u; k++){
+                        var elN = D.querySelector('#param_name_'+k),
+                            elP = D.querySelector('#param_percent_'+k),
+                            GZ = D.querySelector('#parameter_'+k);
+                        if(elN.value != ''){
+                            removeClass(elN, 'border-red'), removeClass(elN, 'boxshadow-red'), GZ.querySelector('.text-error').innerText = "";
+                        }
+                        addClass(elP, 'border-red'), addClass(elP, 'boxshadow-red'), GZ.querySelector('.text-error').innerText = "La suma de estos valores debe ser 100", timeDelay(function(){
+                            addClass(GI, 'efect-boom'), timeDelay(function(){
+                                removeClass(GI, 'efect-boom')
+                            }, 200)
+                        }, 700);
+                    }
+                    if(gs[gs.length-1] == el) return false;
+                } else {
+                    removeClass(elN, 'border-red'), removeClass(elN, 'boxshadow-red'), removeClass(elP, 'border-red'), removeClass(elP, 'boxshadow-red'), GZ.querySelector('.text-error').innerText = "", GO.push([elN.value, elP.value]);
+                }
+            }
+        } else {
+            var el = D.querySelector('#container-parameters_'+j),
+                GC = el.children;
+            for (var n = 0, m = GC.length; n < m; n++){
+                var GZ = GC[n],
+                    elN = el.querySelector('#param_name_'+n),
+                    elP = el.querySelector('#param_percent_'+n);
+                if(elN.value == '' || elP.value == ''){
                     var points = D.querySelectorAll('.item-capoint');
                     removeClass(points[j], 'background-blue'), addClass(points[j], 'background-red'), addClass(points[j], 'alert-capoint'),
                     timeDelay(function(){
                         addClass(points[j], 'background-blue'), removeClass(points[j], 'background-red'), removeClass(points[j], 'alert-capoint');
                     }, 1000);
-                    for (var k = 0, u = GC.length; k < u; k++){
-                        var el2 = GC[k],
-                            elP = el2.querySelector('#param_percent_'+k);
-                        addClass(elP, 'border-red'), addClass(elP, 'boxshadow-red'), el2.querySelector('.text-error').innerText = "La suma de estos valores debe ser 100";
+                    if(elN.value == '') {
+                        addClass(elN, 'border-red'), addClass(elN, 'boxshadow-red');
+                    } else {
+                        removeClass(elN, 'border-red'), removeClass(elN, 'boxshadow-red');
                     }
-                    return false;
+                    if(elP.value == '') {
+                        addClass(elP, 'border-red'), addClass(elP, 'boxshadow-red');
+                    } else {
+                        removeClass(elP, 'border-red'), removeClass(elP, 'boxshadow-red');
+                    }
+                    GZ.querySelector('.text-error').innerText = '*{$word->this_field_is_empty}', timeDelay(function(){
+                        addClass(GI, 'efect-boom'), timeDelay(function(){
+                            removeClass(GI, 'efect-boom')
+                        }, 200)
+                    }, 700);
+                    if(GC[GC.length-1] == GZ) return false;
                 } else {
-                    removeClass(elN, 'border-red'), removeClass(elN, 'boxshadow-red'), removeClass(elP, 'border-red'), removeClass(elP, 'boxshadow-red'), GZ.querySelector('.text-error').innerText = "", GO[j].push([elN.value, elP.value]);
+                    sum[j] += Number(elP.value);
+                    if((sum[j] < 100 || sum[j] > 100) && GC[GC.length-1] == GZ){
+                        var points = D.querySelectorAll('.item-capoint');
+                        removeClass(points[j], 'background-blue'), addClass(points[j], 'background-red'), addClass(points[j], 'alert-capoint'),
+                        timeDelay(function(){
+                            addClass(points[j], 'background-blue'), removeClass(points[j], 'background-red'), removeClass(points[j], 'alert-capoint');
+                        }, 1000);
+                        for (var k = 0, u = GC.length; k < u; k++){
+                            var el2 = GC[k],
+                                elN = el2.querySelector('#param_name_'+k),
+                                elP = el2.querySelector('#param_percent_'+k);
+                            if(elN.value != ''){
+                                removeClass(elN, 'border-red'), removeClass(elN, 'boxshadow-red'), GZ.querySelector('.text-error').innerText = "";
+                            }
+                            addClass(elP, 'border-red'), addClass(elP, 'boxshadow-red'), el2.querySelector('.text-error').innerText = "La suma de estos valores debe ser 100", timeDelay(function(){
+                                addClass(GI, 'efect-boom'), timeDelay(function(){
+                                    removeClass(GI, 'efect-boom')
+                                }, 200)
+                            }, 700);
+                        }
+                        if(GC[GC.length-1] == GZ) return false;
+                    } else {
+                        removeClass(elN, 'border-red'), removeClass(elN, 'boxshadow-red'), removeClass(elP, 'border-red'), removeClass(elP, 'boxshadow-red'), GZ.querySelector('.text-error').innerText = "", GO[j].push([elN.value, elP.value]);
+                    }
                 }
             }
         }
@@ -721,9 +820,13 @@ var GE = D.querySelectorAll('.show_emodal'),
             GI.style.display = "", loadAlert("{$word->course_updated_successfully}"), preloadPage('&one=courses');
         } else {
             if (e.errors == 'params') {
-                for (var j = 0, i = GC.length; j < i; j++){
-                    var elP = D.querySelector('#param_percent_'+j),
+                for (var j = 0, i = gs.length; j < i; j++){
+                    var elN = el.querySelector('#param_name_'+n),
+                        elP = D.querySelector('#param_percent_'+j),
                         GZ = D.querySelector('#parameter_'+j);
+                    if(elN.value != ''){
+                        removeClass(elN, 'border-red'), removeClass(elN, 'boxshadow-red'), GZ.querySelector('.text-error').innerText = "";
+                    }
                     addClass(elP, 'border-red'), addClass(elP, 'boxshadow-red'), GZ.querySelector('.text-error').innerText = "La suma de estos valores debe ser 100", timeDelay(function(){
                         addClass(GI, 'efect-boom'), timeDelay(function(){
                             removeClass(GI, 'efect-boom')
@@ -734,6 +837,9 @@ var GE = D.querySelectorAll('.show_emodal'),
                 for (var j = 0, i = e.emptys.length; j < i; j++){
                     var el = D.querySelector('#'+e.emptys[j]['class']+e.emptys[j]['id']),
                         GZ = D.querySelector('#parameter_'+e.emptys[j]['id']);
+                    if(el.value != ''){
+                        GZ.querySelector('.text-error').innerText = '', removeClass(el, 'border-red'), removeClass(el, 'boxshadow-red')
+                    }
                     GZ.querySelector('.text-error').innerText = '*{$word->this_field_is_empty}', addClass(el, 'border-red'), addClass(el, 'boxshadow-red'), timeDelay(function(){
                             addClass(GI, 'efect-boom'), timeDelay(function(){
                                 removeClass(GI, 'efect-boom')
@@ -745,7 +851,7 @@ var GE = D.querySelectorAll('.show_emodal'),
             }
             GB.removeAttribute('disabled'), removeClass(GB, 'spinner-is-loading');
         }
-    }, "POST", "&id=" + self.getAttribute('data-id') + "&params=" + JSON.stringify(GO))
+    }, "POST", "&id=" + self.getAttribute('data-id') + "&params=" + JSON.stringify(GO) + "&mode=" + mode)
 }), <?php } ?>addEvent(GA, 'keyup', function(){
     var self = this,
         TZ = D.querySelector('#table-footer');

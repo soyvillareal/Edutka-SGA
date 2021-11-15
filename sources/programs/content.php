@@ -8,7 +8,7 @@ $programs = $dba->query('SELECT * FROM programs LIMIT ? OFFSET ?', 10, 1)->fetch
 $TEMP['#total_pages'] = $dba->totalPages;
 
 if(!empty($programs)){
-	foreach ($programs as $key => $program) {
+	foreach ($programs as $program) {
 		$TEMP['!id'] = $program['id'];
 		$TEMP['!name'] = $program['name'];
 		$TEMP['!title'] = $program['title'];

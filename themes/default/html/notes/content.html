@@ -23,7 +23,7 @@
 			                <div class="flex-grow">
 			                    <select id="programs" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue area_changed caret-down background-grely color-black">
 			                        <?php foreach ($TEMP['#programs'] as $key => $value) {?>
-			                        <option value="<?php echo $value['id'];?>"<?php echo($value['program_id'] == $TEMP['#notes']['program_id']) ? ' selected' : '';?>><?php echo $value['name']; ?></option>
+			                        <option value="<?php echo $value['id'];?>"<?php echo($value['id'] == $TEMP['#program_id']) ? ' selected' : '';?>><?php echo $value['name']; ?></option>
 			                        <?php } ?>
 			                    </select>
 			                    <div class="color-red text-left text-error font-low margin-t5"></div>
@@ -115,9 +115,9 @@ var NU = D.querySelectorAll('.upload_note'),
                 for(var j = 0, i = e.items['parameters'].length; j < i; j++){
                     var el = e.items['parameters'][j],
                         element = D.createElement('div');
-                    element.className = 'group-validate display-block position-relative w-100 padding-25 border-all border-blue margin-b20', element.id = "parameter_"+j, element.innerHTML = '<h3 class="text-center" id="text-parameter">'+el['name']+'</h3><div class="display-flex"><div class="margin-auto margin-b15 margin-t15 padding-r10"><input id="param_note_'+j+'" type="text" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue background-grely color-black" placeholder="{$word->note}" '+(e.items['notes'] != 0 ? 'value="'+e.items['notes'][j]+'"' : '')+'/></div><div class="position-relative margin-auto margin-b15 margin-t15 percent-gadget percent-gadget-disabled"><input type="text" readonly="true" class="cont-input mw-w-100 h-50 border-radius-12 animated-easy border-focus-blue margin-left-auto background-grely color-black text-center" placeholder="{$word->percentage}" value="'+el['percent']+'"/></div></div><div class="text-error color-red text-center font-low margin-t5"></div>', NK.appendChild(element);
+                    element.className = 'group-validate display-block position-relative w-100 padding-25 border-all border-blue margin-b20', element.id = "parameter_"+j, element.innerHTML = '<h3 class="text-center" id="text-parameter">'+el['name']+'</h3><div class="display-flex"><div class="margin-auto margin-b15 margin-t15 padding-r10"><input id="param_note_'+j+'" type="text" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue background-grely color-black" placeholder="{$word->note}" '+(e.items['notes'][j] != 0 && e.items['notes'][j] != undefined ? 'value="'+e.items['notes'][j]+'"' : '')+'/></div><div class="position-relative margin-auto margin-b15 margin-t15 percent-gadget percent-gadget-disabled"><input type="text" readonly="true" class="cont-input mw-w-100 h-50 border-radius-12 animated-easy border-focus-blue margin-left-auto background-grely color-black text-center" placeholder="{$word->percentage}" value="'+el['percent']+'"/></div></div><div class="text-error color-red text-center font-low margin-t5"></div>', NK.appendChild(element);
                 }
-                NN.style.display = "block", D.body.style.overflow = "hidden", NT.setAttribute('data-pos', pos), NT.setAttribute('data-id', note_id), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
+                NN.style.display = "block", D.body.style.overflow = "hidden"<?php echo($TEMP['#note_mode'] == '30-30-40') ? ", NT.setAttribute('data-pos', pos)" : "";?>, NT.setAttribute('data-id', note_id), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
             } else {
                 self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
             }
@@ -186,7 +186,7 @@ addEvent(D.querySelector('#cancel-alert'), 'click', function(){
             }
             NT.removeAttribute('disabled'), removeClass(NT, 'spinner-is-loading');
         }
-    }, "POST", "&id=" + self.getAttribute('data-id') + "&params=" + JSON.stringify(GO) + "&pos=" + self.getAttribute('data-pos'))
+    }, "POST", "&id=" + self.getAttribute('data-id') + "&params=" + JSON.stringify(GO)<?php echo($TEMP['#note_mode'] == '30-30-40') ? ' + "&pos=" + self.getAttribute("data-pos")' : '';?>)
 }), <?php } ?>addEvent(D.querySelector('#search-users'), "keyup", function(e){
 	let SV = this.value,
 		SD = D.querySelector('.search-down');

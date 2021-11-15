@@ -13,14 +13,12 @@ if($one == 'this-programs'){
     $semesters  = array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
     $modalities  = array('presential', 'distance', 'virtual');
     $faculties = $dba->query('SELECT id FROM faculty')->fetchAll(false);
-    $plans = $dba->query('SELECT id FROM plan')->fetchAll(false);
     $emptys = array();
     $errors = array();
 
     $id = Specific::Filter($_POST['id']);
     $name = Specific::Filter($_POST['name']);
     $faculty_id = Specific::Filter($_POST['faculty_id']);
-    $plan_id = Specific::Filter($_POST['plan_id']);
     $title = Specific::Filter($_POST['title']);
     $snies = Specific::Filter($_POST['snies']);
     $level = Specific::Filter($_POST['level']);
@@ -33,9 +31,6 @@ if($one == 'this-programs'){
     }
     if(empty($faculty_id)){
         $emptys[] = 'faculty_id';
-    }
-    if(empty($plan_id)){
-        $emptys[] = 'plan_id';
     }
     if(empty($title)){
         $emptys[] = 'title';
@@ -63,17 +58,14 @@ if($one == 'this-programs'){
         if(!in_array($faculty_id, array_values($faculties))){
             $errors[] = 'faculty_id';
         }
-        if(!in_array($plan_id, array_values($faculties))){
-            $errors[] = 'plan_id';
-        }
         if (empty($errors)) {
             if(!empty($type)){
                 if($type == 'add'){
-                    if($dba->query('INSERT INTO programs (name, faculty_id, plan_id, title, snies, level, semesters, mode, `time`) VALUES ("'.$name.'", '.$faculty_id.', '.$plan_id.',"'.$title.'",'.$snies.',"'.$level.'",'.$semester.',"'.$mode.'",'.time().')')->returnStatus()){
+                    if($dba->query('INSERT INTO programs (name, faculty_id, title, snies, level, semesters, mode, `time`) VALUES ("'.$name.'", '.$faculty_id.',"'.$title.'",'.$snies.',"'.$level.'",'.$semester.',"'.$mode.'",'.time().')')->returnStatus()){
                         $deliver['status'] = 200;
                     }
                 } else if(isset($id) && is_numeric($id)){
-                    if($dba->query('UPDATE programs SET name = ?, faculty_id = ?, plan_id = ?, title= ?, snies = ?, level = ?, semesters = ?, mode = ? WHERE id = '.$id, $name, $faculty_id, $plan_id, $title, $snies, $level, $semester, $mode)->returnStatus()){
+                    if($dba->query('UPDATE programs SET name = ?, faculty_id = ?, title= ?, snies = ?, level = ?, semesters = ?, mode = ? WHERE id = '.$id, $name, $faculty_id, $title, $snies, $level, $semester, $mode)->returnStatus()){
                         $deliver['status'] = 200;
                     }
                 }
@@ -91,16 +83,16 @@ if($one == 'this-programs'){
         );
     }
 } else if($one == 'get-pitems'){
-        $id = Specific::Filter($_POST['id']);
-        if(isset($id) && is_numeric($id)){
-            $items = $dba->query('SELECT name, faculty_id, plan_id, title, snies, level, semesters, mode FROM programs WHERE id = '.$id)->fetchArray();
-            if (!empty($items)) {
-                $deliver = array(
-                    'status' => 200,
-                    'items' => $items
-                );
-            }
+    $id = Specific::Filter($_POST['id']);
+    if(isset($id) && is_numeric($id)){
+        $items = $dba->query('SELECT name, faculty_id, title, snies, level, semesters, mode FROM programs WHERE id = '.$id)->fetchArray();
+        if (!empty($items)) {
+            $deliver = array(
+                'status' => 200,
+                'items' => $items
+            );
         }
+    }
 } else if($one == 'delete-program'){
     $deliver['status'] = 400;
     $id = Specific::Filter($_POST['id']);
@@ -210,9 +202,6 @@ if($one == 'this-programs'){
     if(empty($teachers)){
         $emptys[] = 'teachers';
     }
-    if(empty($preknowledge)){
-        $emptys[] = 'preknowledge';
-    }
     if(empty($semester)){
         $emptys[] = 'semester';
     }
@@ -230,17 +219,19 @@ if($one == 'this-programs'){
     }
 
     if(empty($emptys)){
-        $preknowledges = explode(',', $preknowledge);
-        $prektrues = array();
-        foreach ($preknowledges as $prek) {
-            if($dba->query('SELECT COUNT(*) FROM courses WHERE id = '.$prek)->fetchArray() > 0){
-                $prektrues[] = true;
-            } else {
-                $prektrues[] = false;
+        if(!empty($preknowledge)){
+            $preknowledges = explode(',', $preknowledge);
+            $prektrues = array();
+            foreach ($preknowledges as $prek) {
+                if($dba->query('SELECT COUNT(*) FROM courses WHERE id = '.$prek)->fetchArray() > 0){
+                    $prektrues[] = true;
+                } else {
+                    $prektrues[] = false;
+                }
             }
-        }
-        if(in_array(false, $prektrues)){
-            $errors[] = 'preknowledge';
+            if(in_array(false, $prektrues)){
+                $errors[] = 'preknowledge';
+            }
         }
         if(!in_array($program_id, array_values($programs))){
             $errors[] = 'program_id';
@@ -287,7 +278,7 @@ if($one == 'this-programs'){
                                 }
                             }
                             if(count($deleted) > 0){
-                                if($dba->query('DELETE FROM teacher WHERE user_id IN ('.implode(',', $deleted).')')->returnStatus()){    
+                                if($dba->query('DELETE FROM teacher WHERE user_id IN ('.implode(',', $deleted).')')->returnStatus()){ 
                                     $deliver['status'] = 200;
                                 }
                             }
@@ -499,8 +490,12 @@ if($one == 'this-programs'){
     if(empty($expire)){
         $emptys[] = 'expire';
     }
-    if($min == date("Y-m-d")){
+    if($min == date("Y-m-d") && is_numeric($id)){
         if(empty($emptys)){
+            $expires = explode('-', $expire);
+            if(!checkdate($expires[1], $expires[2], $expires[0])){
+                $errors[] = 'expire';
+            }
             if(!in_array($status, array_values($statusa))){
                 $errors[] = 'status';
             }
@@ -673,7 +668,7 @@ if($one == 'this-programs'){
     }
 } else if($one == 'this-periods'){
     $deliver['status'] = 400;
-    $statusa  = array('activated', 'deactivated');
+    $statusa  = array('enabled', 'disabled');
     $emptys = array();
     $errors = array();
 
@@ -762,9 +757,13 @@ if($one == 'this-programs'){
     $html = '';
     $query = '';
     if(!empty($keyword)){
+        $assigned = $dba->query('SELECT course_id FROM assigned')->fetchAll(false);
         $query .= " WHERE (id LIKE '%$keyword%' OR name LIKE '%$keyword%' OR code LIKE '%$keyword%')";
-        if($type == 'edit'){
+        if($type == 'edit' && !empty($course_id)){
             $query .= " AND id <> $course_id";
+        }
+        if(!empty($assigned)){
+            $query .= " AND id NOT IN (".implode(',', $assigned).")";
         }
     }
     $courses = $dba->query('SELECT * FROM courses'.$query.' LIMIT 5')->fetchAll();
@@ -778,5 +777,245 @@ if($one == 'this-programs'){
         $html .= Specific::Maket('not-found/result-for');
     }
     $deliver['html'] = $html;
+} else if($one == 'this-plans'){
+    $deliver['status'] = 400;
+    $programs = $dba->query('SELECT id FROM programs')->fetchAll(false);
+    $modalities  = array('100', '30-30-40');
+    $statusa  = array('enabled', 'disabled');
+    $emptys = array();
+    $errors = array();
+
+    $id = Specific::Filter($_POST['id']);
+    $name = Specific::Filter($_POST['name']);
+    $resolution = Specific::Filter($_POST['resolution']);
+    $date_approved = Specific::Filter($_POST['date_approved']);
+    $duration = Specific::Filter($_POST['duration']);
+    $credits = Specific::Filter($_POST['credits']);
+    $courses = Specific::Filter($_POST['courses']);
+    $note_mode = Specific::Filter($_POST['note_mode']);
+    $program_id = Specific::Filter($_POST['program_id']);
+    $status = Specific::Filter($_POST['status']);
+    $type = Specific::Filter($_POST['type']);
+
+    if(empty($name)){
+        $emptys[] = 'name';
+    }
+    if(empty($resolution)){
+        $emptys[] = 'resolution';
+    }
+    if(empty($date_approved)){
+        $emptys[] = 'date_approved';
+    }
+    if(empty($duration)){
+        $emptys[] = 'duration';
+    }
+    if(empty($credits)){
+        $emptys[] = 'credits';
+    }
+    if(empty($courses)){
+        $emptys[] = 'courses';
+    }
+    if(empty($note_mode)){
+        $emptys[] = 'note_mode';
+    }
+    if(empty($program_id)){
+        $emptys[] = 'program_id';
+    }
+    if(empty($status)){
+        $emptys[] = 'status';
+    }
+
+    if(empty($emptys)){
+        $approved = explode('-', $date_approved);
+        $date_approved = strtotime($date_approved);
+        $couarr = explode(',', $courses);
+        $coutrues = array();
+        foreach ($couarr as $cou) {
+            if($dba->query('SELECT COUNT(*) FROM courses WHERE id = '.$cou)->fetchArray() > 0){
+                $coutrues[] = true;
+            } else {
+                $coutrues[] = false;
+            }
+        }
+        if(in_array(false, $coutrues)){
+            $errors[] = 'courses';
+        }
+        if(!checkdate($approved[1], $approved[2], $approved[0])){
+            $errors[] = 'date_approved';
+        }
+        if(!is_numeric($resolution)){
+            $errors[] = 'resolution';
+        }
+        if(!is_numeric($duration)){
+            $errors[] = 'duration';
+        }
+        if(!is_numeric($credits)){
+            $errors[] = 'credits';
+        }
+        if(!in_array($note_mode, array_values($modalities))){
+            $errors[] = 'note_mode';
+        }
+        if(!in_array($program_id, array_values($programs))){
+            $errors[] = 'program_id';
+        }
+        if(!in_array($status, array_values($statusa))){
+            $errors[] = 'status';
+        }
+        if (empty($errors)) {
+            if(!empty($type)){
+                $courses = explode(',', $courses);
+                if($type == 'add'){
+                    $plan_id = $dba->query('INSERT INTO plan (program_id, name, resolution, date_approved, duration, credits, courses, note_mode, status, `time`) VALUES ('.$program_id.', "'.$name.'", '.$resolution.', '.$date_approved.', '.$duration.', '.$credits.', "'.$note_mode.'", "'.$status.'", '.time().')')->insertId();
+                    if(isset($plan_id)){
+                        foreach ($courses as $course_id) {
+                            if($course_id == end($courses) && $dba->query('INSERT INTO assigned (course_id, plan_id, program_id, `time`) VALUES ('.$teacher_id.','.$plan_id.', '.$program_id.','.time().')')->returnStatus()){
+                                 $deliver['status'] = 200;
+                            }
+                        }
+                    }
+                } else if(isset($id) && is_numeric($id)){
+                    if($dba->query('UPDATE plan SET program_id = ?, name = ?, resolution = ?, date_approved = ?, duration= ?, credits = ?, note_mode = ?, status = ? WHERE id = '.$id, $program_id, $name, $resolution, $date_approved, $duration, $credits, $note_mode, $status)->returnStatus()){
+                        $courses_all = $dba->query('SELECT course_id FROM assigned WHERE plan_id = '.$id)->fetchAll(false);
+                        $deleted = array_diff($courses_all, $courses);
+                        $addf = array_diff($courses, $courses_all);
+                        $adds = explode(',', implode(',', $addf));
+                        if(count($addf) > 0 || count($deleted) > 0){
+                            if(count($addf) > 0){
+                                for ($i=0; $i < count($adds); $i++) {
+                                    if($dba->query('SELECT COUNT(*) FROM assigned WHERE course_id = '.$adds[$i])->fetchArray() == 0){
+                                        if($dba->query('INSERT INTO assigned (course_id, plan_id, `time`) VALUES ('.$adds[$i].','.$id.','.time().')')->returnStatus()){
+                                            $deliver['status'] = 200;
+                                        }
+                                    }
+                                }
+                            }
+                            if(count($deleted) > 0){
+                                if($dba->query('DELETE FROM assigned WHERE course_id IN ('.implode(',', $deleted).')')->returnStatus()){
+                                    $deliver['status'] = 200;
+                                }
+                            }
+                        } else {
+                            $deliver['status'] = 200;
+                        }
+                    }
+
+                }
+            }
+        } else {
+            $deliver = array(
+                'status' => 400,
+                'errors' => $errors
+            );
+        }
+    } else {
+        $deliver = array(
+            'status' => 400,
+            'emptys' => $emptys
+        );
+    }
+} else if($one == 'delete-plan'){
+    $deliver['status'] = 400;
+    $id = Specific::Filter($_POST['id']);
+    if (isset($id) && is_numeric($id)) {
+        $plan_exists = $dba->query('SELECT COUNT(*) FROM programs WHERE plan_id = '.$id)->fetchArray();
+        if($plan_exists == 0){
+            if($dba->query('DELETE FROM plan WHERE id = '.$id)->returnStatus()){
+                $deliver['status'] = 200;
+            };
+        } else {
+            $deliver = array(
+                'status' => 400,
+                'error' => $TEMP['#word']['you_cannot_delete']
+            );
+        }
+    } else {
+        $deliver = array(
+            'status' => 400,
+            'error' => $TEMP['#word']['error']
+        );
+    }
+} else if($one == 'search-plans') {
+    $keyword = Specific::Filter($_POST['keyword']);
+        $html = '';
+        $query = '';
+        if(!empty($keyword)){
+            $query .= " WHERE name LIKE '%$keyword%' OR resolution LIKE '%$keyword%'";
+        }
+        $plans = $dba->query('SELECT * FROM plan'.$query.' LIMIT ? OFFSET ?', 10, 1)->fetchAll();
+        $deliver['total_pages'] = $dba->totalPages;
+        if (!empty($plans)) {
+            foreach ($plans as $plan) {
+                $TEMP['!id'] = $plan['id'];
+                $TEMP['!name'] = $plan['name'];
+                $TEMP['!program'] = $dba->query('SELECT name FROM programs WHERE id = '.$plan['program_id'])->fetchArray();
+                $TEMP['!resolution'] = $plan['resolution'];
+                $TEMP['!date_approved'] = Specific::DateFormat($plan['date_approved']);
+                $TEMP['!duration'] = $plan['duration'];
+                $TEMP['!credits'] = $plan['credits'];
+                $TEMP['!courses'] = $dba->query('SELECT COUNT(*) FROM assigned WHERE plan_id = '.$plan['id'])->fetchArray();
+                $TEMP['!note_mode'] = $plan['note_mode'];
+                $TEMP['!status'] = $TEMP['#word'][$plan['status']];
+                $TEMP['!time'] = Specific::DateFormat($plan['time']);
+                $html .= Specific::Maket('more/plans/includes/plans-list');
+            }
+            Specific::DestroyMaket();
+            $deliver['status'] = 200;
+        } else {
+            if(!empty($keyword)){
+                $TEMP['keyword'] = $keyword;
+                $html .= Specific::Maket('not-found/result-for');
+            } else {
+                $html .= Specific::Maket('not-found/plans');
+            }
+        }
+        $deliver['html'] = $html;
+} else if($one == 'get-plitems'){
+    $id = Specific::Filter($_POST['id']);
+    if(isset($id) && is_numeric($id)){
+        $items = $dba->query('SELECT program_id, name, resolution, date_approved, duration, credits, note_mode, status FROM plan WHERE id = '.$id)->fetchArray();
+        $items['date_approved'] = date('Y-m-d', $items['date_approved']);
+        $assigned = $dba->query('SELECT * FROM assigned WHERE plan_id = '.$id)->fetchAll();
+        foreach ($assigned as $assig) {
+            $name = $dba->query('SELECT name FROM courses WHERE id = '.$assig['course_id'])->fetchArray();
+            $items['courses'][] = array('id' => $assig['course_id'], 'name' => $name);   
+        }
+        if (!empty($items)) {
+            $deliver = array(
+                'status' => 200,
+                'items' => $items
+            );
+        }
+    }
+} else if($one == 'table-plans'){
+    $page = Specific::Filter($_POST['page_id']);
+    if(!empty($page) && is_numeric($page) && isset($page) && $page > 0){
+        $html = "";
+        $query = '';
+        $keyword = Specific::Filter($_POST['keyword']);
+        if(!empty($keyword)){
+            $query .= " WHERE name LIKE '%$keyword%' OR resolution LIKE '%$keyword%'";
+        }
+        $plans = $dba->query('SELECT * FROM plan'.$query.' LIMIT ? OFFSET ?', 10, $page)->fetchAll();
+        if (!empty($plans)) {
+            foreach ($plans as $plan) {
+                $TEMP['!id'] = $plan['id'];
+                $TEMP['!name'] = $plan['name'];
+                $TEMP['!program'] = $dba->query('SELECT name FROM programs WHERE id = '.$plan['program_id'])->fetchArray();
+                $TEMP['!resolution'] = $plan['resolution'];
+                $TEMP['!date_approved'] = Specific::DateFormat($plan['date_approved']);
+                $TEMP['!duration'] = $plan['duration'];
+                $TEMP['!credits'] = $plan['credits'];
+                $TEMP['!courses'] = $dba->query('SELECT COUNT(*) FROM assigned WHERE plan_id = '.$plan['id'])->fetchArray();
+                $TEMP['!note_mode'] = $plan['note_mode'];
+                $TEMP['!status'] = $TEMP['#word'][$plan['status']];
+                $TEMP['!time'] = Specific::DateFormat($plan['time']);
+                $html .= Specific::Maket('more/plans/includes/plans-list');
+            }
+            Specific::DestroyMaket();
+            $deliver['status'] = 200;
+        }
+        $deliver['status'] = 200;
+        $deliver['html'] = $html;
+    }
 }
 ?>

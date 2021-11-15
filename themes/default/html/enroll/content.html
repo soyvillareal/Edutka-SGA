@@ -6,12 +6,13 @@
 				<label class="color-black">{$word->search}</label>
 				<div class="content-search-notes position-relative margin-b10">
 					<div class="display-flex margin-auto border-radius-4">
-				        <input class="background-grely padding-10 border-focus-blue border-all border-grey border-top-left-radius border-top-right-radius w-100 color-black" type="text" id="search-users" name="keyword" autocomplete="off" value="{#keyword_notes}"> 
+				        <input class="background-grely padding-10 border-focus-blue border-all border-grey border-top-left-radius border-top-right-radius w-100 color-black" type="text" id="search-users" name="keyword" autocomplete="off" value="{#keyword_enroll}"> 
 				    </div>
 			        <div class="search-down w-100 z-index-first position-absolute background-white"></div>
 			    </div>
 			</div>
 			<?php } ?>
+			<?php if(!empty($TEMP['#keyword_enroll']) || $TEMP['#student'] == true) { ?>
 			<div class="text-center background-white border-radius-12 padding-25 margin-b10">
 				<div class="max-w-900 border-top-left-radius border-top-right-radius">
 					<div class="font-medium color-black">{$word->current_license_plates}</div>
@@ -24,20 +25,32 @@
 			<div class="background-white border-radius-12 padding-25 margin-b10">
 				<label class="color-black">{$word->type}</label>
 			    <div class="content-types position-relative margin-b10">
-			    	<select id="type" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue area_changed caret-down background-grely color-black">
-			            <option value="programs">{$word->program}</option>
-			            <option value="courses">{$word->course}</option>
+			    	<select id="type" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue caret-down background-grely color-black">
+			            <option value="program"<?php echo($TEMP['#type'] == 'program') ? ' selected' : '';?>>{$word->program}</option>
+			            <option value="course"<?php echo($TEMP['#type'] == 'course') ? ' selected' : '';?>>{$word->course}</option>
 			        </select>
 			    	<div class="color-red text-left text-error font-low margin-t5"></div>
 			    </div>
+				<?php if(count($TEMP['#programs']) > 1 && $TEMP['#type'] == 'course'){ ?>
+				<label class="color-black">{$word->programs}</label>
+			    <div class="content-types position-relative margin-b10">
+			    	<select id="program_id" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue caret-down background-grely color-black">
+			            <?php foreach($TEMP['#programs'] as $program){ ?>
+	                    <option value="<?php echo $program['id']; ?>"><?php echo $program['name']; ?></option>
+	                    <?php } ?>
+				    </select>
+			    	<div class="color-red text-left text-error font-low margin-t5"></div>
+			    </div>
+				<?php } ?>
 				<label class="color-black">{$word->search}</label>
 				<div class="content-search-notes position-relative margin-b10">
 					<div class="display-flex margin-auto border-radius-4">
-				        <input class="background-grely padding-10 border-focus-blue border-all border-grey border-top-left-radius border-top-right-radius border-bottom-left-radius border-bottom-right-radius w-100 color-black" type="text" id="search-enrolled" name="keyword" autocomplete="off" value="{#keyword_notes}"> 
+				        <input class="background-grely padding-10 border-focus-blue border-all border-grey border-top-left-radius border-top-right-radius border-bottom-left-radius border-bottom-right-radius w-100 color-black" type="text" id="search-enrolled" name="keyword" autocomplete="off" value="{#keyword_enroll}"> 
 			        </div>
 			        <div class="search-down z-index-first position-absolute background-white"></div>
 			    </div>
 			</div>
+			<?php } ?>
 	   	    <div class="background-white border-radius-12 padding-25">
 	   	   		<?php if($TEMP['#academic'] == true && !empty($TEMP['#enrolled'])) { ?>
 	   	    	<div class="font-medium text-center margin-t15 margin-b15">Matriculas de <span class="color-black font-bold">{$user}</span></div>
@@ -106,8 +119,20 @@ var GA = D.querySelectorAll('.show_cmodal'),
 	GN = D.querySelector('#alert-enrollp'),
 	GG = D.querySelector('#cancel-enroll'),
 	GE = D.querySelector('#alert-cancel'),
+	GP = D.querySelector('#container-enrolled'),
+	GF = function(e){
+		var self = this;
+	    Req('{$url->{req/rol-student/search-enrolled}}', function(e){
+	    	console.log(e);
+	        GP.innerHTML = e.html;
+	        GA = D.querySelectorAll('.show_cmodal'), GB = D.querySelectorAll('.show_rcmodal'), GK = D.querySelectorAll('.show_rpmodal');
+			for(var j = 0, i = GB.length; j < i; j++) addEvent(GB[j], "click", GC);
+	        for(var j = 0, i = GA.length; j < i; j++) addEvent(GA[j], "click", GH);
+			for(var j = 0, i = GK.length; j < i; j++) addEvent(GK[j], "click", GM);
+	    }, "POST", "&keyword=" + self.value + "&id={#user_id}&type={#type}<?php echo(count($TEMP['#programs']) > 1 && $TEMP['#type'] == 'course') ? '&program_id=" + D.querySelector("#program_id").value' : '&program_id={#program}"';?>)
+	},
 	GC = function(){
-		GJ.style.display = "block", D.body.style.overflow = "hidden", GI.setAttribute('data-id', this.getAttribute('data-id'));
+		GJ.style.display = "block", D.body.style.overflow = "hidden", GI.setAttribute('data-id', this.getAttribute('data-id')), GI.setAttribute('data-program', this.getAttribute('data-program'));
 	},
     GH = function(){
         GE.style.display = "block", D.body.style.overflow = "hidden", GG.setAttribute('data-id', this.getAttribute('data-id'));
@@ -115,26 +140,18 @@ var GA = D.querySelectorAll('.show_cmodal'),
     GM = function(){
         GN.style.display = "block", D.body.style.overflow = "hidden", GL.setAttribute('data-id', this.getAttribute('data-id'));
     },
-	keyword = "{#keyword_notes}";
+	keyword = "{#keyword_enroll}";
 
 
-addEvent(D.querySelector('#close-ealert'), 'click', function(){
+<?php if(count($TEMP['#programs']) > 1 && $TEMP['#type'] == 'course'){ ?>addEvent(D.querySelector('#program_id'), 'change', GF), addEvent(D.querySelector('#close-ealert'), 'click', function(){
     GE.style.display = "", D.body.style.overflow = "";
-}), addEvent(D.querySelector('#cancel-ecalert'), 'click', function(){
+}), <?php } ?>addEvent(D.querySelector('#cancel-ecalert'), 'click', function(){
     GJ.style.display = "", D.body.style.overflow = "";
 }), addEvent(D.querySelector('#cancel-epalert'), 'click', function(){
     GN.style.display = "", D.body.style.overflow = "";
-}), addEvent(D.querySelector('#search-enrolled'), "keyup", function(e){
-	var self = this;
-    Req('{$url->{req/rol-student/search-enrolled}}', function(e){
-    	console.log(e);
-        D.querySelector('#container-enrolled').innerHTML = e.html;
-        GA = D.querySelectorAll('.show_cmodal'), GB = D.querySelectorAll('.show_rcmodal'), GK = D.querySelectorAll('.show_rpmodal');
-		for(var j = 0, i = GB.length; j < i; j++) addEvent(GB[j], "click", GC);
-        for(var j = 0, i = GA.length; j < i; j++) addEvent(GA[j], "click", GH);
-		for(var j = 0, i = GK.length; j < i; j++) addEvent(GK[j], "click", GM);
-    }, "POST", "&keyword=" + self.value + "&id={#user_id}&type=" + D.querySelector('#type').value)
-}), addEvent(GG, "click", function(){
+})<?php if(!empty($TEMP['#keyword_enroll']) || $TEMP['#student'] == true) { ?>, addEvent(D.querySelector('#type'), 'change', function(){
+    preloadPage('&one=enroll<?php echo($TEMP["#academic"] == true) ? "&keyword={#keyword_enroll}&user={#user_id}" : ''?>&type='+this.value);
+}), addEvent(D.querySelector('#search-enrolled'), "keyup", GF)<?php } ?>, addEvent(GG, "click", function(){
     var self = this; 
     self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
 	Req('{$url->{req/rol-student/cancel-enroll}}', function(e){
@@ -154,7 +171,7 @@ addEvent(D.querySelector('#close-ealert'), 'click', function(){
 	    } else {
 	        loadAlert(e.error, 1), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
         }
-	}, "POST", "&id=" + self.getAttribute('data-id') + "&user_id={#user_id}<?php echo($TEMP['#academic'] == false) ? '&code="+D.querySelector("#course-code").value' : '"'?>);
+	}, "POST", "&course_id=" + self.getAttribute('data-id') + "&user_id={#user_id}&program_id=" + self.getAttribute('data-program') + "<?php echo($TEMP['#academic'] == false) ? '&code="+D.querySelector("#course-code").value' : '"'?>);
 }), addEvent(GL, "click", function(){
     var self = this; 
     self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
@@ -178,7 +195,6 @@ addEvent(D.querySelector('#close-ealert'), 'click', function(){
 	}
 	keyword = SV;
 	Req('{$url->{req/rol-teacher/search-users}}', function(e) {
-		console.log(e);
 	    if (e.status == 200) {
 	   		SD.innerHTML = e.html, loadPage(SD.querySelectorAll('a[target="_self"]'));
 	    } else {

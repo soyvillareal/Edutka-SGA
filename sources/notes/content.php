@@ -24,8 +24,10 @@ if(Specific::Teacher() == true){
     $my_courses = $dba->query('SELECT course_id FROM teacher WHERE user_id = '.$TEMP['#user']['id'])->fetchAll(false);
 }
 
-$TEMP['#programs'] = $dba->query('SELECT * FROM programs p WHERE (SELECT program_id FROM enrolled WHERE user_id = '.$TEMP['#user_id'].' AND program_id = p.id) = id')->fetchAll();
-$periods = $dba->query('SELECT period_id FROM courses c WHERE (SELECT course_id FROM enrolled WHERE user_id = '.$TEMP['#user_id'].' AND course_id = c.id) = id')->fetchAll(false);
+$TEMP['#programs'] = $dba->query('SELECT * FROM programs p WHERE (SELECT program_id FROM enrolled WHERE user_id = '.$TEMP['#user_id'].' AND program_id = p.id AND type = "program") = id')->fetchAll();
+
+$periods = $dba->query('SELECT period_id FROM courses c WHERE (SELECT course_id FROM enrolled WHERE user_id = '.$TEMP['#user_id'].' AND course_id = c.id AND type = "course") = id')->fetchAll(false);
+
 if(!empty($periods)){
 	$TEMP['#periods'] = $dba->query('SELECT * FROM periods WHERE id IN ('.implode(',', $periods).')')->fetchAll();
 }
@@ -45,14 +47,15 @@ if(Specific::Teacher() == true){
     	$TEMP['#period_id'] = $dba->query('SELECT max(period_id) FROM courses WHERE (SELECT course_id FROM notes WHERE user_id = '.$TEMP['#user_id'].' AND course_id = '.end($my_courses).') = id')->fetchArray();
     }
 }
-
 if(!empty($TEMP['#program_id'])){
-	$sqls .= ' AND (SELECT id FROM courses WHERE program_id = '.$TEMP['#program_id'].' AND id = n.course_id) = course_id';
+	$plan = $dba->query('SELECT * FROM plan WHERE program_id = '.$TEMP['#program_id'])->fetchArray();
+	$TEMP['#note_mode'] = $plan['note_mode'];
+	$courses = $dba->query('SELECT course_id FROM assigned WHERE plan_id = '.$plan['id'])->fetchAll(false);
+	$sqls .= ' AND course_id IN ('.implode(',', $courses).') AND program_id = '.$TEMP['#program_id'];
 	$params .= (!empty($params) ? "&" : "?")."program={$TEMP['#program_id']}";
 }
 if(!empty($TEMP['#period_id'])){
 	$sqls .= ' AND (SELECT id FROM courses WHERE period_id = '.$TEMP['#period_id'].' AND id = n.course_id) = course_id';
-
 	$params .= "&period={$TEMP['#period_id']}";
 }
 
@@ -64,12 +67,8 @@ $TEMP['#notes'] = $dba->query('SELECT * FROM notes'.(!empty($TEMP['#period_id'])
 if(!empty($TEMP['#notes'])){
 	foreach ($TEMP['#notes'] as $note) {
 		$notes = json_decode($note['notes'], true);
-
-
-		
 		$course = $dba->query('SELECT * FROM courses WHERE id = '.$note['course_id'])->fetchArray();
 		$period = $dba->query('SELECT * FROM periods WHERE id = '.$course['period_id'])->fetchArray();
-
 
 		$teachers = $dba->query('SELECT names FROM users u WHERE (SELECT user_id FROM teacher WHERE user_id = u.id AND course_id = '.$note['course_id'].') = id')->fetchAll(false);
 		if(count($teachers) == 2){
@@ -87,21 +86,32 @@ if(!empty($TEMP['#notes'])){
 	    $TEMP['!course'] = $course['name'];
 	    $TEMP['!parameters'] = $course['parameters'];
 
-
-	    for ($i=0; $i < 3; $i++) { 
+	    if($TEMP['#note_mode'] == '30-30-40'){
+	    	for ($i=0; $i < 3; $i++) { 
+		    	$anotes = array();
+		        $parameters = json_decode($course['parameters'], true)[$i];
+		        foreach ($parameters as $key => $param) {
+		        	$anotes[] = (($notes[$i][$key]/100)*$param['percent']);
+		        }
+		        $notes[$i] = array_sum($anotes);
+		    }
+			$TEMP['!first'] = $notes[0];
+		    $TEMP['!second'] = $notes[1];
+		    $TEMP['!third'] = $notes[2];
+	    	$TEMP['!average'] = $average[] = round((($notes[0]*0.3)+($notes[1]*0.3)+($notes[2]*0.4)), 2);
+	    } else {
 	    	$anotes = array();
-		    $rnotes = json_decode($notes[$i], true);
-	        $parameters = json_decode($course['parameters'], true)[$i];
-	        foreach ($parameters as $key => $param) {
-	        	$anotes[] = (($rnotes[$key]/100)*$param['percent']);
-	        }
-	        $notes[$i] = array_sum($anotes);
+		    $parameters = json_decode($course['parameters'], true);
+		    foreach ($parameters as $key => $param) {
+		      	$anotes[] = (($notes[$key]/100)*$param['percent']);
+		    }
+
+		    $notes = array_sum($anotes);
+			$TEMP['!first'] = $notes;
+	    	$TEMP['!average'] = $average[] = round($notes, 2);
 	    }
 
-		$TEMP['!first'] = $notes[0];
-	    $TEMP['!second'] = $notes[1];
-	    $TEMP['!third'] = $notes[2];
-	    $TEMP['!average'] = $average[] = round((($notes[0]*0.3)+($notes[1]*0.3)+($notes[2]*0.4)), 2);
+
 	    $TEMP['!teacher'] = $teachers;
 
 	    $TEMP['!approved'] = ($course['type'] == 'practice' && $TEMP['!average'] >= 3.5) || ($course['type'] == 'theoretical' && $TEMP['!average'] >= 3.0) ? true : false;

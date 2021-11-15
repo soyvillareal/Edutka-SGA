@@ -12,22 +12,21 @@ if(isset($_GET['user']) && Specific::Academic() == true){
 	}
 }
 
-$type = Specific::Filter($_GET['program']);
-$TEMP['#keyword_notes'] = Specific::Filter($_GET['keyword']);
-
+$TEMP['#type'] = !empty($_GET['type']) ? Specific::Filter($_GET['type']) : 'program';
+$TEMP['#keyword_enroll'] = Specific::Filter($_GET['keyword']);
 $params = "";
 $sqls = '';
 
 if(isset($_GET['keyword'])){
-	$params .= "?keyword=".$TEMP['#keyword_notes'];
+	$params .= "?keyword=".$TEMP['#keyword_enroll'];
 }
 if(isset($_GET['user'])){
 	$params .= "&user={$TEMP['#user_id']}";
 }
 
-if(isset($_GET['type'])){
-	$sqls .= ' AND type = '.$type;
-	$params .= (!empty($params) ? "&" : "?")."program=$type";
+if(!empty($TEMP['#type'])){
+	$sqls .= " AND type = '{$TEMP['#type']}'";
+	$params .= (!empty($params) ? "&" : "?")."type={$TEMP['#type']}";
 }
 
 
@@ -35,17 +34,39 @@ $TEMP['#url_params'] = str_replace('?', '&', "&one=enroll$params");
 $TEMP['#load_url'] = Specific::Url("enroll$params");
 
 $TEMP['#enrolled'] = $dba->query('SELECT * FROM enrolled WHERE user_id = '.$TEMP['#user_id'].$sqls)->fetchAll();
-$programs = $dba->query('SELECT COUNT(*) FROM enrolled WHERE user_id = '.$TEMP['#user_id'].' AND type = "program"')->fetchArray();
+$programs = $dba->query('SELECT program_id FROM enrolled WHERE user_id = '.$TEMP['#user_id'].' AND type = "program"')->fetchAll(false);
+
+$TEMP['#program'] = $TEMP["#user"]["program"];
+$TEMP['#programs'] = 0;
+if(!empty($programs)){
+	$TEMP['#programs'] = $dba->query('SELECT * FROM programs WHERE id IN ('.implode(',', $programs).')')->fetchAll();
+}
+
 $courses = $dba->query('SELECT COUNT(*) FROM enrolled WHERE user_id = '.$TEMP['#user_id'].' AND type = "course"')->fetchArray();
 
-$TEMP['programs'] = $programs.(count($programs) > 1 ? " {$TEMP['#word']['programs']}" : " {$TEMP['#word']['program']}");
-$TEMP['courses'] = $courses.(count($courses) > 1 ? " {$TEMP['#word']['courses']}" : " {$TEMP['#word']['course']}");
+$programs = count($programs);
+
+$TEMP['programs'] = $programs.($programs > 1 || $programs == 0 ? " {$TEMP['#word']['programs']}" : " {$TEMP['#word']['program']}");
+$TEMP['courses'] = $courses.($courses > 1 || $courses == 0 ? " {$TEMP['#word']['courses']}" : " {$TEMP['#word']['course']}");
 
 if(!empty($TEMP['#enrolled'])){
 	foreach ($TEMP['#enrolled'] as $enroll) {
 		if($enroll['type'] == 'course'){
 			$course = $dba->query('SELECT name FROM courses WHERE id = '.$enroll['course_id'])->fetchArray();
 			$periodc = $dba->query('SELECT name FROM periods p WHERE (SELECT period_id FROM courses WHERE id = '.$enroll['course_id'].' AND period_id = p.id)')->fetchArray();
+
+			$teachers = $dba->query('SELECT names FROM users u WHERE (SELECT user_id FROM teacher WHERE user_id = u.id AND course_id = '.$enroll['course_id'].') = id')->fetchAll(false);
+			if(count($teachers) == 2){
+				$teachers = "{$teachers[0]} {$TEMP['#word']['and']} {$teachers[1]}";
+			} else if(count($teachers) > 2){
+				$end = end($teachers);
+				array_pop($teachers);
+				$teachers = implode(', ', $teachers)." {$TEMP['#word']['and']} $end";
+			} else {
+				$teachers = $teachers[0];
+			}
+
+			$TEMP['!teacher'] = $teachers;
 			$TEMP['!name'] = "{$course} ($periodc)";
 			$TEMP['!color'] = 'purple';
 		} else {

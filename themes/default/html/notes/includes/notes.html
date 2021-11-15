@@ -16,26 +16,27 @@
                {$word->percentage}
             </div>
          </div>
-         <div class="container-pages">
-            <div class="content-row-table dv-vertical-center padding-t15 padding-b15 border-bottom border-blue">
+         <div class="container-pages"> 
+            <div class="content-row-table dv-vertical-center padding-t15 padding-b15<?php echo($TEMP['#note_mode'] == '30-30-40') ? ' border-bottom border-blue' : '';?>">
                <div class="cont-cell-header padding-lr20 color-black">
-                  {$word->first}
+                  <?php echo($TEMP['#note_mode'] == '30-30-40') ? 'Primero' : '{$word->single_cut}';?>
                </div>
                <div class="cont-cell-header padding-lr20 color-black">
                   <?php if($TEMP['#teacher'] == true || $TEMP['#academic'] == true) { ?>
                   <?php if($TEMP['!first'] == 0){ ?>
-                  <button class="upload_note btn-noway color-blue underline-hover<?php echo(empty($TEMP['!parameters'])) ? ' cursor-disabled" disabled' : '"';?> data-pos="0" data-id="{!id}">Subir nota</button>
+                  <button class="upload_note btn-noway color-blue underline-hover<?php echo(empty($TEMP['!parameters'])) ? ' cursor-disabled" disabled' : '"';?><?php echo($TEMP['#note_mode'] == '30-30-40') ? ' data-pos="0"' : '';?> data-id="{!id}">Subir nota</button>
                   <?php } else { ?>
-                  <button class="upload_note btn-noway color-blue underline-hover" data-pos="0" data-id="{!id}">{!first}</button>
+                  <button class="upload_note btn-noway color-blue underline-hover"<?php echo($TEMP['#note_mode'] == '30-30-40') ? ' data-pos="0"' : '';?> data-id="{!id}">{!first}</button>
                   <?php } ?>
                   <?php } else { ?>
                   {!first}
                   <?php } ?>
                </div>
                <div class="cont-cell-header padding-lr20 color-black">
-                  30%
+                  <?php echo($TEMP['#note_mode'] == '30-30-40') ? '30%' : '100%'; ?>
                </div>
             </div>
+            <?php if($TEMP['#note_mode'] == '30-30-40'){ ?>
             <div class="content-row-table dv-vertical-center padding-t15 padding-b15 border-bottom border-blue">
                <div class="cont-cell-header padding-lr20 color-black">
                   {$word->second}
@@ -74,6 +75,7 @@
                   40%
                </div>
             </div>
+            <?php } ?>
          </div>
       </div>
       <div class="scroll-table-header margin-t15 border-all <?php echo($TEMP['!approved'] == true) ? 'border-blue ' : 'border-red ';?>border-radius-12">
