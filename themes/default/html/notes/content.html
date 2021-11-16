@@ -71,18 +71,25 @@
 		<div class="clear"></div>
 	</div>
 </div>
-<?php if($TEMP['#teacher'] == true || $TEMP['#academic'] == true){ ?>
 <div class="content-modal" id="alert-notes">
     <div class="cont-dialog">
         <div class="cont-popup background-white">
-            <div class="top-header">
+            <div class="top-header dv-vertical-center">
                 <div class="padding-t15 padding-b15 w-100 font-lowly color-black">
                     {$word->notes}
                 </div>
+                <?php if($TEMP['#student'] == true){ ?>
+                <button id="cancel-alert" class="close-popup color-grey btn-noway">
+                  <svg class="dv-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                     <path fill="currentColor" d="M 12 13.17 L 5.17 20 L 4 18.832 L 10.83 12 L 4 5.17 L 5.17 4 L 12 10.83 L 18.832 4 L 20 5.17 L 13.17 12 L 20 18.832 L 18.832 20 Z"></path>
+                  </svg>
+                </button>
+                <?php } ?>
             </div>
             <div class="content-modal-body color-grey">
                 <div id="container-parameters"></div>
             </div>
+            <?php if($TEMP['#student'] == false){ ?>
             <div class="display-flex">
                 <div class="margin-left-auto margin-r25 margin-b15">
                     <button class="btn-noway background-grely border-radius-4 padding-10 color-black hover-button font-uppercase" id="cancel-alert">{$word->cancel}</button>
@@ -94,13 +101,14 @@
                     </button>
                 </div>
             </div>
+            <?php } ?>
         </div>
     </div>
 </div>
 <div class="background-pointer"></div>
-<?php } ?>
 <script type="text/javascript">
 var NU = D.querySelectorAll('.upload_note'),
+    NZ = D.querySelectorAll('.see_params'),
 	NN = D.querySelector('#alert-notes'),
 	NT = D.querySelector('#this-note'),
 	NK = D.querySelector('#container-parameters'),
@@ -108,16 +116,16 @@ var NU = D.querySelectorAll('.upload_note'),
         var self = this,
             note_id = self.getAttribute('data-id'),
             pos = self.getAttribute('data-pos');
-        self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
-        Req('{$url->{req/rol-teacher/get-citems}}', function(e){
+        <?php if($TEMP['#student'] == false){ ?>self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');<?php } ?>
+        Req('{$url->{req/rol-{#role}/get-citems}}', function(e){
             console.log(e);
             if(e.status == 200){
                 for(var j = 0, i = e.items['parameters'].length; j < i; j++){
                     var el = e.items['parameters'][j],
                         element = D.createElement('div');
-                    element.className = 'group-validate display-block position-relative w-100 padding-25 border-all border-blue margin-b20', element.id = "parameter_"+j, element.innerHTML = '<h3 class="text-center" id="text-parameter">'+el['name']+'</h3><div class="display-flex"><div class="margin-auto margin-b15 margin-t15 padding-r10"><input id="param_note_'+j+'" type="text" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue background-grely color-black" placeholder="{$word->note}" '+(e.items['notes'][j] != 0 && e.items['notes'][j] != undefined ? 'value="'+e.items['notes'][j]+'"' : '')+'/></div><div class="position-relative margin-auto margin-b15 margin-t15 percent-gadget percent-gadget-disabled"><input type="text" readonly="true" class="cont-input mw-w-100 h-50 border-radius-12 animated-easy border-focus-blue margin-left-auto background-grely color-black text-center" placeholder="{$word->percentage}" value="'+el['percent']+'"/></div></div><div class="text-error color-red text-center font-low margin-t5"></div>', NK.appendChild(element);
+                    element.className = 'group-validate display-block position-relative w-100 padding-25 border-all border-blue margin-b20', element.id = "parameter_"+j, element.innerHTML = '<h3 class="text-center" id="text-parameter">'+el['name']+'</h3><div class="display-flex"><div class="margin-auto margin-b15 margin-t15 padding-r10"><input id="param_note_'+j+'" type="text" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue background-grely color-black"<?php echo($TEMP["#student"] == true) ? ' readonly="true" ' : ' ';?>placeholder="{$word->note}" '+(e.items['notes'][j] != 0 && e.items['notes'][j] != undefined ? 'value="'+e.items['notes'][j]+'"' : '')+'/></div><div class="position-relative margin-auto margin-b15 margin-t15 percent-gadget percent-gadget-disabled"><input type="text" readonly="true" class="cont-input mw-w-100 h-50 border-radius-12 animated-easy border-focus-blue margin-left-auto background-grely color-black text-center" placeholder="{$word->percentage}" value="'+el['percent']+'"/></div></div><div class="text-error color-red text-center font-low margin-t5"></div>', NK.appendChild(element);
                 }
-                NN.style.display = "block", D.body.style.overflow = "hidden"<?php echo($TEMP['#note_mode'] == '30-30-40') ? ", NT.setAttribute('data-pos', pos)" : "";?>, NT.setAttribute('data-id', note_id), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
+                NN.style.display = "block", D.body.style.overflow = "hidden"<?php if($TEMP['#student'] == false){ ?><?php echo($TEMP['#note_mode'] == '30-30-40') ? ", NT.setAttribute('data-pos', pos)" : "";?>, NT.setAttribute('data-id', note_id), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');<?php } ?>
             } else {
                 self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
             }
@@ -131,11 +139,12 @@ addEvent(D.querySelector('#programs'), 'change', function(){
     preloadPage('&one=notes<?php echo($TEMP['#academic'] == true || $TEMP['#teacher'] == true) ? "&user={#user_id}" : "" ;?>&program={#program_id}&period='+this.value);
 })
 <?php } ?>
-<?php if($TEMP['#teacher'] == true || $TEMP['#academic'] == true) { ?>
-<?php if(!empty($TEMP['#notes'])){ ?>
 addEvent(D.querySelector('#cancel-alert'), 'click', function(){
     NN.style.display = "", D.body.style.overflow = "", NK.innerHTML = "";
-}), addEvent(NT, 'click', function(){
+})
+<?php if($TEMP['#teacher'] == true || $TEMP['#academic'] == true) { ?>
+<?php if(!empty($TEMP['#notes'])){ ?>
+addEvent(NT, 'click', function(){
     var self = this,
         GO = [],
         sum = 0,
@@ -210,5 +219,8 @@ addEvent(D.querySelector('#cancel-alert'), 'click', function(){
 	}, "POST", "&type=notes&keyword=" + SV);
 })
 for(var j = 0, i = NU.length; j < i; j++) addEvent(NU[j], "click", NA);	
+<?php } ?>
+<?php if($TEMP['#student']){ ?>
+for(var j = 0, i = NZ.length; j < i; j++) addEvent(NZ[j], "click", NA);
 <?php } ?>
 </script>

@@ -1,20 +1,20 @@
 <?php
-$id = Specific::Filter($_GET['id']);
+$ukey = Specific::Filter($_GET['ukey']);
 $token = Specific::Filter($_GET['tokenu']);
 $TEMP['#descode'] = Specific::Filter($_GET['insert']);
-if ($TEMP['#loggedin'] == true || empty($token) || empty($id)) {
+if ($TEMP['#loggedin'] == true || empty($token) || empty($ukey)) {
 	header("Location: " . Specific::Url());
 	exit();
 }
 
-$user = $dba->query('SELECT * FROM users WHERE user_id = "'.$id.'" AND token = "'.$token.'"')->fetchArray();
+$user = $dba->query('SELECT * FROM users WHERE ukey = "'.$ukey.'" AND token = "'.$token.'"')->fetchArray();
 $page = empty($user) || $user['status'] == 1 || (strlen($TEMP['#descode']) != 6 && !empty($TEMP['#descode'])) ? 'invalid-auth' : 'authentication';
 
 $TEMP['#bubbles'] = Specific::Bubbles();
 
 $TEMP['title'] = $TEMP['#word']['check_your_email'];
 $TEMP['type'] = 'email';
-$TEMP['id'] = $id;
+$TEMP['ukey'] = $ukey;
 $TEMP['token'] = $token;
 $TEMP['bubbles'] = implode(',', $TEMP['#bubbles']['rands']);
 if(!empty($_GET['insert'])){
@@ -30,7 +30,7 @@ $TEMP['#page']        = 'verify-email';
 $TEMP['#title']       = $TEMP['#word']['check_your_email'] . ' - ' . $TEMP['#settings']['title'];
 $TEMP['#description'] = $TEMP['#settings']['description'];
 $TEMP['#keyword']     = $TEMP['#settings']['keyword'];
-$TEMP['#load_url']    = Specific::Url('verify-email/'.$ecode.'/'.$id);
+$TEMP['#load_url']    = Specific::Url('verify-email/'.$ecode.'/'.$ukey);
 
 $TEMP['#content'] = Specific::Maket("$page/content");
 ?>

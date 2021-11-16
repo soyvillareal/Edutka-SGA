@@ -1,7 +1,7 @@
 <div class="display-flex">
     <div class="container-items margin-auto">
         <h2 class="font-supraly text-center no-margin padding-t25 padding-b15">{$word->faculties}</h2>
-        <div class="background-white border-radius-12 padding-25 margin-b50">
+        <div class="max-w-700 background-white border-radius-12 padding-25 margin-b50">
             <div class="border-top-left-radius border-top-right-radius">
                 <label class="color-black">{$word->search}</label>
                 <div class="content-search-notes position-relative margin-b20">
@@ -13,24 +13,26 @@
                     <div class="container-data-table">
                         <div class="cont-table-header">
                             <div class="scroll-table-header">
-                                <div class="contsub-table-header w-100 display-flex padding-t15 padding-b15 border-bottom border-top border-grey" id="container-table-header">
-                                    <div class="cont-cell-header padding-lr20 color-black">
-                                        {$word->code}
-                                    </div>
-                                    <div class="cont-cell-header padding-lr20 color-black">
-                                        {$word->faculty}
-                                    </div>
-                                    <div class="cont-cell-header padding-lr20 color-black">
-                                        {$word->status}
-                                    </div>
-                                    <div class="cont-cell-header padding-lr20 color-black">
-                                        {$word->date}
-                                    </div>
-                                    <div class="cont-cell-header padding-lr20 color-black text-center">
-                                        {$word->action}
+                                <div class="display-inline-flex">
+                                    <div class="contsub-table-header w-100 display-flex padding-t15 padding-b15 border-bottom border-top border-grey" id="container-table-header">
+                                        <div class="cont-cell-header padding-lr20 color-black">
+                                            {$word->code}
+                                        </div>
+                                        <div class="cont-cell-header padding-lr20 color-black">
+                                            {$word->faculty}
+                                        </div>
+                                        <div class="cont-cell-header padding-lr20 color-black">
+                                            {$word->status}
+                                        </div>
+                                        <div class="cont-cell-header padding-lr20 color-black">
+                                            {$word->date}
+                                        </div>
+                                        <div class="cont-cell-header padding-lr20 color-black text-center">
+                                            {$word->action}
+                                        </div>
                                     </div>
                                 </div>
-                                <div id="container-pages">
+                                <div id="container-pages" class="display-inline-block">
                                     {$faculties}
                                 </div>
                             </div>

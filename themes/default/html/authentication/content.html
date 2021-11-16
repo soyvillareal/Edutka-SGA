@@ -123,7 +123,7 @@ var TI = D.querySelectorAll('.input_key'),
 				}
 				TH.querySelector('.text-error').innerText = '*'+e.message;
 			}
-		}, "POST", "&tokenu=" + TC + "&id={$id}&to={$to}")
+		}, "POST", "&tokenu=" + TC + "&ukey={$ukey}&to={$to}")
 	},
 	TX = !1,
 	TY = "{$bubbles}".split(',');
@@ -164,7 +164,7 @@ var TI = D.querySelectorAll('.input_key'),
 		} else {
 			self.innerText = "{$word->resend_code}", self.removeAttribute('disabled'), loadAlert(e.message, 1);
 		}
-	}, "POST", "&tokenu=" + TM + "&id={$id}")
+	}, "POST", "&tokenu=" + TM + "&ukey={$ukey}")
 });
 for(var j = 0, i = TN.length; j < i; j++) addEvent(TN[j], 'input', function(){
 	var self = this;

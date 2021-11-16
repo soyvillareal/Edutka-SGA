@@ -3,17 +3,7 @@ if ($TEMP['#loggedin'] === false) {
     header("Location: " . Specific::Url('login'));
     exit();
 }
-$by_id = $TEMP['#user']['id'];
-$user_id = Specific::Filter($_GET['id']);
-if (isset($_GET['id']) && !empty($user_id) && Specific::Admin() === true) {
-    if ($dba->query('SELECT COUNT(*) FROM users WHERE user_id = "'.$user_id.'"')->fetchArray() == 0) {
-        header("Location: " . Specific::Url('404'));
-        exit();
-    }
-    $by_id = $dba->query('SELECT id FROM users WHERE user_id = "'.$user_id.'"')->fetchArray();
-}
 
-$TEMP['#data']     = Specific::Data($by_id);
 $TEMP['#load_url'] = Specific::Url('settings?page=change-password');
 
 if (!empty($user_id)) {
@@ -21,8 +11,6 @@ if (!empty($user_id)) {
     $TEMP['href_settings'] = "&id=$user_id";
     $TEMP['#load_url'] = Specific::Url('settings?page=change-password'.$TEMP['href_settings']);
 }
-
-$TEMP['data'] = $TEMP['#data'];
 
 $TEMP['#page']        = 'change-password';
 $TEMP['#title']       = $TEMP['#word']['settings'] . ' - ' . $TEMP['#settings']['title'];

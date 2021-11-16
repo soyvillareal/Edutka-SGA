@@ -1,0 +1,15 @@
+<li>
+    <<?php echo($TEMP['!url'] != '#') ? 'a' : 'div';?> class="dv-vertical-center action-list-hover padding-10"<?php echo($TEMP['!url'] != '#') ? ' href="{!url}" target="_self"' : '';?>>
+        <div class="cont-point border-radius-med margin-r10{!point_active}"></div>
+		<div class="margin-r10">
+			<img class="w-50 h-50 border-radius-med" src="{!data->avatar}" alt="{$data->username}">
+		</div>
+		<div class="notifications-info margin-r10">
+			<h3 class="notifications-message no-margin font-medium ellipsis-vertical-2 color-black">
+				{!data->names}
+			</h3>
+			<p class="color-black no-margin">{!text}</p>
+			<time class="notifications-meta font-low color-grey">{!time}</time>
+		</div>
+	</<?php echo($TEMP['!url'] != '#') ? 'a' : 'div';?>>
+</li>

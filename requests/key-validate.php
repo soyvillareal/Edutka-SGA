@@ -5,8 +5,6 @@ if (!isset($_POST['input'])) {
     exit();
 }else {
 	$error = '';
-	$by_id = Specific::Filter($_POST['by_id']);
-	$user_data = Specific::Data($by_id);
 	$input = Specific::Filter($_POST['input']);
 	$type = Specific::Filter($_POST['type']);
 	$page = Specific::Filter($_POST['page']);
@@ -17,11 +15,11 @@ if (!isset($_POST['input'])) {
 	       	$error = $TEMP['#word']['document_already_exists'];
 	    } else if (!preg_match('/^[0-9]/', $input) && $type == 'dni') {
 	        $error = $TEMP['#word']['invalid_document_characters'];
-	    } else if ($dba->query('SELECT COUNT(*) FROM users WHERE email = "'.$input.'"')->fetchArray() > 0 && ($type == 'email' || ($type == 'settings-email' && $user_data['email'] != $input))) {
+	    } else if ($dba->query('SELECT COUNT(*) FROM users WHERE email = "'.$input.'"')->fetchArray() > 0 && ($type == 'email' || ($type == 'settings-email' && $TEMP['#user']['email'] != $input))) {
 	        $error = $TEMP['#word']['email_exists'];
 	    } else if (!filter_var($input, FILTER_VALIDATE_EMAIL) && ($type == 'email' || $type == 'settings-email')) {
 	        $error = $TEMP['#word']['email_invalid_characters'];
-	    } else if($user_data['password'] != sha1($input) && $type == 'current-password') {
+	    } else if($TEMP['#user']['password'] != sha1($input) && $type == 'current-password') {
 	    	$error = $TEMP['#word']['current_password_dont_match'];
 	    } else if (strlen($input) < 4 && $type == 'password') {
 	        $error = $TEMP['#word']['password_is_short'];

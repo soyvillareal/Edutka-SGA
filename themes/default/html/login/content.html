@@ -101,7 +101,7 @@ var LI = D.querySelectorAll('.input_key'),
 								} else {
 									window.location = e.url;
 								}
-							}, "POST", "&tokenu=" + e.token + "&id=" + e.id)
+							}, "POST", "&tokenu=" + e.token + "&ukey=" + e.ukey)
 						})
 					} else {
 						loadPage(LE.querySelectorAll('a[target="_self"]'));

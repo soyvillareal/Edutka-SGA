@@ -3,8 +3,8 @@
     <label class="padding-5 color-black">{$word->authentication}</label>
     <div class="display-inline-block">
         <select class="cont-input border-radius-12 animated-easy border-focus-blue area_changed caret-down input_key area_validate background-grely color-black" name="authentication" id="authentication">
-            <option value="0"<?php echo ($TEMP['#data']['authentication'] == 0) ? ' selected': '';?>>{$word->disabled}</option>
-            <option value="1"<?php echo ($TEMP['#data']['authentication'] == 1) ? ' selected': '';?>>{$word->enabled}</option>
+            <option value="0"<?php echo ($TEMP['#user']['authentication'] == 0) ? ' selected': '';?>>{$word->disabled}</option>
+            <option value="1"<?php echo ($TEMP['#user']['authentication'] == 1) ? ' selected': '';?>>{$word->enabled}</option>
         </select>
     </div>
 </div>
@@ -64,7 +64,7 @@
         <?php } ?>
     </div>
 </div>
-<div class="cont-alert hidden" id="alert-delsession">
+<div class="cont-alert" id="alert-delsession">
    <h2 class="color-red">{$word->confirmation}</h2>
    <p>{$word->sure_you_wan_log_out}</p>
    <div class="padding-t25">
@@ -72,6 +72,7 @@
       <button class="btn-noway background-blue border-radius-4 padding-10 color-black hover-opacity font-uppercase" id="delete-session" data-id="0">{$word->delete}</button>
    </div>
 </div>
+<div class="background-point"></div>
 <script>
 var YF = D.querySelectorAll('#log-out-session'),
     YL = D.querySelectorAll('.load-table-page'),
@@ -80,10 +81,10 @@ var YF = D.querySelectorAll('#log-out-session'),
     YP = function(){
         var id = this.getAttribute("data-session");
         if (!id) { return false; }
-        addClass(D.querySelector('#untab-menu'), 'toggle-guid'), removeClass(YX, 'hidden'), YX.querySelector('#delete-session').setAttribute('data-id', id), D.body.style.overflow = "hidden";
+        addClass(D.querySelector('#untab-menu'), 'toggle-guid'), YX.querySelector('#delete-session').setAttribute('data-id', id), YX.style.display = "block", D.body.style.overflow = "hidden";
     },
     YD = function(){
-        removeClass(D.querySelector('#untab-menu'), 'toggle-guid'), addClass(YX, 'hidden'), D.body.style.overflow = "";
+        removeClass(D.querySelector('#untab-menu'), 'toggle-guid'), YX.style.display = "", D.body.style.overflow = "";
     };
 <?php if ($TEMP['#settings']['authentication'] == 'on') { ?>
 addEvent(D.querySelector("#authentication"), "change", function(){
@@ -93,21 +94,22 @@ addEvent(D.querySelector("#authentication"), "change", function(){
         } else {
             loadAlert('{$word->error}', 1);
         }
-    }, "POST", "&by_id={$data->id}&authentication=" + this.value)
+    }, "POST", "&authentication=" + this.value)
 });
 <?php } ?>
 
 addEvent(D.querySelector('#cancel-alert'), 'click', YD), addEvent(D.querySelector('#delete-session'), 'click', function(){
     var self = this,
         id = self.getAttribute('data-id');
-    Req("{$url->{req/delete/session}}", function(e){
+    Req("{$url->{req/settings/delete-session}}", function(e){
+        console.log(e);
         if (e.reload == true) {
             location.reload();
         } else if (e.status == 200) {
             D.querySelector('#session_' + id).remove();
         }
         YD();
-    }, "POST", "&id=" + id + "&by_id={$data->id}")
+    }, "POST", "&id=" + id)
 })
 
 for (var j = 0, i = YL.length; j < i; j++) addEvent(YL[j], "click", function(){
@@ -153,7 +155,7 @@ for (var j = 0, i = YL.length; j < i; j++) addEvent(YL[j], "click", function(){
         YS.setAttribute('disabled', true);
         YE.setAttribute('disabled', true);
     } 
-    Req("{$url->{req/table-load-pages}}", function(e){
+    Req("{$url->{req/settings/table-sessions}}", function(e){
         if(e.status == 200){
             D.querySelector('#container-pages').innerHTML = e.html;
             var YF = D.querySelectorAll('#log-out-session');
@@ -161,7 +163,7 @@ for (var j = 0, i = YL.length; j < i; j++) addEvent(YL[j], "click", function(){
         } else {
             YE.setAttribute('disabled', true), YO.setAttribute('disabled', true), YR.setAttribute('disabled', true), YS.setAttribute('disabled', true), YA = 1, loadAlert('{$word->error}', 1);
         }
-    }, "POST", "&page_id=" + YA + "&type=sessions&by_id={$settings_id}")
+    }, "POST", "&page_id=" + YA + "&type=sessions")
 });
 for (var j = 0, i = YF.length; j < i; j++) addEvent(YF[j], "click", YP);
 </script>

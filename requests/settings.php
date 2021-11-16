@@ -1,5 +1,5 @@
 <?php
-if (empty($_POST['by_id']) || $TEMP['#loggedin'] === false) {
+if ($TEMP['#loggedin'] === false) {
     $deliver = array(
         'status' => 400,
         'error' => $TEMP['#word']['error']
@@ -14,12 +14,10 @@ if ($one == 'general') {
     $gen = 'male';
     $deliver['status'] = 400;
 
-    $by_id = Specific::Filter($_POST['by_id']);
-    $user_data = Specific::Data($by_id);
-    $age_changed = $user_data['age_changed'];
-    $d = $user_data['birthday'];
-    $m = $user_data['birthday_month'];
-    $y = $user_data['birthday_year'];
+    $age_changed = $TEMP['#user']['age_changed'];
+    $d = $TEMP['#user']['birthday'];
+    $m = $TEMP['#user']['birthday_month'];
+    $y = $TEMP['#user']['birthday_year'];
 
     $day = Specific::Filter($_POST['day']);
     $month = Specific::Filter($_POST['month']);
@@ -66,7 +64,7 @@ if ($one == 'general') {
                 $gen = $gender;
             }
         }
-        if ($email != $user_data['email']) {
+        if ($email != $TEMP['#user']['email']) {
             if ($dba->query('SELECT COUNT(*) FROM users WHERE email = "'.$email.'"')->fetchArray() > 0) {
                 $errors[] = array('error' => $TEMP['#word']['email_exists'], 'el' => 'settings-email');
             }
@@ -80,16 +78,16 @@ if ($one == 'general') {
             $redirect_verify = false;
             $date_birthday = DateTime::createFromFormat('d-m-Y H:i:s', "$d-$m-$y 00:00:00");
 
-            if(empty($user_data['change_email'])){
-                if ($TEMP['#settings']['validate_email'] == 'on' && !empty($email) && $user_data['email'] != $email) {
+            if(empty($TEMP['#user']['change_email'])){
+                if ($TEMP['#settings']['validate_email'] == 'on' && !empty($email) && $TEMP['#user']['email'] != $email) {
                     $code = rand(111111, 999999);
                     $token = md5($code);
-                    $dba->query('UPDATE users SET token = "'.$token.'" WHERE id = '.$user_data['id']);
+                    $dba->query('UPDATE users SET token = "'.$token.'" WHERE id = '.$TEMP['#user']['id']);
 
                     $TEMP['token'] = $token;
                     $TEMP['code'] = $code;
-                    $TEMP['id'] = $user_data['user_id'];
-                    $TEMP['name'] = $user_data['names'];
+                    $TEMP['ukey'] = $TEMP['#user']['ukey'];
+                    $TEMP['name'] = $TEMP['#user']['names'];
                     $TEMP['text'] = $TEMP['#word']['check_your_new_email'];
                     $TEMP['footer'] = $TEMP['#word']['just_ignore_this_message'];
                     $TEMP['type'] = 'change';
@@ -98,7 +96,7 @@ if ($one == 'general') {
                         'from_email' => $TEMP['#settings']['smtp_username'],
                         'from_name' => $TEMP['#settings']['name'],
                         'to_email' => $email,
-                        'to_name' => $user_data['name'],
+                        'to_name' => $TEMP['#user']['name'],
                         'subject' => $TEMP['#word']['verify_your_account'],
                         'charSet' => 'UTF-8',
                         'message_body' => Specific::Maket('emails/includes/verify-email'),
@@ -114,13 +112,11 @@ if ($one == 'general') {
                 }
             }
                 
-            if (Specific::IsOwner($_POST['by_id'])) {
-                $update = $dba->query('UPDATE users SET gender = '.$gen.', age_changed = '.$age_changed.', date_birthday = '.$date_birthday->getTimestamp().', province = "'.Specific::Filter($_POST['province']).'", municipality = '.Specific::Filter($_POST['municipality']).', about = "'.Specific::Filter($_POST['about']).'"'.$update_data.' WHERE id = '.$by_id)->returnStatus();
-                if ($update){
-                    $deliver['status'] = 200;
-                    $deliver['message'] = $TEMP['#word']['setting_updated'];
-                    $deliver['redirect_verify'] = $redirect_verify;
-                }
+            $update = $dba->query('UPDATE users SET gender = '.$gen.', age_changed = '.$age_changed.', date_birthday = '.$date_birthday->getTimestamp().', province = "'.Specific::Filter($_POST['province']).'", municipality = '.Specific::Filter($_POST['municipality']).', about = "'.Specific::Filter($_POST['about']).'"'.$update_data.' WHERE id = '.$TEMP['#user']['id'])->returnStatus();
+            if ($update){
+                $deliver['status'] = 200;
+                $deliver['message'] = $TEMP['#word']['setting_updated'];
+                $deliver['redirect_verify'] = $redirect_verify;
             }
         } else {
             $deliver = array(
@@ -136,7 +132,6 @@ if ($one == 'general') {
     }
 } else if ($one == 'change-password') {
     $emptys = array();
-    $user_data = Specific::Data($_POST['by_id']);
     if (empty($_POST['current-password'])) {
         $emptys[] = 'current-password';
     }
@@ -148,7 +143,7 @@ if ($one == 'general') {
     }
 
     if (empty($emptys)) {
-        if ($user_data['password'] != sha1($_POST['current-password'])) {
+        if ($TEMP['#user']['password'] != sha1($_POST['current-password'])) {
             $errors[] = array('error' => $TEMP['#word']['current_password_dont_match'], 'el' => 'current-password');
         }
         if (strlen($_POST['password']) < 4) {
@@ -158,13 +153,11 @@ if ($one == 'general') {
             $errors[] = array('error' => $TEMP['#word']['new_password_dont_match'], 'el' => 're-password');
         }
         if (!isset($errors)) {
-            if (Specific::IsOwner($_POST['by_id'])) {
-                if ($dba->query('UPDATE users SET password = "'.sha1($_POST['password']).'" WHERE id = '.Specific::Filter($_POST['by_id']))->returnStatus()) {
-                    $deliver = array(
-                        'status' => 200,
-                        'message' => $TEMP['#word']['setting_updated']
-                    );
-                }
+            if ($dba->query('UPDATE users SET password = "'.sha1($_POST['password']).'" WHERE id = '.$TEMP['#user']['id'])->returnStatus()) {
+                $deliver = array(
+                    'status' => 200,
+                    'message' => $TEMP['#word']['setting_updated']
+                );
             }
         } else {
             $deliver = array(
@@ -178,65 +171,6 @@ if ($one == 'general') {
             'emptys' => $emptys
         );
     }
-} else if ($one == 'delete') {
-    $user_data = Specific::Data($_POST['by_id']);
-    if($TEMP['#settings']['delete_account'] == 'on' && !empty($user_data) && Specific::IsOwner($_POST['by_id'])){  
-        $current_password = Specific::Filter($_POST['current-password']);  
-        if(!empty($current_password)){
-            if ($user_data['password'] == sha1($current_password)) {
-                if (Specific::DeleteUser($user_data['id'])) {
-                    $deliver = array(
-                        'status' => 200,
-                        'message' => $TEMP['#word']['your_account_was_deleted'],
-                        'url' => Specific::Url()
-                    );
-                }
-            } else {
-                $deliver = array(
-                    'status' => 400,
-                    'err' => $TEMP['#word']['incorrect_password']
-                );
-            }
-        } else {
-            $deliver = array(
-                'status' => 400,
-                'empty' => $TEMP['#word']['this_field_is_empty']
-            );
-        }
-    } else {
-        $deliver = array(
-            'status' => 400,
-            'error' => $TEMP['#word']['error']
-        );
-    }
-        
-} else if ($one == 'request-verification') {
-    if ($dba->query('SELECT COUNT(*) FROM requests WHERE status = 0 AND by_id = '.$TEMP['#user']['id'])->fetchArray() == 0) {
-        $TEMP['username'] = $TEMP['#user']['username'];
-        $send_email = Specific::SendEmail(array(
-            'from_email' => $TEMP['#settings']['smtp_username'],
-            'from_name' => $TEMP['#settings']['name'],
-            'to_email' => $TEMP['#user']['email'],
-            'to_name' => $TEMP['#user']['name'],
-            'subject' => $TEMP['#word']['verification_request_was_received'],
-            'charSet' => 'UTF-8',
-            'message_body' => Specific::Maket('emails/includes/verify-account'),
-            'is_html' => true
-        ));
-        if($send_email){
-            if ($dba->query('INSERT INTO requests (by_id, `time`) VALUES ('.$TEMP['#user']['id'].','.time().')')->returnStatus()) {
-                $deliver['status']  = 200;
-                $deliver['message'] = $TEMP['#word']['verif_request_sent'];
-            } else {
-                $deliver['status']  = 500;
-                $deliver['message'] = $TEMP['#word']['unknown_error'];
-            }
-        }
-
-    } else{
-        $deliver['status']  = 400;
-        $deliver['message'] = $TEMP['#word']['submit_verif_request_error'];
-    }
 } else if ($one == 'authentication') {
     if(in_array($_POST['authentication'], array(0, 1))){
         if($dba->query('UPDATE users SET authentication = '.Specific::Filter($_POST['authentication']).' WHERE id = '.$TEMP['#user']['id'])->returnStatus()){
@@ -246,46 +180,80 @@ if ($one == 'general') {
             );
         }
     }  
-} else if ($one == 'block-user') {
+} else if($one == 'change-avatar'){
     $deliver['status'] = 400;
-    if(!empty($_POST['by_id']) && is_numeric($_POST['by_id'])){
-        $by_id = Specific::Filter($_POST['by_id']);
-        $user_data = Specific::Data($by_id);
-        if (!empty($user_data) && $user_data['role'] == 0) {
-            if ($dba->query('SELECT COUNT(*) FROM blocked WHERE by_id = '.$TEMP['#user']['id'].' AND to_id = '.$by_id)->fetchArray() > 0) {
-                $dba->query('DELETE FROM blocked WHERE by_id = '.$TEMP['#user']['id'].' AND to_id = '.$by_id);
-                $deliver['message'] = $TEMP['#word']['block'];
-            } else {
-                $dba->query('INSERT INTO blocked (by_id, to_id, `time`) VALUES ('.$TEMP['#user']['id'].','.$by_id.','.time().')');
-                $deliver['message'] = $TEMP['#word']['unblock'];
+    if(!empty($_FILES['avatar'])){
+        if(!empty($_FILES['avatar']['tmp_name'])){
+            $file_info = array(
+                'file' => $_FILES['avatar']['tmp_name'],
+                'size' => $_FILES['avatar']['size'],
+                'name' => $_FILES['avatar']['name'],
+                'type' => $_FILES['avatar']['type'],
+                'from' => 'avatar',
+                'crop' => array('width' => 400, 'height' => 400)
+            );
+            $file_data = Specific::UploadImage($file_info);
+            $deliver['XD'] = $file_data;
+            if (!empty($file_data)) {
+                if(!empty($TEMP['#user']['ex_avatar']) && $TEMP['#user']['avatar'] != 'images/default-avatar.jpg' && $TEMP['#user']['avatar'] != 'images/default-favatar.jpg'){
+                    unlink($TEMP['#user']['ex_avatar']);
+                }
+                if ($dba->query('UPDATE users SET avatar = ? WHERE id = '.$TEMP['#user']['id'], $file_data)->returnStatus()) {
+                    $deliver = array(
+                        'status' => 200,
+                        'message' => $TEMP['#word']['setting_updated']
+                    );
+                }
             }
-            $deliver['status'] = 200;
-        } else {
-            $deliver = array(
-                'status' => 400,
-                'error' => $TEMP['#word']['error']
-            );
         }
-    } else {
-        $deliver = array(
-            'status' => 400,
-            'error' => $TEMP['#word']['there_problems_with_some_fields']
-        );
     }
-} else if($one == 'reset-live-key') {
-    $deliver['status'] = 200;
-    $by_id = Specific::Filter($_POST['by_id']);
-    if(!empty($by_id) && ($by_id == $TEMP['#user']['id'] || $TEMP['#owner_global'] === true)){
-        $live_key = 'live_'.Specific::RandomKey(24, 30);
-        if($dba->query('SELECT COUNT(*) FROM users WHERE live_key = "'.$live_key.'"')->fetchArray() > 0){
-            $live_key = 'live_'.Specific::RandomKey(24, 30);
+} else if ($one == 'delete-session'){
+    $id = Specific::Filter($_POST['id']);
+    if (!empty($id)) {
+        $sessions = $dba->query('SELECT * FROM sessions WHERE id = '.$id)->fetchArray();
+        if (!empty($sessions)) {
+            $deliver['reload'] = false;
+            if (($sessions['user_id'] == $TEMP['#user']['id']) || Specific::Admin()) {
+                if ((!empty($_SESSION['session_id']) && $_SESSION['session_id'] == $sessions['session_id']) || (!empty($_COOKIE['session_id']) && $_COOKIE['session_id'] == $sessions['session_id'])) {
+                    setcookie('session_id', null, -1, '/');
+                    session_destroy();
+                    $deliver['reload'] = true;
+                }
+
+                if ($dba->query('DELETE FROM sessions WHERE id = '.$id)->returnStatus()) {
+                    $deliver['status'] = 200;
+                }
+            }
         }
-        if($dba->query('UPDATE users SET live_key = "'.$live_key.'" WHERE id = '.$by_id)->returnStatus()){
-            $deliver = array(
-                'status' => 200,
-                'message' => $TEMP['#word']['your_transmission_key_was_successfully_changed'],
-                'live_key' => $live_key
-            );
+    }
+} else if($one == 'table-sessions'){
+    $page = Specific::Filter($_POST['page_id']);
+    if(!empty($page) && is_numeric($page) && isset($page) && $page > 0){
+        $html = "";
+        $user_sessions = $dba->query('SELECT * FROM sessions WHERE user_id = '.$TEMP['#user']['id'].' ORDER BY id DESC LIMIT ? OFFSET ?', 10, $page)->fetchAll();
+        if (!empty($user_sessions)) {
+            foreach ($user_sessions as $value) {
+                $session = Specific::GetSessions($value);
+                $TEMP['!id'] = $value['id'];
+                $TEMP['!ip'] = $session['ip'];
+                $TEMP['!browser'] = $session['browser'];
+                $TEMP['!platform'] = $session['platform'];
+                $TEMP['!time'] = Specific::DateFormat($value['time']);
+                $html .= Specific::Maket("settings/security/includes/sessions");
+            }
+            Specific::DestroyMaket();
+        }
+        $deliver['status'] = 200;
+        $deliver['html'] = $html;
+    }
+} else if($one == 'delete-email'){
+    $deliver['status'] = 400;
+    $user_id = Specific::Filter($_POST['user_id']);
+    if(!empty($user_id) && Specific::IsOwner($user_id)){
+        $code = rand(111111, 999999);
+        $token = md5($code);
+        if($dba->query('UPDATE users SET change_email = ?, token = ? WHERE id = '.$user_id, NULL, $token)->returnStatus()){
+            $deliver['status'] = 200;
         }
     }
 }

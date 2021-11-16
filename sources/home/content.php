@@ -1,7 +1,4 @@
 <?php
-
-$TEMP['rol'] = Specific::Academic() == true ? 'Academico' : (Specific::Teacher() == true ? 'Profesor' : 'Alumno');
-
 $TEMP['#program'] = $TEMP['#user']['program'];
 
 $TEMP['#page']         = 'home';

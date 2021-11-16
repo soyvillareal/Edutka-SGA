@@ -131,7 +131,7 @@ var PI = D.querySelectorAll('.input_key'),
                     }
                 }
             }
-        }, "POST", "&by_id={$data->id}&current-password=" + D.querySelector('#current-password').value + "&password=" + D.querySelector('#password').value + "&re-password=" + D.querySelector('#re-password').value)
+        }, "POST", "&current-password=" + D.querySelector('#current-password').value + "&password=" + D.querySelector('#password').value + "&re-password=" + D.querySelector('#re-password').value)
     },
     PX = !1;
 addEvent(PB, "click", PF), addEvent(D, 'keydown', function(e){
@@ -187,7 +187,7 @@ for (var j = 0, i = PI.length; j < i; j++) addEvent(PI[j], 'keyup', function(e){
             } else {
                 loadAlert(e.message, 1);
             }
-        }, "POST", "&input=" + GW + "&type=" + GA + "&password=" + PP.value + "&re-password=" + PC.value + "&by_id={$data->id}")
+        }, "POST", "&input=" + GW + "&type=" + GA + "&password=" + PP.value + "&re-password=" + PC.value)
     }
 });
 </script>

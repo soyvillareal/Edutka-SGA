@@ -3,17 +3,7 @@ if ($TEMP['#loggedin'] === false) {
     header("Location: " . Specific::Url('login'));
     exit();
 }
-$by_id = $TEMP['#user']['id'];
-$user_id = Specific::Filter($_GET['id']);
-if (isset($_GET['id']) && !empty($user_id) && Specific::Admin()) {
-    if ($dba->query('SELECT COUNT(*) FROM users WHERE user_id = "'.$user_id.'"')->fetchArray() == 0) {
-        header("Location: " . Specific::Url('404'));
-        exit();
-    }
-    $by_id = $dba->query('SELECT id FROM users WHERE user_id = "'.$user_id.'"')->fetchArray();
-}
 
-$TEMP['#data']     = Specific::Data($by_id);
 $TEMP['#load_url'] = Specific::Url('settings');
 
 if (!empty($user_id)) {
@@ -22,8 +12,7 @@ if (!empty($user_id)) {
     $TEMP['#load_url'] = Specific::Url('settings'.$TEMP['href_setting']);
 }
 
-$TEMP['#birthday_enable'] = $TEMP['#data']['age_changed'] >= 1;
-$TEMP['data'] = $TEMP['#data'];
+$TEMP['#birthday_enable'] = $TEMP['#user']['age_changed'] >= 1;
 
 $TEMP['#page']        = 'general';
 $TEMP['#title']       = $TEMP['#word']['settings'] . ' - ' . $TEMP['#settings']['title'];

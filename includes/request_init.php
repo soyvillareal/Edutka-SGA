@@ -2,6 +2,7 @@
 $TEMP = array();
 $TEMP['#site_url'] = $site_url;
 $TEMP['#settings'] = Specific::Settings();
+$TEMP['#languages'] = Specific::Languages();
 $TEMP['#loggedin'] = Specific::Logged();
 if ($TEMP['#loggedin'] === true) {
     $TEMP['#user'] = Specific::Data(null, 3);

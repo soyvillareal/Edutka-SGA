@@ -1,5 +1,4 @@
 <?php
-use Gregwar\Image\Image;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 
@@ -46,6 +45,60 @@ class Specific {
 	    return $TEMP['#loggedin'] === false ? false : $TEMP['#user']['role'] == 0 ? true : false;
 	}
 
+	function CompressImage($source_url, $destination_url, $quality) {
+	    $info = getimagesize($source_url);
+	    if ($info['mime'] == 'image/jpeg') {
+	        $image = @imagecreatefromjpeg($source_url);
+	        @imagejpeg($image, $destination_url, $quality);
+	    } elseif ($info['mime'] == 'image/gif') {
+	        $image = @imagecreatefromgif($source_url);
+	        @imagegif($image, $destination_url, $quality);
+	    } elseif ($info['mime'] == 'image/png') {
+	        $image = @imagecreatefrompng($source_url);
+	        @imagepng($image, $destination_url);
+	    }
+	}
+
+	function ResizeImage($max_width, $max_height, $source_file, $dst_dir, $quality = 80) {
+	    $imgsize = @getimagesize($source_file);
+	    $width   = $imgsize[0];
+	    $height  = $imgsize[1];
+	    $mime    = $imgsize['mime'];
+	    switch ($mime) {
+	        case 'image/gif':
+	            $image_create = "imagecreatefromgif";
+	            $image        = "imagegif";
+	            break;
+	        case 'image/png':
+	            $image_create = "imagecreatefrompng";
+	            $image        = "imagepng";
+	            break;
+	        case 'image/jpeg':
+	            $image_create = "imagecreatefromjpeg";
+	            $image        = "imagejpeg";
+	            break;
+	        default:
+	            return false;
+	            break;
+	    }
+	    $dst_img    = @imagecreatetruecolor($max_width, $max_height);
+	    $src_img    = $image_create($source_file);
+	    $width_new  = $height * $max_width / $max_height;
+	    $height_new = $width * $max_height / $max_width;
+	    if ($width_new > $width) {
+	        $h_point = (($height - $height_new) / 2);
+	        @imagecopyresampled($dst_img, $src_img, 0, 0, 0, $h_point, $max_width, $max_height, $width, $height_new);
+	    } else {
+	        $w_point = (($width - $width_new) / 2);
+	        @imagecopyresampled($dst_img, $src_img, 0, 0, $w_point, 0, $max_width, $max_height, $width_new, $height);
+	    }
+	    @imagejpeg($dst_img, $dst_dir, $quality);
+	    if ($dst_img)
+	        @imagedestroy($dst_img);
+	    if ($src_img)
+	        @imagedestroy($src_img);
+	}
+
 	public static function CreateDirImage(){
 		if (!file_exists('uploads/images/' . date('Y'))) {
 	        mkdir('uploads/images/' . date('Y'), 0777, true);
@@ -74,14 +127,8 @@ class Specific {
 	    $file = $filepath . '/' . sha1(time()) . '_' . date('d') . '_' . self::RandomKey() . '_' . $data['from'];
 	    $filename    = "$file.$ext";
 	    if (move_uploaded_file($data['file'], $filename)) {
-	        if($data['from'] == 'cover'){
-	            $full_cover = $file.'_full.'.$ext;
-	            Image::open($filename)->save($full_cover);
-	        }
-	        if (!empty($data['crop'])) {
-	            Image::open($filename)->zoomCrop($data['crop']['width'], $data['crop']['height'])->save($filename, $ext, 60);
-	        }
-	        Image::open($filename)->save($filename, $ext, 80);
+	    	@self::CompressImage($filename, $filename, 50);
+            @self::ResizeImage($data['crop']['width'], $data['crop']['height'], $filename, $filename, 60);
 	        return $filename;
 	    }
 	}
@@ -119,17 +166,17 @@ class Specific {
 	    return $data;  
 	}
 
-	public static function Data($by_id = 0, $type = 1) {
+	public static function Data($user_id = 0, $type = 1) {
 	    global $TEMP, $dba;
 
 	    if($type == 1){
-	        $user = $dba->query('SELECT * FROM users WHERE id = "'.$by_id.'"')->fetchArray();
+	        $user = $dba->query('SELECT * FROM users WHERE id = "'.$user_id.'"')->fetchArray();
 	    } else if($type == 2){
-	        $user = $dba->query('SELECT * FROM users WHERE user_id = "'.$by_id.'"')->fetchArray();
+	        $user = $dba->query('SELECT * FROM users WHERE user_id = "'.$user_id.'"')->fetchArray();
 	    } else if($type == 3){
 	        $session_id = !empty($_SESSION['session_id']) ? $_SESSION['session_id'] : $_COOKIE['session_id'];
-	        $by_id = $dba->query('SELECT by_id FROM sessions WHERE session_id = "'.$session_id.'"')->fetchArray();
-	        $user = $dba->query('SELECT * FROM users WHERE id = '.$by_id)->fetchArray();
+	        $user_id = $dba->query('SELECT user_id FROM sessions WHERE session_id = "'.$session_id.'"')->fetchArray();
+	        $user = $dba->query('SELECT * FROM users WHERE id = '.$user_id)->fetchArray();
 	    }
 	    
 	    if (empty($user)) {
@@ -219,6 +266,14 @@ class Specific {
 	        return true;
 	    }
 	    return false;
+	}
+
+	public static function SendNotification($data = array()){
+	    global $TEMP, $dba;
+	    if (empty($data) || !is_array($data) || $TEMP['#user']['id'] == $to_id || $dba->query('SELECT COUNT(*) FROM notifications WHERE from_id = '.$data['from_id'].' AND to_id = '.$data['to_id'].' AND course_id = '.$data['course_id'].' AND type = '.$data['type'])->fetchArray() > 0) {
+	        return false;
+	    }
+	    return $dba->query('INSERT INTO notifications ('.implode(',', array_keys($data)).') VALUES ('.implode(',', array_values($data)).')')->returnStatus();
 	}
 
 	public static function Url($params = '') {
@@ -313,16 +368,35 @@ class Specific {
 	    return $data;
 	}
 
+	public static function Languages($query = 'type') {
+	    global $dba;
+	    $data = array();
+	    $langs = $dba->query("DESCRIBE words")->fetchAll();
+	    foreach ($langs as $lang) {
+	        $data[] = $lang['Field'];
+	    }
+	    unset($data[0]);
+	    return $data;
+	}
+
 	public static function Language($lang = 'en'){
 		global $TEMP, $dba;
-		if (isset($lang) && !empty($lang)) {
-		    $lang = strtolower($lang);
-		    if (in_array($lang, array('es', 'en'))) {
-		        $language = $lang;
+		if ($TEMP['#loggedin'] == true) {
+		    if (!empty($TEMP['#user']['language']) && in_array($TEMP['#user']['language'], $TEMP['#languages'])) {
+		        $language = $TEMP['#user']['language'];
 		    }
 		}
-		if(empty($language)){
-			$language = $TEMP['#settings']['language'];
+		if (isset($lang) && !empty($lang)) {
+		    $lang = strtolower($lang);
+		    if (in_array($lang, $TEMP['#languages'])) {
+		        $language = $_SESSION['language'] = $lang;
+		        if ($TEMP['#loggedin'] == true) {
+		            $dba->query('UPDATE users SET language = "'.$lang.'" WHERE id = '.$TEMP['#user']['id']);
+		        }
+		    }
+		}
+		if (empty($language)) {
+		    $language = $TEMP['#settings']['language'];
 		}
 		return $language;
 	}
@@ -340,10 +414,10 @@ class Specific {
 	    return '?';
 	}
 
-	public static function IsOwner($by_id) {
+	public static function IsOwner($user_id) {
 	    global $TEMP;
 	    if ($TEMP['#loggedin'] === true) {
-	        if ($TEMP['#user']['id'] == $by_id) {
+	        if ($TEMP['#user']['id'] == $user_id) {
 	            return true;
 	        }
 	    }

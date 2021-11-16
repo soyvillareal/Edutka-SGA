@@ -14,6 +14,7 @@ $user_data = Specific::Data($TEMP['#user_id']);
 $TEMP['#program_id'] = !empty($_GET['program']) ? Specific::Filter($_GET['program']) : $user_data['program'];
 $TEMP['#period_id'] = !empty($_GET['period']) ? Specific::Filter($_GET['period']) : $user_data['last_cenrolled'];
 $TEMP['#keyword_notes'] = Specific::Filter($_GET['keyword']);
+$TEMP['#role'] = Specific::Student() == true ? 'student' : 'teacher';
 
 $params = "";
 $sqls = '';

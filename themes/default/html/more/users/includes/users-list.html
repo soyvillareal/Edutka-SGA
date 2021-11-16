@@ -1,0 +1,32 @@
+<div class="content-row-table dv-vertical-center padding-t15 padding-b15 border-bottom border-grey">
+	<div class="cont-cell-header padding-lr20 color-black">
+        {!data->id}
+	</div>
+	<div class="cont-cell-header padding-lr20 color-black">
+		{!data->names}
+	</div>
+	<div class="cont-cell-header padding-lr20 color-black ellipsis-horizontal">
+		{!data->email}
+	</div>
+	<div class="cont-cell-header padding-lr20 color-black">
+		{!data->ip}
+	</div>
+	<div class="cont-cell-header padding-lr20 color-black">
+		{!status}
+	</div>
+	<div class="cont-cell-header padding-lr20 color-black">
+		{!data->date_time}
+	</div>
+	<div class="cont-cell-header padding-lr20 text-center">
+		<button class="show_emodal btn-noway" data-id="{!id}">
+			<span class="color-blue">
+				<svg class="dv-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+	                <path fill="currentColor" d="M 7.313 19.479 L 8.394 18.398 L 5.602 15.606 L 4.521 16.687 L 4.521 17.958 L 6.042 17.958 L 6.042 19.479 L 7.313 19.479 Z M 13.526 8.453 C 13.526 8.279 13.44 8.192 13.265 8.192 C 13.186 8.192 13.119 8.22 13.064 8.275 L 6.623 14.715 C 6.569 14.77 6.541 14.838 6.541 14.917 C 6.541 15.092 6.628 15.178 6.802 15.178 C 6.881 15.178 6.948 15.151 7.004 15.095 L 13.444 8.656 C 13.499 8.6 13.526 8.532 13.526 8.453 Z M 12.886 6.173 L 17.828 11.115 L 7.943 21 L 3 21 L 3 16.057 Z M 21 7.313 C 21 7.733 20.853 8.09 20.561 8.382 L 18.588 10.355 L 13.645 5.412 L 15.618 3.452 C 15.903 3.15 16.26 3 16.687 3 C 17.107 3 17.468 3.15 17.768 3.452 L 20.561 6.232 C 20.853 6.541 21 6.901 21 7.313 Z"/>
+	            </svg>
+	        </span>
+            <div class="content-spinner-circle">
+                <div class="spinner-circle"></div>
+            </div>
+		</button>
+	</div>
+</div>

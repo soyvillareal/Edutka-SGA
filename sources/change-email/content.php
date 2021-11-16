@@ -1,11 +1,11 @@
 <?php 
-$id = Specific::Filter($_GET['id']);
+$ukey = Specific::Filter($_GET['ukey']);
 $token = Specific::Filter($_GET['tokenu']);
 $TEMP['#descode'] = Specific::Filter($_GET['insert']);
 if ($TEMP['#loggedin'] === false){
     header("Location: " . Specific::Url('login'));
     exit();
-} else if (empty($id) || empty($token)) {
+} else if (empty($ukey) || empty($token)) {
 	header("Location: " . Specific::Url('settings'));
 	exit();
 } else if ($TEMP['#settings']['validate_email'] != 'on') {
@@ -13,13 +13,13 @@ if ($TEMP['#loggedin'] === false){
     exit();
 }
 
-$page = $dba->query('SELECT COUNT(*) FROM users WHERE user_id = "'.$id.'" AND token = "'.$token.'"')->fetchArray() == 0 || (strlen($TEMP['#descode']) != 6 && !empty($TEMP['#descode'])) ? 'invalid-auth' : 'authentication';
+$page = $dba->query('SELECT COUNT(*) FROM users WHERE ukey = "'.$ukey.'" AND token = "'.$token.'"')->fetchArray() == 0 || (strlen($TEMP['#descode']) != 6 && !empty($TEMP['#descode'])) ? 'invalid-auth' : 'authentication';
 
 $TEMP['#bubbles'] = Specific::Bubbles();
 
 $TEMP['title'] = $TEMP['#word']['check_your_new_email'];
 $TEMP['type'] = 'change-email';
-$TEMP['id'] = $id;
+$TEMP['ukey'] = $ukey;
 $TEMP['token'] = $token;
 $TEMP['bubbles'] = implode(',', $TEMP['#bubbles']['rands']);
 if(!empty($_GET['insert'])){
@@ -35,7 +35,7 @@ $TEMP['#page']        = 'change-email';
 $TEMP['#title']       = $TEMP['#word']['authentication'] . ' - ' . $TEMP['#settings']['title'];
 $TEMP['#description'] = $TEMP['#settings']['description'];
 $TEMP['#keyword']     = $TEMP['#settings']['keyword'];
-$TEMP['#load_url']    = Specific::Url('change-email/'.$token.'/'.$id);
+$TEMP['#load_url']    = Specific::Url('change-email/'.$token.'/'.$ukey);
 
 $TEMP['#content']     = Specific::Maket("$page/content");
 ?>

@@ -310,6 +310,14 @@ if($one == 'search-courses') {
                 }
                 if($dba->query('UPDATE notes SET notes = ? WHERE id = '.$id, json_encode($notes))->returnStatus()){
                     $deliver['status'] = 200;
+                    $note = $dba->query('SELECT * FROM notes WHERE id = '.$id)->fetchArray();
+                    Specific::SendNotification(array(
+                        'from_id' => $TEMP['#user']['id'],
+                        'to_id' => $note['user_id'],
+                        'course_id' => $note['user_id'],
+                        'type' => "'note'",
+                        'time' => time()
+                    ));
                 }
             } else {
                 $deliver = array(

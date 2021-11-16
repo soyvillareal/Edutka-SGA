@@ -1,15 +1,15 @@
 <?php
-if ($TEMP['#loggedin'] === true || empty($_GET['code'])) {
+if ($TEMP['#loggedin'] === true || empty($_GET['tokenu'])) {
 	header("Location: " . Specific::Url());
 	exit();
 }
 
-$code = Specific::Filter($_GET['code']);
-$page = $dba->query('SELECT COUNT(*) FROM users WHERE token = "'.$code.'"')->fetchArray() == 0 ? 'invalid-auth' : 'reset-password';
+$tokenu = Specific::Filter($_GET['tokenu']);
+$page = $dba->query('SELECT COUNT(*) FROM users WHERE token = "'.$tokenu.'"')->fetchArray() == 0 ? 'invalid-auth' : 'reset-password';
 
 $TEMP['#bubbles'] = Specific::Bubbles();
 
-$TEMP['code'] = $code;
+$TEMP['tokenu'] = $tokenu;
 $TEMP['bubbles'] = implode(',', $TEMP['#bubbles']['rands']);
 
 $TEMP['#page']        = 'reset-password';

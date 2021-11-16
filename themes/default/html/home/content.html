@@ -1,5 +1,10 @@
 <div class="slots-container padding-t25 padding-b15">
-    <h2 class="font-supraly text-center margin-t5 margin-b15">{$word->modules} - Rol ({$rol})</h2>
+    <div class="display-flex">
+        <div class="content-machine margin-auto">
+            <h2 id="machine-wridel" class="font-supraly text-center margin-t5 margin-b15 font-machine machine machine-wridel">¡{$word->hi} {$me->names}! ;)</h2>
+            <h2 id="machine-write" class="font-supraly text-center margin-t5 margin-b15 font-machine machine hidden">{$word->modules}</h2>
+        </div>
+    </div>
     <div class="cont-slots-two display-flex margin-b20 margin-right-auto margin-left-auto">
         <div class="contsub-slots-two display-flex dv-vertical-slots margin-l20">
             <a class="item-slot-two position-relative margin-r20 margin-b20" href="{$url->{notes<?php echo($TEMP['#student'] == true) ? "?program={#program}" : "" ;?>}}" target="_self">
@@ -59,3 +64,12 @@
         </div>
     </div>
 </div>
+<script type="text/javascript">
+var MW = D.querySelector('#machine-write');
+timeDelay(function(){
+    addClass(D.querySelector('#machine-wridel'), 'hidden'), addClass(MW, 'machine-write'), removeClass(MW, 'hidden');
+    timeDelay(function(){
+        removeClass(MW, 'machine-write'), removeClass(MW, 'machine');
+    }, 5000)
+}, 8000)
+</script>

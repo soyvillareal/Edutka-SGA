@@ -1,5 +1,5 @@
 <?php
-if ($TEMP['#loggedin'] === false) {
+if ($TEMP['#loggedin'] === false || Specific::Teacher() == true) {
 	header("Location: ".Specific::Url());
 	exit();
 }
@@ -97,11 +97,11 @@ if(!empty($TEMP['#enrolled'])){
 	    $TEMP['!type'] = "{$TEMP['#word'][$enroll['type']]} ({$TEMP['#word'][$enroll['status']]})";
 	    $TEMP['!typet'] = $enroll['type'];
 	    $TEMP['!time'] = Specific::DateFormat($enroll['time']);
-	    $TEMP['enrolled'] .= Specific::Maket("enroll/includes/enrolled");
+	    $TEMP['enrolled'] .= Specific::Maket("enroll/includes/enroll-list");
 	}
 	Specific::DestroyMaket();
 } else {
-	$TEMP['enrolled'] .= Specific::Maket("not-found/enrolled");
+	$TEMP['enrolled'] .= Specific::Maket("not-found/enroll");
 }
 
 

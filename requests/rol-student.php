@@ -68,7 +68,7 @@ if($one == 'search-enrolled'){
 				    $TEMP['!type'] = "{$TEMP['#word'][$type]} ({$TEMP['#word'][$TEMP['#enrolled']['status']]})";
 				    $TEMP['!time'] = Specific::DateFormat($TEMP['#enrolled']['time']);
 				}
-				$html .= Specific::Maket("enroll/includes/enrolled");
+				$html .= Specific::Maket("enroll/includes/enroll-list");
 	        }
 	        Specific::DestroyMaket();
 	        $deliver['status'] = 200;
@@ -77,7 +77,7 @@ if($one == 'search-enrolled'){
 	            $TEMP['keyword'] = $keyword;
 	   	        $html .= Specific::Maket('not-found/result-for');
 	        } else {
-	            $html .= Specific::Maket('not-found/enrolled');
+	            $html .= Specific::Maket('not-found/enroll');
 	        }
 	    }
     } else {
@@ -132,11 +132,11 @@ if($one == 'search-enrolled'){
 			    $TEMP['!type'] = "{$TEMP['#word'][$enroll['type']]} ({$TEMP['#word'][$enroll['status']]})";
 			    $TEMP['!typet'] = $enroll['type'];
 			    $TEMP['!time'] = Specific::DateFormat($enroll['time']);
-			    $html .= Specific::Maket("enroll/includes/enrolled");
+			    $html .= Specific::Maket("enroll/includes/enroll-list");
 			}
 			Specific::DestroyMaket();
 		} else {
-			$html .= Specific::Maket("not-found/enrolled");
+			$html .= Specific::Maket("not-found/enroll");
 		}
     }
     $deliver['html'] = $html;
@@ -187,6 +187,16 @@ if($one == 'search-enrolled'){
 			        		if($dba->query('SELECT COUNT(*) FROM assigned WHERE course_id = '.$course_id.' AND plan_id = '.$plan['id'])->fetchArray() > 0){
 				        		if($dba->query('INSERT INTO enrolled (user_id, course_id, program_id, type, status, `time`) VALUES ('.$user_id.', '.$course_id.', '.$program_id.', "course", "registered",'.time().')')->returnStatus() && $dba->query('INSERT INTO notes (user_id, course_id, program_id, notes, `time`) VALUES ('.$user_id.','.$course_id.', '.$program_id.', "'.json_encode(array(0.0, 0.0, 0.0)).'",'.time().')')->returnStatus()){
 					        		$deliver['status'] = 200;
+					        		$teachers = $dba->query('SELECT user_id FROM teacher WHERE course_id = '.$course_id)->fetchAll(false);
+					        		foreach ($teachers as $teacher) {
+					        			Specific::SendNotification(array(
+						                    'from_id' => $TEMP['#user']['id'],
+						                    'to_id' => $teacher,
+						                    'course_id' => $course_id,
+						                    'type' => "'enroll'",
+						                    'time' => time()
+						                ));
+					        		}
 					        	}
 				        	}
 			        	} else {
@@ -245,6 +255,29 @@ if($one == 'search-enrolled'){
 	        	$deliver['status'] = 400;
 	        }
 	    }
+    }
+} else if($one == 'get-citems'){
+    $id = Specific::Filter($_POST['id']);
+    $type = Specific::Filter($_POST['type']);
+    $pos = Specific::Filter($_POST['pos']);
+    if(isset($id) && is_numeric($id)){
+        if($type == 'notes'){
+            $note = $dba->query('SELECT * FROM notes WHERE id = '.$id)->fetchArray();
+            $id = $note['course_id'];
+            $items = array();
+            $course = $dba->query('SELECT * FROM courses WHERE id = '.$id)->fetchArray();
+                $items['parameters'] = json_decode($course['parameters'], true);
+                $items['notes'] = json_decode($note['notes'], true);
+                if(isset($pos) && is_numeric($pos)){
+                    $items['parameters'] = json_decode($course['parameters'], true)[$pos];
+                    $notes = json_decode($note['notes'], true)[$pos];
+                    $items['notes'] = $notes;
+                }
+            }
+        if (!empty($items)) {
+            $deliver['status'] = 200;
+            $deliver['items'] = $items;
+        }
     }
 }
 ?>

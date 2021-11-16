@@ -6,10 +6,10 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^$ index.php?one=home [NC,QSA]
 RewriteRule ^reset-password/([^\/]+)(\/|)$ index.php?one=reset-password&tokenu=$1 [NC,QSA]
-RewriteRule ^verify-email/([^/.]+)/([^\/]+)(\/|)?$ index.php?one=verify-email&tokenu=$1&id=$2 [NC,QSA]
-RewriteRule ^authentication/([^/.]+)/([^\/]+)(\/|)?$ index.php?one=authentication&tokenu=$1&id=$2 [NC,QSA]
-RewriteRule ^change-email/([^/.]+)/([^\/]+)(\/|)?$ index.php?one=change-email&tokenu=$1&id=$2 [NC,QSA]
-RewriteRule ^not-me/([^/.]+)/([^\/]+)(\/|)?$ index.php?one=not-me&tokenu=$1&id=$2 [NC,QSA]
+RewriteRule ^verify-email/([^/.]+)/([^\/]+)(\/|)?$ index.php?one=verify-email&tokenu=$1&ukey=$2 [NC,QSA]
+RewriteRule ^authentication/([^/.]+)/([^\/]+)(\/|)?$ index.php?one=authentication&tokenu=$1&ukey=$2 [NC,QSA]
+RewriteRule ^change-email/([^/.]+)/([^\/]+)(\/|)?$ index.php?one=change-email&tokenu=$1&ukey=$2 [NC,QSA]
+RewriteRule ^not-me/([^/.]+)/([^\/]+)(\/|)?$ index.php?one=not-me&tokenu=$1&ukey=$2 [NC,QSA]
 RewriteRule ^register/([^/.]+)?$ index.php?one=register&form-key=$1 [NC,QSA]
 RewriteRule ^pages/([^\/]+)(\/|)$ index.php?one=pages&two=$1 [QSA]
 

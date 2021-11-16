@@ -3,17 +3,7 @@ if ($TEMP['#loggedin'] === false) {
     header("Location: " . Specific::Url('login'));
     exit();
 }
-$by_id = $TEMP['#user']['id'];
-$user_id = Specific::Filter($_GET['id']);
-if (isset($_GET['id']) && !empty($user_id) && Specific::Admin() === true) {
-    if ($dba->query('SELECT COUNT(*) FROM users WHERE user_id = "'.$user_id.'"')->fetchArray() == 0) {
-        header("Location: " . Specific::Url('404'));
-        exit();
-    }
-    $by_id = $dba->query('SELECT id FROM users WHERE user_id = "'.$user_id.'"')->fetchArray();
-}
 
-$TEMP['#data']     = Specific::Data($by_id);
 $TEMP['#load_url'] = Specific::Url('settings?page=security');
 
 if (!empty($user_id)) {
@@ -23,7 +13,7 @@ if (!empty($user_id)) {
 }
 
 
-$user_sessions = $dba->query('SELECT * FROM sessions WHERE by_id = '.$TEMP['#data']['id'].' ORDER BY id DESC LIMIT ? OFFSET ?', 10, 1)->fetchAll();
+$user_sessions = $dba->query('SELECT * FROM sessions WHERE user_id = '.$TEMP['#user']['id'].' ORDER BY id DESC LIMIT ? OFFSET ?', 10, 1)->fetchAll();
 $TEMP['#total_pages'] = $dba->totalPages;
 
 if (!empty($user_sessions)) {
@@ -42,9 +32,6 @@ if (!empty($user_sessions)) {
 } else {
     $TEMP['sessions'] = Specific::Maket("not-found/sessions");
 }
-
-$TEMP['data'] = $TEMP['#data'];
-$TEMP['settings_id'] = $TEMP['#data']['id'];
 
 $TEMP['#page']        = 'security';
 $TEMP['#title']       = $TEMP['#word']['settings'] . ' - ' . $TEMP['#settings']['title'];

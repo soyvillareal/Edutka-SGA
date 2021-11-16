@@ -1,10 +1,22 @@
 <?php
 if ($TEMP['#loggedin'] === false || Specific::Academic() == false) {
-    header("Location: " . Specific::Url('404'));
+	header("Location: " . Specific::Url('404'));
     exit();
 }
 
+$users = $dba->query('SELECT * FROM users LIMIT ? OFFSET ?', 10, 1)->fetchAll();
+$TEMP['#total_pages'] = $dba->totalPages;
 
+if(!empty($users)){
+	foreach ($users as $user) {
+		$TEMP['!data'] = Specific::Data($user['id']);
+	    $TEMP['!status'] = $user['status'] == 1 ? $TEMP['#word']['active'] : $TEMP['#word']['pending'];
+		$TEMP['users'] .= Specific::Maket('more/users/includes/users-list');
+	}
+	Specific::DestroyMaket();
+} else {
+	$TEMP['users'] .= Specific::Maket('not-found/users');
+}
 
 
 $TEMP['#page']        = 'users';

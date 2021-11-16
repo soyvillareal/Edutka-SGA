@@ -1,20 +1,20 @@
 <?php 
-$id = Specific::Filter($_GET['id']);
+$ukey = Specific::Filter($_GET['ukey']);
 $token = Specific::Filter($_GET['tokenu']);
 $TEMP['#descode'] = Specific::Filter($_GET['insert']);
-if ($TEMP['#loggedin'] === true || $TEMP['#settings']['authentication'] == 'off' || empty($id) || empty($token)) {
+if ($TEMP['#loggedin'] === true || $TEMP['#settings']['authentication'] == 'off' || empty($ukey) || empty($token)) {
 	header("Location: " . Specific::Url());
 	exit();
 }
 
-$page = $dba->query('SELECT COUNT(*) FROM users WHERE user_id = "'.$id.'" AND token = "'.$token.'"')->fetchArray() == 0 || (strlen($TEMP['#descode']) != 6 && !empty($TEMP['#descode'])) ? 'invalid-auth' : 'authentication';
+$page = $dba->query('SELECT COUNT(*) FROM users WHERE ukey = "'.$ukey.'" AND token = "'.$token.'"')->fetchArray() == 0 || (strlen($TEMP['#descode']) != 6 && !empty($TEMP['#descode'])) ? 'invalid-auth' : 'authentication';
 
 $TEMP['#bubbles'] = Specific::Bubbles();
 
 $TEMP['title'] = $TEMP['#word']['authentication'];
 $TEMP['type'] = 'code';
 $TEMP['to'] = Specific::Filter($_GET['to']);
-$TEMP['id'] = $id;
+$TEMP['ukey'] = $ukey;
 $TEMP['token'] = $token;
 $TEMP['bubbles']      = implode(',', $TEMP['#bubbles']['rands']);
 if(!empty($_GET['insert'])){
@@ -30,7 +30,7 @@ $TEMP['#page']        = 'authentication';
 $TEMP['#title']       = $TEMP['#word']['authentication'] . ' - ' . $TEMP['#settings']['title'];
 $TEMP['#description'] = $TEMP['#settings']['description'];
 $TEMP['#keyword']     = $TEMP['#settings']['keyword'];
-$TEMP['#load_url']    = Specific::Url('authentication/'.$token.'/'.$id.(!empty($_GET['to']) ? '?to='.urlencode($_GET['to']) : ''));
+$TEMP['#load_url']    = Specific::Url('authentication/'.$token.'/'.$ukey.(!empty($_GET['to']) ? '?to='.urlencode($_GET['to']) : ''));
 
 $TEMP['#content']     = Specific::Maket("$page/content");
 ?>

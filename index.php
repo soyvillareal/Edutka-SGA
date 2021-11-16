@@ -24,6 +24,10 @@ if($TEMP['#loggedin'] === true){
         }
         session_destroy();
     }
+    $live_notify = $dba->query('SELECT COUNT(*) FROM notifications WHERE seen = 0 AND to_id = '.$TEMP['#user']['id'])->fetchArray();
+    if(!empty($live_notify)){
+        $TEMP['#notifications'] = $live_notify > 9 ? '9+' : $live_notify;
+    }
 }
 if (file_exists("./sources/$page")) {
     require_once("./sources/$page");
