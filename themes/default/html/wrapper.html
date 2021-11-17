@@ -286,8 +286,8 @@
      </button>
      <div class="cont-site-logo display-flex h-150 padding-l10 padding-b15 padding-t15">
       <a href="{$url->{home}}">
-        <img class="display-block-desk" src="{$theme->{images/logo.png}}" alt="CENAUC" />
-        <img class="display-block-mob" src="{$theme->{images/logo-only.png}}" alt="CENAUC" />
+        <img class="display-block-desk" src="{$theme->{images/logo.png}}" alt="{$settings->title}" />
+        <img class="display-block-mob" src="{$theme->{images/logo-only.png}}" alt="{$settings->title}" />
       </a>
     </div>
     <nav class="cont-menu display-flex">
@@ -310,14 +310,15 @@
         <?php } ?>
       </ul>
       <ul class="cont-language">
+        <?php if($TEMP['#loggedin'] === true && $TEMP['#academic'] == false){ ?>
         <li class="notifications margin-b10">
           <button id="get-notifications" class="btn-noway dv-lang dv-vertical-center<?php echo($TEMP['#notifications'] > 0) ? ' color-red ' : ' color-grey ';?>hover-button" data-toggle="dropdown">
             <svg class="pointer-events-none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path fill="currentColor" d="M 12.154 19.589 C 12.154 19.488 12.103 19.438 12 19.438 C 11.622 19.438 11.296 19.303 11.024 19.034 C 10.752 18.766 10.615 18.445 10.615 18.071 C 10.615 17.97 10.564 17.92 10.462 17.92 C 10.359 17.92 10.308 17.97 10.308 18.071 C 10.308 18.533 10.473 18.927 10.803 19.253 C 11.133 19.578 11.532 19.741 12 19.741 C 12.103 19.741 12.154 19.69 12.154 19.589 Z M 20 16.857 C 20 17.186 19.878 17.471 19.635 17.711 C 19.391 17.951 19.103 18.071 18.769 18.071 L 14.462 18.071 C 14.462 18.742 14.221 19.314 13.74 19.789 C 13.26 20.263 12.679 20.5 12 20.5 C 11.321 20.5 10.74 20.263 10.26 19.789 C 9.779 19.314 9.538 18.742 9.538 18.071 L 5.231 18.071 C 4.897 18.071 4.609 17.951 4.365 17.711 C 4.122 17.471 4 17.186 4 16.857 C 4.321 16.592 4.612 16.313 4.875 16.022 C 5.138 15.731 5.41 15.354 5.692 14.889 C 5.974 14.424 6.213 13.923 6.409 13.385 C 6.604 12.847 6.764 12.196 6.889 11.431 C 7.014 10.666 7.077 9.843 7.077 8.964 C 7.077 8.003 7.452 7.11 8.202 6.284 C 8.952 5.459 9.936 4.958 11.154 4.781 C 11.103 4.661 11.077 4.537 11.077 4.411 C 11.077 4.158 11.167 3.943 11.346 3.766 C 11.526 3.589 11.744 3.5 12 3.5 C 12.256 3.5 12.474 3.589 12.654 3.766 C 12.833 3.943 12.923 4.158 12.923 4.411 C 12.923 4.537 12.897 4.661 12.846 4.781 C 14.064 4.958 15.048 5.459 15.798 6.284 C 16.548 7.11 16.923 8.003 16.923 8.964 C 16.923 9.843 16.986 10.666 17.111 11.431 C 17.236 12.196 17.396 12.847 17.591 13.385 C 17.787 13.923 18.026 14.424 18.308 14.889 C 18.59 15.354 18.862 15.731 19.125 16.022 C 19.388 16.313 19.679 16.592 20 16.857 Z"></path>
-          </svg>
-          <div id="new-notifications" class="position-absolute pos-left pos-right font-down font-bold color-white pointer-events-none">
-            {#notifications}
-          </div>
+            </svg>
+            <div id="new-notifications" class="position-absolute pos-left pos-right font-down font-bold color-white pointer-events-none">
+              {#notifications}
+            </div>
           </button>
           <ul id="notifications" class="down-menu-container pos-right z-index-first">
             <div class="container-dropdown-content background-white border-grey" scroll>
@@ -337,6 +338,7 @@
             </div>
           </ul>
         </li>
+        <?php } ?>
         <li class="margin-b10">
           <a class="language-href btn-noway dv-vertical-center hover-opacity" href="{$lang_url}=es">
             <img class="dv-lang" src="{$theme->{images/es.png}}">
@@ -355,7 +357,11 @@
 <aside class="cont-sidemenu">
   <div class="cont-sidehead display-flex border-bottom border-grey margin-b15">
     <div class="cont-logo-menu margin-t15 margin-l15">
+      <?php if($TEMP['#loggedin'] === true){ ?>
       <img class="border-radius-med" src="{$me->avatar}" alt="{$me->names}" />
+      <?php } else { ?>
+      <img src="{$theme->{images/logo-only.png}}" alt="{$settings->title}" />
+      <?php } ?>
     </div>
     <buttom class="display-flex btn-noway margin-left-auto margin-r15" id="close-tab-menu">
       <svg class="dv-supraly margin-auto" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -493,7 +499,7 @@
   var HC = D.querySelector('#close-tab-menu'),
       HT = D.querySelectorAll('.has-submenu');
 
-<?php if ($TEMP['#loggedin'] === true){ ?>
+<?php if ($TEMP['#loggedin'] === true && $TEMP['#academic'] == false){ ?>
 var HA = D.querySelector('#get-notifications'),
   HN = D.querySelector("#new-notifications"),
   HE  = D.querySelector("#notifications"),
@@ -515,7 +521,7 @@ var HA = D.querySelector('#get-notifications'),
           }, 500);
         }     
       } else if(e.status == 304 && type == 'click'){
-        HE.querySelector('ul').innerHTML = '<li class="display-flex h-100 text-center"><div class="padding-15 margin-auto"><svg class="color-grey w-20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M 12.154 19.589 C 12.154 19.488 12.103 19.438 12 19.438 C 11.622 19.438 11.296 19.303 11.024 19.034 C 10.752 18.766 10.615 18.445 10.615 18.071 C 10.615 17.97 10.564 17.92 10.462 17.92 C 10.359 17.92 10.308 17.97 10.308 18.071 C 10.308 18.533 10.473 18.927 10.803 19.253 C 11.133 19.578 11.532 19.741 12 19.741 C 12.103 19.741 12.154 19.69 12.154 19.589 Z M 20 16.857 C 20 17.186 19.878 17.471 19.635 17.711 C 19.391 17.951 19.103 18.071 18.769 18.071 L 14.462 18.071 C 14.462 18.742 14.221 19.314 13.74 19.789 C 13.26 20.263 12.679 20.5 12 20.5 C 11.321 20.5 10.74 20.263 10.26 19.789 C 9.779 19.314 9.538 18.742 9.538 18.071 L 5.231 18.071 C 4.897 18.071 4.609 17.951 4.365 17.711 C 4.122 17.471 4 17.186 4 16.857 C 4.321 16.592 4.612 16.313 4.875 16.022 C 5.138 15.731 5.41 15.354 5.692 14.889 C 5.974 14.424 6.213 13.923 6.409 13.385 C 6.604 12.847 6.764 12.196 6.889 11.431 C 7.014 10.666 7.077 9.843 7.077 8.964 C 7.077 8.003 7.452 7.11 8.202 6.284 C 8.952 5.459 9.936 4.958 11.154 4.781 C 11.103 4.661 11.077 4.537 11.077 4.411 C 11.077 4.158 11.167 3.943 11.346 3.766 C 11.526 3.589 11.744 3.5 12 3.5 C 12.256 3.5 12.474 3.589 12.654 3.766 C 12.833 3.943 12.923 4.158 12.923 4.411 C 12.923 4.537 12.897 4.661 12.846 4.781 C 14.064 4.958 15.048 5.459 15.798 6.284 C 16.548 7.11 16.923 8.003 16.923 8.964 C 16.923 9.843 16.986 10.666 17.111 11.431 C 17.236 12.196 17.396 12.847 17.591 13.385 C 17.787 13.923 18.026 14.424 18.308 14.889 C 18.59 15.354 18.862 15.731 19.125 16.022 C 19.388 16.313 19.679 16.592 20 16.857 Z"></path></svg><div class="padding-left-right-12"><div class="font-high font-bold color-grey">{$word->here_save_notify}</div><div class="font-medium color-grey">{$word->no_notifications}</div></div></div></li>';
+        HE.querySelector('ul').innerHTML = '<li class="display-flex h-100 text-center"><div class="padding-15 margin-auto"><svg class="color-grey w-20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M 12.154 19.589 C 12.154 19.488 12.103 19.438 12 19.438 C 11.622 19.438 11.296 19.303 11.024 19.034 C 10.752 18.766 10.615 18.445 10.615 18.071 C 10.615 17.97 10.564 17.92 10.462 17.92 C 10.359 17.92 10.308 17.97 10.308 18.071 C 10.308 18.533 10.473 18.927 10.803 19.253 C 11.133 19.578 11.532 19.741 12 19.741 C 12.103 19.741 12.154 19.69 12.154 19.589 Z M 20 16.857 C 20 17.186 19.878 17.471 19.635 17.711 C 19.391 17.951 19.103 18.071 18.769 18.071 L 14.462 18.071 C 14.462 18.742 14.221 19.314 13.74 19.789 C 13.26 20.263 12.679 20.5 12 20.5 C 11.321 20.5 10.74 20.263 10.26 19.789 C 9.779 19.314 9.538 18.742 9.538 18.071 L 5.231 18.071 C 4.897 18.071 4.609 17.951 4.365 17.711 C 4.122 17.471 4 17.186 4 16.857 C 4.321 16.592 4.612 16.313 4.875 16.022 C 5.138 15.731 5.41 15.354 5.692 14.889 C 5.974 14.424 6.213 13.923 6.409 13.385 C 6.604 12.847 6.764 12.196 6.889 11.431 C 7.014 10.666 7.077 9.843 7.077 8.964 C 7.077 8.003 7.452 7.11 8.202 6.284 C 8.952 5.459 9.936 4.958 11.154 4.781 C 11.103 4.661 11.077 4.537 11.077 4.411 C 11.077 4.158 11.167 3.943 11.346 3.766 C 11.526 3.589 11.744 3.5 12 3.5 C 12.256 3.5 12.474 3.589 12.654 3.766 C 12.833 3.943 12.923 4.158 12.923 4.411 C 12.923 4.537 12.897 4.661 12.846 4.781 C 14.064 4.958 15.048 5.459 15.798 6.284 C 16.548 7.11 16.923 8.003 16.923 8.964 C 16.923 9.843 16.986 10.666 17.111 11.431 C 17.236 12.196 17.396 12.847 17.591 13.385 C 17.787 13.923 18.026 14.424 18.308 14.889 C 18.59 15.354 18.862 15.731 19.125 16.022 C 19.388 16.313 19.679 16.592 20 16.857 Z"></path></svg><div class="padding-left-right-12"><div class="font-high font-bold color-grey">{$word->here_save_notify}</div><div class="font-medium color-grey"><?php echo($TEMP["#student"] == true) ? '{$word->no_notifications_one}' : '{$word->no_notifications_two}';?></div></div></div></li>';
         setTimeout(function(){
           addClass(HI, 'hidden'), removeClass(HL, 'hidden'), removeClass(HO, 'hidden'), addClass(HO, 'no-notify')
         }, 500);

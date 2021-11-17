@@ -154,7 +154,7 @@ addEvent(NT, 'click', function(){
             GZ = D.querySelector('#parameter_'+j);
         if(el.value == '' || el.value > 5 || el.value < 0){
             addClass(el, 'border-red'), addClass(el, 'boxshadow-red');
-            GZ.querySelector('.text-error').innerText = (el.value == '' ? '*{$word->this_field_is_empty}' : (el.value < 5 ? '{$word->please_enter_valid_value}' : 'La nota maxima es 5')), timeDelay(function(){
+            GZ.querySelector('.text-error').innerText = (el.value == '' ? '*{$word->this_field_is_empty}' : (el.value < 5 ? '{$word->please_enter_valid_value}' : '{$word->the_maximum_grade_is}')), timeDelay(function(){
                 addClass(NN, 'efect-boom'), timeDelay(function(){
                     removeClass(NN, 'efect-boom')
                 }, 200)

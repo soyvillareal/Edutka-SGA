@@ -4,5 +4,5 @@ $mysql_username = "root";
 $mysql_password = "";
 $mysql_database = "cenauc";
 
-$site_url = "http://localhost/cenauc"; // e.g (http://example.com)
+$site_url = "http://192.168.1.60/cenauc"; // e.g (http://example.com)
 ?>

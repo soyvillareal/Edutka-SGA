@@ -18,7 +18,7 @@ if (isset($_GET['one'])) {
 $now_url = (!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] != 'on' ? 'http://' : 'https://') . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 $TEMP['#now_url']  = urlencode($now_url);
 if($TEMP['#loggedin'] === true){
-    if ($TEMP['#user']['status'] != 1) {
+    if ($TEMP['#user']['status'] != 'active') {
         if (isset($_COOKIE['session_id'])) {
             setcookie('session_id', null, -1,'/');
         }

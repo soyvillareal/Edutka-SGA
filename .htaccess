@@ -13,10 +13,6 @@ RewriteRule ^not-me/([^/.]+)/([^\/]+)(\/|)?$ index.php?one=not-me&tokenu=$1&ukey
 RewriteRule ^register/([^/.]+)?$ index.php?one=register&form-key=$1 [NC,QSA]
 RewriteRule ^pages/([^\/]+)(\/|)$ index.php?one=pages&two=$1 [QSA]
 
-RewriteRule ^admin$ index.php?one=admin&two=manage-dashboard [NC,QSA]
-RewriteRule ^admin/([^/.]+)?$ index.php?one=admin&two=$1 [NC,QSA]
-RewriteRule ^admin/([^/.]+)/([^/.]+)?$ index.php?one=admin&two=$1&three=$2 [NC,QSA]
-
 
 RewriteRule ^req/([^/.]+)/?$ requests.php?request-name=$1 [L,QSA]
 RewriteRule ^req/([^/.]+)/([^/.]+)/?$ requests.php?request-name=$1&one=$2 [L,QSA]

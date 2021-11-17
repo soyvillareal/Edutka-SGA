@@ -8,7 +8,8 @@ $TEMP['#user_id'] = $TEMP['#user']['id'];
 if(isset($_GET['user']) && Specific::Academic() == true){
 	$TEMP['#user_id'] = Specific::Filter($_GET['user']);
 	if(Specific::Academic() == true){
-		$TEMP['user'] = Specific::Data($TEMP['#user_id'])['full_name'];
+		$TEMP['#user'] = Specific::Data($TEMP['#user_id']);
+		$TEMP['full_name'] = $TEMP['#user']['full_name'];
 	}
 }
 

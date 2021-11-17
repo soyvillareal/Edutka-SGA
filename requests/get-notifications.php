@@ -22,10 +22,10 @@ if ($TEMP['#loggedin'] === false) {
 			foreach ($notifications as $value) {
 				$user_data = Specific::Data($value['from_id']);
 				$course = $dba->query('SELECT name FROM courses WHERE id = '.$value['course_id'])->fetchArray();
-				$TEMP['!text'] = "Se matriculo en tu curso: $course";
+				$TEMP['!text'] = "{$TEMP['#word']['enrolled_your_course']}: <b>$course</b>";
 				$TEMP['!url'] = '#';
 				if($value['type'] == 'note'){
-					$TEMP['!text'] = "Acaba de subir tu nota en el curso: $course";
+					$TEMP['!text'] = "{$TEMP['#word']['just_uploaded_your_grade_course']}: <b>$course</b>";
 					$TEMP['!url'] = Specific::Url('notes');
 				}
 				$TEMP['!id'] = $value['id'];

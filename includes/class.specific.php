@@ -32,17 +32,17 @@ class Specific {
 
 	public static function Academic() {
 	    global $TEMP;
-	    return $TEMP['#loggedin'] === false ? false : $TEMP['#user']['role'] == 2 ? true : false;
+	    return $TEMP['#loggedin'] === false ? false : $TEMP['#user']['role'] == 'academic' ? true : false;
 	}
 
 	public static function Teacher() {
 	    global $TEMP;
-	    return $TEMP['#loggedin'] === false ? false : $TEMP['#user']['role'] == 1 ? true : false;
+	    return $TEMP['#loggedin'] === false ? false : $TEMP['#user']['role'] == 'teacher' ? true : false;
 	}
 
 	public static function Student() {
 	    global $TEMP;
-	    return $TEMP['#loggedin'] === false ? false : $TEMP['#user']['role'] == 0 ? true : false;
+	    return $TEMP['#loggedin'] === false ? false : $TEMP['#user']['role'] == 'student' ? true : false;
 	}
 
 	function CompressImage($source_url, $destination_url, $quality) {
@@ -207,7 +207,7 @@ class Specific {
 	    $user['municipalities']  = $TEMP['#municipalities'][$user['municipality']];
 
 
-	    $user['program'] = $dba->query('SELECT max(program_id) FROM enrolled e WHERE user_id = '.$user['id'].' AND type = "program" AND (SELECT id FROM programs WHERE id = e.program_id) = program_id')->fetchArray();
+	    $user['program'] = $dba->query('SELECT max(program_id) FROM enrolled e WHERE user_id = '.$user['id'].' AND type = "program"')->fetchArray();
 
 	    $user['last_cenrolled'] = $dba->query('SELECT period_id FROM courses c WHERE (SELECT course_id FROM enrolled WHERE type = "course" AND user_id = '.$user['id'].' AND course_id = c.id) = id ORDER BY id DESC LIMIT 1')->fetchArray();
 

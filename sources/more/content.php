@@ -10,7 +10,7 @@ $TEMP['#total_pages'] = $dba->totalPages;
 if(!empty($users)){
 	foreach ($users as $user) {
 		$TEMP['!data'] = Specific::Data($user['id']);
-	    $TEMP['!status'] = $user['status'] == 1 ? $TEMP['#word']['active'] : $TEMP['#word']['pending'];
+	    $TEMP['!status'] = $TEMP['#word'][$user['status']];
 		$TEMP['users'] .= Specific::Maket('more/users/includes/users-list');
 	}
 	Specific::DestroyMaket();

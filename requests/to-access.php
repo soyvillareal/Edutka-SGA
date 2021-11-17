@@ -32,14 +32,14 @@ if ($TEMP['#loggedin'] === true && !in_array($one, array('verify-change-email', 
 
 	    $to_access = $dba->query('SELECT * FROM users WHERE dni = "'.$dni.'" AND password = "'.sha1($password).'"')->fetchArray();
 	    if (empty($error)) {
-	        if ($to_access['status'] == 0) {
+	        if ($to_access['status'] == 'pending') {
 	           	$deliver = array(
 	           		'status' => 401,
 	           		'ukey' => $to_access['ukey'],
 	           		'token' => $to_access['token'],
 	           		'html' => $TEMP['#word']['account_is_not_active'] . ' <button class="btn-noway color-blue" id="resend-email">' . $TEMP['#word']['resend_email'] . '</button>'
 	            );
-	        } else if ($to_access['status'] == 2) {
+	        } else if ($to_access['status'] == 'deactivated') {
 	           	$deliver = array(
 	           		'status' => 401,
 	           		'html' => $TEMP['#word']['account_was_deactivated_owner_email_related'] . ' ' . $TEMP['#word']['if_you_need_more_help'] . ' <a class="color-blue" href="'.Specific::Url('contact').'" target="_self">' . $TEMP['#word']['contact_our_helpdesk'] . '</a>'
@@ -223,7 +223,7 @@ if ($TEMP['#loggedin'] === true && !in_array($one, array('verify-change-email', 
         } else if(empty($user)){
         	$error = $TEMP['#word']['email_not_exist'];
         }
-        if ($user['status'] == 2) {
+        if ($user['status'] == 'deactivated') {
 	        $deliver = array(
 	         	'status' => 401,
 	           	'html' => $TEMP['#word']['account_was_deactivated_owner_email_related'] . ' ' . $TEMP['#word']['if_you_need_more_help'] . ' <a class="color-blue" href="'.Specific::Url('contact').'" target="_self">' . $TEMP['#word']['contact_our_helpdesk'] . '</a>'
@@ -410,7 +410,7 @@ if ($TEMP['#loggedin'] === true && !in_array($one, array('verify-change-email', 
 	                'email' => "'$email'",
 	                'ip' => "'$ip'",
 	                'gender' => "'$gender'",
-	                'status' => $TEMP['#settings']['validate_email'] == 'on' ? 0 : 1,
+	                'status' => $TEMP['#settings']['validate_email'] == 'on' ? 'pending' : 'active',
 	                'token' => "'$token'",
 	                'date_birthday' => $date_birthday->getTimestamp(),
 	                'time' => time()
@@ -495,7 +495,7 @@ if ($TEMP['#loggedin'] === true && !in_array($one, array('verify-change-email', 
 	$token = Specific::Filter($_POST['tokenu']);
 	$user = $dba->query('SELECT * FROM users WHERE ukey = "'.$ukey.'" AND token = "'.sha1($token).'"')->fetchArray();
 	if(!empty($token) && !empty($ukey) && !empty($user)){
-		if ($dba->query('UPDATE users SET status = 1, token = "'.sha1(rand(111111,999999)).'" WHERE id = '.$user['id'])->returnStatus()) {
+		if ($dba->query('UPDATE users SET status = "active", token = "'.sha1(rand(111111,999999)).'" WHERE id = '.$user['id'])->returnStatus()) {
 			$session_id          = sha1(Specific::RandomKey()) . md5(time());
 		    $insert = $dba->query('INSERT INTO sessions (user_id, session_id, time) VALUES ('.$user['id'].',"'.$session_id.'",'.time().')')->insertid();
 		    $_SESSION['session_id'] = $session_id;
@@ -581,6 +581,16 @@ if ($TEMP['#loggedin'] === true && !in_array($one, array('verify-change-email', 
 			'bubble' => $bubbles['avatar'],
 			'bubbles' => $bubbles['rands']
 		);
+	}
+} else if($one == 'deactivate-account'){
+	$deliver['status'] = 400;
+	$user_id = Specific::Filter($_POST['user_id']);
+	$token = Specific::Filter($_POST['tokenu']);
+	$ukey = Specific::Filter($_POST['ukey']);
+	if(!empty($user_id) && !empty($token) && !empty($ukey)){
+		if($dba->query('UPDATE users SET status = "deactivated" WHERE id = '.$user_id.' AND token = "'.$token.'" AND ukey = "'.$ukey.'"')->returnStatus()){
+			$deliver['status'] = 200;
+		}
 	}
 }
 ?>

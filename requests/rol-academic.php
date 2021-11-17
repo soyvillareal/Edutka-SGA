@@ -328,7 +328,7 @@ if($one == 'this-programs'){
     if(!empty($keyword)){
         $query .= " AND (names LIKE '%$keyword%' OR surnames LIKE '%$keyword%' OR dni LIKE '%$keyword%')";
     }
-    $users = $dba->query('SELECT * FROM users WHERE role = 1'.$query.' LIMIT 5')->fetchAll();
+    $users = $dba->query('SELECT * FROM users WHERE role = "teacher"'.$query.' LIMIT 5')->fetchAll();
     if (!empty($users)) {
         foreach ($users as $user) {
             $html .= "<button class='tipsit-search display-flex btn-noway border-bottom border-grey padding-10 background-hover' data-id='".$user['id']."' data-name='".$user['names'].' '.$user['surnames']."'>".$user['names'].' '.$user['surnames']."</button>";
@@ -426,9 +426,22 @@ if($one == 'this-programs'){
     $deliver['status'] = 400;
     $id = Specific::Filter($_POST['id']);
     if (isset($id) && is_numeric($id)) {
-        if($dba->query('DELETE FROM faculty WHERE id = '.$id)->returnStatus()){
-            $deliver['status'] = 200;
-        };
+        $courses_exists = $dba->query('SELECT COUNT(*) FROM programs WHERE faculty_id = '.$id)->fetchArray();
+        if($courses_exists == 0){
+            if($dba->query('DELETE FROM faculty WHERE id = '.$id)->returnStatus()){
+                $deliver['status'] = 200;
+            };
+        } else {
+            $deliver = array(
+                'status' => 400,
+                'error' => $TEMP['#word']['you_cannot_delete']
+            );
+        }
+    } else {
+        $deliver = array(
+            'status' => 400,
+            'error' => $TEMP['#word']['error']
+        );
     }
 } else if($one == 'table-faculties'){
     $page = Specific::Filter($_POST['page_id']);
@@ -917,22 +930,9 @@ if($one == 'this-programs'){
     $deliver['status'] = 400;
     $id = Specific::Filter($_POST['id']);
     if (isset($id) && is_numeric($id)) {
-        $plan_exists = $dba->query('SELECT COUNT(*) FROM programs WHERE plan_id = '.$id)->fetchArray();
-        if($plan_exists == 0){
-            if($dba->query('DELETE FROM plan WHERE id = '.$id)->returnStatus()){
-                $deliver['status'] = 200;
-            };
-        } else {
-            $deliver = array(
-                'status' => 400,
-                'error' => $TEMP['#word']['you_cannot_delete']
-            );
-        }
-    } else {
-        $deliver = array(
-            'status' => 400,
-            'error' => $TEMP['#word']['error']
-        );
+        if($dba->query('DELETE FROM plan WHERE id = '.$id)->returnStatus()){
+            $deliver['status'] = 200;
+        };
     }
 } else if($one == 'search-plans') {
     $keyword = Specific::Filter($_POST['keyword']);
@@ -1010,6 +1010,123 @@ if($one == 'this-programs'){
                 $TEMP['!status'] = $TEMP['#word'][$plan['status']];
                 $TEMP['!time'] = Specific::DateFormat($plan['time']);
                 $html .= Specific::Maket('more/plans/includes/plans-list');
+            }
+            Specific::DestroyMaket();
+            $deliver['status'] = 200;
+        }
+        $deliver['status'] = 200;
+        $deliver['html'] = $html;
+    }
+} else if($one == 'this-users'){
+    $deliver['status'] = 400;
+    $roles  = array('academic', 'teacher', 'student');
+    $statusa  = array(0, 1);
+    $emptys = array();
+    $errors = array();
+
+    $id = Specific::Filter($_POST['id']);
+    $dni = Specific::Filter($_POST['dni']);
+    $names = Specific::Filter($_POST['names']);
+    $surnames = Specific::Filter($_POST['surnames']);
+    $role = Specific::Filter($_POST['role']);
+    $status = Specific::Filter($_POST['status']);
+
+    if(empty($dni)){
+        $emptys[] = 'dni';
+    }
+    if(empty($names)){
+        $emptys[] = 'names';
+    }
+    if(empty($surnames)){
+        $emptys[] = 'surnames';
+    }
+    if(empty($role)){
+        $emptys[] = 'role';
+    }
+    if(empty($status)){
+        $emptys[] = 'status';
+    }
+    if(isset($id) && is_numeric($id)){
+        if(empty($emptys)){
+            if(!is_numeric($dni)){
+                $errors[] = 'dni';
+            }
+            if(!in_array($role, $roles)){
+                $errors[] = 'role';
+            }
+            if(!in_array($status, $statusa)){
+                $errors[] = 'status';
+            }
+            if (empty($errors)) {
+                if($dba->query('UPDATE users SET dni = ?, names = ?, surnames = ?, role = ?, status = ? WHERE id = '.$id, $dni, $names, $surnames, $role, $status)->returnStatus()){
+                    $deliver['status'] = 200;
+                }
+            } else {
+                $deliver = array(
+                    'status' => 400,
+                    'errors' => $errors
+                );
+            }
+        } else {
+            $deliver = array(
+                'status' => 400,
+                'emptys' => $emptys
+            );
+        }
+    }
+} else if($one == 'get-uitems'){
+    $id = Specific::Filter($_POST['id']);
+    if(isset($id) && is_numeric($id)){
+        $items = $dba->query('SELECT dni, names, surnames, role, status FROM users WHERE id = '.$id)->fetchArray();
+        $deliver['XD'] = 'XD';
+        if (!empty($items)) {
+            $deliver = array(
+                'status' => 200,
+                'items' => $items
+            );
+        }
+    }
+} else if($one == 'search-users') {
+    $keyword = Specific::Filter($_POST['keyword']);
+    $html = '';
+    $query = '';
+    if(!empty($keyword)){
+        $query .= " WHERE dni LIKE '%$keyword%' OR names LIKE '%$keyword%' OR surnames LIKE '%$keyword%'";
+    }
+    $users = $dba->query('SELECT * FROM users'.$query.' LIMIT ? OFFSET ?', 10, 1)->fetchAll();
+    $deliver['total_pages'] = $dba->totalPages;
+    if (!empty($users)) {
+        foreach ($users as $user) {
+            $TEMP['!data'] = Specific::Data($user['id']);
+            $TEMP['!status'] = $TEMP['#word'][$user['status']];
+            $html .= Specific::Maket('more/users/includes/users-list');
+        }
+        Specific::DestroyMaket();
+        $deliver['status'] = 200;
+    } else {
+        if(!empty($keyword)){
+            $TEMP['keyword'] = $keyword;
+            $html .= Specific::Maket('not-found/result-for');
+        } else {
+            $html .= Specific::Maket('not-found/users');
+        }
+    }
+    $deliver['html'] = $html;
+} else if($one == 'table-users'){
+    $page = Specific::Filter($_POST['page_id']);
+    if(!empty($page) && is_numeric($page) && isset($page) && $page > 0){
+        $html = "";
+        $query = '';
+        $keyword = Specific::Filter($_POST['keyword']);
+        if(!empty($keyword)){
+            $query .= " WHERE dni LIKE '%$keyword%' OR names LIKE '%$keyword%' OR surnames LIKE '%$keyword%'";
+        }
+        $users = $dba->query('SELECT * FROM users'.$query.' LIMIT ? OFFSET ?', 10, $page)->fetchAll();
+        if (!empty($users)) {
+            foreach ($users as $user) {
+                $TEMP['!data'] = Specific::Data($user['id']);
+                $TEMP['!status'] = $TEMP['#word'][$user['status']];
+                $html .= Specific::Maket('more/users/includes/users-list');
             }
             Specific::DestroyMaket();
             $deliver['status'] = 200;

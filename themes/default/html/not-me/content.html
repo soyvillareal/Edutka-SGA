@@ -1,0 +1,108 @@
+<div class="login-page display-flex">
+	<div class="margin-auto text-center">
+	    <div class="cont-login-center display-flex background-white border-radius-12 margin-t50 margin-b50">
+	   		<div class="w-100 margin-auto">
+	   			<div class="display-block margin-t15 position-relative">
+				    <?php if($TEMP['#user']['status'] == 'pending'){ ?>
+				   	<div id="notme-container">
+				   		<h2 class="margin-b10 color-secondary" id="notme-title">{$word->didnt_create_this_account}</h2>
+						<p class="color-secondary" id="notme-content">{$word->not_create_account_associated_email}</p>
+					</div>
+					<?php } else { ?>
+					<div id="notme-container">
+						<h2 class="margin-b10 color-secondary" id="notme-title">{$word->the_account_been_deactivated}</h2>
+						<p class="color-black" id="notme-content">{$word->thanks_for_letting_us_know} {$word->if_you_need_more_help} <a class="color-blue" href="mailto:{$settings->email}" target="_blank">{$word->contact_our_helpdesk}</a></p>		
+					</div>
+					<?php } ?>
+				</div>
+				<div class="display-block margin-t15 position-relative">
+					<div class="display-flex" id="notme-buttons">
+						<?php if($TEMP['#user']['status'] == 'pending'){ ?>
+						<button id="show-dmodal" class="btn-noway background-red cursor-disabled hover-opacity margin-b20 border-radius-4 padding-10 margin-left-auto">
+							<span class="color-white">{$word->deactivate_this_account}</span>
+		                    <div class="content-spinner-circle">
+		                        <div class="spinner-circle"></div>
+		                    </div>
+						</button>
+						<a class="color-white margin-right-auto" href="{$url->{verify-email/{$token}/{$ukey}}}" target="_blank">
+							<button class="btn-noway margin-l10 position-relative background-blue hover-opacity border-radius-4 padding-10">
+								{$word->this_is_my_account}		
+							</button>
+						</a>
+						<?php } else { ?>
+						<a class="color-white margin-auto" href="{$url->{home}}" target="_self">
+							<button class="btn-noway margin-l10 position-relative background-blue hover-opacity border-radius-4 padding-10">
+								{$word->return_to}
+							</button>
+						</a>
+						<?php } ?>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="cont-alert" id="alert-deactivate">
+   <h2 class="color-red">{$word->deactivate_this_account}</h2>
+   <p>{$word->this_action_cannot_undone_continue}</p>
+   <div class="padding-t25">
+      <button class="btn-noway background-grely border-radius-4 padding-10 color-black hover-button font-uppercase" id="cancel-dalert">{$word->cancel}</button>
+      <button class="btn-noway background-blue border-radius-4 padding-10 color-black hover-opacity font-uppercase" id="deactivate-account">
+        <span class="color-white">{$word->deactivate}</span>
+        <div class="content-spinner-circle">
+            <div class="spinner-circle"></div>
+        </div>
+    </button>
+   </div>
+</div>
+<div class="background-pointer"></div>
+<ul class="container-bubbles">
+	<?php foreach ($TEMP['#bubbles']['avatar'] as $key => $avatar){ ?>
+	<li class="bubble-<?php echo $key;?>">
+		<img id="bubble-<?php echo $key;?>" src="<?php echo $avatar; ?>">
+	</li>
+	<?php } ?>
+</ul> 
+<script>
+var TY = "{$bubbles}".split(','),
+    GW = D.querySelector('#show-dmodal'),
+	GQ = D.querySelector('#deactivate-account'),
+    GI = D.querySelector('#alert-deactivate'),
+    GD = function(){
+	    GI.style.display = "", D.body.style.overflow = "";
+	};
+timeDelay(function(){
+	if(TY.length > 0){
+		Req("{$url->{req/to-access/bubbles}}", function(e){
+			if(e.status == 200){
+				TY = e.bubbles;
+				for (var j = 0, i = e.bubble.length; j < i; j++){
+					var av = e.bubble[j],
+						el = D.querySelector('#bubble-'+j);
+					if(el){
+						el.setAttribute('src', av);
+					} else {
+						D.querySelector('.container-bubbles').innerHTML += '<li class="bubble-'+j+'"><img id="bubble-'+j+'" src="'+av+'"/></li>'
+					}
+				}
+			}
+		}, "POST", "&bubbles=" + TY)
+	}
+}, 14000, 1);
+<?php if($TEMP['#user']['status'] == 'pending'){ ?>
+addEvent(D.querySelector('#cancel-dalert'), 'click', GD), addEvent(GW, "click", function(){
+    GI.style.display = "block", D.body.style.overflow = "hidden";
+}), addEvent(GQ, 'click', function(){
+	var self = this;
+	addClass(self, 'spinner-is-loading'), self.setAttribute('disabled', true);
+    Req("{$url->{req/to-access/deactivate-account}}", function(e){
+    	console.log(e);
+        if (e.status == 200) {
+            D.querySelector('#notme-title').innerText = '{$word->the_account_been_reported}', D.querySelector('#notme-content').innerHTML = '{$word->thanks_for_letting_us_know} {$word->if_you_need_more_help} <a class="color-blue" href="mailto:{$settings->email}" target="_blank">{$word->contact_our_helpdesk}</a>', D.querySelector('#notme-buttons').innerHTML = '<a class="color-white margin-auto" href="{$url->{home}}" target="_self"><button class="btn-noway margin-l10 position-relative background-blue hover-opacity border-radius-4 padding-10">{$word->return_to}</button></a>', GD();
+        } else {
+        	removeClass(self, 'spinner-is-loading'), self.removeAttribute('disabled'), loadAlert("{$word->error}", 1);
+        }
+   	}, "POST", "&user_id={$id}&tokenu={$token}&ukey={$ukey}")
+});
+<?php } ?>
+</script>

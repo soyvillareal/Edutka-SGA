@@ -1368,6 +1368,10 @@ h5 {
     border-color: #4cbd1d !important
 }
 
+.display-grid {
+    display: grid;
+}
+
 .display-flex {
     display: -webkit-box;
     display: -ms-flexbox;
@@ -1641,6 +1645,10 @@ h5 {
 
 .w-100 {
     width: 100%
+}
+
+.max-w-450 {
+    max-width: 450px
 }
 
 .max-w-700 {

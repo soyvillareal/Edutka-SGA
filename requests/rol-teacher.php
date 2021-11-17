@@ -126,14 +126,15 @@ if($one == 'search-courses') {
         $type = Specific::Filter($_POST['type']);
         if($type == 'notes' && Specific::Teacher() == true){
             $my_courses = $dba->query('SELECT course_id FROM teacher WHERE user_id = '.$TEMP['#user']['id'])->fetchAll(false);
-            $users = $dba->query('SELECT * FROM users u WHERE id != '.$TEMP['#user']['id'].' AND role = 0 AND (names LIKE "%'.$keyword.'%" OR surnames LIKE "%'.$keyword.'%") AND (SELECT user_id FROM enrolled WHERE user_id = u.id AND type = "course" AND course_id IN ('.implode(',', $my_courses).')) = id LIMIT 10')->fetchAll();
+            $users = $dba->query('SELECT * FROM users u WHERE id != '.$TEMP['#user']['id'].' AND role = "student" AND (names LIKE "%'.$keyword.'%" OR surnames LIKE "%'.$keyword.'%") AND (SELECT user_id FROM enrolled WHERE user_id = u.id AND type = "course" AND course_id IN ('.implode(',', $my_courses).')) = id LIMIT 10')->fetchAll();
         } else {
-            $users = $dba->query('SELECT * FROM users WHERE id != '.$TEMP['#user']['id'].' AND role = 0 AND (names LIKE "%'.$keyword.'%" OR surnames LIKE "%'.$keyword.'%") LIMIT 10')->fetchAll();
+            $users = $dba->query('SELECT * FROM users WHERE id != '.$TEMP['#user']['id'].' AND role = "student" AND (names LIKE "%'.$keyword.'%" OR surnames LIKE "%'.$keyword.'%") LIMIT 10')->fetchAll();
         }
         
         if (!empty($users)) {
             foreach ($users as $user) {
-                $html .= "<a class='display-flex border-left border-right border-bottom border-grey padding-10 background-hover' href='".Specific::Url("$type?keyword=$keyword&user={$user['id']}")."' target='_self'><div class='margin-right-auto color-black'>".$user['names'].' '.$user['surnames'].'</div></a>';
+                $full_name = "{$user['names']} {$user['surnames']}";
+                $html .= "<a class='display-flex border-left border-right border-bottom border-grey padding-10 background-hover' href='".Specific::Url("$type?keyword={$full_name}&user={$user['id']}")."' target='_self'><div class='margin-right-auto color-black'>".$full_name.'</div></a>';
             }
             $deliver = array(
                 'status' => 200,
@@ -182,7 +183,6 @@ if($one == 'search-courses') {
             } else if(Specific::Teacher() == true){
                 $note_mode = $dba->query('SELECT note_mode FROM plan p WHERE (SELECT plan_id FROM assigned WHERE course_id = '.$id.' AND plan_id = p.id) = id')->fetchArray();
                 $deliver['mode'] = $note_mode;
-                $deliver['XD'] = $course['parameters'];
                 if(!empty($course['parameters'])){
                    $items = json_decode($course['parameters'], true); 
                 } else {

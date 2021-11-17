@@ -45,7 +45,7 @@
 				<label class="color-black">{$word->search}</label>
 				<div class="content-search-notes position-relative margin-b10">
 					<div class="display-flex margin-auto border-radius-4">
-				        <input class="background-grely padding-10 border-focus-blue border-all border-grey border-top-left-radius border-top-right-radius border-bottom-left-radius border-bottom-right-radius w-100 color-black" type="text" id="search-enrolled" name="keyword" autocomplete="off" value="{#keyword_enroll}"> 
+				        <input class="background-grely padding-10 border-focus-blue border-all border-grey border-top-left-radius border-top-right-radius border-bottom-left-radius border-bottom-right-radius w-100 color-black" type="text" id="search-enrolled" name="keyword" autocomplete="off"> 
 			        </div>
 			        <div class="search-down z-index-first position-absolute background-white"></div>
 			    </div>
@@ -53,7 +53,7 @@
 			<?php } ?>
 	   	    <div class="background-white border-radius-12 padding-25">
 	   	   		<?php if($TEMP['#academic'] == true && !empty($TEMP['#enrolled'])) { ?>
-	   	    	<div class="font-medium text-center margin-t15 margin-b15">Matriculas de <span class="color-black font-bold">{$user}</span></div>
+	   	    	<div class="font-medium text-center margin-t15 margin-b15">{$word->license_plates_of} <span class="color-black font-bold">{$full_name}</span></div>
 	   	    	<?php } ?>
 			    <div class="max-w-900 border-top-left-radius border-top-right-radius" id="container-enrolled">
 			    	{$enrolled}
@@ -65,7 +65,7 @@
 </div>
 <div class="cont-alert" id="alert-enrollp">
    <h2 class="color-red">{$word->enroll} {$word->program}</h2>
-   <p>¿Esta seguro de que desea realizar esta matricula?</p>
+   <p>{$word->are_sure_want_make_registration}</p>
    <div class="padding-t25">
       <button class="btn-noway background-grely border-radius-4 padding-10 color-black hover-button font-uppercase" id="cancel-epalert">{$word->cancel}</button>
       <button class="btn-noway background-red border-radius-4 padding-10 color-black hover-opacity font-uppercase" id="register-epnroll">
@@ -78,11 +78,11 @@
 </div>
 <div class="background-pointer"></div>
 <div class="cont-alert" id="alert-enrollc">
-   <h2 class="<?php echo($TEMP['#academic'] == false) ? 'no-margin ' : ''?>padding-b10 color-red">Introduce el codigo del curso</h2>
+   <h2 class="<?php echo($TEMP['#academic'] == false) ? 'no-margin ' : ''?>padding-b10 color-red">{$word->enter_course_code}</h2>
    <?php if($TEMP['#academic'] == false) { ?>
    <input id="course-code" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue background-grely color-black" />
    <?php } else { ?>
-   <p>¿Esta seguro de que desea realizar esta matricula?</p>
+   <p>{$word->are_sure_want_make_registration}</p>
    <?php } ?>
    <div class="padding-t25">
       <button class="btn-noway background-grely border-radius-4 padding-10 color-black hover-button font-uppercase" id="cancel-ecalert">{$word->cancel}</button>
