@@ -19,8 +19,7 @@ if($one == 'search-enrolled'){
     if(!empty($keyword)){
         $query .= " WHERE (id LIKE '%$keyword%' OR name LIKE '%$keyword%')";
         if($type == 'course'){
-        	$enrolled_plans = array();
-        	$courses = $dba->query('SELECT course_id FROM assigned a WHERE (SELECT id FROM plan WHERE program_id = '.$program_id.' AND id = a.plan_id) = plan_id')->fetchAll(false);
+        	$courses = $dba->query('SELECT id FROM courses c WHERE (SELECT id FROM plan WHERE program_id = '.$program_id.' AND id = c.plan_id) = plan_id')->fetchAll(false);
         	if(!empty($courses)){
         		$query .= " AND id IN (".implode(',', $courses).")";
         	}
@@ -30,7 +29,7 @@ if($one == 'search-enrolled'){
 	    if (!empty($searchs)) {
 	        foreach ($searchs as $search) {
 	            if($type == 'course'){
-					$periodc = $dba->query('SELECT name FROM periods p WHERE (SELECT period_id FROM courses WHERE id = '.$search['id'].' AND period_id = p.id)')->fetchArray();
+					$periodc = $dba->query('SELECT name FROM periods p WHERE (SELECT period_id FROM enrolled WHERE type = "course" AND user_id = '.$id.' AND course_id = '.$search['id'].' AND period_id = p.id) = id')->fetchArray();
 					$teachers = $dba->query('SELECT names FROM users u WHERE (SELECT user_id FROM teacher WHERE user_id = u.id AND course_id = '.$search['id'].') = id')->fetchAll(false);
 					if(count($teachers) == 2){
 						$teachers = "{$teachers[0]} {$TEMP['#word']['and']} {$teachers[1]}";
@@ -42,8 +41,8 @@ if($one == 'search-enrolled'){
 						$teachers = $teachers[0];
 					}
 					$TEMP['!teacher'] = $teachers;
-					$TEMP['!name'] = "{$search['name']} ($periodc)";
-					$TEMP['!program_id'] = $program_id;
+					$TEMP['!name'] = "{$search['name']} ".(!is_array($periodc) ? "($periodc)" : "");
+					$TEMP['!plan_id'] = $search['plan_id'];
 					$TEMP['!color'] = 'purple';
 					$search_id = 'course_id';
 				} else {
@@ -88,8 +87,8 @@ if($one == 'search-enrolled'){
         if(!empty($TEMP['#enrolled'])){
 			foreach ($TEMP['#enrolled'] as $enroll) {
 				if($enroll['type'] == 'course'){
-					$course = $dba->query('SELECT name FROM courses WHERE id = '.$enroll['course_id'])->fetchArray();
-					$periodc = $dba->query('SELECT name FROM periods p WHERE (SELECT period_id FROM courses WHERE id = '.$enroll['course_id'].' AND period_id = p.id)')->fetchArray();
+					$course = $dba->query('SELECT name FROM periods p WHERE (SELECT period_id FROM enrolled WHERE type = "course" AND user_id = '.$id.' AND course_id = '.$enroll['course_id'].' AND period_id = p.id) = id')->fetchArray();
+					$periodc = $dba->query('SELECT name FROM periods p WHERE (SELECT period_id FROM enrolled WHERE course_id = '.$enroll['course_id'].' AND period_id = p.id) = id')->fetchArray();
 					$teachers = $dba->query('SELECT names FROM users u WHERE (SELECT user_id FROM teacher WHERE user_id = u.id AND course_id = '.$enroll['course_id'].') = id')->fetchAll(false);
 					if(count($teachers) == 2){
 						$teachers = "{$teachers[0]} {$TEMP['#word']['and']} {$teachers[1]}";
@@ -152,7 +151,7 @@ if($one == 'search-enrolled'){
 	$deliver['status'] = 400;
     $course_id = Specific::Filter($_POST['course_id']);
     $user_id = Specific::Filter($_POST['user_id']);
-    $program_id = Specific::Filter($_POST['program_id']);
+    $plan_id = Specific::Filter($_POST['plan_id']);
     $code = Specific::Filter($_POST['code']);
 
     if (isset($course_id) && is_numeric($course_id)) {
@@ -182,22 +181,40 @@ if($one == 'search-enrolled'){
 			        	}
 		        	}
 		        	if(!in_array(false, $prektrues) || empty($prektrues)){
-			        	$plan = $dba->query('SELECT id, COUNT(*) AS count FROM plan WHERE program_id = '.$program_id)->fetchArray();
-			        	if($plan['count']){
-			        		if($dba->query('SELECT COUNT(*) FROM assigned WHERE course_id = '.$course_id.' AND plan_id = '.$plan['id'])->fetchArray() > 0){
-				        		if($dba->query('INSERT INTO enrolled (user_id, course_id, program_id, type, status, `time`) VALUES ('.$user_id.', '.$course_id.', '.$program_id.', "course", "registered",'.time().')')->returnStatus() && $dba->query('INSERT INTO notes (user_id, course_id, program_id, notes, `time`) VALUES ('.$user_id.','.$course_id.', '.$program_id.', "'.json_encode(array(0.0, 0.0, 0.0)).'",'.time().')')->returnStatus()){
-					        		$deliver['status'] = 200;
-					        		$teachers = $dba->query('SELECT user_id FROM teacher WHERE course_id = '.$course_id)->fetchAll(false);
-					        		foreach ($teachers as $teacher) {
-					        			Specific::SendNotification(array(
-						                    'from_id' => $TEMP['#user']['id'],
-						                    'to_id' => $teacher,
-						                    'course_id' => $course_id,
-						                    'type' => "'enroll'",
-						                    'time' => time()
-						                ));
-					        		}
-					        	}
+			        	$plan = $dba->query('SELECT program_id, COUNT(*) AS count FROM plan WHERE id = '.$plan_id)->fetchArray();
+			        	if($plan['count'] > 0){
+			        		if($dba->query('SELECT COUNT(*) FROM courses WHERE id = '.$course_id.' AND plan_id = '.$plan_id)->fetchArray() > 0){
+			        			$period = $dba->query('SELECT id, COUNT(*) AS count FROM periods WHERE status = "enabled" AND start < '.time().' AND final > '.time())->fetchArray();
+			        			if($period['count'] > 0){
+			        				if($dba->query('INSERT INTO enrolled (period_id, user_id, course_id, program_id, type, status, `time`) VALUES ('.$period['id'].', '.$user_id.', '.$course_id.', '.$plan['program_id'].', "course", "registered",'.time().')')->returnStatus() && $dba->query('INSERT INTO notes (user_id, course_id, program_id, notes, `time`) VALUES ('.$user_id.','.$course_id.', '.$plan['program_id'].', "'.json_encode(array(0.0, 0.0, 0.0)).'",'.time().')')->returnStatus()){
+						        		$deliver['status'] = 200;
+						        		$teachers = $dba->query('SELECT user_id FROM teacher WHERE course_id = '.$course_id)->fetchAll(false);
+						        		foreach ($teachers as $teacher) {
+						        			Specific::SendNotification(array(
+							                    'from_id' => $TEMP['#user']['id'],
+							                    'to_id' => $teacher,
+							                    'course_id' => $course_id,
+							                    'type' => "'enroll'",
+							                    'time' => time()
+							                ));
+						        		}
+						        	} else {
+						        		$deliver = array(
+						        			'status' => 400,
+						        			'error' => $TEMP['#word']['error']
+						        		);
+						        	}
+			        			} else {
+			        				$deliver = array(
+			        					'status' => 400,
+			        					'error' => $TEMP['#word']['there_no_active_period_moment']
+			        				);
+			        			}
+				        	} else {
+				        		$deliver = array(
+				        			'status' => 400,
+				        			'error' => $TEMP['#word']['error']
+				        		);
 				        	}
 			        	} else {
 			        		$deliver = array(

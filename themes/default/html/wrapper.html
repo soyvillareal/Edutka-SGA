@@ -304,13 +304,13 @@
           <a class="animated-easy color-black" href="{$url->{pages/about-us}}" target="_self">{$word->about_us}</a>
         </li>
         <?php if($TEMP['#loggedin'] === true){ ?>
-        <li>
+        <li class="logout_">
           <a class="animated-easy color-black" href="{$url->{logout}}">{$word->logout}</a>
         </li>
         <?php } ?>
       </ul>
       <ul class="cont-language">
-        <?php if($TEMP['#loggedin'] === true && $TEMP['#academic'] == false){ ?>
+        <?php if($TEMP['#loggedin'] === true){ ?>
         <li class="notifications margin-b10">
           <button id="get-notifications" class="btn-noway dv-lang dv-vertical-center<?php echo($TEMP['#notifications'] > 0) ? ' color-red ' : ' color-grey ';?>hover-button" data-toggle="dropdown">
             <svg class="pointer-events-none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -383,7 +383,7 @@
         <a class="animated-easy color-black padding-15 w-100" href="{$url->{pages/about-us}}" target="_self">{$word->about_us}</a>
       </li>
       <?php if($TEMP['#loggedin'] === true){ ?>
-      <li>
+      <li class="logout_">
         <a class="animated-easy color-black padding-15 w-100" href="{$url->{logout}}">{$word->logout}</a>
       </li>
       <?php } ?>
@@ -443,7 +443,7 @@
             <a class="font-lowly color-black animated-easy" href="{$url->{pages/about-us}}" target="_self">{$word->about_us}</a>
           </li>
           <?php if($TEMP['#loggedin'] === true){ ?>
-          <li>
+          <li class="logout_">
             <a class="font-lowly color-black animated-easy" href="{$url->{logout}}">{$word->logout}</a>
           </li>
           <?php } ?>
@@ -499,7 +499,7 @@
   var HC = D.querySelector('#close-tab-menu'),
       HT = D.querySelectorAll('.has-submenu');
 
-<?php if ($TEMP['#loggedin'] === true && $TEMP['#academic'] == false){ ?>
+<?php if ($TEMP['#loggedin'] === true){ ?>
 var HA = D.querySelector('#get-notifications'),
   HN = D.querySelector("#new-notifications"),
   HE  = D.querySelector("#notifications"),

@@ -191,7 +191,7 @@ addEvent(NT, 'click', function(){
                         }, 700);
                 }
             } else {
-                loadAlert("{$word->error}", 1)
+                loadAlert(e.error, 1)
             }
             NT.removeAttribute('disabled'), removeClass(NT, 'spinner-is-loading');
         }

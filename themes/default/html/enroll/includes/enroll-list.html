@@ -3,12 +3,12 @@
    <div class="item-enroll display-flex margin-t15">
       <div class="display-inline-block">
          <h3 class="font-medium color-black margin-r25 ellipsis-vertical-2"><?php echo($TEMP['!typet'] == 'course') ? '{$word->course}:' : '';?> {!name}</h3>
-         <?php if($TEMP['!typet'] == 'course'){ ?>
+         <?php if($TEMP['!typet'] == 'course' && !empty($TEMP['!teacher'])){ ?>
          <p class="font-medium color-black margin-r25 ellipsis-vertical-2">{$word->teacher}: {!teacher}</p>
          <?php } ?>
       </div>
       <div class="dv-vertical-center margin-left-auto">
-         <button class="{!status} btn-noway background-red hover-opacity color-white padding-10 border-radius-12 {!class_event} data-id="{!id}"<?php echo(isset($TEMP['!program_id'])) ? ' data-program="{!program_id}"' : '';?>>{!text}</button>
+         <button class="{!status} btn-noway background-red hover-opacity color-white padding-10 border-radius-12 {!class_event} data-id="{!id}" data-plan="{!plan_id}">{!text}</button>
       </div>
    </div>
    <?php if(!empty($TEMP['#enrolled'])){ ?>

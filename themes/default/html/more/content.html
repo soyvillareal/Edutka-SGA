@@ -3,17 +3,22 @@
 		<div class="text-center">
 			<ul class="settings-items display-inline-flex margin-t50 margin-b10 border-all border-blue">
 				<li>
-					<a class="dv-vertical-center background-blue hover-button padding-5 border-all border-bluly color-white<?php echo ($TEMP['#page'] == 'users') ? ' active': '';?>" href="{$url->{more}}{$href_setting}" target="_self">
+					<a class="dv-vertical-center background-blue hover-button padding-5 border-all border-bluly color-white<?php echo ($TEMP['#page'] == 'users') ? ' active': '';?>" href="{$url->{more}}" target="_self">
 						{$word->users}
 					</a>
 				</li>
 				<li>
-					<a class="dv-vertical-center background-blue hover-button padding-5 border-all border-bluly color-white<?php echo ($TEMP['#page'] == 'plans') ? ' active': '';?>" href="{$url->{more}}?page=plans{$href_more}" target="_self">
+					<a class="dv-vertical-center background-blue hover-button padding-5 border-all border-bluly color-white<?php echo ($TEMP['#page'] == 'plans') ? ' active': '';?>" href="{$url->{more}}?page=plans" target="_self">
 						{$word->study_plans}
 					</a>
 				</li>
 				<li>
-					<a class="dv-vertical-center background-blue hover-button padding-5 border-all border-bluly color-white last<?php echo ($TEMP['#page'] == 'rules') ? ' active': '';?>" href="{$url->{more}}?page=rules{$href_more}" target="_self">
+					<a class="dv-vertical-center background-blue hover-button padding-5 border-all border-bluly color-white last<?php echo ($TEMP['#page'] == 'authorizations') ? ' active': '';?>" href="{$url->{more}}?page=authorizations" target="_self">
+						{$word->authorizations}
+					</a>
+				</li>
+				<li>
+					<a class="dv-vertical-center background-blue hover-button padding-5 border-all border-bluly color-white last<?php echo ($TEMP['#page'] == 'rules') ? ' active': '';?>" href="{$url->{more}}?page=rules" target="_self">
 						{$word->rules}
 					</a>
 				</li>

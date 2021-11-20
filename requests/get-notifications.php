@@ -27,6 +27,12 @@ if ($TEMP['#loggedin'] === false) {
 				if($value['type'] == 'note'){
 					$TEMP['!text'] = "{$TEMP['#word']['just_uploaded_your_grade_course']}: <b>$course</b>";
 					$TEMP['!url'] = Specific::Url('notes');
+				} else if($value['type'] == 'authorize'){
+					$TEMP['!text'] = "{$TEMP['#word']['just_applied_authorization_in_the_course']}: <b>$course</b>";
+					$TEMP['!url'] = Specific::Url('more?page=authorizations');
+				} else if($value['type'] == 'authorized'){
+					$TEMP['!text'] = "{$TEMP['#word']['you_authorized_upload_grades_course_of']}: <b>$course</b>";
+					$TEMP['!url'] = Specific::Url('authorizations');
 				}
 				$TEMP['!id'] = $value['id'];
 				$TEMP['!data'] = $user_data;

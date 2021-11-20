@@ -123,7 +123,6 @@ var GA = D.querySelectorAll('.show_cmodal'),
 	GF = function(e){
 		var self = this;
 	    Req('{$url->{req/rol-student/search-enrolled}}', function(e){
-	    	console.log(e);
 	        GP.innerHTML = e.html;
 	        GA = D.querySelectorAll('.show_cmodal'), GB = D.querySelectorAll('.show_rcmodal'), GK = D.querySelectorAll('.show_rpmodal');
 			for(var j = 0, i = GB.length; j < i; j++) addEvent(GB[j], "click", GC);
@@ -132,7 +131,7 @@ var GA = D.querySelectorAll('.show_cmodal'),
 	    }, "POST", "&keyword=" + self.value + "&id={#user_id}&type={#type}<?php echo(count($TEMP['#programs']) > 1 && $TEMP['#type'] == 'course') ? '&program_id=" + D.querySelector("#program_id").value' : '&program_id={#program}"';?>)
 	},
 	GC = function(){
-		GJ.style.display = "block", D.body.style.overflow = "hidden", GI.setAttribute('data-id', this.getAttribute('data-id')), GI.setAttribute('data-program', this.getAttribute('data-program'));
+		GJ.style.display = "block", D.body.style.overflow = "hidden", GI.setAttribute('data-id', this.getAttribute('data-id')), GI.setAttribute('data-plan', this.getAttribute('data-plan'));
 	},
     GH = function(){
         GE.style.display = "block", D.body.style.overflow = "hidden", GG.setAttribute('data-id', this.getAttribute('data-id'));
@@ -143,9 +142,9 @@ var GA = D.querySelectorAll('.show_cmodal'),
 	keyword = "{#keyword_enroll}";
 
 
-<?php if(count($TEMP['#programs']) > 1 && $TEMP['#type'] == 'course'){ ?>addEvent(D.querySelector('#program_id'), 'change', GF), addEvent(D.querySelector('#close-ealert'), 'click', function(){
+<?php if(count($TEMP['#programs']) > 1 && $TEMP['#type'] == 'course'){ ?>addEvent(D.querySelector('#program_id'), 'change', GF), <?php } ?>addEvent(D.querySelector('#close-ealert'), 'click', function(){
     GE.style.display = "", D.body.style.overflow = "";
-}), <?php } ?>addEvent(D.querySelector('#cancel-ecalert'), 'click', function(){
+}), addEvent(D.querySelector('#cancel-ecalert'), 'click', function(){
     GJ.style.display = "", D.body.style.overflow = "";
 }), addEvent(D.querySelector('#cancel-epalert'), 'click', function(){
     GN.style.display = "", D.body.style.overflow = "";
@@ -165,18 +164,17 @@ var GA = D.querySelectorAll('.show_cmodal'),
     var self = this; 
     self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
 	Req('{$url->{req/rol-student/register-ecnroll}}', function(e){
-		console.log(e);
+		console.log(e)
         if(e.status == 200){
 	        loadAlert("{$word->you_have_successfully_enrolled}"), preloadPage("{#url_params}");
 	    } else {
 	        loadAlert(e.error, 1), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
         }
-	}, "POST", "&course_id=" + self.getAttribute('data-id') + "&user_id={#user_id}&program_id=" + self.getAttribute('data-program') + "<?php echo($TEMP['#academic'] == false) ? '&code="+D.querySelector("#course-code").value' : '"'?>);
+	}, "POST", "&course_id=" + self.getAttribute('data-id') + "&user_id={#user_id}&plan_id=" + self.getAttribute('data-plan') + "<?php echo($TEMP['#academic'] == false) ? '&code="+D.querySelector("#course-code").value' : '"'?>);
 }), addEvent(GL, "click", function(){
     var self = this; 
     self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
 	Req('{$url->{req/rol-student/register-epnroll}}', function(e){
-		console.log(e);
         if(e.status == 200){
 	        loadAlert("{$word->you_have_successfully_enrolled}"), preloadPage("{#url_params}");
 	    } else {

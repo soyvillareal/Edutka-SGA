@@ -18,7 +18,7 @@ if(!empty($plans)){
         $TEMP['!duration'] = $plan['duration'];
         $TEMP['!credits'] = $plan['credits'];
         $TEMP['!credits'] = $plan['credits'];
-        $TEMP['!courses'] = $dba->query('SELECT COUNT(*) FROM assigned WHERE plan_id = '.$plan['id'])->fetchArray();
+        $TEMP['!courses'] = $dba->query('SELECT COUNT(*) FROM courses WHERE plan_id = '.$plan['id'])->fetchArray();
         $TEMP['!note_mode'] = $plan['note_mode'];
         $TEMP['!status'] = $TEMP['#word'][$plan['status']];
         $TEMP['!time'] = Specific::DateFormat($plan['time']);

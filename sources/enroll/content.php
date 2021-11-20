@@ -54,7 +54,7 @@ if(!empty($TEMP['#enrolled'])){
 	foreach ($TEMP['#enrolled'] as $enroll) {
 		if($enroll['type'] == 'course'){
 			$course = $dba->query('SELECT name FROM courses WHERE id = '.$enroll['course_id'])->fetchArray();
-			$periodc = $dba->query('SELECT name FROM periods p WHERE (SELECT period_id FROM courses WHERE id = '.$enroll['course_id'].' AND period_id = p.id)')->fetchArray();
+			$periodc = $dba->query('SELECT name FROM periods p WHERE (SELECT period_id FROM enrolled WHERE type = "course" AND user_id = '.$TEMP['#user_id'].' AND course_id = '.$enroll['course_id'].' AND period_id = p.id) = id')->fetchArray();
 
 			$teachers = $dba->query('SELECT names FROM users u WHERE (SELECT user_id FROM teacher WHERE user_id = u.id AND course_id = '.$enroll['course_id'].') = id')->fetchAll(false);
 			if(count($teachers) == 2){
@@ -68,7 +68,7 @@ if(!empty($TEMP['#enrolled'])){
 			}
 
 			$TEMP['!teacher'] = $teachers;
-			$TEMP['!name'] = "{$course} ($periodc)";
+			$TEMP['!name'] = "{$course} ".(!is_array($periodc) ? "($periodc)" : "");
 			$TEMP['!color'] = 'purple';
 		} else {
 			$program = $dba->query('SELECT * FROM programs WHERE id = '.$enroll['program_id'])->fetchArray();

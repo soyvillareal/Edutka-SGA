@@ -1,15 +1,15 @@
 <div class="display-flex">
     <div class="container-items margin-auto">
-        <h2 class="font-supraly text-center no-margin padding-t25 padding-b15">{$word->academic_periods}</h2>
+        <h2 class="font-supraly text-center no-margin padding-t25 padding-b15">{$word->authorizations}</h2>
         <div class="background-white border-radius-12 padding-25 margin-b50">
             <div class="border-top-left-radius border-top-right-radius">
                 <label class="color-black">{$word->search}</label>
                 <div class="content-search-notes position-relative margin-b20">
                     <div class="display-flex margin-auto border-radius-4">
-                        <input id="search-periods" class="background-grely padding-10 border-focus-blue border-all border-grey border-top-left-radius border-top-right-radius border-bottom-right-radius border-bottom-left-radius w-100 color-black" type="text" autocomplete="off">
+                        <input id="search-programs" class="background-grely padding-10 border-focus-blue border-all border-grey border-top-left-radius border-top-right-radius border-bottom-right-radius border-bottom-left-radius w-100 color-black" type="text" autocomplete="off">
                     </div>
                 </div>
-                <div class="content-periods">
+                <div class="content-programs">
                     <div class="container-data-table">
                         <div class="cont-table-header">
                             <div class="scroll-table-header">
@@ -19,27 +19,33 @@
                                             ID
                                         </div>
                                         <div class="cont-cell-header padding-lr20 color-black">
-                                            {$word->name}
+                                            {$word->authorize_}
                                         </div>
                                         <div class="cont-cell-header padding-lr20 color-black">
-                                            {$word->start}
+                                            {$word->teacher}
                                         </div>
                                         <div class="cont-cell-header padding-lr20 color-black">
-                                            {$word->final}
+                                            {$word->course}
+                                        </div>
+                                        <div class="cont-cell-header padding-lr20 color-black">
+                                            {$word->court}
+                                        </div>
+                                        <div class="cont-cell-header padding-lr20 color-black">
+                                            {$word->expiration}
                                         </div>
                                         <div class="cont-cell-header padding-lr20 color-black">
                                             {$word->status}
                                         </div>
                                         <div class="cont-cell-header padding-lr20 color-black">
-                                            {$word->created}
+                                            {$word->date}
                                         </div>
-                                        <div class="cont-cell-header padding-lr20 color-black text-center">
+                                        <div class="cont-cell-header padding-lr20 color-black">
                                             {$word->action}
                                         </div>
                                     </div>
                                 </div>
                                 <div id="container-pages" class="display-inline-block">
-                                    {$periods}
+                                    {$authorizations}
                                 </div>
                             </div>
                         </div>
@@ -77,70 +83,66 @@
                     </div>
                     <div class="display-flex flex-end margin-t50">
                         <span class="color-black dv-vertical-center margin-r10">
-                            {$word->if_you_want_add_period}
+                            {$word->if_you_want_request_authorization}
                         </span>
-                        <button class="btn-noway background-blue border-radius-4 padding-10 cursor-disabled color-white hover-opacity" id="show-pmodal">{$word->add}</button>
+                        <button class="btn-noway background-blue border-radius-4 padding-10 cursor-disabled color-white hover-opacity" id="show-rmodal">{$word->request}</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-<div class="content-modal" id="alert-periods">
+<div class="content-modal" id="alert-authorizations">
     <div class="cont-dialog">
         <div class="cont-popup background-white">
             <div class="top-header">
                 <div class="padding-t15 padding-b15 w-100 font-lowly color-black">
-                    {$word->add_new_academic_term}
+                    {$word->request_an_authorization}
                 </div>
             </div>
             <div class="content-modal-body color-grey">
+                <div id="courses-select" class="group-validate display-block margin-t15 position-relative w-100 padding-25">
+                    <div class="display-flex flex-wrap">
+                        <div class="cont-label dv-vertical-center">
+                            <label class="color-black">{$word->courses}</label>
+                        </div>
+                        <div class="flex-grow">
+                            <select id="course_id" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue area_changed caret-down area_validate background-grely color-black">
+                                <option value selected>{$word->select_course}</option>
+                                <?php foreach($TEMP['#courses'] as $course){ ?>
+                                <option value="<?php echo $course['id']; ?>"><?php echo $course['name']; ?></option>
+                                <?php } ?>
+                            </select>
+                            <div class="content-spinner-circle">
+                                <div class="spinner-circle"></div>
+                            </div>
+                            <div class="color-red text-left text-error font-low margin-t5"></div>
+                        </div>
+                    </div>
+                </div>
+                <div id="cut-select" class="group-validate display-block margin-t15 position-relative w-100 padding-25 hidden">
+                    <div class="display-flex flex-wrap">
+                        <div class="cont-label dv-vertical-center">
+                            <label class="color-black">{$word->cuts}</label>
+                        </div>
+                        <div class="flex-grow">
+                            <select id="court" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue area_changed caret-down area_validate background-grely color-black">
+                                <option value selected>{$word->select_a_cut}</option>
+                                <option value="first" selected>{$word->first_cut}</option>
+                                <option value="second" selected>{$word->second_cut}</option>
+                                <option value="third" selected>{$word->third_cut}</option>
+                            </select>
+                            <div class="color-red text-left text-error font-low margin-t5"></div>
+                        </div>
+                    </div>
+                </div>
                 <div class="group-validate display-block position-relative w-100 padding-25">
                     <div class="display-flex flex-wrap">
                         <div class="cont-label dv-vertical-center">
-                            <label class="color-black">{$word->period}</label>
+                            <label class="color-black">{$word->description}</label>
                         </div>
                         <div class="flex-grow">
-                            <div class="dv-vertical-center">
-                                <input id="year" type="text" class="cont-input mw-w-100 h-50 border-radius-12 background-grely color-black text-center margin-r10" readonly="true"/>
-                                <input id="period" type="number" class="cont-input w-50 h-50 border-radius-12 animated-easy border-focus-blue number area_validate background-grely color-black"/>
-                            </div>
-                            <div class="color-red text-left text-error font-low margin-t5"></div>  
-                        </div>
-                    </div>
-                </div>
-                <div class="group-validate display-block margin-t15 position-relative w-100 padding-25">
-                    <div class="display-flex flex-wrap">
-                        <div class="cont-label dv-vertical-center">
-                            <label class="color-black">{$word->start}</label>
-                        </div>
-                        <div class="flex-grow">
-                            <input id="start" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue area_changed area_validate background-grely color-black" type="date">
-                            <div class="color-red text-left text-error font-low margin-t5"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="group-validate display-block margin-t15 position-relative w-100 padding-25">
-                    <div class="display-flex flex-wrap">
-                        <div class="cont-label dv-vertical-center">
-                            <label class="color-black">{$word->final}</label>
-                        </div>
-                        <div class="flex-grow">
-                            <input id="final" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue area_changed area_validate background-grely color-black" type="date">
-                            <div class="color-red text-left text-error font-low margin-t5"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="group-validate display-block margin-t15 position-relative w-100 padding-25">
-                    <div class="display-flex flex-wrap">
-                        <div class="cont-label dv-vertical-center">
-                            <label class="color-black">{$word->status}</label>
-                        </div>
-                        <div class="flex-grow">
-                            <select id="status" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue caret-down area_changed area_validate background-grely color-black">
-                                <option value="enabled">{$word->enabled}</option>
-                                <option value="disabled">{$word->disabled}</option>
-                            </select>
+                            <textarea id="description" class="cont-input border-radius-12 animated-easy area_validate border-focus-blue background-grely color-black" cols="20" rows="5"></textarea>
                             <div class="color-red text-left text-error font-low margin-t5"></div>
                         </div>
                     </div>
@@ -149,8 +151,8 @@
             <div class="display-flex">
                 <div class="margin-left-auto margin-r25 margin-b15">
                     <button class="btn-noway background-grely border-radius-4 padding-10 color-black hover-button font-uppercase" id="cancel-alert">{$word->cancel}</button>
-                    <button class="btn-noway background-blue border-radius-4 padding-10 color-black hover-opacity font-uppercase" data-type="add" id="this-period">
-                        <span class="color-white">{$word->save}</span>
+                    <button class="btn-noway background-blue border-radius-4 padding-10 color-black hover-opacity font-uppercase" data-type="add" id="this-auth">
+                        <span class="color-white">{$word->request}</span>
                         <div class="content-spinner-circle">
                             <div class="spinner-circle"></div>
                         </div>
@@ -160,93 +162,80 @@
         </div>
     </div>
 </div>
-<div class="cont-alert" id="alert-delete">
-   <h2 class="color-red">{$word->delete} {$word->period}</h2>
-   <p>{$word->this_action_cannot_undone_continue}</p>
-   <div class="padding-t25">
-      <button class="btn-noway background-grely border-radius-4 padding-10 color-black hover-button font-uppercase" id="cancel-dalert">{$word->cancel}</button>
-      <button class="btn-noway background-blue border-radius-4 padding-10 color-black hover-opacity font-uppercase" id="delete-period">
-        <span class="color-white">{$word->delete}</span>
-        <div class="content-spinner-circle">
-            <div class="spinner-circle"></div>
-        </div>
-    </button>
-   </div>
-</div>
 <div class="background-pointer"></div>
 <script>
-var GE = D.querySelectorAll('.show_emodal'),
-    GW = D.querySelectorAll('.show_dmodal'),
-    GC = D.querySelectorAll('.area_validate'),
+var GP = D.querySelectorAll('.area_validate'),
+    GJ = D.querySelectorAll('.area_changed'),
+    GW = D.querySelectorAll('.show_emodal'),
     GL = D.querySelectorAll('.load-table-page'),
-    GR = D.querySelectorAll('.area_changed'),
+    GI = D.querySelector('#alert-authorizations'),
     GV = D.querySelector('.content-modal-body'),
-    GA = D.querySelector('#search-periods'),
-    GB = D.querySelector('#this-period'),
-    GQ = D.querySelector('#delete-period'),
-    GI = D.querySelector('#alert-periods'),
-    GT = D.querySelector('#alert-delete'),
-    GO = D.querySelector('#year'),
-    GM = D.querySelector('#period'),
-    GU = D.querySelector('#start'),
-    GF = D.querySelector('#final'),
-    GG = D.querySelector('#status'),
+    GA = D.querySelector('#search-programs'),
+    GB = D.querySelector('#this-auth'),
+    GU = GB.querySelector('span'),
+    GX = D.querySelector('#description'),
+    GC = D.querySelector('#course_id'),
+    GO = D.querySelector('#court'),
+    GK = D.querySelector('#cut-select'),
+    GS = D.querySelector('#courses-select'),
     TE = D.querySelector('#navigation-after'),
     TO = D.querySelector('#navigation-before'),
     TR = D.querySelector('#navigation-first'),
     TS = D.querySelector('#navigation-last'),
     TN = D.querySelector('#page-now'),
+    GD = function(){
+        var self = this,
+            auth_id = self.getAttribute('data-id');
+        self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
+        Req('{$url->{req/rol-teacher/get-aitems}}', function(e){
+            if(e.status == 200){
+                for (var key in e.items) {
+                    if(key != 'status') {
+                        D.querySelector('#'+key).value = e.items[key];
+                    }
+                }
+                if(e.items['status'] != 'pending') {
+                    addClass(GO, 'cursor-disabled'), GO.setAttribute('disabled', true), GX.setAttribute('readonly', true), addClass(GB, 'cursor-disabled'), GB.setAttribute('disabled', true);
+                } else {
+                    removeClass(GO, 'cursor-disabled'), GO.removeAttribute('disabled'), GX.removeAttribute('readonly'), removeClass(GB, 'cursor-disabled'), GB.removeAttribute('disabled');
+                }
+                GI.style.display = "block", D.body.style.overflow = "hidden", removeClass(GK, 'hidden'), addClass(GS, 'hidden'), GB.setAttribute('data-id', auth_id), GB.setAttribute('data-type', 'edit'), GU.innerText = "{$word->save}", self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
+            } else {
+                self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
+            }
+        }, "POST", "&id=" + auth_id)
+    },
     bDisabled = function(){
-        if(GM.value != '' && GU.value != '' && GF.value != '' && GG.value != ''){
+        if(GX.value != '' && GO.value != '' && GC.value != ''){
             GB.removeAttribute('disabled');
         } else {
             GB.setAttribute('disabled', true);
         }
     },
-    GS = function(){
-        var self = this,
-            period_id = self.getAttribute('data-id');
-        self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
-        Req('{$url->{req/rol-academic/get-peitems}}', function(e){
-            console.log(e);
-            if(e.status == 200){
-                for (var key in e.items) {
-                    if(key == 'start'){
-                        D.querySelector('#'+key).max = e.items['final'];
-                    }
-                    D.querySelector('#'+key).value = e.items[key];
-                }
-                GI.style.display = "block", D.body.style.overflow = "hidden", GB.setAttribute('data-id', period_id), GB.setAttribute('data-type', 'edit'), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
-            } else {
-                self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
-            }
-        }, "POST", "&id=" + period_id)
-    },
-    GD = function(){
-        GT.style.display = "block", D.body.style.overflow = "hidden", GQ.setAttribute('data-id', this.getAttribute('data-id'));
-    },
     TA = 1,
     TT = {#total_pages};
 
-addEvent(GF, 'change', function(){
-    GU.max = this.value;
-}), addEvent(GU, 'change', function(){
-    GO.value = this.value.split('-')[0];
-}), addEvent(GU, 'keyup', function(){
-    GO.value = this.value.split('-')[0];
-}), addEvent(D.querySelector('#show-pmodal'), 'click', function(){
-    GI.style.display = "block", D.body.style.overflow = "hidden", GB.setAttribute('data-type', 'add'), GB.removeAttribute('data-id'), scrollTo(0, GV);
-    for(var j = 0, i = GC.length; j < i; j++) GC[j].value = (GC[j].nodeName != 'SELECT') ? '' : GC[j].children[0].getAttribute('value');
-}), addEvent(D.querySelector('#cancel-alert'), 'click', function(){
-    GI.style.display = "", D.body.style.overflow = "";
-}), addEvent(D.querySelector('#cancel-dalert'), 'click', function(){
-    GT.style.display = "", D.body.style.overflow = "";
+addEvent(GC, 'change', function(){
+    var self = this;
+    self.setAttribute('disabled', true), addClass(GK, 'spinner-is-loading');
+    Req('{$url->{req/rol-teacher/cut-select}}', function(e){
+        if(e.status == 200){
+            if(e.note_mode == '30-30-40'){
+                removeClass(GK, 'hidden');
+            } else {
+                addClass(GK, 'hidden');
+            }
+            self.removeAttribute('disabled'), removeClass(GK, 'spinner-is-loading');
+        } else {
+            addClass(GK, 'hidden'), self.removeAttribute('disabled'), removeClass(GK, 'spinner-is-loading');
+        }
+    }, "POST", "&id=" + self.value)
 }), addEvent(GB, 'click', function(){
     var self = this,
         type = self.getAttribute('data-type');
-    if(GM.value == '' || GU.value == '' || GF.value == '' || GG.value == ''){
-        for (var j = 0, i = GC.length; j < i; j++){
-            var el = GC[j],
+    if(GX.value == '' || GC.value == '' || GO.value == ''){
+        for (var j = 0, i = GP.length; j < i; j++){
+            var el = GP[j],
                 GZ = el.parentNode,
                 GH = hasClass(GZ, 'group-validate') ? GZ : GZ.parentNode;
             if(el.value == '' && !el.getAttribute('disabled')){
@@ -255,34 +244,27 @@ addEvent(GF, 'change', function(){
                         removeClass(GI, 'efect-boom')
                     }, 200)
                 }, 700);
+                if(GP[GP.length-1] == el) return false;
+            } else {
+                GH.querySelector('.text-error').innerText = "", removeClass(el, 'border-red'), removeClass(el, 'boxshadow-red');
             }
         }
-        return false;
+        
     } else {
-        for (var j = 0, i = GC.length; j < i; j++) {
-            var el = GC[j],
+        for (var j = 0, i = GP.length; j < i; j++) {
+            var el = GP[j],
                 GZ = el.parentNode,
                 GH = hasClass(GZ, 'group-validate') ? GZ : GZ.parentNode;
             if(el.value != ''){
                 GH.querySelector('.text-error').innerText = "", removeClass(el, 'border-red'), removeClass(el, 'boxshadow-red');
             }
         }
-        var dateStart = GU.value.split('-'),
-            dateFinal = GF.value.split('-');
-        if(dateStart[0] > dateFinal[0] && dateStart[1] > dateFinal[1] && dateStart[2] > dateFinal[2]){
-            GU.parentNode.querySelector('.text-error').innerText = '*{$word->must_be_less_completion}', addClass(GU, 'border-red'), addClass(GU, 'boxshadow-red'), timeDelay(function(){
-                addClass(GI, 'efect-boom'), timeDelay(function(){
-                    removeClass(GI, 'efect-boom')
-                }, 200)
-            }, 700);
-            return false;
-        }
     }
     GB.setAttribute('disabled', true), addClass(GB, 'spinner-is-loading');
-    Req('{$url->{req/rol-academic/this-periods}}', function(e){
+    Req('{$url->{req/rol-teacher/this-authorizations}}', function(e){
         console.log(e);
         if(e.status == 200){
-            GI.style.display = "", loadAlert((type == 'add' ? "{$word->period_added_successfully}" : "{$word->period_updated_successfully}")), preloadPage('&one=periods');
+            GI.style.display = "", loadAlert("{$word->you_have_authorized_teacher_successfully}"), preloadPage('&one=authorizations');
         } else {
             if (e.errors != undefined) {
                 for (var j = 0, i = e.errors.length; j < i; j++){
@@ -311,36 +293,29 @@ addEvent(GF, 'change', function(){
             }
             GB.removeAttribute('disabled'), removeClass(GB, 'spinner-is-loading');
         }
-    }, "POST", "&type=" + type + "&id=" + self.getAttribute('data-id') + "&period=" + GM.value + "&start=" + GU.value + "&final=" + GF.value + "&status=" + GG.value)
-}), addEvent(GQ, "click", function(){
-    var self = this; 
-    self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
-    Req('{$url->{req/rol-academic/delete-period}}', function(e){
-        if(e.status == 200){
-            GT.style.display = "", loadAlert("{$word->period_removed_successfully}", 1), preloadPage('&one=periods');
-        } else {
-            self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading'), loadAlert(e.error, 1);
-        }
-    }, "POST", "&id=" + self.getAttribute('data-id'));
+    }, "POST", "&type=" + type + "&id=" + self.getAttribute('data-id') + "&description=" + GX.value + "&court=" + GO.value + "&course_id=" + GC.value)
+}), addEvent(D.querySelector('#show-rmodal'), 'click', function(){
+    GI.style.display = "block", D.body.style.overflow = "hidden", GB.setAttribute('data-type', 'add'), GU.innerText = "{$word->request}", GB.removeAttribute('data-id'), GX.removeAttribute('readonly'), removeClass(GO, 'cursor-disabled'), GO.removeAttribute('disabled'), addClass(GK, 'hidden'), removeClass(GS, 'hidden'), scrollTo(0, GV);
+    for(var j = 0, i = GP.length; j < i; j++) GP[j].value = (GP[j].nodeName != 'SELECT') ? '' : GP[j].children[0] && GP[j].children[0].getAttribute('value');
+}), addEvent(D.querySelector('#cancel-alert'), 'click', function(){
+    GI.style.display = "", D.body.style.overflow = "";
 }), addEvent(GA, 'keyup', function(){
     var self = this,
         TZ = D.querySelector('#table-footer');
-    Req('{$url->{req/rol-academic/search-periods}}', function(e){
+    Req('{$url->{req/rol-teacher/search-authorizations}}', function(e){
+        console.log(e);
         if(e.status == 200){
-            <?php echo($TEMP['#total_pages'] > 1) ? "TT = e.total_pages, TA = 1, TO.setAttribute('disabled', true), TR.setAttribute('disabled', true), TE.removeAttribute('disabled'), TS.removeAttribute('disabled'), D.querySelector('#total-pages').innerText = TT, TN.innerText = TA, TZ && (TT <= 1 ? TZ.style.display = 'none' : TZ.removeAttribute('style')), " : ""?>D.querySelector('#container-pages').innerHTML = e.html, loadPage(D.querySelectorAll('a[target="_self"]')), GE = D.querySelectorAll('.show_emodal'), GW = D.querySelectorAll('.show_dmodal');
-            for(var j = 0, i = GE.length; j < i; j++) addEvent(GE[j], "click", GS);
+            <?php echo($TEMP['#total_pages'] > 1) ? "TT = e.total_pages, TA = 1, TO.setAttribute('disabled', true), TR.setAttribute('disabled', true), TE.removeAttribute('disabled'), TS.removeAttribute('disabled'), D.querySelector('#total-pages').innerText = TT, TN.innerText = TA, TZ && (TT <= 1 ? TZ.style.display = 'none' : TZ.removeAttribute('style')), " : ""?>D.querySelector('#container-pages').innerHTML = e.html, loadPage(D.querySelectorAll('a[target="_self"]')), GW = D.querySelectorAll('.show_emodal');
             for(var j = 0, i = GW.length; j < i; j++) addEvent(GW[j], "click", GD);
         } else {
             D.querySelector('#container-pages').innerHTML = e.html<?php echo($TEMP['#total_pages'] > 1) ? ', TZ.style.display = "none"' : '';?>; 
         }
     }, "POST", "&keyword=" + self.value)
-}), addEvent(D.querySelector('.number'), 'input', function(){
-    this.value = this.value.replace(/[^0-9]/gi, '');
 });
-for(var j = 0, i = GE.length; j < i; j++) addEvent(GE[j], "click", GS);
+
 for(var j = 0, i = GW.length; j < i; j++) addEvent(GW[j], "click", GD);
-for (var j = 0, i = GR.length; j < i; j++) addEvent(GR[j], 'change', bDisabled);
-for (var j = 0, i = GC.length; j < i; j++) addEvent(GC[j], 'keyup', bDisabled);
+for(var j = 0, i = GJ.length; j < i; j++) addEvent(GJ[j], "change", bDisabled);
+for(var j = 0, i = GP.length; j < i; j++) addEvent(GP[j], "keyup", bDisabled);
 for (var j = 0, i = GL.length; j < i; j++) addEvent(GL[j], "click", function(){
     var self = this,
         type = self.getAttribute('data-type');
@@ -378,10 +353,9 @@ for (var j = 0, i = GL.length; j < i; j++) addEvent(GL[j], "click", function(){
         TS.setAttribute('disabled', true);
         TE.setAttribute('disabled', true);
     }
-    Req("{$url->{req/rol-academic/table-periods}}", function(e){
+    Req("{$url->{req/rol-academic/table-authorizations}}", function(e){
         if(e.status == 200){
-            D.querySelector('#container-pages').innerHTML = e.html, GE = D.querySelectorAll('.show_emodal'), GW = D.querySelectorAll('.show_dmodal');
-            for(var j = 0, i = GE.length; j < i; j++) addEvent(GE[j], "click", GS);
+            D.querySelector('#container-pages').innerHTML = e.html, GW = D.querySelectorAll('.show_emodal');
             for(var j = 0, i = GW.length; j < i; j++) addEvent(GW[j], "click", GD);
         } else {
             TE.setAttribute('disabled', true), TO.setAttribute('disabled', true), TR.setAttribute('disabled', true), TS.setAttribute('disabled', true), TA = 1, loadAlert('{$word->error}', 1);

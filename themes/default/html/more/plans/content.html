@@ -280,8 +280,8 @@ var GE = D.querySelectorAll('.show_emodal'),
     TO = D.querySelector('#navigation-before'),
     TR = D.querySelector('#navigation-first'),
     TS = D.querySelector('#navigation-last'),
-    TN = D.querySelector('#page-now',
-    ZO = D.querySelector('#tips-courses')),
+    TN = D.querySelector('#page-now'),
+    ZO = D.querySelector('#tips-courses'),
     ga = ZO.querySelector('#tips-val-cou'),
     GX = GK.value ? GK.value.split(',') : Array()
     gl = ZO.querySelector('.search-down'),
@@ -374,7 +374,7 @@ addEvent(ga, "keydown", function(e){
             gl.innerHTML = "";
             return false;
         }
-    }, "POST", "&keyword=" + SV);
+    }, "POST", "&type=" + GB.getAttribute('data-type') + "&keyword=" + SV + "&courses=" + GK.value + "&plan_id=" + GB.getAttribute('data-id'));
 }), addEvent(D.querySelector('#show-pmodal'), 'click', function(){
     var gz = ZO.querySelectorAll('.tipsit-choice');
     GK.value = "", GX = [], GI.style.display = "block", D.body.style.overflow = "hidden", GB.setAttribute('data-type', 'add'), GB.removeAttribute('data-id'), scrollTo(0, GV);
@@ -389,17 +389,19 @@ addEvent(ga, "keydown", function(e){
         type = self.getAttribute('data-type');
     if(GM.value == '' || GU.value == '' || GF.value == '' || GG.value == '' || GP.value == '' || GK.value == '' || GJ.value == '' || GO.value == '' || GN.value == ''){
         for (var j = 0, i = GC.length; j < i; j++){
-            console.log(GC[j].id);
             var el = GC[j].id == 'tips-val-cou' ? GK : GC[j],
                 elb = GC[j].id == 'tips-val-cou' ? ZO : el,
                 GZ = el.parentNode,
                 GH = hasClass(GZ, 'group-validate') ? GZ : GZ.parentNode;
-            if(el.value == '' && !el.getAttribute('disabled')){
+            if(el.value == ''){
                 GH.querySelector('.text-error').innerText = '*{$word->this_field_is_empty}', addClass(elb, 'border-red'), addClass(elb, 'boxshadow-red'), timeDelay(function(){
                     addClass(GI, 'efect-boom'), timeDelay(function(){
                         removeClass(GI, 'efect-boom')
                     }, 200)
                 }, 700);
+                if(GC[GC.length-1] == el) return false;
+            } else {
+                GH.querySelector('.text-error').innerText = "", removeClass(elb, 'border-red'), removeClass(elb, 'boxshadow-red');
             }
         }
         return false;
@@ -445,7 +447,7 @@ addEvent(ga, "keydown", function(e){
                         }, 700);
                 }
             } else {
-                loadAlert("{$word->error}", 1)
+                loadAlert(e.error, 1)
             }
             GB.removeAttribute('disabled'), removeClass(GB, 'spinner-is-loading');
         }

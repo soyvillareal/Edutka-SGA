@@ -182,7 +182,7 @@
    <p>{$word->you_will_redirected_verify_email_continue}</p>
    <div class="padding-t25">
       <button class="btn-noway background-grely border-radius-4 padding-10 color-black hover-button font-uppercase" id="cancel-malert">{$word->cancel}</button>
-      <a href="#" class="btn-noway background-blue border-radius-4 padding-10 color-black hover-opacity font-uppercase" id="droped-here">{$word->follow}</a>
+      <button class="btn-noway background-blue border-radius-4 padding-10 color-black hover-opacity font-uppercase" id="droped-here">{$word->follow}</button>
    </div>
 </div>
 <div class="background-pointer"></div>
@@ -190,8 +190,13 @@
    <h2 class="color-red">{$word->change_photo}</h2>
    <p>{$word->your_old_photo_will_deleted}</p>
    <div class="padding-t25">
-      <button class="btn-noway background-grely border-radius-4 padding-10 color-black hover-button font-uppercase" id="cancel-aalert">{$word->cancel}</button>
-      <a href="#" class="btn-noway background-blue border-radius-4 padding-10 color-black hover-opacity font-uppercase" id="change-avatar">{$word->follow}</a>
+        <button class="btn-noway background-grely border-radius-4 padding-10 color-black hover-button font-uppercase" id="cancel-aalert">{$word->cancel}</button>
+        <button class="btn-noway background-blue border-radius-4 padding-10 color-black hover-opacity font-uppercase" id="change-avatar">
+            <span class="color-white">{$word->follow}</span>
+            <div class="content-spinner-circle">
+                <div class="spinner-circle"></div>
+            </div>
+        </button>
    </div>
 </div>
 <div class="background-pointer"></div>
@@ -277,14 +282,15 @@ var GL = D.querySelectorAll('.area_validate'),
 }), addEvent(D.querySelector('#cancel-aalert'), 'click', function(){
     Gb.src = "{$me->avatar}", GC.value = "", Gz.style.display = "";
 }), addEvent(D.querySelector('#change-avatar'), 'click', function(){
+    var self = this;
+    self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
     Req("{$url->{req/settings/change-avatar}}?token={#token_session}", function(e){
-        console.log(e);
         if (e.status == 200) {
             location.reload(), Gz.style.display = "none", loadAlert(e.message);
-        } else if(e.status == 401){
-            loadAlert(e.error, 1);
-        } else {
-            loadAlert('{$word->error}', 1);
+        } else if(e.status == 401){   
+            self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading'), loadAlert(e.error, 1);
+        } else {  
+            self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading'), loadAlert('{$word->error}', 1);
         }
     }, "POST", GC, "avatar", function(){}, function(){}, function() {
         loadAlert('{$word->there_error_uploading_file}', 1);
@@ -332,7 +338,6 @@ var GL = D.querySelectorAll('.area_validate'),
     addClass(GB, 'spinner-is-loading');
     GB.setAttribute('disabled', true);
     Req("{$url->{req/settings/general}}", function(e){
-        console.log(e);
         if (e.status == 200) {
             GX = !1;
             if (e.redirect_verify == true) {
@@ -421,7 +426,6 @@ for (var j = 0, i = GK.length; j < i; j++) addEvent(GK[j], 'keyup', function(e){
         }
         if(Array.prototype.slice.call(GO).indexOf(self)){
             Req("{$url->{req/key-validate}}", function(e){
-                console.log(e);
                 if(e.status == 200){
                     var msg = e.message;
                     if(msg == ''){

@@ -29,6 +29,14 @@
                 </div>
             </a>
             <?php } ?>
+            <?php if($TEMP['#teacher'] == true) { ?>
+            <a class="item-slot-two position-relative margin-r20 margin-b20" href="{$url->{authorizations}}" target="_self">
+                <img class="border-radius-12" src="{$theme->{images/navigation/authorizations.png}}" />
+                <div class="item-slot-title dv-vertical-center position-absolute pos-bottom w-100 background-white margin-b10">
+                    <h3 class="font-medium font-bold color-blud text-center text-uppercase margin-auto">{$word->authorizations}</h3>
+                </div>
+            </a>
+            <?php } ?>
             <?php if($TEMP['#academic'] == true) { ?>
             <a class="item-slot-two position-relative margin-r20 margin-b20" href="{$url->{programs}}" target="_self">
                 <img class="border-radius-12" src="{$theme->{images/navigation/programs.png}}" />

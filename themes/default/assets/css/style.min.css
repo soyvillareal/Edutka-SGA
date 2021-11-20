@@ -57,7 +57,7 @@ textarea {
     min-height: 50px;
     resize: vertical
 }
-input[readonly="true"] {
+textarea[readonly="true"], input[readonly="true"] {
     color: #aaa !important;
 }
 textarea::-webkit-input-placeholder,
@@ -398,6 +398,10 @@ ul {
     border-color: #ffd608;
 }
 
+.cont-contentheader .contsub-menu>li.logout_>a:hover {
+    border-color: #cb0e0b;
+}
+
 .contsub-menu>li {
     display: inline-block;
     position: relative;
@@ -461,9 +465,13 @@ h5 {
     margin-right: 5%
 }
 
-.cont-list .contsub-list li:hover a {
+.cont-list .contsub-list li a:hover {
     color: #2e3191;
     margin-left: 8px
+}
+
+.cont-list .contsub-list li.logout_:last-child a:hover {
+    color: #cb0e0b;
 }
 
 .cont-list .contsub-list li.active a {

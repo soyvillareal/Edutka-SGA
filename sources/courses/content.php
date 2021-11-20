@@ -9,7 +9,6 @@ if(isset($_GET['user']) && Specific::Academic() == true){
 	$TEMP['#user_id'] = Specific::Filter($_GET['user']);
 }
 
-$TEMP['#periods'] = $dba->query('SELECT * FROM periods')->fetchAll();
 $TEMP['#programs'] = $dba->query('SELECT * FROM programs')->fetchAll();
 $query = '';
 if(Specific::Teacher() == true){
@@ -39,8 +38,7 @@ if(!empty($courses)){
 		$TEMP['!name'] = $course['name'];
 		$TEMP['!preknowledge'] = !empty($course['preknowledge']) ? count($preknowledge) : 0;
 		$TEMP['!parameters'] = count($parameters);
-		$TEMP['!program'] = $dba->query('SELECT name FROM programs WHERE id = '.$course['program_id'])->fetchArray();
-		$TEMP['!period'] = $dba->query('SELECT name FROM periods WHERE id = '.$course['period_id'])->fetchArray();
+		$TEMP['!program'] = $course['plan_id'] == 0 ? $TEMP['#word']['pending'] : $dba->query('SELECT name FROM programs p WHERE (SELECT program_id FROM plan WHERE program_id ='.$course['plan_id'].' AND program_id = p.id) = id')->fetchArray();
 		$TEMP['!teacher'] = $teachers;
 		$TEMP['!semester'] = $course['semester'];
 		$TEMP['!credits'] = $course['credits'];
