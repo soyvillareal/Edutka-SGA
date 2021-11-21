@@ -88,7 +88,6 @@ if(!empty($TEMP['#notes'])){
 	    $TEMP['!period'] = $period['name'];
 	    $TEMP['!course'] = $course['name'];
 	    $TEMP['!parameters'] = $course['parameters'];
-
 	    if($TEMP['#note_mode'] == '30-30-40'){
 	    	for ($i=0; $i < 3; $i++) { 
 		    	$anotes = array();
@@ -102,28 +101,34 @@ if(!empty($TEMP['#notes'])){
 		    $TEMP['!second'] = $notes[1];
 		    $TEMP['!third'] = $notes[2];
 	    	$TEMP['!average'] = $average[] = round((($notes[0]*0.3)+($notes[1]*0.3)+($notes[2]*0.4)), 2);
+		    if($TEMP['!average'] > 0 && $notes[2] < $TEMP['#nmtc']){
+		    	$TEMP['!evalfinal'] = true;
+		    	$TEMP['!article'] = 43;
+		    	$TEMP['!average'] = $average[] = round($notes[2], 2);
+		    }
 	    } else {
 	    	$anotes = array();
 		    $parameters = json_decode($course['parameters'], true);
 		    foreach ($parameters as $key => $param) {
 		      	$anotes[] = (($notes[$key]/100)*$param['percent']);
 		    }
-
 		    $notes = array_sum($anotes);
 			$TEMP['!first'] = $notes;
 	    	$TEMP['!average'] = $average[] = round($notes, 2);
 	    }
 
-
 	    $TEMP['!teacher'] = $teachers;
-
-	    $TEMP['!approved'] = ($course['type'] == 'practice' && $TEMP['!average'] >= 3.5) || ($course['type'] == 'theoretical' && $TEMP['!average'] >= 3.0) ? true : false;
+	    $TEMP['!approved'] = ($course['type'] == 'practice' && $TEMP['!average'] >= $TEMP['#nmcnt']) || ($course['type'] == 'theoretical' && $TEMP['!average'] >= $TEMP['#nmct']) ? true : false;
+	    if($TEMP['!approved'] == false){
+	    	$avekey[] = $TEMP['!average'];
+	    } else if($notes[2] > $TEMP['#nmtc']){
+	    	$TEMP['!article'] = 60;
+	    }
 	    $TEMP['!status'] = $TEMP['!period_final'] == true ? $TEMP['#word']['finalized'] : $TEMP['#word']['in_progress'];
-
 	    $TEMP['notes'] .= Specific::Maket("notes/includes/notes");
 	}
 	Specific::DestroyMaket();
-
+	$TEMP['#semesbad'] = count($avekey) >= $TEMP['#cers'];
 	$TEMP['average'] = round(array_sum($average)/count($average), 2);
 } else {
 	$TEMP['notes'] .= Specific::Maket("not-found/notes");

@@ -294,7 +294,7 @@ if($one == 'search-courses') {
             if(!isset($note)){
                 $emptys[] = Array('id' => $key, 'class' => 'param_note_');
             }
-            if($note > 5 || $note < 0){
+            if($note > $TEMP['#nm'] || $note < 0){
                 $errors[] = Array('id' => $key, 'class' => 'param_note_');
             }
         }

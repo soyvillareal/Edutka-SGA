@@ -37,7 +37,19 @@
 			<div class="text-center background-white border-radius-12 padding-25 margin-b10">
 				<div class="max-w-900 border-top-left-radius border-top-right-radius">
 					<div class="font-medium color-black">{$word->global_average}</div>
-					<div class="font-supraly font-bold">{$average}</div>
+					<div class="font-supraly font-bold<?php echo($TEMP['#semesbad'] == true) ? ' color-red' : ''; echo($TEMP['average'] < $TEMP['#nmcs']) ? ' color-red' : ' color-green';?>">{$average}
+
+                    <?php if($TEMP['#semesbad'] == true){ ?>
+                    <a class="position-absolute" href="{$url->{rules}}?article=64" target="_blank">
+                        <svg class="dv-xs" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M13,17h-2v-6h2V17z M13,7h-2v2h2V7z M12,3c-4.96,0-9,4.04-9,9s4.04,9,9,9c4.96,0,9-4.04,9-9S16.96,3,12,3 M12,2 c5.52,0,10,4.48,10,10s-4.48,10-10,10C6.48,22,2,17.52,2,12S6.48,2,12,2L12,2z"></path>
+                        </svg>
+                    </a>
+                    <?php } ?>
+                    </div>
+                    <?php if($TEMP['#semesbad'] == true){ ?>
+                    <div class="font-medium font-bold color-red">{$word->you_missed_more_subjects}</div>
+                    <?php } ?>
 				</div>
 			</div>
 			<?php } ?>

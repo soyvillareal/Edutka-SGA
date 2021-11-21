@@ -66,9 +66,17 @@
                             </ol>
                         </li>
                         <li>
-                            <h3 class="font-lowly font-bold color-blue">{$word->article} #64: </h3>
+                            <h3 class="font-lowly font-bold color-blue">{$word->article} #48: </h3>
                             <ol>
-                                <li><b>{#CERS-><span class="color-red">{$word->number}</span>}</b>: {$word->number_spaces_that_semester_fails}</li>
+                                <li><b>{#NMHEAP-><span class="color-red">{$word->number}</span>}</b>: {$word->number_qualifications_academic_space_period}</li>
+                                <li><b>{#NMDPH-><span class="color-red">{$word->number}</span>}</b>: {$word->definitive_minimum_mark_present}</li>
+                            </ol>
+                        </li>
+                        <li>
+                            <h3 class="font-lowly font-bold color-blue">{$word->article} #50: </h3>
+                            <ol>
+                                <li><b>{#NMAT-><span class="color-red">{$word->number}</span>}</b>: {$word->theoretical_qualification_minimum_mark}</li>
+                                <li><b>{#NMANT-><span class="color-red">{$word->number}</span>}</b>: {$word->minimum_grade_theoretical_room}</li>
                             </ol>
                         </li>
                         <li>
@@ -76,24 +84,59 @@
                             <ol>
                                <li><b>{#TMVEA-><span class="color-red">{$word->number}</span>}</b>: {$word->maximum_limit_validations_academic_space}</li>
                                 <li><b>{#NVP-><span class="color-red">{$word->number}</span>}</b>: {$word->number_validations_loss}</li>
+
                                 <li><b>{#NVS-><span class="color-red">{$word->number}</span>}</b>: {$word->number_validations_sufficiency}</li>
-                                <li><b>{#NMVT-><span class="color-red">{$word->number}</span>}</b>: {$word->minimum_theoretical_validation_mark}</li>
-                                <li><b>{#NMVNT-><span class="color-red">{$word->number}</span>}</b>: {$word->minimum_non_theoretical_validation_mark}</li> 
+                                <li><b>{#NMV-><span class="color-red">{$word->number}</span>}</b>: {$word->minimum_validation_mark}</li>
                             </ol>
                         </li>
                         <li>
-                            <h3 class="font-lowly font-bold color-blue">{$word->article} #46: </h3>
+                            <h3 class="font-lowly font-bold color-blue">{$word->article} #54: </h3>
                             <ol>
-                                <li><b>{#NHP-><span class="color-red">{$word->number}</span>}</b>: {$word->number_qualifications_period}</li>
-                                <li><b>{#NHEA-><span class="color-red">{$word->number}</span>}</b>: {$word->number_qualifications_academic_space_period}</li>
-                                <li><b>{#NMAT-><span class="color-red">{$word->number}</span>}</b>: {$word->theoretical_qualification_minimum_mark}</li>
-                                <li><b>{#NMANT-><span class="color-red">{$word->number}</span>}</b>: {$word->minimum_grade_theoretical_room}</li>
-                                <li><b>{#NMDPH-><span class="color-red">{$word->number}</span>}</b>: {$word->definitive_minimum_mark_present}</li>
+                                <li><b>{#NVS-><span class="color-red">{$word->number}</span>}</b>: {$word->number_validations_sufficiency}</li>
+                                <li><b>{#NMV-><span class="color-red">{$word->number}</span>}</b>: {$word->minimum_validation_mark}</li>
+                            </ol>
+                        </li>
+                        <li>
+                            <h3 class="font-lowly font-bold color-blue">{$word->article} #56: </h3>
+                            <ol>
+                                <li><b>{#NMV-><span class="color-red">{$word->number}</span>}</b>: {$word->minimum_validation_mark}</li>
+                            </ol>
+                        </li>
+                        <li>
+                            <h3 class="font-lowly font-bold color-blue">{$word->article} #59: </h3>
+                            <ol>
+                                <li><b><span class="color-red">*</span>{#NM-><span class="color-red">{$word->number}</span>}</b>: {$word->maximum_grade_from_university}</li>
+                            </ol>
+                        </li>
+                        <li>
+                            <h3 class="font-lowly font-bold color-blue">{$word->article} #64: </h3>
+                            <ol>
+                                <li><b>{#CERS-><span class="color-red">{$word->number}</span>}</b>: {$word->number_spaces_that_semester_fails}</li>
                             </ol>
                         </li>
                     </ol>
-                    <b>{$word->example}:</b> {$word->article} 42º. {$word->have_right_present_final} (<span class="color-green">{#NNEVF->2.0}</span>).<br><br>
+                    <b>{$word->example}:</b> ===ARTÍCULO {>>42<<}º. Para tener derecho a presentar evaluación final el estudiante deberá tener una calificación promedio no inferior a dos (<span class="color-green">{#NNEVF->2.0}</span>).===<br><br>
                     <b>{$word->explanation}:</b> {$word->previous_example_you_indicating}
+                    <h3>{$word->articles_with_mandatory_parameters}:</h3>
+                    <ol>
+                        <li>{$word->article} #59</li>
+                    </ol>
+                    <h3>{$word->extra_commands}:</h3>
+                    <ol>
+                        <li>
+                            <p><b>{$word->command} (<span class="color-red">===</span>):</b> {$word->used_specify_item}.</p>
+                            <ol>
+                                <li>{$word->example}: <span class="color-red">===</span>ARTÍCULO {>>56<<}º. La nota aprobatoria de la evaluación de validación es de tres cinco ({#NMV->3.5}).<span class="color-red">===</span>
+                                </li>
+                            </ol>
+                        </li>
+                        <li>
+                            <p><b>{$word->command} (<span class="color-red">{>><<}</span>):</b> {$word->used_specify_number_item}</p>
+                            <ol>
+                                <li>{$word->example}: ===ARTÍCULO <span class="color-red">{>>56<<}</span>º. La nota aprobatoria de la evaluación de validación es de tres cinco ({#NMV->3.5}).===</li>
+                            </ol>
+                        </li>
+                    </ol>
                 </p>
             </div>
             <div class="display-flex">
@@ -145,6 +188,7 @@ var GC = D.querySelectorAll('.edit_rule'),
         } else {
             self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
             Req('{$url->{req/rol-admin/this-rules}}', function(e){
+                console.log(e);
                 if(e.status == 200){
                     button.innerText = "{$word->edit}", status.setAttribute('disabled', true), addClass(status, 'cursor-disabled'), link.setAttribute('readonly', true), removeClass(ruleh, 'hidden'), addClass(rulet, 'hidden'), addClass(close, 'hidden'), loadAlert("{$word->regulation_updated_successfully}"), preloadPage('&one=more&page=rules');
                 } else {
@@ -175,6 +219,7 @@ addEvent(GR, 'click', function(){
     } else {
         GR.setAttribute('disabled', true), addClass(GR, 'spinner-is-loading');
         Req('{$url->{req/rol-admin/this-rules}}', function(e){
+            console.log(e);
             if(e.status == 200){
                 GR.innerText = "{$word->add}", removeClass(GN, 'h-640px'), addClass(GN, 'h-0'), loadAlert("{$word->regulation_updated_successfully}"), preloadPage('&one=more&page=rules');
             } else {

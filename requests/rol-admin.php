@@ -1178,48 +1178,82 @@ if($one == 'search-teacher') {
 	$status = Specific::Filter($_POST['status']);
 	$type = Specific::Filter($_POST['type']);
 	if(!empty($rules) && !empty($status)){
-		if (empty($link) || !filter_var($link, FILTER_VALIDATE_URL) === false) {
-			if($type == 'add'){
-				$rule_id = $dba->query('INSERT INTO rule (user_id, rules, link, status, modified, `time`) VALUES ('.$TEMP['#user']['id'].', "'.$rules.'", "'.$link.'", "'.$status.'" , 0, '.time().')')->insertId();
-				if($rule_id){
-					$rule = $dba->query('SELECT id, COUNT(*) AS count FROM rule WHERE status = "enabled" AND id <> '.$rule_id)->fetchArray();
-					if($rule['count'] > 0 && $status == 'enabled'){
-						$dba->query('UPDATE rule SET status = "disabled" WHERE id = '.$rule['id']);
-					}
-					$deliver['status'] = 200;
-				} else {
-					$deliver = array(
-						'status' => 400,
-						'error' => $TEMP['#word']['error']
-					);
-				}
-			} else {
-				if(isset($id) && is_numeric($id)){
-					if($dba->query('UPDATE rule SET rules = ?, link = ?, status = ? WHERE id = '.$id, $rules, $link, $status)->returnStatus()){
-						$rule = $dba->query('SELECT id, COUNT(*) AS count FROM rule WHERE status = "enabled" AND id <> '.$id)->fetchArray();
-						if($rule['count'] > 0 && $status == 'enabled'){
-							$dba->query('UPDATE rule SET status = "disabled" WHERE id = '.$rule['id']);
-						}
-						$deliver['status'] = 200;
-					} else {
-						$deliver = array(
-							'status' => 400,
-							'error' => $TEMP['#word']['error']
-						);
-					}
-				} else {
-					$deliver = array(
-						'status' => 400,
-						'error' => $TEMP['#word']['error']
-					);
-				}
-			}
-		} else {
-			$deliver = array(
-				'status' => 400,
-				'error' => $TEMP['#word']['please_enter_valid_link']
-			);
-		}
+        if (preg_match_all('/{\#(.+?)->(.+?)}/i', htmlspecialchars_decode($rules), $rls)) {
+            $count = 0;
+            $params_uniq = array_count_values($rls[1]);
+            foreach ($params_uniq as $key => $uniq) {
+                if(in_array($rls[1][$count], $TEMP['#rules'])){
+                    if($uniq > 1){
+                        $uniq_error = $TEMP['#word']['the_parameter'].' "'.$key.'" '.$TEMP['#word']['repeated_parameters_unique'];
+                        break;
+                    }
+                }
+                $count++;
+            }
+            for ($i=0; $i < count($TEMP['#rulen']); $i++) { 
+                $pnot = array_search($TEMP['#rulen'][$i], $rls[1]);
+                $pmax = array_search('NM', $rls[1]);
+                if($rls[2][$pnot] > $rls[2][$pmax]){
+                    $max_error = $TEMP['#word']['the_maximum_grade_is'].' '.$TEMP['#word']['and_was_set_to'].' "'.$rls[1][$pmax].'", '.$TEMP['#word']['change_the_parameter'].': '.$rls[1][$pnot];
+                }
+            }    
+        }
+        if(!isset($max_error)){
+            if(!isset($uniq_error)){
+                if (empty($link) || !filter_var($link, FILTER_VALIDATE_URL) === false) {
+                    if($type == 'add'){
+                        $rule_id = $dba->query('INSERT INTO rule (user_id, rules, link, status, modified, `time`) VALUES ('.$TEMP['#user']['id'].', "'.$rules.'", "'.$link.'", "'.$status.'" , 0, '.time().')')->insertId();
+                        if($rule_id){
+                            $rule = $dba->query('SELECT id, COUNT(*) AS count FROM rule WHERE status = "enabled" AND id <> '.$rule_id)->fetchArray();
+                            if($rule['count'] > 0 && $status == 'enabled'){
+                                $dba->query('UPDATE rule SET status = "disabled" WHERE id = '.$rule['id']);
+                            }
+                            $deliver['status'] = 200;
+                        } else {
+                            $deliver = array(
+                                'status' => 400,
+                                'error' => $TEMP['#word']['error']
+                            );
+                        }
+                    } else {
+                        if(isset($id) && is_numeric($id)){
+                            if($dba->query('UPDATE rule SET rules = ?, link = ?, status = ? WHERE id = '.$id, $rules, $link, $status)->returnStatus()){
+                                $rule = $dba->query('SELECT id, COUNT(*) AS count FROM rule WHERE status = "enabled" AND id <> '.$id)->fetchArray();
+                                if($rule['count'] > 0 && $status == 'enabled'){
+                                    $dba->query('UPDATE rule SET status = "disabled" WHERE id = '.$rule['id']);
+                                }
+                                $deliver['status'] = 200;
+                            } else {
+                                $deliver = array(
+                                    'status' => 400,
+                                    'error' => $TEMP['#word']['error']
+                                );
+                            }
+                        } else {
+                            $deliver = array(
+                                'status' => 400,
+                                'error' => $TEMP['#word']['error']
+                            );
+                        }
+                    }
+                } else {
+                    $deliver = array(
+                        'status' => 400,
+                        'error' => $TEMP['#word']['please_enter_valid_link']
+                    );
+                }
+            } else {
+                $deliver = array(
+                    'status' => 400,
+                    'error' => $uniq_error
+                );
+            }
+        } else {
+            $deliver = array(
+                'status' => 400,
+                'error' => $max_error
+            );
+        }
 	} else {
 		$deliver = array(
 			'status' => 400,

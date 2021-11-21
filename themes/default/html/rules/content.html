@@ -1,0 +1,16 @@
+<div class="display-flex">
+    <div class="container-items margin-auto">
+        <h2 class="font-supraly text-center no-margin padding-t25">{$title}</h2>
+        <p class="text-center padding-b15">{$word->regulation_its_original_language}</p>
+        <div class="max-w-700 background-white border-radius-12 padding-25 margin-b50">
+            <div class="border-top-left-radius border-top-right-radius margin-b10">
+                {$rules}
+            </div>
+            <?php if(!empty($TEMP['#link'])){ ?>
+            <div class="display-flex">
+            	<a class="color-blue margin-left-auto" href="{#link}" target="_blank">{$word->see_full_regulation}</a>
+            </div>
+            <?php } ?>
+        </div>
+    </div>
+</div>

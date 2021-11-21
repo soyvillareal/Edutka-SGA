@@ -530,67 +530,21 @@ class Specific {
 	}
 
 	public static function GetComposeRule($rules, $html = false){
-	    
+		global $TEMP;
 	    if($html == false){
 	    	$rules = str_replace('<br>', "\n", $rules);
 	    	$rules = str_replace('<br />', "\n", $rules);
 	    } else {
 	    	$rules = htmlspecialchars_decode($rules);
-	    	//Nota promedio (N1+N2)/2 para presentar evaluacion final
-	        $rules = preg_replace_callback('/{\#NNEVF->(.+?)}/i', function($matches) {
-		        return $matches[1];
-		    }, $rules);
-		    //Nota minima tercer corte
-		    $rules = preg_replace_callback('/{\#NMTC->(.+?)}/i', function($matches) {
-		        return $matches[1];
-		    }, $rules);
-		    //Cantidad espacios que reprueba semestre
-		    $rules = preg_replace_callback('/{\#CERS->(.+?)}/i', function($matches) {
-		        return $matches[1];
-		    }, $rules);
-
-
-		    //Tope maximo de validaciones por espacio academico
-		    $rules = preg_replace_callback('/{\#TMVEA->(.+?)}/i', function($matches) {
-		        return $matches[1];
-		    }, $rules);
-		    //Numero de validaciones por perdida
-		    $rules = preg_replace_callback('/{\#NVP->(.+?)}/i', function($matches) {
-		        return $matches[1];
-		    }, $rules);
-		    //Numero de validaciones por suficiencia
-		    $rules = preg_replace_callback('/{\#NVS->(.+?)}/i', function($matches) {
-		        return $matches[1];
-		    }, $rules);
-		    //Nota minima validacion teorica
-		    $rules = preg_replace_callback('/{\#NMVT->(.+?)}/i', function($matches) {
-		        return $matches[1];
-		    }, $rules);
-		    //Nota minima validacion no teorica
-		    $rules = preg_replace_callback('/{\#NMVNT->(.+?)}/i', function($matches) {
-		        return $matches[1];
-		    }, $rules);
-
-		    //Numero de habilitaciones por periodo (Perdio semestre)
-		    $rules = preg_replace_callback('/{\#NHP->(.+?)}/i', function($matches) {
-		        return $matches[1];
-		    }, $rules);
-		    //Numero de habilitaciones de un espacio academico en el periodo
-		    $rules = preg_replace_callback('/{\#NHEA->(.+?)}/i', function($matches) {
-		        return $matches[1];
-		    }, $rules);
-		    //Nota minima habilitacion teorica
-		    $rules = preg_replace_callback('/{\#NMAT->(.+?)}/i', function($matches) {
-		        return $matches[1];
-		    }, $rules);
-		    //Nota minima habitacion no teorica
-		    $rules = preg_replace_callback('/{\#NMANT->(.+?)}/i', function($matches) {
-		        return $matches[1];
-		    }, $rules);
-		    //Nota minima definitiva para presentar habilitacion
-		    $rules = preg_replace_callback('/{\#NMDPH->(.+?)}/i', function($matches) {
-		        return $matches[1];
-		    }, $rules);
+	    	if (preg_match_all('/{\#(.+?)->(.+?)}/i', $rules, $rls)) {
+	            foreach ($rls[0] as $key => $rl) {
+	            	if(in_array($rls[1][$key], $TEMP['#rules'])){
+	            		$rules = str_replace($rl, $rls[2][$key], $rules);
+	            	}
+	            }
+	        }
+	    	$rules = preg_replace('/\=\=\=(.+?)\=\=\=/i', "$1", $rules);
+	    	$rules = preg_replace('/{\>\>(.+?)\<\<}/i', '$1', $rules);
 	    }
 	    return $rules;
 	}

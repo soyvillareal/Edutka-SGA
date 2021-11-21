@@ -22,6 +22,49 @@ if (isset($_SESSION['session_id'])) {
 if (empty($TEMP['#word'])) {
     $TEMP['#word'] = Specific::Words();
 }
+$TEMP['#rules'] = array(
+    'NNEVF',
+    'NMTC',
+    'NMHEAP',
+    'NMDPH',
+    'NMAT',
+    'NMANT',
+    'TMVEA',
+    'NVP',
+    'NVS',
+    'NM',
+    'NMV',
+    'NMCNT',
+    'NMCT',
+    'CERS'
+);
+$TEMP['#rulen'] = array(
+    'NNEVF',
+    'NMTC',
+    'NMDPH',
+    'NMAT',
+    'NMANT',
+    'NMV',
+    'NMCNT',
+    'NMCT'
+);
+$TEMP['#nmtc'] = 1.5;
+$TEMP['#nm'] = 5.0;
+$TEMP['#nmcnt'] = 3.5;
+$TEMP['#nmct'] = 3.0;
+$TEMP['#cers'] = 4;
+//Para aprobar el semestre
+$TEMP['#nmcs'] = 3.5;
+$rules = $dba->query('SELECT rules FROM rule WHERE status = "enabled"')->fetchArray();
+if(!empty($rules)){
+    if (preg_match_all('/{\#(.+?)->(.+?)}/i', htmlspecialchars_decode($rules), $rls)) {
+        for ($i=0; $i < count($rls[0]); $i++) { 
+            if(in_array($rls[1][$i], $TEMP['#rules'])){
+                $TEMP["#".strtolower($rls[1][$i])] = $rls[2][$i];
+            }
+        }
+    }
+}
 $TEMP['#plans'] = $dba->query('SELECT * FROM plan')->fetchAll();
 $TEMP['#faculties'] = $dba->query('SELECT * FROM faculty')->fetchAll();
 $TEMP['#admin'] = Specific::Admin();

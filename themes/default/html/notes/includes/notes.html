@@ -101,6 +101,13 @@
                </div>
                <div class="cont-cell-header padding-lr20 color-black">
                   {!average}
+                  <?php if($TEMP['!evalfinal'] == true || $TEMP['!approved'] == false){ ?>
+                  <a class="position-absolute" href="{$url->{rules}}?article={!article}" target="_blank">
+                     <svg class="dv-xs" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M13,17h-2v-6h2V17z M13,7h-2v2h2V7z M12,3c-4.96,0-9,4.04-9,9s4.04,9,9,9c4.96,0,9-4.04,9-9S16.96,3,12,3 M12,2 c5.52,0,10,4.48,10,10s-4.48,10-10,10C6.48,22,2,17.52,2,12S6.48,2,12,2L12,2z"></path>
+                     </svg>
+                  </a>
+                  <?php } ?>
                </div>
                <div class="cont-cell-header padding-lr20 color-white">
                   <div class="<?php echo($TEMP['!approved'] == true || $TEMP['!period_final'] == false) ? 'background-green ' : 'background-red ';?> padding-5 text-center border-radius-4">{!status}</div>
