@@ -1,0 +1,43 @@
+<div class="content-rules border-top border-grey margin-b20">
+    <div class="container-rule">
+        <h2 class="font-medium font-bold text-center">{$word->regulation} #{!number}</h2>
+        <div class="display-flex position-relative margin-b10">
+            <button class="close_edit position-absolute pos-right btn-noway hover-button color-red margin-t10 margin-r10 hidden">
+                <svg class="dv-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path fill="currentColor" d="M 12 13.17 L 5.17 20 L 4 18.832 L 10.83 12 L 4 5.17 L 5.17 4 L 12 10.83 L 18.832 4 L 20 5.17 L 13.17 12 L 20 18.832 L 18.832 20 Z"></path>
+                </svg>
+            </button>
+            <textarea class="rulet cont-input w-100 h-400px border-radius-12 animated-easy border-focus-blue background-grely color-black margin-auto hidden" cols="200" rows="20">{!rulest}</textarea>
+        </div>
+        <div class="ruleh display-flex overflow-hidden w-100 h-400px cont-input border-radius-12 background-grely color-grey margin-auto margin-b10">
+            <div class="overflow-auto w-100">
+                {!rulesh}
+            </div>
+        </div>
+        <label class="color-black">{$word->status}:</label>
+        <select class="status cont-input h-50 border-radius-12 animated-easy border-focus-blue area_changed caret-down area_validate background-grely cursor-disabled color-black margin-b10" disabled>
+            <option value="enabled"<?php echo($TEMP['!status'] == 'enabled') ? 'selected' : '' ;?>>{$word->enabled}</option>
+            <option value="disabled"<?php echo($TEMP['!status'] == 'disabled') ? 'selected' : '' ;?>>{$word->disabled}</option>
+        </select>
+        <label class="color-black">{$word->link}:</label>
+        <input type="text" class="link cont-input h-50 border-radius-12 animated-easy border-focus-blue background-grely color-black" placeholder="{$word->optional}" readonly="true"/>
+        <div class="text-center margin-t15">
+            <p><b>Creado por:</b> {!user}</p>
+            <?php if($TEMP['!modified'] != 0){ ?>
+            <p><b>Modificado:</b> {!modify}</p>
+            <?php } ?>
+            <p><b>{$word->date}:</b> {!time}</p>
+        </div>
+    </div>
+    <div class="display-flex flex-center margin-t15">
+        <button class="delete_rule btn-noway background-red border-radius-4 padding-10 color-white hover-opacity margin-r10" data-id="{!id}">
+            {$word->delete}
+        </button>
+        <button class="edit_rule btn-noway background-blue border-radius-4 padding-10 color-white hover-opacity" data-id="{!id}">
+            <span class="color-white">{$word->edit}</span>
+            <div class="content-spinner-circle">
+                <div class="spinner-circle"></div>
+            </div>
+        </button>
+    </div>
+</div>

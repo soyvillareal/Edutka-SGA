@@ -24,6 +24,7 @@ if (empty($TEMP['#word'])) {
 }
 $TEMP['#plans'] = $dba->query('SELECT * FROM plan')->fetchAll();
 $TEMP['#faculties'] = $dba->query('SELECT * FROM faculty')->fetchAll();
+$TEMP['#admin'] = Specific::Admin();
 $TEMP['#academic'] = Specific::Academic();
 $TEMP['#teacher'] = Specific::Teacher();
 $TEMP['#student'] = Specific::Student();

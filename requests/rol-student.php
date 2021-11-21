@@ -1,5 +1,5 @@
 <?php
-if ($TEMP['#loggedin'] === false && (Specific::Academic() === false || Specific::Student() === false)) {
+if ($TEMP['#loggedin'] === false && (Specific::Admin() === false || Specific::Academic() === false || Specific::Student() === false)) {
     $deliver = array(
         'status' => 400,
         'error' => $TEMP['#word']['error']
@@ -87,7 +87,7 @@ if($one == 'search-enrolled'){
         if(!empty($TEMP['#enrolled'])){
 			foreach ($TEMP['#enrolled'] as $enroll) {
 				if($enroll['type'] == 'course'){
-					$course = $dba->query('SELECT name FROM periods p WHERE (SELECT period_id FROM enrolled WHERE type = "course" AND user_id = '.$id.' AND course_id = '.$enroll['course_id'].' AND period_id = p.id) = id')->fetchArray();
+					$course = $dba->query('SELECT name FROM courses WHERE id = '.$enroll['course_id'])->fetchArray();
 					$periodc = $dba->query('SELECT name FROM periods p WHERE (SELECT period_id FROM enrolled WHERE course_id = '.$enroll['course_id'].' AND period_id = p.id) = id')->fetchArray();
 					$teachers = $dba->query('SELECT names FROM users u WHERE (SELECT user_id FROM teacher WHERE user_id = u.id AND course_id = '.$enroll['course_id'].') = id')->fetchAll(false);
 					if(count($teachers) == 2){
@@ -100,7 +100,7 @@ if($one == 'search-enrolled'){
 						$teachers = $teachers[0];
 					}
 					$TEMP['!teacher'] = $teachers;
-					$TEMP['!name'] = "{$course} ($periodc)";
+					$TEMP['!name'] = "$course ".(!is_array($periodc) ? "($periodc)" : "");
 					$TEMP['!color'] = 'purple';
 				} else {
 					$program = $dba->query('SELECT * FROM programs WHERE id = '.$enroll['program_id'])->fetchArray();
@@ -121,7 +121,7 @@ if($one == 'search-enrolled'){
 				}
 				$TEMP['!class_event'] = $enroll['type'] == 'course' ? 'show_rcmodal"' : 'show_rpmodal"';
 				if($enroll['status'] == 'cancelled'){
-					if(Specific::Academic() == false){
+					if(Specific::Admin() == false || Specific::Academic() == false){
 						$TEMP['!class_event'] = 'cursor-disabled" disabled';
 					}
 				} else {
@@ -157,9 +157,9 @@ if($one == 'search-enrolled'){
     if (isset($course_id) && is_numeric($course_id)) {
     	$enrolled_courses = $dba->query('SELECT COUNT(*) FROM enrolled WHERE type = "course" AND user_id = '.$user_id.' AND course_id = '.$course_id)->fetchArray();
     	if($enrolled_courses == 0){
-	    	if(Specific::Academic() == true || !empty($code)){
+	    	if(Specific::Admin() == true || Specific::Academic() == true || !empty($code)){
 	    		$courses = $dba->query('SELECT * FROM courses WHERE id = "'.$course_id.'"')->fetchArray();
-		        if(Specific::Academic() == true || $courses['code'] === $code){
+		        if(Specific::Admin() == true || Specific::Academic() == true || $courses['code'] === $code){
 		        	$prektrues = array();
 		        	if(!empty($courses['preknowledge'])){
 		        		$preknowledges = explode(',', $courses['preknowledge']);

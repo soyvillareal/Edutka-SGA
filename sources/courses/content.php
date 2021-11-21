@@ -1,11 +1,16 @@
 <?php 
-if ($TEMP['#loggedin'] === false && Specific::Student() == false) {
+if ($TEMP['#loggedin'] === false) {
+	header("Location: ".Specific::Url());
+	exit();
+}
+
+if (Specific::Admin() == false && Specific::Teacher() == false) {
 	header("Location: " . Specific::Url('404'));
     exit();
 }
 
 $TEMP['#user_id'] = $TEMP['#user']['id'];
-if(isset($_GET['user']) && Specific::Academic() == true){
+if(isset($_GET['user']) && Specific::Admin() == true){
 	$TEMP['#user_id'] = Specific::Filter($_GET['user']);
 }
 

@@ -1,13 +1,18 @@
 <?php
-if ($TEMP['#loggedin'] === false || Specific::Teacher() == true) {
+if ($TEMP['#loggedin'] === false) {
 	header("Location: ".Specific::Url());
 	exit();
 }
 
+if (Specific::Teacher() == true) {
+	header("Location: ".Specific::Url('404'));
+	exit();
+}
+
 $TEMP['#user_id'] = $TEMP['#user']['id'];
-if(isset($_GET['user']) && Specific::Academic() == true){
+if(isset($_GET['user']) && (Specific::Admin() == true || Specific::Academic() == true)){
 	$TEMP['#user_id'] = Specific::Filter($_GET['user']);
-	if(Specific::Academic() == true){
+	if(Specific::Admin() == true || Specific::Academic() == true){
 		$TEMP['#user'] = Specific::Data($TEMP['#user_id']);
 		$TEMP['full_name'] = $TEMP['#user']['full_name'];
 	}
@@ -88,7 +93,7 @@ if(!empty($TEMP['#enrolled'])){
 		}
 		$TEMP['!class_event'] = $enroll['type'] == 'course' ? 'show_rcmodal"' : 'show_rpmodal"';
 		if($enroll['status'] == 'cancelled'){
-			if(Specific::Academic() == false){
+			if(Specific::Admin() == false || Specific::Academic() == false){
 				$TEMP['!class_event'] = 'cursor-disabled" disabled';
 			}
 		} else {

@@ -1,6 +1,6 @@
 <?php
 $TEMP['#form_key'] = Specific::Filter($_GET['form-key']);
-if ((empty($TEMP['#form_key']) && $TEMP['#academic'] == false) || ($TEMP['#loggedin'] === true && $TEMP['#academic'] == false)) {
+if ((empty($TEMP['#form_key']) && Specific::Admin() == false && Specific::Academic() == false) || ($TEMP['#loggedin'] === true && Specific::Admin() == false && Specific::Academic() == false)) {
 	header("Location: " . Specific::Url());
 	exit();
 }
@@ -11,7 +11,7 @@ if(!empty($TEMP['#form_key'])){
 	$TEMP['#load_url']    = Specific::Url('register/'.$TEMP['#form_key']);
 }
 
-$page = (empty($form) || time() >= $form['expire'] || $form['status'] == 'deactivated') && $TEMP['#academic'] == false ? 'invalid-auth' : 'register';
+$page = (empty($form) || time() >= $form['expire'] || $form['status'] == 'deactivated') && Specific::Academic() == false ? 'invalid-auth' : 'register';
 
 $TEMP['#bubbles'] = Specific::Bubbles();
 

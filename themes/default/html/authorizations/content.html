@@ -128,9 +128,9 @@
                         <div class="flex-grow">
                             <select id="court" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue area_changed caret-down area_validate background-grely color-black">
                                 <option value selected>{$word->select_a_cut}</option>
-                                <option value="first" selected>{$word->first_cut}</option>
-                                <option value="second" selected>{$word->second_cut}</option>
-                                <option value="third" selected>{$word->third_cut}</option>
+                                <option value="first">{$word->first_cut}</option>
+                                <option value="second">{$word->second_cut}</option>
+                                <option value="third">{$word->third_cut}</option>
                             </select>
                             <div class="color-red text-left text-error font-low margin-t5"></div>
                         </div>
@@ -262,7 +262,6 @@ addEvent(GC, 'change', function(){
     }
     GB.setAttribute('disabled', true), addClass(GB, 'spinner-is-loading');
     Req('{$url->{req/rol-teacher/this-authorizations}}', function(e){
-        console.log(e);
         if(e.status == 200){
             GI.style.display = "", loadAlert("{$word->you_have_authorized_teacher_successfully}"), preloadPage('&one=authorizations');
         } else {
@@ -303,7 +302,6 @@ addEvent(GC, 'change', function(){
     var self = this,
         TZ = D.querySelector('#table-footer');
     Req('{$url->{req/rol-teacher/search-authorizations}}', function(e){
-        console.log(e);
         if(e.status == 200){
             <?php echo($TEMP['#total_pages'] > 1) ? "TT = e.total_pages, TA = 1, TO.setAttribute('disabled', true), TR.setAttribute('disabled', true), TE.removeAttribute('disabled'), TS.removeAttribute('disabled'), D.querySelector('#total-pages').innerText = TT, TN.innerText = TA, TZ && (TT <= 1 ? TZ.style.display = 'none' : TZ.removeAttribute('style')), " : ""?>D.querySelector('#container-pages').innerHTML = e.html, loadPage(D.querySelectorAll('a[target="_self"]')), GW = D.querySelectorAll('.show_emodal');
             for(var j = 0, i = GW.length; j < i; j++) addEvent(GW[j], "click", GD);

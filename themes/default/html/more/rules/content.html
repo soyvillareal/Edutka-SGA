@@ -1,0 +1,205 @@
+<div class="display-flex">
+    <div class="container-items margin-auto">
+        <h2 class="font-supraly text-center no-margin padding-t25 padding-b15">{$word->academic_regulations}</h2>
+        <p class="text-center margin-b15">{$word->please_see_instructions_fill} <button id="show-steps" class="btn-noway color-blue underline-hover">{$word->here}</button>.</p>
+        <div class="max-w-900 background-white border-radius-12 padding-25 margin-b50">
+            <div class="border-top-left-radius border-top-right-radius">
+                {$rules}
+            </div>
+        </div>
+        <div class="max-w-900 background-white border-radius-12 padding-25">
+            <div id="content-new-rules" class="content-rules animated-easy h-0 overflow-hidden">
+                <div class="container-rule">
+                    <h2 class="font-medium font-bold text-center">{$word->new_regulation}</h2>
+                    <div class="display-flex position-relative margin-b10">
+                        <button id="close-add" class="position-absolute pos-right btn-noway hover-button color-red margin-t10 margin-r10">
+                            <svg class="dv-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path fill="currentColor" d="M 12 13.17 L 5.17 20 L 4 18.832 L 10.83 12 L 4 5.17 L 5.17 4 L 12 10.83 L 18.832 4 L 20 5.17 L 13.17 12 L 20 18.832 L 18.832 20 Z"></path>
+                            </svg>
+                        </button>
+                        <textarea id="new-rulet" class="cont-input w-100 h-400px border-radius-12 animated-easy border-focus-blue background-grely color-black margin-auto" cols="200" rows="20">{!rulest}</textarea>
+                    </div>
+                    <label class="color-black">{$word->status}:</label>
+                    <select id="status" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue area_changed caret-down area_validate background-grely color-black margin-b10">
+                        <option value selected="">{$word->select_state}</option>
+                        <option value="enabled">{$word->enabled}</option>
+                        <option value="disabled">{$word->disabled}</option>
+                    </select>
+                    <label class="color-black">{$word->link}:</label>
+                    <input id="link" type="text" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue background-grely color-black" placeholder="{$word->optional}" />
+                </div>
+            </div>
+            <div class="display-flex flex-end">
+                <span class="color-black dv-vertical-center margin-r10">
+                    {$word->if_you_want_add_regulation}
+                </span>
+                <button id="new-rules" class="btn-noway background-blue border-radius-4 padding-10 cursor-disabled color-white hover-opacity">{$word->add}</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="content-modal" id="alert-steps">
+    <div class="cont-dialog">
+        <div class="cont-popup background-white">
+            <div class="top-header">
+                <h2 class="padding-t15 w-100 padding-b15 font-mediumly color-black text-center">
+                    {$word->instructions}
+                </h2>
+            </div>
+            <div class="content-modal-body color-grey">
+                <p>
+                    <b>1.</b> {$word->the_field_create_edit_regulation_accepts}<br>
+                    <b>2.</b> {$word->this_field_captures_all_text_referring}
+
+                    <h3 class="font-lowly font-bold">{$word->parameters}:</h3>
+                    <ol>
+                        <li>
+                            <h3 class="font-lowly font-bold color-blue">{$word->article} #42: </h3>
+                            <ol>
+                                <li><b>{#NNEVF-><span class="color-red">{$word->number}</span>}</b>: {$word->average_grade_n_n_present_final}</li>
+                            </ol>
+                        </li>
+                        <li>
+                            <h3 class="font-lowly font-bold color-blue">{$word->article} #43: </h3>
+                            <ol>
+                                <li><b>{#NMTC-><span class="color-red">{$word->number}</span>}</b>: {$word->minimum_mark_third_cut}</li>
+                            </ol>
+                        </li>
+                        <li>
+                            <h3 class="font-lowly font-bold color-blue">{$word->article} #64: </h3>
+                            <ol>
+                                <li><b>{#CERS-><span class="color-red">{$word->number}</span>}</b>: {$word->number_spaces_that_semester_fails}</li>
+                            </ol>
+                        </li>
+                        <li>
+                            <h3 class="font-lowly font-bold color-blue">{$word->article} #53: </h3>
+                            <ol>
+                               <li><b>{#TMVEA-><span class="color-red">{$word->number}</span>}</b>: {$word->maximum_limit_validations_academic_space}</li>
+                                <li><b>{#NVP-><span class="color-red">{$word->number}</span>}</b>: {$word->number_validations_loss}</li>
+                                <li><b>{#NVS-><span class="color-red">{$word->number}</span>}</b>: {$word->number_validations_sufficiency}</li>
+                                <li><b>{#NMVT-><span class="color-red">{$word->number}</span>}</b>: {$word->minimum_theoretical_validation_mark}</li>
+                                <li><b>{#NMVNT-><span class="color-red">{$word->number}</span>}</b>: {$word->minimum_non_theoretical_validation_mark}</li> 
+                            </ol>
+                        </li>
+                        <li>
+                            <h3 class="font-lowly font-bold color-blue">{$word->article} #46: </h3>
+                            <ol>
+                                <li><b>{#NHP-><span class="color-red">{$word->number}</span>}</b>: {$word->number_qualifications_period}</li>
+                                <li><b>{#NHEA-><span class="color-red">{$word->number}</span>}</b>: {$word->number_qualifications_academic_space_period}</li>
+                                <li><b>{#NMAT-><span class="color-red">{$word->number}</span>}</b>: {$word->theoretical_qualification_minimum_mark}</li>
+                                <li><b>{#NMANT-><span class="color-red">{$word->number}</span>}</b>: {$word->minimum_grade_theoretical_room}</li>
+                                <li><b>{#NMDPH-><span class="color-red">{$word->number}</span>}</b>: {$word->definitive_minimum_mark_present}</li>
+                            </ol>
+                        </li>
+                    </ol>
+                    <b>{$word->example}:</b> {$word->article} 42º. {$word->have_right_present_final} (<span class="color-green">{#NNEVF->2.0}</span>).<br><br>
+                    <b>{$word->explanation}:</b> {$word->previous_example_you_indicating}
+                </p>
+            </div>
+            <div class="display-flex">
+                <div class="margin-auto margin-b15">
+                    <button class="btn-noway background-red border-radius-4 padding-10 color-white hover-opacity font-uppercase" id="close-alert">{$word->close}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="cont-alert" id="alert-delete">
+   <h2 class="color-red">{$word->delete} {$word->regulation}</h2>
+   <p>{$word->this_action_cannot_undone_continue}</p>
+   <div class="padding-t25">
+      <button class="btn-noway background-grely border-radius-4 padding-10 color-black hover-button font-uppercase" id="cancel-alert">{$word->cancel}</button>
+      <button class="btn-noway background-blue border-radius-4 padding-10 color-black hover-opacity font-uppercase" id="delete-rule">
+        <span class="color-white">{$word->delete}</span>
+        <div class="content-spinner-circle">
+            <div class="spinner-circle"></div>
+        </div>
+    </button>
+   </div>
+</div>
+<div class="background-pointer"></div>
+<script type="text/javascript">
+var GC = D.querySelectorAll('.edit_rule'),
+    GY = D.querySelectorAll('.delete_rule'),
+    GS = D.querySelectorAll('.close_edit'),
+    GI = D.querySelector('#alert-steps'),
+    GA = D.querySelector('#alert-delete'),
+    GH = D.querySelector('#delete-rule'),
+    GV = GI.querySelector('.content-modal-body'),
+    GN = D.querySelector('#content-new-rules'),
+    GT = D.querySelector('#new-rulet'),
+    GR = D.querySelector('#new-rules'),
+    GL = D.querySelector('#link'),
+    GK = D.querySelector('#status'),
+    GE = function(){
+        var self = this,
+            button = self.querySelector('span'),
+            content = self.parentNode.parentNode,
+            rulet = content.querySelector('.rulet'),
+            ruleh = content.querySelector('.ruleh'),
+            link = content.querySelector('.link'),
+            status = content.querySelector('.status'),
+            close = content.querySelector('.close_edit');
+        if(button.innerText == '{$word->edit}'){
+            statu = status.value, links = link.value, rules = rulet.value, button.innerText = "{$word->save}", status.removeAttribute('disabled'), removeClass(status, 'cursor-disabled'), link.removeAttribute('readonly'), addClass(ruleh, 'hidden'), removeClass(rulet, 'hidden'), removeClass(close, 'hidden');
+        } else {
+            self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
+            Req('{$url->{req/rol-admin/this-rules}}', function(e){
+                if(e.status == 200){
+                    button.innerText = "{$word->edit}", status.setAttribute('disabled', true), addClass(status, 'cursor-disabled'), link.setAttribute('readonly', true), removeClass(ruleh, 'hidden'), addClass(rulet, 'hidden'), addClass(close, 'hidden'), loadAlert("{$word->regulation_updated_successfully}"), preloadPage('&one=more&page=rules');
+                } else {
+                    loadAlert(e.error, 1), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
+                }
+            }, "POST", "&type=edit&id=" + self.getAttribute('data-id') + "&rules=" + rulet.value + "&status=" + status.value)
+        }
+    },
+    GD = function(){
+        GA.style.display = "block", D.body.style.overflow = "hidden", GH.setAttribute('data-id', this.getAttribute('data-id'));
+    },
+    GF = function(){
+        var self = this,
+            content = self.parentNode.parentNode,
+            button = content.parentNode.querySelector('.edit_rule span'),
+            rulet = content.querySelector('.rulet'),
+            ruleh = content.querySelector('.ruleh'),
+            link = content.querySelector('.link'),
+            status = content.querySelector('.status');
+        status.value = statu, link.value = links, rulet.value = rules, button.innerText = "{$word->edit}", status.setAttribute('disabled', true), addClass(status, 'cursor-disabled'), link.setAttribute('readonly', true), removeClass(ruleh, 'hidden'), addClass(rulet, 'hidden'), addClass(self, 'hidden')
+    },
+    rules,
+    links,
+    statu;
+addEvent(GR, 'click', function(){
+    if(hasClass(GN, 'h-0')){
+        GR.innerText = "{$word->save}", removeClass(GN, 'h-0'), addClass(GN, 'h-640px')
+    } else {
+        GR.setAttribute('disabled', true), addClass(GR, 'spinner-is-loading');
+        Req('{$url->{req/rol-admin/this-rules}}', function(e){
+            if(e.status == 200){
+                GR.innerText = "{$word->add}", removeClass(GN, 'h-640px'), addClass(GN, 'h-0'), loadAlert("{$word->regulation_updated_successfully}"), preloadPage('&one=more&page=rules');
+            } else {
+                loadAlert(e.error, 1), GR.removeAttribute('disabled'), removeClass(GR, 'spinner-is-loading');
+            }
+        }, "POST", "&type=add&rules=" + GT.value + "&link=" + GL.value + "&status=" + GK.value)
+    }
+}), addEvent(GH, 'click', function(){
+    var self = this; 
+    self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
+    Req('{$url->{req/rol-admin/delete-rule}}', function(e){
+        if(e.status == 200){
+            loadAlert("{$word->regulation_removed_successfully}", 1), preloadPage('&one=more&page=rules');
+        } else {
+            self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
+        }
+    }, "POST", "&id=" + self.getAttribute('data-id'));
+}), addEvent(D.querySelector('#close-add'), 'click', function(){
+    GR.innerText = "{$word->add}", removeClass(GN, 'h-640px'), addClass(GN, 'h-0');
+}), addEvent(D.querySelector('#show-steps'), 'click', function(){
+    GI.style.display = "block", D.body.style.overflow = "hidden", scrollTo(0, GV);
+}), addEvent(D.querySelector('#close-alert'), 'click', function(){
+    GI.style.display = "", D.body.style.overflow = "";
+});
+for(var j = 0, i = GC.length; j < i; j++) addEvent(GC[j], "click", GE);
+for(var j = 0, i = GY.length; j < i; j++) addEvent(GY[j], "click", GD);
+for(var j = 0, i = GS.length; j < i; j++) addEvent(GS[j], "click", GF);
+</script>

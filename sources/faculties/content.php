@@ -1,10 +1,14 @@
 <?php 
-if ($TEMP['#loggedin'] === false || Specific::Academic() == false) {
+if ($TEMP['#loggedin'] === false) {
+	header("Location: ".Specific::Url());
+	exit();
+}
+
+if (Specific::Admin() == false) {
 	header("Location: " . Specific::Url('404'));
     exit();
 }
 
-$TEMP['#periods'] = $dba->query('SELECT * FROM periods')->fetchAll();
 $faculties = $dba->query('SELECT * FROM faculty LIMIT ? OFFSET ?', 10, 1)->fetchAll();
 $TEMP['#total_pages'] = $dba->totalPages;
 

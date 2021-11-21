@@ -357,6 +357,7 @@ addEvent(D.querySelector('.number'), 'input', function(){
     var self = this,
         TZ = D.querySelector('#table-footer');
     Req('{$url->{req/rol-academic/search-forms}}', function(e){
+        console.log(e);
         if(e.status == 200){
             <?php echo($TEMP['#total_pages'] > 1) ? "TT = e.total_pages, TA = 1, TO.setAttribute('disabled', true), TR.setAttribute('disabled', true), TE.removeAttribute('disabled'), TS.removeAttribute('disabled'), D.querySelector('#total-pages').innerText = TT, TN.innerText = TA, TZ && (TT <= 1 ? TZ.style.display = 'none' : TZ.removeAttribute('style')), " : ""?>D.querySelector('#container-pages').innerHTML = e.html, loadPage(D.querySelectorAll('a[target="_self"]')), GE = D.querySelectorAll('.show_emodal'), GW = D.querySelectorAll('.show_dmodal');
             for(var j = 0, i = GE.length; j < i; j++) addEvent(GE[j], "click", GS);

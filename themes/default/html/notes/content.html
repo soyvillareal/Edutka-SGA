@@ -1,7 +1,7 @@
 <div class="display-flex">
 	<div class="content-notes margin-auto">
 		<div class="margin-t10 margin-t50 padding-b50">
-			<?php if($TEMP['#academic'] == true || $TEMP['#teacher'] == true) { ?>
+			<?php if($TEMP['#admin'] == true || $TEMP['#academic'] == true || $TEMP['#teacher'] == true) { ?>
 			<div class="background-white border-radius-12 padding-25 margin-b10">
 				<label class="color-black">{$word->search}</label>
 				<div class="content-search-notes position-relative margin-b10">
@@ -134,15 +134,15 @@ var NU = D.querySelectorAll('.upload_note'),
 	keyword = "{#keyword_notes}";
 <?php if(count($TEMP['#programs']) > 1){ ?>
 addEvent(D.querySelector('#programs'), 'change', function(){
-    preloadPage('&one=notes<?php echo($TEMP['#academic'] == true || $TEMP['#teacher'] == true) ? "&user={#user_id}" : "" ;?>&program='+this.value);
+    preloadPage('&one=notes<?php echo($TEMP['#admin'] == true || $TEMP['#academic'] == true || $TEMP['#teacher'] == true) ? "&user={#user_id}" : "" ;?>&program='+this.value);
 }), <?php } if(count($TEMP['#periods']) > 1){ ?>addEvent(D.querySelector('#periods'), 'change', function(){
-    preloadPage('&one=notes<?php echo($TEMP['#academic'] == true || $TEMP['#teacher'] == true) ? "&user={#user_id}" : "" ;?>&program={#program_id}&period='+this.value);
+    preloadPage('&one=notes<?php echo($TEMP['#admin'] == true || $TEMP['#academic'] == true || $TEMP['#teacher'] == true) ? "&user={#user_id}" : "" ;?>&program={#program_id}&period='+this.value);
 })
 <?php } ?>
 addEvent(D.querySelector('#cancel-alert'), 'click', function(){
     NN.style.display = "", D.body.style.overflow = "", NK.innerHTML = "";
 })
-<?php if($TEMP['#teacher'] == true || $TEMP['#academic'] == true) { ?>
+<?php if($TEMP['#admin'] == true || $TEMP['#academic'] == true || $TEMP['#teacher'] == true) { ?>
 <?php if(!empty($TEMP['#notes'])){ ?>
 addEvent(NT, 'click', function(){
     var self = this,
@@ -168,7 +168,7 @@ addEvent(NT, 'click', function(){
     Req('{$url->{req/rol-teacher/this-notes}}', function(e){
     	console.log(e);
         if(e.status == 200){
-            NN.style.display = "", loadAlert("{$word->course_updated_successfully}"), preloadPage('{#url_params}');
+            NN.style.display = "", loadAlert("{$word->note_updated_successfully}"), preloadPage('{#url_params}');
         } else {
             if (e.errors != undefined) {
                 for (var j = 0, i = e.errors.length; j < i; j++){

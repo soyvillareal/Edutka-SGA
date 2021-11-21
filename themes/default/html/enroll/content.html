@@ -1,7 +1,7 @@
 <div class="display-flex">
 	<div class="content-notes margin-auto">
 		<div class="margin-t10 margin-t50 padding-b50">
-			<?php if($TEMP['#academic'] == true) { ?>
+			<?php if($TEMP['#admin'] == true || $TEMP['#academic'] == true) { ?>
 			<div class="background-white border-radius-12 padding-25 margin-b10">
 				<label class="color-black">{$word->search}</label>
 				<div class="content-search-notes position-relative margin-b10">
@@ -52,7 +52,7 @@
 			</div>
 			<?php } ?>
 	   	    <div class="background-white border-radius-12 padding-25">
-	   	   		<?php if($TEMP['#academic'] == true && !empty($TEMP['#enrolled'])) { ?>
+	   	   		<?php if(($TEMP['#admin'] == true || $TEMP['#academic'] == true) && !empty($TEMP['#enrolled'])) { ?>
 	   	    	<div class="font-medium text-center margin-t15 margin-b15">{$word->license_plates_of} <span class="color-black font-bold">{$full_name}</span></div>
 	   	    	<?php } ?>
 			    <div class="max-w-900 border-top-left-radius border-top-right-radius" id="container-enrolled">
@@ -78,8 +78,8 @@
 </div>
 <div class="background-pointer"></div>
 <div class="cont-alert" id="alert-enrollc">
-   <h2 class="<?php echo($TEMP['#academic'] == false) ? 'no-margin ' : ''?>padding-b10 color-red">{$word->enter_course_code}</h2>
-   <?php if($TEMP['#academic'] == false) { ?>
+   <h2 class="<?php echo($TEMP['#admin'] == false || $TEMP['#academic'] == false) ? 'no-margin ' : ''?>padding-b10 color-red">{$word->enter_course_code}</h2>
+   <?php if($TEMP['#admin'] == false || $TEMP['#academic'] == false) { ?>
    <input id="course-code" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue background-grely color-black" />
    <?php } else { ?>
    <p>{$word->are_sure_want_make_registration}</p>
@@ -149,7 +149,7 @@ var GA = D.querySelectorAll('.show_cmodal'),
 }), addEvent(D.querySelector('#cancel-epalert'), 'click', function(){
     GN.style.display = "", D.body.style.overflow = "";
 })<?php if(!empty($TEMP['#keyword_enroll']) || $TEMP['#student'] == true) { ?>, addEvent(D.querySelector('#type'), 'change', function(){
-    preloadPage('&one=enroll<?php echo($TEMP["#academic"] == true) ? "&keyword={#keyword_enroll}&user={#user_id}" : ''?>&type='+this.value);
+    preloadPage('&one=enroll<?php echo($TEMP["#admin"] == true || $TEMP["#academic"] == true) ? "&keyword={#keyword_enroll}&user={#user_id}" : ''?>&type='+this.value);
 }), addEvent(D.querySelector('#search-enrolled'), "keyup", GF)<?php } ?>, addEvent(GG, "click", function(){
     var self = this; 
     self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
@@ -160,7 +160,7 @@ var GA = D.querySelectorAll('.show_cmodal'),
 	        self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
         }
 	}, "POST", "&id=" + self.getAttribute('data-id'));
-})<?php if($TEMP['!status'] != 'cancelled' || $TEMP['#academic'] == true){ ?>, addEvent(GI, "click", function(){
+})<?php if($TEMP['!status'] != 'cancelled' || $TEMP['#admin'] == true || $TEMP['#academic'] == true){ ?>, addEvent(GI, "click", function(){
     var self = this; 
     self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
 	Req('{$url->{req/rol-student/register-ecnroll}}', function(e){
@@ -170,7 +170,7 @@ var GA = D.querySelectorAll('.show_cmodal'),
 	    } else {
 	        loadAlert(e.error, 1), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
         }
-	}, "POST", "&course_id=" + self.getAttribute('data-id') + "&user_id={#user_id}&plan_id=" + self.getAttribute('data-plan') + "<?php echo($TEMP['#academic'] == false) ? '&code="+D.querySelector("#course-code").value' : '"'?>);
+	}, "POST", "&course_id=" + self.getAttribute('data-id') + "&user_id={#user_id}&plan_id=" + self.getAttribute('data-plan') + "<?php echo($TEMP['#admin'] == false || $TEMP['#academic'] == false) ? '&code="+D.querySelector("#course-code").value' : '"'?>);
 }), addEvent(GL, "click", function(){
     var self = this; 
     self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
@@ -181,7 +181,7 @@ var GA = D.querySelectorAll('.show_cmodal'),
 	        loadAlert("{$word->error}", 1), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
         }
 	}, "POST", "&id=" + self.getAttribute('data-id') + "&user_id={#user_id}");
-})<?php } if($TEMP['#academic'] == true) { ?>, addEvent(D.querySelector('#search-users'), "keyup", function(e){
+})<?php } if($TEMP['#admin'] == true || $TEMP['#academic'] == true) { ?>, addEvent(D.querySelector('#search-users'), "keyup", function(e){
 	let SV = this.value,
 		SD = D.querySelector('.search-down');
 	if (SV == '') {

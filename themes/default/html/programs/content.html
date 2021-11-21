@@ -265,7 +265,7 @@ var GE = D.querySelectorAll('.show_emodal'),
         var self = this,
             program_id = self.getAttribute('data-id');
         self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
-        Req('{$url->{req/rol-academic/get-pitems}}', function(e){
+        Req('{$url->{req/rol-admin/get-pitems}}', function(e){
             if(e.status == 200){
                 for (var key in e.items) D.querySelector('#'+key).value = e.items[key];
                 GI.style.display = "block", D.body.style.overflow = "hidden", GB.setAttribute('data-id', program_id), GB.setAttribute('data-type', 'edit'), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
@@ -315,7 +315,7 @@ addEvent(D.querySelector('#show-pmodal'), 'click', function(){
         }
     }
     GB.setAttribute('disabled', true), addClass(GB, 'spinner-is-loading');
-    Req('{$url->{req/rol-academic/this-programs}}', function(e){
+    Req('{$url->{req/rol-admin/this-programs}}', function(e){
         if(e.status == 200){
             GI.style.display = "", loadAlert((type == 'add' ? "{$word->program_added_successfully}" : "{$word->program_updated_successfully}")), preloadPage('&one=programs');
         } else {
@@ -350,7 +350,7 @@ addEvent(D.querySelector('#show-pmodal'), 'click', function(){
 }), addEvent(GQ, "click", function(){
     var self = this; 
     self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
-    Req('{$url->{req/rol-academic/delete-program}}', function(e){
+    Req('{$url->{req/rol-admin/delete-program}}', function(e){
         if(e.status == 200){
             GT.style.display = "", loadAlert("{$word->program_removed_successfully}", 1), preloadPage('&one=programs');
         } else {
@@ -360,7 +360,7 @@ addEvent(D.querySelector('#show-pmodal'), 'click', function(){
 }), addEvent(GA, 'keyup', function(){
     var self = this,
         TZ = D.querySelector('#table-footer');
-    Req('{$url->{req/rol-academic/search-programs}}', function(e){
+    Req('{$url->{req/rol-admin/search-programs}}', function(e){
         if(e.status == 200){
             <?php echo($TEMP['#total_pages'] > 1) ? "TT = e.total_pages, TA = 1, TO.setAttribute('disabled', true), TR.setAttribute('disabled', true), TE.removeAttribute('disabled'), TS.removeAttribute('disabled'), D.querySelector('#total-pages').innerText = TT, TN.innerText = TA, TZ && (TT <= 1 ? TZ.style.display = 'none' : TZ.removeAttribute('style')), " : ""?>D.querySelector('#container-pages').innerHTML = e.html, loadPage(D.querySelectorAll('a[target="_self"]')), GE = D.querySelectorAll('.show_emodal'), GW = D.querySelectorAll('.show_dmodal');
             for(var j = 0, i = GE.length; j < i; j++) addEvent(GE[j], "click", GS);
@@ -413,7 +413,7 @@ for (var j = 0, i = GL.length; j < i; j++) addEvent(GL[j], "click", function(){
         TS.setAttribute('disabled', true);
         TE.setAttribute('disabled', true);
     }
-    Req("{$url->{req/rol-academic/table-programs}}", function(e){
+    Req("{$url->{req/rol-admin/table-programs}}", function(e){
         if(e.status == 200){
             D.querySelector('#container-pages').innerHTML = e.html, GE = D.querySelectorAll('.show_emodal'), GW = D.querySelectorAll('.show_dmodal');
             for(var j = 0, i = GE.length; j < i; j++) addEvent(GE[j], "click", GS);

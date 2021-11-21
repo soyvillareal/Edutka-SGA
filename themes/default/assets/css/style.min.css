@@ -940,15 +940,9 @@ h5 {
     height: 6px;
     min-height: 6px;
 }
-
-
-
-
-
-
-
-
-
+.content-rules:first-child {
+    border-top: 0;
+}
 
 
 .cont-label {
@@ -1253,6 +1247,10 @@ h5 {
 
 .overflow-hidden {
     overflow: hidden
+}
+
+.overflow-auto {
+    overflow: auto
 }
 
 .ellipsis-horizontal {
@@ -1670,7 +1668,9 @@ h5 {
 .mw-w-100 {
     max-width: 100px !important
 }
-
+.h-0 {
+    height: 0;
+}
 .h-8 {
     height: 8px
 }
@@ -1693,6 +1693,10 @@ h5 {
 
 .h-400px {
     height: 400px
+}
+
+.h-640px {
+    height: 640px
 }
 
 .h-100 {

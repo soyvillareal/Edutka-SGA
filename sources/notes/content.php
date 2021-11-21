@@ -5,7 +5,7 @@ if ($TEMP['#loggedin'] === false) {
 }
 
 $TEMP['#user_id'] = $TEMP['#user']['id'];
-if(isset($_GET['user']) && (Specific::Academic() == true || Specific::Teacher() == true)){
+if(isset($_GET['user']) && (Specific::Admin() == true || Specific::Academic() == true || Specific::Teacher() == true)){
 	$TEMP['#user_id'] = Specific::Filter($_GET['user']);
 }
 
@@ -32,7 +32,7 @@ if(!empty($periods)){
 	$TEMP['#periods'] = $dba->query('SELECT * FROM periods WHERE id IN ('.implode(',', $periods).')')->fetchAll();
 }
 
-if(Specific::Academic() == true || Specific::Teacher() == true){
+if(Specific::Admin() == true || Specific::Academic() == true || Specific::Teacher() == true){
 	if(isset($_GET['keyword'])){
 		$params .= "?keyword=".$TEMP['#keyword_notes'];
 	}
@@ -70,6 +70,8 @@ if(!empty($TEMP['#notes'])){
 		$course = $dba->query('SELECT * FROM courses WHERE id = '.$note['course_id'])->fetchArray();
 		$period = $dba->query('SELECT * FROM periods p WHERE (SELECT period_id FROM enrolled WHERE user_id = '.$TEMP['#user_id'].' AND course_id = '.$note['course_id'].' AND type = "course" AND period_id = p.id) = id')->fetchArray();
 		$TEMP['!period_final'] = time() > $period['final'];
+		$authorization = $dba->query('SELECT court FROM authorization WHERE status = "authorized" AND period_id = '.$period['id'].' AND course_id = '.$note['course_id'])->fetchAll(false);
+		$TEMP['!authorization'] = Specific::Admin() == true || Specific::Academic() == true ? array('first', 'second', 'third') : $authorization;
 
 		$teachers = $dba->query('SELECT names FROM users u WHERE (SELECT user_id FROM teacher WHERE user_id = u.id AND course_id = '.$note['course_id'].') = id')->fetchAll(false);
 		if(count($teachers) == 2){

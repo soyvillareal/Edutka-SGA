@@ -1,5 +1,10 @@
 <?php 
-if ($TEMP['#loggedin'] === false || Specific::Academic() == false) {
+if ($TEMP['#loggedin'] === false) {
+	header("Location: ".Specific::Url());
+	exit();
+}
+
+if (Specific::Admin() == false) {
 	header("Location: " . Specific::Url('404'));
     exit();
 }
