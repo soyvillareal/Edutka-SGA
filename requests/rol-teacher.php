@@ -10,23 +10,29 @@ if ($TEMP['#loggedin'] === false && (Specific::Admin() === false || Specific::Ac
 
 if($one == 'search-courses') {
     $keyword = Specific::Filter($_POST['keyword']);
-        $html = '';
-        $query = '';
-        if(!empty($keyword)){
-            $query .= " WHERE name LIKE '%$keyword%'";
-        }
-        $TEMP['#programs'] = $dba->query('SELECT * FROM programs')->fetchAll();
-        if(Specific::Teacher() == true){
-            $teachers = $dba->query('SELECT course_id FROM teacher WHERE user_id = '.$TEMP['#user']['id'])->fetchAll(false);
-            $query .= (!empty($keyword) ? ' AND' : ' WHERE').' id IN ('.implode(',', $teachers).')';
-        }
-        $courses = $dba->query('SELECT * FROM courses'.$query.' LIMIT ? OFFSET ?', 10, 1)->fetchAll();
-        $deliver['total_pages'] = $dba->totalPages;
-        if (!empty($courses)) {
-            foreach ($courses as $course) {
-                $parameters = json_decode($course['parameters']);
-                $preknowledge = explode(',', $course['preknowledge']);
-                $teachers = $dba->query('SELECT names FROM users u WHERE (SELECT user_id FROM teacher WHERE user_id = u.id AND course_id = '.$course['id'].') = id')->fetchAll(false);
+    $user_id = Specific::Filter($_POST['user_id']);
+    $period_id = Specific::Filter($_POST['period_id']);
+    $html = '';
+    $query = '';
+    if(!empty($keyword)){
+        $query .= " WHERE name LIKE '%$keyword%'";
+    }
+    $TEMP['#programs'] = $dba->query('SELECT * FROM programs')->fetchAll();
+    if(Specific::Teacher() == true){
+        $teachers = $dba->query('SELECT course_id FROM teacher WHERE user_id = '.$TEMP['#user']['id'].' AND period_id = '.$period_id)->fetchAll(false);
+        $query .= (!empty($keyword) ? ' AND' : ' WHERE').' id IN ('.implode(',', $teachers).')';
+    }
+    $courses = $dba->query('SELECT * FROM courses'.$query.' LIMIT ? OFFSET ?', 10, 1)->fetchAll();
+    $deliver['total_pages'] = $dba->totalPages;
+    if (!empty($courses)) {
+        foreach ($courses as $course) {
+            $parameters = json_decode($course['parameters']);
+            $preknowledge = explode(',', $course['preknowledge']);
+            $assignments = $dba->query('SELECT period_id FROM teacher WHERE course_id = '.$course['id'])->fetchAll(false);
+            $assignments = array_unique($assignments);
+
+            if(Specific::Teacher() == true){
+                $teachers = $dba->query('SELECT names FROM users u WHERE (SELECT user_id FROM teacher WHERE user_id = u.id AND course_id = '.$course['id'].' AND period_id = '.$period_id.') = id')->fetchAll(false);
                 $enrolled = $dba->query('SELECT COUNT(*) FROM enrolled WHERE course_id = '.$course['id'])->fetchArray();
                 if(count($teachers) == 2){
                     $teachers = "{$teachers[0]} {$TEMP['#word']['and']} {$teachers[1]}";
@@ -37,44 +43,49 @@ if($one == 'search-courses') {
                 } else {
                     $teachers = $teachers[0];
                 }
-                $TEMP['!id'] = $course['id'];
-                $TEMP['!code'] = $course['code'];
-                $TEMP['!name'] = $course['name'];
-                $TEMP['!preknowledge'] = !empty($course['preknowledge']) ? count($preknowledge) : 0;
-                $TEMP['!parameters'] = count($parameters);
-                $TEMP['!program'] = $course['plan_id'] == 0 ? $TEMP['#word']['pending'] : $dba->query('SELECT name FROM programs p WHERE (SELECT program_id FROM plan WHERE program_id ='.$course['plan_id'].' AND program_id = p.id) = id')->fetchArray();
                 $TEMP['!teacher'] = $teachers;
-                $TEMP['!semester'] = $course['semester'];
-                $TEMP['!credits'] = $course['credits'];
-                $TEMP['!quota'] = ($course['quota']-$enrolled). "/{$course['quota']}";
-                $TEMP['!type'] = $TEMP['#word'][$course['type']];
-                $TEMP['!schedule'] = $TEMP['#word'][$course['schedule']];
-                $TEMP['!time'] = Specific::DateFormat($course['time']);
-                $html .= Specific::Maket('courses/includes/courses-list');
             }
-            Specific::DestroyMaket();
-            $deliver['status'] = 200;
-        } else {
-            if(!empty($keyword)){
-                $TEMP['keyword'] = $keyword;
-                $html .= Specific::Maket('not-found/result-for');
-            } else {
-                $html .= Specific::Maket('not-found/courses');
-            }
+
+            $TEMP['!id'] = $course['id'];
+            $TEMP['!code'] = $course['code'];
+            $TEMP['!name'] = $course['name'];
+            $TEMP['!assignments'] = count($assignments);
+            $TEMP['!preknowledge'] = !empty($course['preknowledge']) ? count($preknowledge) : 0;
+            $TEMP['!parameters'] = count($parameters);
+            $TEMP['!program'] = $course['plan_id'] == 0 ? $TEMP['#word']['pending'] : $dba->query('SELECT name FROM programs p WHERE (SELECT program_id FROM plan WHERE program_id ='.$course['plan_id'].' AND program_id = p.id) = id')->fetchArray();
+            $TEMP['!semester'] = $course['semester'];
+            $TEMP['!credits'] = $course['credits'];
+            $TEMP['!quota'] = ($course['quota']-$enrolled). "/{$course['quota']}";
+            $TEMP['!type'] = $TEMP['#word'][$course['type']];
+            $TEMP['!schedule'] = $TEMP['#word'][$course['schedule']];
+            $TEMP['!time'] = Specific::DateFormat($course['time']);
+            $html .= Specific::Maket('courses/includes/courses-list');
         }
-        $deliver['html'] = $html;
+        Specific::DestroyMaket();
+        $deliver['status'] = 200;
+    } else {
+        if(!empty($keyword)){
+            $TEMP['keyword'] = $keyword;
+            $html .= Specific::Maket('not-found/result-for');
+        } else {
+            $html .= Specific::Maket('not-found/courses');
+        }
+    }
+    $deliver['html'] = $html;
 } else if($one == 'table-courses'){
     $page = Specific::Filter($_POST['page_id']);
     if(!empty($page) && is_numeric($page) && isset($page) && $page > 0){
         $html = "";
         $query = "";
         $keyword = Specific::Filter($_POST['keyword']);
+        $user_id = Specific::Filter($_POST['user_id']);
+        $period_id = Specific::Filter($_POST['period_id']);
         if(!empty($keyword)){
             $query .= " WHERE name LIKE '%$keyword%'";
         }
         $TEMP['#programs'] = $dba->query('SELECT * FROM programs')->fetchAll();
         if(Specific::Teacher() == true){
-            $teachers = $dba->query('SELECT course_id FROM teacher WHERE user_id = '.$TEMP['#user']['id'])->fetchAll(false);
+            $teachers = $dba->query('SELECT course_id FROM teacher WHERE user_id = '.$TEMP['#user']['id'].' AND period_id = '.$period_id)->fetchAll(false);
             $query .= (!empty($keyword) ? ' AND' : ' WHERE').' id IN ('.implode(',', $teachers).')';
         }
         $courses = $dba->query('SELECT * FROM courses'.$query.' LIMIT ? OFFSET ?', 10, $page)->fetchAll();
@@ -82,24 +93,29 @@ if($one == 'search-courses') {
             foreach ($courses as $course) {
                 $parameters = json_decode($course['parameters']);
                 $preknowledge = explode(',', $course['preknowledge']);
-                $teachers = $dba->query('SELECT names FROM users u WHERE (SELECT user_id FROM teacher WHERE user_id = u.id AND course_id = '.$course['id'].') = id')->fetchAll(false);
-                $enrolled = $dba->query('SELECT COUNT(*) FROM enrolled WHERE course_id = '.$course['id'])->fetchArray();
-                if(count($teachers) == 2){
-                    $teachers = "{$teachers[0]} {$TEMP['#word']['and']} {$teachers[1]}";
-                } else if(count($teachers) > 2){
-                    $end = end($teachers);
-                    array_pop($teachers);
-                    $teachers = implode(', ', $teachers)." {$TEMP['#word']['and']} $end";
-                } else {
-                    $teachers = $teachers[0];
+                $assignments = $dba->query('SELECT period_id FROM teacher WHERE course_id = '.$course['id'])->fetchAll(false);
+                $assignments = array_unique($assignments);
+                if(Specific::Teacher() == true){
+                    $teachers = $dba->query('SELECT names FROM users u WHERE (SELECT user_id FROM teacher WHERE user_id = u.id AND course_id = '.$course['id'].' AND period_id = '.$period_id.') = id')->fetchAll(false);
+                    $enrolled = $dba->query('SELECT COUNT(*) FROM enrolled WHERE course_id = '.$course['id'])->fetchArray();
+                    if(count($teachers) == 2){
+                        $teachers = "{$teachers[0]} {$TEMP['#word']['and']} {$teachers[1]}";
+                    } else if(count($teachers) > 2){
+                        $end = end($teachers);
+                        array_pop($teachers);
+                        $teachers = implode(', ', $teachers)." {$TEMP['#word']['and']} $end";
+                    } else {
+                        $teachers = $teachers[0];
+                    }
+                    $TEMP['!teacher'] = $teachers;
                 }
                 $TEMP['!id'] = $course['id'];
                 $TEMP['!code'] = $course['code'];
                 $TEMP['!name'] = $course['name'];
+                $TEMP['!assignments'] = count($assignments);
                 $TEMP['!preknowledge'] = !empty($course['preknowledge']) ? count($preknowledge) : 0;
                 $TEMP['!parameters'] = count($parameters);
                 $TEMP['!program'] = $course['plan_id'] == 0 ? $TEMP['#word']['pending'] : $dba->query('SELECT name FROM programs p WHERE (SELECT program_id FROM plan WHERE program_id ='.$course['plan_id'].' AND program_id = p.id) = id')->fetchArray();
-                $TEMP['!teacher'] = $teachers;
                 $TEMP['!semester'] = $course['semester'];
                 $TEMP['!credits'] = $course['credits'];
                 $TEMP['!quota'] = ($course['quota']-$enrolled). "/{$course['quota']}";
