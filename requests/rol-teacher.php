@@ -139,6 +139,7 @@ if($one == 'search-courses') {
         if($type == 'notes' && Specific::Teacher() == true){
             $my_courses = $dba->query('SELECT course_id FROM teacher WHERE user_id = '.$TEMP['#user']['id'])->fetchAll(false);
             $users = $dba->query('SELECT * FROM users u WHERE id != '.$TEMP['#user']['id'].' AND role = "student" AND (names LIKE "%'.$keyword.'%" OR surnames LIKE "%'.$keyword.'%") AND (SELECT user_id FROM enrolled WHERE user_id = u.id AND type = "course" AND course_id IN ('.implode(',', $my_courses).')) = id LIMIT 10')->fetchAll();
+            $deliver['XD'] = $users;
         } else {
             $users = $dba->query('SELECT * FROM users WHERE id != '.$TEMP['#user']['id'].' AND role = "student" AND (names LIKE "%'.$keyword.'%" OR surnames LIKE "%'.$keyword.'%") LIMIT 10')->fetchAll();
         }
@@ -156,6 +157,7 @@ if($one == 'search-courses') {
     }
 } else if($one == 'get-citems'){
     $id = Specific::Filter($_POST['id']);
+    $period_id = Specific::Filter($_POST['period_id']);
     $type = Specific::Filter($_POST['type']);
     $pos = Specific::Filter($_POST['pos']);
     if(isset($id) && is_numeric($id)){
@@ -183,21 +185,24 @@ if($one == 'search-courses') {
             } else {
                 $items = array();
             }
-            $course = $dba->query('SELECT * FROM courses WHERE id = '.$id)->fetchArray();
+
             if($type == 'notes'){
-                $items['parameters'] = json_decode($course['parameters'], true);
+                $parameter = $dba->query('SELECT * FROM parameter WHERE course_id = '.$id)->fetchArray();
+                $items['parameters'] = json_decode($parameter['parameters'], true);
                 $items['notes'] = json_decode($note['notes'], true);
                 if(isset($pos) && is_numeric($pos)){
-                    $items['parameters'] = json_decode($course['parameters'], true)[$pos];
+                    $items['parameters'] = json_decode($parameter['parameters'], true)[$pos];
                     $notes = json_decode($note['notes'], true)[$pos];
                     $items['notes'] = $notes;
                 }
             } else if(Specific::Teacher() == true){
-                $note_mode = $dba->query('SELECT note_mode FROM plan WHERE id = '.$course['plan_id'])->fetchArray();
+                $parameter = $dba->query('SELECT * FROM parameter WHERE course_id = '.$id.' AND period_id = '.$period_id)->fetchArray();
+                $plan_id = $dba->query('SELECT plan_id FROM courses WHERE id = '.$id)->fetchArray();
+                $note_mode = $dba->query('SELECT note_mode FROM plan WHERE id = '.$plan_id)->fetchArray();
                 if(isset($note_mode)){
                     $deliver['mode'] = $note_mode;
-                    if(!empty($course['parameters'])){
-                       $items = json_decode($course['parameters'], true); 
+                    if(!empty($parameter['parameters'])){
+                       $items = json_decode($parameter['parameters'], true); 
                     } else {
                         $example = array(
                             array(

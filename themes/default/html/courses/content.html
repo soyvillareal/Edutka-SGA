@@ -509,6 +509,7 @@ var GE = D.querySelectorAll('.show_emodal'),
             course_id = self.getAttribute('data-id');
         self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
         Req('{$url->{req/rol-teacher/get-citems}}', function(e){
+            console.log(e);
             if(e.status == 200){
                 <?php if($TEMP['#admin'] == true){ ?>
                 for (var key in e.items) {
@@ -525,11 +526,11 @@ var GE = D.querySelectorAll('.show_emodal'),
                 <?php } else if($TEMP['#teacher'] == true) { ?>
                     mode = e.mode;
                     if(mode == '100'){
-                        addClass(gv, 'hidden'), addClass(GJ, 'hidden'), removeClass(gb, 'hidden');
+                        addClass(gv, 'hidden'), addClass(GJ, 'hidden'), removeClass(gb, 'hidden'), GK.innerHTML = "";
                         for(var j = 0, i = e.items.length; j < i; j++){
                             var el = e.items[j],
                                 element = D.createElement('div');
-                            GK.innerHTML = "", element.className = 'group-validate display-block position-relative w-100 padding-25 border-all border-blue margin-b20', element.id = "parameter_"+j, element.innerHTML = '<button class="delete-parameter position-absolute h-8 btn-noway hover-button font-ultraly color-red" id="delete-parameter">-</button><h3 class="text-center" id="text-parameter">{$word->parameter} #'+(j+1)+'</h3><div class="display-flex"><div class="margin-auto margin-b15 margin-t15 padding-r10"><input id="param_name_'+j+'" type="text" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue background-grely color-black" placeholder="{$word->name}" value="'+el['name']+'"/></div><div class="position-relative margin-auto margin-b15 margin-t15 percent-gadget"><input id="param_percent_'+j+'" type="text" class="cont-input mw-w-100 h-50 border-radius-12 animated-easy border-focus-blue margin-left-auto background-grely color-black text-center" placeholder="{$word->percentage}" value="'+el['percent']+'"/></div></div><div class="text-error color-red text-center font-low margin-t5"></div>', GK.appendChild(element), count = (j+1);
+                            element.className = 'group-validate display-block position-relative w-100 padding-25 border-all border-blue margin-b20', element.id = "parameter_"+j, element.innerHTML = '<button class="delete-parameter position-absolute h-8 btn-noway hover-button font-ultraly color-red" id="delete-parameter">-</button><h3 class="text-center" id="text-parameter">{$word->parameter} #'+(j+1)+'</h3><div class="display-flex"><div class="margin-auto margin-b15 margin-t15 padding-r10"><input id="param_name_'+j+'" type="text" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue background-grely color-black" placeholder="{$word->name}" value="'+el['name']+'"/></div><div class="position-relative margin-auto margin-b15 margin-t15 percent-gadget"><input id="param_percent_'+j+'" type="text" class="cont-input mw-w-100 h-50 border-radius-12 animated-easy border-focus-blue margin-left-auto background-grely color-black text-center" placeholder="{$word->percentage}" value="'+el['percent']+'"/></div></div><div class="text-error color-red text-center font-low margin-t5"></div>', GK.appendChild(element), count = (j+1);
                             addEvent(element.querySelector('#delete-parameter'), 'click', function(){
                                 this.parentNode.remove(), count = 0;
                                 var els = GK.children;
@@ -544,10 +545,11 @@ var GE = D.querySelectorAll('.show_emodal'),
                         for(let j = 0, i = e.items.length; j < i; j++){
                             var el = e.items[j],
                                 cp = D.querySelector('#container-parameters_'+j);
+                            cp.innerHTML = "";
                             for(var n = 0, l = el.length; n < l; n++){
                                 var el2 = el[n],
                                     element = D.createElement('div');
-                                cp.innerHTML = "", element.className = 'group-validate display-block position-relative w-100 padding-25 border-all border-blue margin-b20', element.id = "parameter_"+n, element.innerHTML = '<button class="delete-parameter position-absolute h-8 btn-noway hover-button font-ultraly color-red" id="delete-parameter">-</button><h3 class="text-center" id="text-parameter">{$word->parameter} #'+(n+1)+'</h3><div class="display-flex"><div class="margin-auto margin-b15 margin-t15 padding-r10"><input id="param_name_'+n+'" type="text" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue background-grely color-black" placeholder="{$word->name}" value="'+el2['name']+'"/></div><div class="position-relative margin-auto margin-b15 margin-t15 percent-gadget"><input id="param_percent_'+n+'" type="text" class="cont-input mw-w-100 h-50 border-radius-12 animated-easy border-focus-blue margin-left-auto background-grely color-black text-center" placeholder="{$word->percentage}" value="'+el2['percent']+'"/></div></div><div class="text-error color-red text-center font-low margin-t5"></div>', cp.appendChild(element), count[j] = (n+1);
+                                element.className = 'group-validate display-block position-relative w-100 padding-25 border-all border-blue margin-b20', element.id = "parameter_"+n, element.innerHTML = '<button class="delete-parameter position-absolute h-8 btn-noway hover-button font-ultraly color-red" id="delete-parameter">-</button><h3 class="text-center" id="text-parameter">{$word->parameter} #'+(n+1)+'</h3><div class="display-flex"><div class="margin-auto margin-b15 margin-t15 padding-r10"><input id="param_name_'+n+'" type="text" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue background-grely color-black" placeholder="{$word->name}" value="'+el2['name']+'"/></div><div class="position-relative margin-auto margin-b15 margin-t15 percent-gadget"><input id="param_percent_'+n+'" type="text" class="cont-input mw-w-100 h-50 border-radius-12 animated-easy border-focus-blue margin-left-auto background-grely color-black text-center" placeholder="{$word->percentage}" value="'+el2['percent']+'"/></div></div><div class="text-error color-red text-center font-low margin-t5"></div>', cp.appendChild(element), count[j] = (n+1);
                                 addEvent(element.querySelector('#delete-parameter'), 'click', function(){
                                     this.parentNode.remove(), count[j] = 0;
                                     var els = cp.children;
@@ -564,7 +566,7 @@ var GE = D.querySelectorAll('.show_emodal'),
             } else {
                 self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
             }
-        }, "POST", "&type=courses&id=" + course_id)
+        }, "POST", "&type=courses&period_id={#period_id}&id=" + course_id)
     },
     GD = function(){
         GT.style.display = "block", D.body.style.overflow = "hidden", GQ.setAttribute('data-id', this.getAttribute('data-id'));
@@ -896,7 +898,9 @@ addEvent(ga, "keyup", function(e){
         }
     }, "POST", "&type=" + type + "&id=" + self.getAttribute('data-id') + "&teacher=" + GP.value + "&period_id=" + gu.value)
 }), addEvent(D.querySelector('#cancel-aalert'), 'click', function(){
-    gc.style.display = "", D.body.style.overflow = "";
+    var gf = ZO.querySelectorAll('.tipsit-choice');
+    gc.style.display = "", D.body.style.overflow = "", GX = [], GP.value = "", ga.value = "";
+    for(var j = 0, i = gf.length; j < i; j++) gf[j].remove();
 }), addEvent(gu, 'change', function(){
     var self = this,
         ct = GP.parentNode.parentNode;

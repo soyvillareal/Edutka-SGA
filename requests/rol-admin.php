@@ -24,9 +24,14 @@ if($one == 'search-course') {
             }
         }
         if(isset($plan_id)){
-            $couarr = $dba->query('SELECT id FROM courses WHERE plan_id = 0 OR plan_id = '.$plan_id)->fetchAll(false);
+            $couarr = $dba->query('SELECT id FROM courses WHERE plan_id = '.$plan_id)->fetchAll(false);
             if(!empty($couarr)){
                 $query .= " AND id IN (".implode(',', $couarr).")";
+            }
+        } else {
+            $pcourses = $dba->query('SELECT courses FROM plan WHERE courses = '.$course_id)->fetchAll(false);
+            if(!empty($pcourses)){
+                $query .= " AND id IN (".implode(',', $pcourses).")";
             }
         }
     }

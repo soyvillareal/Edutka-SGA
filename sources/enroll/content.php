@@ -31,6 +31,13 @@ if(isset($_GET['user'])){
 }
 
 if(!empty($TEMP['#type'])){
+	if($TEMP['#type'] == 'course'){
+		$TEMP['#program_id'] = Specific::Filter($_GET['program_id']);
+		if(isset($_GET['program_id'])){
+			$params .= (!empty($params) ? "&" : "?")."program_id={$TEMP['#program_id']}";
+			$sqls .= " AND program_id = '{$TEMP['#program_id']}'";
+		}
+	}
 	$sqls .= " AND type = '{$TEMP['#type']}'";
 	$params .= (!empty($params) ? "&" : "?")."type={$TEMP['#type']}";
 }

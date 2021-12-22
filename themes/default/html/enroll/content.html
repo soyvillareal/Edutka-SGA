@@ -36,7 +36,7 @@
 			    <div class="content-types position-relative margin-b10">
 			    	<select id="program_id" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue caret-down background-grely color-black">
 			            <?php foreach($TEMP['#programs'] as $program){ ?>
-	                    <option value="<?php echo $program['id']; ?>"><?php echo $program['name']; ?></option>
+	                    <option value="<?php echo $program['id']; ?>"<?php echo($program['id'] == $TEMP['#program_id']) ? ' selected' : '';?>><?php echo $program['name']; ?></option>
 	                    <?php } ?>
 				    </select>
 			    	<div class="color-red text-left text-error font-low margin-t5"></div>
@@ -113,6 +113,8 @@
 var GA = D.querySelectorAll('.show_cmodal'),
 	GB = D.querySelectorAll('.show_rcmodal'),
 	GK = D.querySelectorAll('.show_rpmodal'),
+	GY = D.querySelector('#type'),
+	GS = D.querySelector('#program_id'),
 	GI = D.querySelector('#register-ecnroll'),
 	GL = D.querySelector('#register-epnroll'),
 	GJ = D.querySelector('#alert-enrollc'),
@@ -120,16 +122,6 @@ var GA = D.querySelectorAll('.show_cmodal'),
 	GG = D.querySelector('#cancel-enroll'),
 	GE = D.querySelector('#alert-cancel'),
 	GP = D.querySelector('#container-enrolled'),
-	GF = function(e){
-		var self = this;
-	    Req('{$url->{req/rol-student/search-enrolled}}', function(e){
-	        GP.innerHTML = e.html;
-	        GA = D.querySelectorAll('.show_cmodal'), GB = D.querySelectorAll('.show_rcmodal'), GK = D.querySelectorAll('.show_rpmodal');
-			for(var j = 0, i = GB.length; j < i; j++) addEvent(GB[j], "click", GC);
-	        for(var j = 0, i = GA.length; j < i; j++) addEvent(GA[j], "click", GH);
-			for(var j = 0, i = GK.length; j < i; j++) addEvent(GK[j], "click", GM);
-	    }, "POST", "&keyword=" + self.value + "&id={#user_id}&type={#type}<?php echo(count($TEMP['#programs']) > 1 && $TEMP['#type'] == 'course') ? '&program_id=" + D.querySelector("#program_id").value' : '&program_id={#program}"';?>)
-	},
 	GC = function(){
 		GJ.style.display = "block", D.body.style.overflow = "hidden", GI.setAttribute('data-id', this.getAttribute('data-id')), GI.setAttribute('data-plan', this.getAttribute('data-plan'));
 	},
@@ -140,17 +132,27 @@ var GA = D.querySelectorAll('.show_cmodal'),
         GN.style.display = "block", D.body.style.overflow = "hidden", GL.setAttribute('data-id', this.getAttribute('data-id'));
     },
 	keyword = "{#keyword_enroll}";
-
-
-<?php if(count($TEMP['#programs']) > 1 && $TEMP['#type'] == 'course'){ ?>addEvent(D.querySelector('#program_id'), 'change', GF), <?php } ?>addEvent(D.querySelector('#close-ealert'), 'click', function(){
+<?php if(count($TEMP['#programs']) > 1 && $TEMP['#type'] == 'course'){ ?>
+addEvent(GS, 'change', function(){
+	preloadPage('&one=enroll<?php echo($TEMP["#admin"] == true || $TEMP["#academic"] == true) ? "&keyword={#keyword_enroll}&user={#user_id}" : ''?>&type=' + GY.value + '&program_id=' + this.value);
+}), <?php } ?>addEvent(D.querySelector('#close-ealert'), 'click', function(){
     GE.style.display = "", D.body.style.overflow = "";
 }), addEvent(D.querySelector('#cancel-ecalert'), 'click', function(){
     GJ.style.display = "", D.body.style.overflow = "";
 }), addEvent(D.querySelector('#cancel-epalert'), 'click', function(){
     GN.style.display = "", D.body.style.overflow = "";
-})<?php if(!empty($TEMP['#keyword_enroll']) || $TEMP['#student'] == true) { ?>, addEvent(D.querySelector('#type'), 'change', function(){
-    preloadPage('&one=enroll<?php echo($TEMP["#admin"] == true || $TEMP["#academic"] == true) ? "&keyword={#keyword_enroll}&user={#user_id}" : ''?>&type='+this.value);
-}), addEvent(D.querySelector('#search-enrolled'), "keyup", GF)<?php } ?>, addEvent(GG, "click", function(){
+})<?php if(!empty($TEMP['#keyword_enroll']) || $TEMP['#student'] == true) { ?>, addEvent(GY, 'change', function(){
+    preloadPage('&one=enroll<?php echo($TEMP["#admin"] == true || $TEMP["#academic"] == true) ? "&keyword={#keyword_enroll}&user={#user_id}" : ''?>&type=' + this.value);
+}), addEvent(D.querySelector('#search-enrolled'), "keyup", function(){
+	var self = this;
+	Req('{$url->{req/rol-student/search-enrolled}}', function(e){
+	    GP.innerHTML = e.html;
+	    GA = D.querySelectorAll('.show_cmodal'), GB = D.querySelectorAll('.show_rcmodal'), GK = D.querySelectorAll('.show_rpmodal');
+		for(var j = 0, i = GB.length; j < i; j++) addEvent(GB[j], "click", GC);
+	    for(var j = 0, i = GA.length; j < i; j++) addEvent(GA[j], "click", GH);
+		for(var j = 0, i = GK.length; j < i; j++) addEvent(GK[j], "click", GM);
+	}, "POST", "&keyword=" + self.value + "&id={#user_id}&type={#type}<?php echo(count($TEMP['#programs']) > 1 && $TEMP['#type'] == 'course') ? '&program_id=" + D.querySelector("#program_id").value' : '&program_id={#program}"';?>)
+})<?php } ?>, addEvent(GG, "click", function(){
     var self = this; 
     self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
 	Req('{$url->{req/rol-student/cancel-enroll}}', function(e){
