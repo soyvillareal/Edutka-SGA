@@ -18,32 +18,53 @@ if($one == 'search-courses') {
         $query .= " WHERE name LIKE '%$keyword%'";
     }
     $TEMP['#programs'] = $dba->query('SELECT * FROM programs')->fetchAll();
-    if(Specific::Teacher() == true){
-        $teachers = $dba->query('SELECT course_id FROM teacher WHERE user_id = '.$TEMP['#user']['id'].' AND period_id = '.$period_id)->fetchAll(false);
-        $query .= (!empty($keyword) ? ' AND' : ' WHERE').' id IN ('.implode(',', $teachers).')';
+    if(Specific::Teacher() == true || Specific::Admin() == true){
+        $sql = '';
+        if(Specific::Teacher() == true){
+            $sql .= ' WHERE user_id = '.$TEMP['#user_id'];
+            if(is_numeric($period_id)){
+                $sql .= (!empty($sql) ? ' AND' : ' WHERE').' period_id = '.$period_id;
+            }
+            $teachers = $dba->query('SELECT course_id FROM teacher'.$sql)->fetchAll(false);
+        }
+        $sql = (!empty($keyword) ? ' AND' : ' WHERE').' id IN ('.implode(',', $teachers);
+        if(!empty($teachers)){
+            $courses = $dba->query('SELECT * FROM courses'.$query.$sql.') LIMIT ? OFFSET ?', 10, 1)->fetchAll();
+        } else {
+            $courses = $dba->query('SELECT * FROM courses'.$query.' LIMIT ? OFFSET ?', 10, 1)->fetchAll();
+        }
+    } else {
+        $courses = $dba->query('SELECT * FROM courses'.$query.' LIMIT ? OFFSET ?', 10, 1)->fetchAll();
     }
-    $courses = $dba->query('SELECT * FROM courses'.$query.' LIMIT ? OFFSET ?', 10, 1)->fetchAll();
+    
     $deliver['total_pages'] = $dba->totalPages;
     if (!empty($courses)) {
         foreach ($courses as $course) {
-            $parameters = json_decode($course['parameters']);
+            if(Specific::Teacher() == true || Specific::Admin() == true){
+                if(is_numeric($period_id)){
+                    $parameters = $dba->query('SELECT parameters FROM parameter WHERE course_id = '.$course['id'].' AND period_id = '.$period_id)->fetchArray();
+                }
+            }
+            $parameters = json_decode($parameters);
             $preknowledge = explode(',', $course['preknowledge']);
             $assignments = $dba->query('SELECT period_id FROM teacher WHERE course_id = '.$course['id'])->fetchAll(false);
             $assignments = array_unique($assignments);
 
             if(Specific::Teacher() == true){
-                $teachers = $dba->query('SELECT names FROM users u WHERE (SELECT user_id FROM teacher WHERE user_id = u.id AND course_id = '.$course['id'].' AND period_id = '.$period_id.') = id')->fetchAll(false);
-                $enrolled = $dba->query('SELECT COUNT(*) FROM enrolled WHERE course_id = '.$course['id'])->fetchArray();
-                if(count($teachers) == 2){
-                    $teachers = "{$teachers[0]} {$TEMP['#word']['and']} {$teachers[1]}";
-                } else if(count($teachers) > 2){
-                    $end = end($teachers);
-                    array_pop($teachers);
-                    $teachers = implode(', ', $teachers)." {$TEMP['#word']['and']} $end";
-                } else {
-                    $teachers = $teachers[0];
+                if(is_numeric($period_id)){
+                    $teachers = $dba->query('SELECT names FROM users u WHERE (SELECT user_id FROM teacher WHERE user_id = u.id AND course_id = '.$course['id'].' AND period_id = '.$period_id.') = id')->fetchAll(false);
+                    $enrolled = $dba->query('SELECT COUNT(*) FROM enrolled WHERE course_id = '.$course['id'])->fetchArray();
+                    if(count($teachers) == 2){
+                        $teachers = "{$teachers[0]} {$TEMP['#word']['and']} {$teachers[1]}";
+                    } else if(count($teachers) > 2){
+                        $end = end($teachers);
+                        array_pop($teachers);
+                        $teachers = implode(', ', $teachers)." {$TEMP['#word']['and']} $end";
+                    } else {
+                        $teachers = $teachers[0];
+                    }
+                    $TEMP['!teacher'] = $teachers;
                 }
-                $TEMP['!teacher'] = $teachers;
             }
 
             $TEMP['!id'] = $course['id'];
@@ -84,30 +105,51 @@ if($one == 'search-courses') {
             $query .= " WHERE name LIKE '%$keyword%'";
         }
         $TEMP['#programs'] = $dba->query('SELECT * FROM programs')->fetchAll();
-        if(Specific::Teacher() == true){
-            $teachers = $dba->query('SELECT course_id FROM teacher WHERE user_id = '.$TEMP['#user']['id'].' AND period_id = '.$period_id)->fetchAll(false);
-            $query .= (!empty($keyword) ? ' AND' : ' WHERE').' id IN ('.implode(',', $teachers).')';
+        if(Specific::Teacher() == true || Specific::Admin() == true){
+            $sql = '';
+            if(Specific::Teacher() == true){
+                $sql .= ' WHERE user_id = '.$TEMP['#user_id'];
+                if(is_numeric($period_id)){
+                    $sql .= (!empty($keyword) ? ' AND' : ' WHERE').' period_id = '.$period_id;
+                }
+                $teachers = $dba->query('SELECT course_id FROM teacher'.$sql)->fetchAll(false);
+            }
+            $sql = (!empty($keyword) ? ' AND' : ' WHERE').' id IN ('.implode(',', $teachers);
+            if(!empty($teachers)){
+                $courses = $dba->query('SELECT * FROM courses'.$query.$sql.') LIMIT ? OFFSET ?', 10, $page)->fetchAll();
+            } else {
+                $courses = $dba->query('SELECT * FROM courses'.$query.' LIMIT ? OFFSET ?', 10, $page)->fetchAll();
+            }
+        } else {
+            $courses = $dba->query('SELECT * FROM courses'.$query.' LIMIT ? OFFSET ?', 10, $page)->fetchAll();
         }
-        $courses = $dba->query('SELECT * FROM courses'.$query.' LIMIT ? OFFSET ?', 10, $page)->fetchAll();
+
         if (!empty($courses)) {
             foreach ($courses as $course) {
-                $parameters = json_decode($course['parameters']);
+                if(Specific::Teacher() == true || Specific::Admin() == true){
+                    if(is_numeric($period_id)){
+                        $parameters = $dba->query('SELECT parameters FROM parameter WHERE course_id = '.$course['id'].' AND period_id = '.$period_id)->fetchArray();
+                    }
+                }
+                $parameters = json_decode($parameters);
                 $preknowledge = explode(',', $course['preknowledge']);
                 $assignments = $dba->query('SELECT period_id FROM teacher WHERE course_id = '.$course['id'])->fetchAll(false);
                 $assignments = array_unique($assignments);
                 if(Specific::Teacher() == true){
-                    $teachers = $dba->query('SELECT names FROM users u WHERE (SELECT user_id FROM teacher WHERE user_id = u.id AND course_id = '.$course['id'].' AND period_id = '.$period_id.') = id')->fetchAll(false);
-                    $enrolled = $dba->query('SELECT COUNT(*) FROM enrolled WHERE course_id = '.$course['id'])->fetchArray();
-                    if(count($teachers) == 2){
-                        $teachers = "{$teachers[0]} {$TEMP['#word']['and']} {$teachers[1]}";
-                    } else if(count($teachers) > 2){
-                        $end = end($teachers);
-                        array_pop($teachers);
-                        $teachers = implode(', ', $teachers)." {$TEMP['#word']['and']} $end";
-                    } else {
-                        $teachers = $teachers[0];
+                    if(is_numeric($period_id)){
+                        $teachers = $dba->query('SELECT names FROM users u WHERE (SELECT user_id FROM teacher WHERE user_id = u.id AND course_id = '.$course['id'].' AND period_id = '.$period_id.') = id')->fetchAll(false);
+                        $enrolled = $dba->query('SELECT COUNT(*) FROM enrolled WHERE course_id = '.$course['id'])->fetchArray();
+                        if(count($teachers) == 2){
+                            $teachers = "{$teachers[0]} {$TEMP['#word']['and']} {$teachers[1]}";
+                        } else if(count($teachers) > 2){
+                            $end = end($teachers);
+                            array_pop($teachers);
+                            $teachers = implode(', ', $teachers)." {$TEMP['#word']['and']} $end";
+                        } else {
+                            $teachers = $teachers[0];
+                        }
+                        $TEMP['!teacher'] = $teachers;
                     }
-                    $TEMP['!teacher'] = $teachers;
                 }
                 $TEMP['!id'] = $course['id'];
                 $TEMP['!code'] = $course['code'];
@@ -135,7 +177,7 @@ if($one == 'search-courses') {
     if (!empty($_POST['keyword'])) {
         $html = '';
         $keyword = Specific::Filter($_POST['keyword']);
-        $type = Specific::Filter($_POST['type']);
+        $type = Specific::Filter($_POST['typet']);
         if($type == 'notes' && Specific::Teacher() == true){
             $my_courses = $dba->query('SELECT course_id FROM teacher WHERE user_id = '.$TEMP['#user']['id'])->fetchAll(false);
             $users = $dba->query('SELECT * FROM users u WHERE id != '.$TEMP['#user']['id'].' AND role = "student" AND (names LIKE "%'.$keyword.'%" OR surnames LIKE "%'.$keyword.'%") AND (SELECT user_id FROM enrolled WHERE user_id = u.id AND type = "course" AND course_id IN ('.implode(',', $my_courses).')) = id LIMIT 10')->fetchAll();
@@ -281,7 +323,7 @@ if($one == 'search-courses') {
             $error = 'other';
         }
         if (empty($error)) {
-            if($dba->query('UPDATE courses SET parameters = ? WHERE id = '.$id, json_encode($arrayj))->returnStatus()){
+            if($dba->query('UPDATE parameter SET parameters = ? WHERE id = '.$id, json_encode($arrayj))->returnStatus()){
                 $deliver['status'] = 200;
             }
         } else {

@@ -1308,6 +1308,10 @@ h5 {
     position: relative
 }
 
+.border-none {
+    border: none;
+}
+
 .border-dotted-14 {
     border-top:14px dotted;
 }

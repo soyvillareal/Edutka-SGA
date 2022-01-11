@@ -273,7 +273,6 @@ if($one == 'get-foitems'){
 } else if($one == 'get-periods'){
     $id = Specific::Filter($_POST['id']);
     if(isset($id) && is_numeric($id)){
-        $items = array();
         $periods = $dba->query('SELECT period_id FROM teacher WHERE course_id = '.$id)->fetchAll(false);
         $periods = array_unique($periods);
         $periods = $dba->query('SELECT * FROM periods WHERE id IN ('.implode(',', $periods).')')->fetchAll();
