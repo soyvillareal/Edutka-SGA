@@ -19,7 +19,8 @@ if($one == 'search-enrolled'){
     if(!empty($keyword)){
         $query .= " WHERE (id LIKE '%$keyword%' OR name LIKE '%$keyword%')";
         if($type == 'course'){
-        	$courses = $dba->query('SELECT id FROM courses c WHERE (SELECT id FROM plan WHERE program_id = '.$program_id.' AND id = c.plan_id) = plan_id')->fetchAll(false);
+        	$courses = $dba->query('SELECT course_id FROM curriculum c WHERE (SELECT id FROM plan WHERE program_id = '.$program_id.' AND id = c.plan_id) = plan_id')->fetchAll(false);
+
         	if(!empty($courses)){
         		$query .= " AND id IN (".implode(',', $courses).")";
         	}
@@ -43,7 +44,7 @@ if($one == 'search-enrolled'){
 					}
 					$TEMP['!teacher'] = $teachers;
 					$TEMP['!name'] = "{$search['name']} ".(!is_array($periodc) ? "($periodc)" : "");
-					$TEMP['!plan_id'] = $search['plan_id'];
+					$TEMP['!plan_id'] = $dba->query('SELECT plan_id FROM curriculum WHERE course_id = '.$search['id'])->fetchArray();
 					$TEMP['!color'] = 'purple';
 					$search_id = 'course_id';
 				} else {
@@ -198,7 +199,7 @@ if($one == 'search-enrolled'){
 		        	}
 		        	if(!in_array(false, $prektrues) || empty($prektrues)){
 			        	if($plan['count'] > 0){
-			        		if($dba->query('SELECT COUNT(*) FROM courses WHERE id = '.$course_id.' AND plan_id = '.$plan_id)->fetchArray() > 0){
+			        		if($dba->query('SELECT COUNT(*) FROM courses c WHERE id = '.$course_id.' AND (SELECT course_id FROM curriculum WHERE plan_id = '.$plan_id.' AND course_id = c.id) = id')->fetchArray() > 0){
 			        			if($period['count'] > 0){
 			        				if($dba->query('INSERT INTO enrolled (period_id, user_id, course_id, program_id, type, status, `time`) VALUES ('.$period['id'].', '.$user_id.', '.$course_id.', '.$plan['program_id'].', "course", "registered",'.time().')')->returnStatus() && $dba->query('INSERT INTO notes (user_id, course_id, program_id, notes, `time`) VALUES ('.$user_id.','.$course_id.', '.$plan['program_id'].', "'.json_encode(array(0.0, 0.0, 0.0)).'",'.time().')')->returnStatus()){
 						        		$deliver['status'] = 200;

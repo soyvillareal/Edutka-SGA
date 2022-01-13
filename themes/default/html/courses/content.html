@@ -379,7 +379,8 @@
                         <div class="cont-label dv-vertical-center">
                             <label class="color-black">{$word->period}</label>
                         </div>
-                        <div id="select-dperiod" class="flex-grow">
+                        <div class="flex-grow">
+                            <select id="period" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue caret-down area_changed area_validate background-grely color-black"></select>
                             <div class="color-red text-left text-error font-low margin-t5"></div>
                         </div>
                     </div>
@@ -407,6 +408,7 @@
             </div>
             <div class="display-flex">
                 <div class="margin-left-auto margin-r25 margin-b15">
+                    <button class="btn-noway background-red border-radius-4 padding-10 color-white hover-button font-uppercase hidden" id="delete-aalert">{$word->delete}</button>
                     <button class="btn-noway background-grely border-radius-4 padding-10 color-black hover-button font-uppercase" id="cancel-aalert">{$word->cancel}</button>
                     <button class="btn-noway background-blue border-radius-4 padding-10 color-black hover-opacity font-uppercase" id="register-assings" data-type="add">
                         <span class="color-white">{$word->save}</span>
@@ -418,6 +420,20 @@
             </div>
         </div>
     </div>
+</div>
+<div class="background-pointer"></div>
+<div class="cont-alert" id="alert-adelete">
+   <h2 class="color-red">{$word->delete} {$word->assignment}</h2>
+   <p>{$word->this_action_cannot_undone_continue}</p>
+   <div class="padding-t25">
+      <button class="btn-noway background-grely border-radius-4 padding-10 color-black hover-button font-uppercase" id="cancel-adalert">{$word->cancel}</button>
+      <button class="btn-noway background-blue border-radius-4 padding-10 color-black hover-opacity font-uppercase" id="delete-assignment">
+        <span class="color-white">{$word->delete}</span>
+        <div class="content-spinner-circle">
+            <div class="spinner-circle"></div>
+        </div>
+    </button>
+   </div>
 </div>
 <div class="background-pointer"></div>
 <?php } ?>
@@ -434,9 +450,13 @@ var GE = D.querySelectorAll('.show_emodal'),
     GB = D.querySelector('#this-course'),
     gxy = D.querySelector('#period_id'),
     gc = D.querySelector('#alert-assigns'),
+
+    gcc = D.querySelector('#alert-adelete'),
+    gyy = D.querySelector('#delete-assignment'),
+    gdd = D.querySelector('#delete-aalert'),
+
     gd = D.querySelector('#register-assings'),
-    gu = D.createElement('select'),
-    guu = D.querySelector('#select-dperiod'),
+    gu = D.querySelector('#period'),
     gy = D.querySelector('#assigns-title'),
     gr = D.querySelector('#select-period'),
     grr = D.querySelector('#text-period'),
@@ -579,6 +599,9 @@ var GE = D.querySelectorAll('.show_emodal'),
     GD = function(){
         GT.style.display = "block", D.body.style.overflow = "hidden", GQ.setAttribute('data-id', this.getAttribute('data-id'));
     },
+    GDD = function(){
+        gc.style.display = "", gcc.style.display = "block", D.body.style.overflow = "hidden", gyy.setAttribute('data-id', this.getAttribute('data-id'));
+    },
     gk = function(){
         var self = this,
             course_id = self.getAttribute('data-id'),
@@ -586,47 +609,25 @@ var GE = D.querySelectorAll('.show_emodal'),
         if(type == 'add'){
             var gf = ZO.querySelectorAll('.tipsit-choice');
             for(var j = 0, i = gf.length; j < i; j++) gf[j].remove();
-            gy.innerText = "{$word->assign_teachers}", addClass(gr, 'hidden'), removeClass(gt, 'hidden'), gd.setAttribute('data-type', 'add')
+            gc.style.display = "block", D.body.style.overflow = "hidden", gy.innerText = "{$word->assign_teachers}", addClass(gr, 'hidden'), removeClass(gt, 'hidden'), gd.setAttribute('data-id', course_id), gd.setAttribute('data-type', 'add')
         } else {
             gy.innerText = "{$word->edit_assignments}", addClass(gt, 'hidden'), removeClass(gr, 'hidden'), self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
             Req('{$url->{req/rol-academic/get-periods}}', function(e){
                 if(e.status == 200){
-                    var gf = ZO.querySelectorAll('.tipsit-choice'),
-                        el = D.createElement('option'),
-                        gui = D.createElement('select'),
-                        guF = function(){
-                            var self = this,
-                                ct = GP.parentNode.parentNode;
-                                self.setAttribute('disabled', true), addClass(ct, 'spinner-is-loading');
-                            Req('{$url->{req/rol-academic/get-titems}}', function(e){
-                                if(e.status == 200){
-                                    GX = [], GP.value = "", ga.value = "";
-                                    var gf = ZO.querySelectorAll('.tipsit-choice');
-                                    for(var j = 0, i = gf.length; j < i; j++) gf[j].remove();
-                                    for (var j = 0, i = e.items['teachers'].length; j < i; j++) createTag(ZO, GX, GP, ga, gl, e.items['teachers'][j]['name'], e.items['teachers'][j]['id']);
-                                    self.removeAttribute('disabled'), removeClass(ct, 'spinner-is-loading');
-                                } else {
-                                    self.removeAttribute('disabled'), removeClass(ct, 'spinner-is-loading');
-                                }
-                            }, "POST", "&id=" + gd.getAttribute('data-id') + "&period_id=" + self.value)
-                        };
-
-                        gu.remove(), removeEvent(gu, 'change', guF), gui.id = 'period', addClass(gui, 'cont-input'), addClass(gui, 'h-50'), addClass(gui, 'border-radius-12'), addClass(gui, 'animated-easy'), addClass(gui, 'border-focus-blue'), addClass(gui, 'caret-down'), addClass(gui, 'area_changed'), addClass(gui, 'area_validate'), addClass(gui, 'background-grely'), addClass(gui, 'color-black'), guu.insertBefore(gui, guu.querySelector('.text-error')), addEvent(gui, 'change', guF), gu = gui;
-
-                    el.selected = true, el.setAttribute('disabled', true), el.innerText = "{$word->select_a_period}", gu.appendChild(el), GX = [], GP.value = "", ga.value = "";
+                    var gf = ZO.querySelectorAll('.tipsit-choice');
+                    gu.innerHTML = "<option selected disabled>{$word->select_a_period}</option>", GX = [], GP.value = "", ga.value = "";
                     for(var j = 0, i = gf.length; j < i; j++) gf[j].remove();
                     for (var j = 0, i = e.periods.length; j < i; j++)  {
                         var el = D.createElement('option');
                         el.value = e.periods[j]['id'], el.innerText = e.periods[j]['name'], gu.appendChild(el);
                     }
-                    gc.style.display = "block", D.body.style.overflow = "hidden", gd.setAttribute('data-id', course_id), gd.setAttribute('data-type', type), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
+                    gc.style.display = "block", D.body.style.overflow = "hidden", gd.setAttribute('data-id', course_id), gd.setAttribute('data-type', type), gd.setAttribute('data-id', course_id), gdd.setAttribute('data-id', self.getAttribute('data-id')), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
                 } else {
                     self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
                 }
             }, "POST", "&id=" + self.getAttribute('data-id'));
             
         }
-        gc.style.display = "block", D.body.style.overflow = "hidden", gd.setAttribute('data-id', course_id)
     },
     createTag = function(el, arr, val, tval, els, gf, gi){
         var FU = D.createElement("li"),
@@ -813,6 +814,7 @@ addEvent(GY, 'click', function(){
     }
     GB.setAttribute('disabled', true), addClass(GB, 'spinner-is-loading');
     Req('{$url->{req/rol-teacher/this-courses}}', function(e){
+        console.log(e);
         if(e.status == 200){
             GI.style.display = "", loadAlert("{$word->course_updated_successfully}"), preloadPage('&one=courses');
         } else {
@@ -848,7 +850,7 @@ addEvent(GY, 'click', function(){
             }
             GB.removeAttribute('disabled'), removeClass(GB, 'spinner-is-loading');
         }
-    }, "POST", "&id=" + self.getAttribute('data-id') + "&params=" + JSON.stringify(GO) + "&mode=" + mode)
+    }, "POST", "&id=" + self.getAttribute('data-id') + "&period_id={#period_id}&params=" + JSON.stringify(GO))
 });
 <?php } ?>
 
@@ -888,10 +890,24 @@ addEvent(gtt, 'change', function(){
             return false;
         }
     }, "POST", "&keyword=" + SV);
+}), addEvent(gdd, 'click', GDD), addEvent(D.querySelector('#cancel-adalert'), 'click', function(){
+    gcc.style.display = "", gc.style.display = "block", D.body.style.overflow = "hidden";
+}), addEvent(gyy, 'click', function(){
+    var self = this;
+
+    gyy.setAttribute('disabled', true), addClass(gyy, 'spinner-is-loading');
+    Req('{$url->{req/rol-academic/delete-assing}}', function(e){
+        console.log(e);
+        if(e.status == 200){
+            gcc.style.display = "", loadAlert("¡Asignacion eliminada con exito!"), preloadPage('&one=courses');
+        } else {
+            loadAlert('{$word->error}', 1), gyy.removeAttribute('disabled'), removeClass(gyy, 'spinner-is-loading');
+        }
+    }, "POST", "&id=" + self.getAttribute('data-id') + "&period_id=" + gu.value);
 }), addEvent(gd, 'click', function(){
     var self = this,
         type = self.getAttribute('data-type'),
-        guz = (type == 'add') ? gtt : gu;
+        gui = type == 'add' ? gtt : gu;
     if(GP.value == '' && type == 'add'){
         var GZ = GP.parentNode,
             GH = hasClass(GZ, 'group-validate') ? GZ : GZ.parentNode;
@@ -906,6 +922,7 @@ addEvent(gtt, 'change', function(){
             GH = hasClass(GZ, 'group-validate') ? GZ : GZ.parentNode;
         GH.querySelector('.text-error').innerText = "", removeClass(ZO, 'border-red'), removeClass(ZO, 'boxshadow-red');
     }
+    console.log("&type=" + type + "&id=" + self.getAttribute('data-id') + "&teacher=" + GP.value + "&period_id=" + gui.value);
     gd.setAttribute('disabled', true), addClass(gd, 'spinner-is-loading');
     Req('{$url->{req/rol-academic/this-assings}}', function(e){
         console.log(e);
@@ -930,11 +947,27 @@ addEvent(gtt, 'change', function(){
             }
             gd.removeAttribute('disabled'), removeClass(gd, 'spinner-is-loading');
         }
-    }, "POST", "&type=" + type + "&id=" + self.getAttribute('data-id') + "&teacher=" + GP.value + "&period_id=" + guz.value)
+    }, "POST", "&type=" + type + "&id=" + self.getAttribute('data-id') + "&teacher=" + GP.value + "&period_id=" + gui.value)
 }), addEvent(D.querySelector('#cancel-aalert'), 'click', function(){
     var gf = ZO.querySelectorAll('.tipsit-choice');
-    gc.style.display = "", D.body.style.overflow = "", GX = [], GP.value = "", ga.value = "";
+    gc.style.display = "", D.body.style.overflow = "", GX = [], GP.value = "", ga.value = "", addClass(gdd, 'hidden');
     for(var j = 0, i = gf.length; j < i; j++) gf[j].remove();
+}), addEvent(gu, 'change', function(){
+    var self = this,
+        ct = GP.parentNode.parentNode;
+    
+    self.setAttribute('disabled', true), addClass(ct, 'spinner-is-loading');
+    Req('{$url->{req/rol-academic/get-titems}}', function(e){
+        if(e.status == 200){
+            GX = [], GP.value = "", ga.value = "";
+            var gf = ZO.querySelectorAll('.tipsit-choice');
+            for(var j = 0, i = gf.length; j < i; j++) gf[j].remove();
+            for (var j = 0, i = e.items['teachers'].length; j < i; j++) createTag(ZO, GX, GP, ga, gl, e.items['teachers'][j]['name'], e.items['teachers'][j]['id']);
+            removeClass(gdd, 'hidden'), self.removeAttribute('disabled'), removeClass(ct, 'spinner-is-loading');
+        } else {
+            self.removeAttribute('disabled'), removeClass(ct, 'spinner-is-loading');
+        }
+    }, "POST", "&id=" + gd.getAttribute('data-id') + "&period_id=" + self.value)
 });
 
 <?php if($TEMP['#admin'] === true){ ?>

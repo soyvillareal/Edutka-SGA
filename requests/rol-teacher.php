@@ -21,7 +21,7 @@ if($one == 'search-courses') {
     if(Specific::Teacher() == true || Specific::Admin() == true){
         $sql = '';
         if(Specific::Teacher() == true){
-            $sql .= ' WHERE user_id = '.$TEMP['#user_id'];
+            $sql .= ' WHERE user_id = '.$TEMP['#user']['id'];
             if(is_numeric($period_id)){
                 $sql .= (!empty($sql) ? ' AND' : ' WHERE').' period_id = '.$period_id;
             }
@@ -42,7 +42,7 @@ if($one == 'search-courses') {
         foreach ($courses as $course) {
             if(Specific::Teacher() == true || Specific::Admin() == true){
                 if(is_numeric($period_id)){
-                    $parameters = $dba->query('SELECT parameters FROM parameter WHERE course_id = '.$course['id'].' AND period_id = '.$period_id)->fetchArray();
+                    $parameters = $dba->query('SELECT parameters FROM parameter p WHERE (SELECT id FROM teacher WHERE course_id = '.$course['id'].' AND period_id = '.$period_id.' AND id = p.teacher_id) = teacher_id')->fetchArray();
                 }
             }
             $parameters = json_decode($parameters);
@@ -67,13 +67,29 @@ if($one == 'search-courses') {
                 }
             }
 
+            $plans = $dba->query('SELECT plan_id FROM curriculum WHERE course_id = '.$course['id'])->fetchAll(false);
+            if(!empty($plans)){
+                $programs = $dba->query('SELECT name FROM programs p WHERE (SELECT program_id FROM plan WHERE id IN ('.implode(',', $plans).') AND program_id = p.id) = id')->fetchAll(false);
+
+                if(count($programs) == 2){
+                    $TEMP['!program'] = "{$programs[0]} {$TEMP['#word']['and']} {$programs[1]}";
+                } else if(count($programs) > 2){
+                    $end = end($programs);
+                    array_pop($programs);
+                    $TEMP['!program'] = implode(', ', $programs)." {$TEMP['#word']['and']} $end";
+                } else {
+                    $TEMP['!program'] = $programs[0];
+                }
+            }
+            $TEMP['!program'] = $TEMP['#word']['pending'];
+
+
             $TEMP['!id'] = $course['id'];
             $TEMP['!code'] = $course['code'];
             $TEMP['!name'] = $course['name'];
             $TEMP['!assignments'] = count($assignments);
             $TEMP['!preknowledge'] = !empty($course['preknowledge']) ? count($preknowledge) : 0;
             $TEMP['!parameters'] = count($parameters);
-            $TEMP['!program'] = $course['plan_id'] == 0 ? $TEMP['#word']['pending'] : $dba->query('SELECT name FROM programs p WHERE (SELECT program_id FROM plan WHERE program_id ='.$course['plan_id'].' AND program_id = p.id) = id')->fetchArray();
             $TEMP['!semester'] = $course['semester'];
             $TEMP['!credits'] = $course['credits'];
             $TEMP['!quota'] = ($course['quota']-$enrolled). "/{$course['quota']}";
@@ -108,7 +124,7 @@ if($one == 'search-courses') {
         if(Specific::Teacher() == true || Specific::Admin() == true){
             $sql = '';
             if(Specific::Teacher() == true){
-                $sql .= ' WHERE user_id = '.$TEMP['#user_id'];
+                $sql .= ' WHERE user_id = '.$TEMP['#user']['id'];
                 if(is_numeric($period_id)){
                     $sql .= (!empty($keyword) ? ' AND' : ' WHERE').' period_id = '.$period_id;
                 }
@@ -128,7 +144,7 @@ if($one == 'search-courses') {
             foreach ($courses as $course) {
                 if(Specific::Teacher() == true || Specific::Admin() == true){
                     if(is_numeric($period_id)){
-                        $parameters = $dba->query('SELECT parameters FROM parameter WHERE course_id = '.$course['id'].' AND period_id = '.$period_id)->fetchArray();
+                        $parameters = $dba->query('SELECT parameters FROM parameter p WHERE (SELECT id FROM teacher WHERE course_id = '.$course['id'].' AND period_id = '.$period_id.' AND id = p.teacher_id) = teacher_id')->fetchArray();
                     }
                 }
                 $parameters = json_decode($parameters);
@@ -151,13 +167,29 @@ if($one == 'search-courses') {
                         $TEMP['!teacher'] = $teachers;
                     }
                 }
+
+                $plans = $dba->query('SELECT plan_id FROM curriculum WHERE course_id = '.$course['id'])->fetchAll(false);
+                if(!empty($plans)){
+                    $programs = $dba->query('SELECT name FROM programs p WHERE (SELECT program_id FROM plan WHERE id IN ('.implode(',', $plans).') AND program_id = p.id) = id')->fetchAll(false);
+
+                    if(count($programs) == 2){
+                        $TEMP['!program'] = "{$programs[0]} {$TEMP['#word']['and']} {$programs[1]}";
+                    } else if(count($programs) > 2){
+                        $end = end($programs);
+                        array_pop($programs);
+                        $TEMP['!program'] = implode(', ', $programs)." {$TEMP['#word']['and']} $end";
+                    } else {
+                        $TEMP['!program'] = $programs[0];
+                    }
+                }
+                $TEMP['!program'] = $TEMP['#word']['pending'];
+
                 $TEMP['!id'] = $course['id'];
                 $TEMP['!code'] = $course['code'];
                 $TEMP['!name'] = $course['name'];
                 $TEMP['!assignments'] = count($assignments);
                 $TEMP['!preknowledge'] = !empty($course['preknowledge']) ? count($preknowledge) : 0;
                 $TEMP['!parameters'] = count($parameters);
-                $TEMP['!program'] = $course['plan_id'] == 0 ? $TEMP['#word']['pending'] : $dba->query('SELECT name FROM programs p WHERE (SELECT program_id FROM plan WHERE program_id ='.$course['plan_id'].' AND program_id = p.id) = id')->fetchArray();
                 $TEMP['!semester'] = $course['semester'];
                 $TEMP['!credits'] = $course['credits'];
                 $TEMP['!quota'] = ($course['quota']-$enrolled). "/{$course['quota']}";
@@ -238,9 +270,9 @@ if($one == 'search-courses') {
                     $items['notes'] = $notes;
                 }
             } else if(Specific::Teacher() == true){
-                $parameter = $dba->query('SELECT * FROM parameter WHERE course_id = '.$id.' AND period_id = '.$period_id)->fetchArray();
-                $plan_id = $dba->query('SELECT plan_id FROM courses WHERE id = '.$id)->fetchArray();
-                $note_mode = $dba->query('SELECT note_mode FROM plan WHERE id = '.$plan_id)->fetchArray();
+                $parameter = $dba->query('SELECT * FROM parameter p WHERE (SELECT id FROM teacher WHERE course_id = '.$id.' AND period_id = '.$period_id.' AND id = p.teacher_id) = teacher_id')->fetchArray();
+                $note_mode = $dba->query('SELECT note_mode FROM plan p WHERE (SELECT plan_id FROM curriculum WHERE course_id = '.$id.' AND plan_id = p.id) = id')->fetchArray();
+
                 if(isset($note_mode)){
                     $deliver['mode'] = $note_mode;
                     if(!empty($parameter['parameters'])){
@@ -275,69 +307,93 @@ if($one == 'search-courses') {
     }
 } else if($one == 'this-courses'){
     $deliver['status'] = 400;
-    $modes = array('100', '30-30-40');
     $emptys = array();
     $error = array();
 
     $id = Specific::Filter($_POST['id']);
+    $period_id = Specific::Filter($_POST['period_id']);
     $params = Specific::Filter($_POST['params']);
-    $mode = Specific::Filter($_POST['mode']);
     $params = html_entity_decode($params);
     $params = json_decode($params);
     $arrayj = array();
-    if($mode == '100'){
-        $sum = 0;
-        foreach ($params as $key => $param) {
-            $sum += $param[1];
-            if(empty($param[0])){
-                $emptys[] = array('id' => $key, 'class' => 'param_name_');
-            }
-            if(empty($param[1])){
-                $emptys[] = array('id' => $key, 'class' => 'param_percent_');
-            }
-            if(($sum < 100 || $sum > 100) && end(array_keys($params)) == $key){
-                $error = 'params';
-            }
-            $arrayj[$key] = array('name' => $param[0], 'percent' => $param[1]);
-        }
-    } else {
-        $sum = array(0, 0, 0);
-        foreach ($params as $keyp => $courts) {
-            foreach ($courts as $keyc => $court) {
-                $sum[$keyp] += $court[1];
-                if(empty($court[0])){
-                    $emptys[] = array('id' => $keyc, 'class' => 'param_name_');
+
+    if(!empty($id) && is_numeric($id)){
+        $note_mode = $dba->query('SELECT note_mode FROM plan p WHERE (SELECT plan_id FROM curriculum WHERE course_id = '.$id.' AND plan_id = p.id) = id')->fetchArray();
+
+        if($note_mode == '100'){
+            $sum = 0;
+            foreach ($params as $key => $param) {
+                $sum += $param[1];
+                if(empty($param[0])){
+                    $emptys[] = array('id' => $key, 'class' => 'param_name_');
                 }
-                if(empty($court[1])){
-                    $emptys[] = array('id' => $keyc, 'class' => 'param_percent_');
+                if(empty($param[1])){
+                    $emptys[] = array('id' => $key, 'class' => 'param_percent_');
                 }
-                if(($sum[$keyp] < 100 || $sum[$keyp] > 100) && end(array_keys($courts)) == $keyc){
-                    $error[] = 'params';
+                if(($sum < 100 || $sum > 100) && end(array_keys($params)) == $key){
+                    $error = 'params';
                 }
-                $arrayj[$keyp][$keyc] = array('name' => $court[0], 'percent' => $court[1]);
+                $arrayj[$key] = array('name' => $param[0], 'percent' => $param[1]);
+            }
+        } else {
+            $sum = array(0, 0, 0);
+            foreach ($params as $keyp => $courts) {
+                foreach ($courts as $keyc => $court) {
+                    $sum[$keyp] += $court[1];
+                    if(empty($court[0])){
+                        $emptys[] = array('id' => $keyc, 'class' => 'param_name_');
+                    }
+                    if(empty($court[1])){
+                        $emptys[] = array('id' => $keyc, 'class' => 'param_percent_');
+                    }
+                    if(($sum[$keyp] < 100 || $sum[$keyp] > 100) && end(array_keys($courts)) == $keyc){
+                        $error[] = 'params';
+                    }
+                    $arrayj[$keyp][$keyc] = array('name' => $court[0], 'percent' => $court[1]);
+                }
             }
         }
-    }
-    if(empty($emptys)){
-        if(!in_array($mode, $modes)){
-            $error = 'other';
-        }
-        if (empty($error)) {
-            if($dba->query('UPDATE parameter SET parameters = ? WHERE id = '.$id, json_encode($arrayj))->returnStatus()){
-                $deliver['status'] = 200;
+        if(empty($emptys)){
+            if (empty($error)) {
+                $teachers = $dba->query('SELECT id FROM teacher WHERE course_id = '.$id.' AND period_id = '.$period_id)->fetchAll(false);
+                if($dba->query('SELECT COUNT(*) FROM parameter WHERE teacher_id IN ('.implode(',', $teachers).')')->fetchArray() > 0){
+                    if($dba->query('UPDATE parameter SET parameters = ? WHERE course_id = '.$id, json_encode($arrayj))->returnStatus()){
+                        $deliver['status'] = 200;
+                    } else {
+                        $deliver = array(
+                            'status' => 400,
+                            'error' => $TEMP['#word']['error']
+                        );
+                    }
+                } else {
+                    $teacher_id = $dba->query('SELECT id FROM teacher WHERE user_id = '.$TEMP['#user']['id'].' AND course_id = '.$id.' AND period_id = '.$period_id)->fetchArray();
+                    if($dba->query('INSERT INTO parameter (user_id, teacher_id, parameters, `time`) VALUES (?, ?, ?, ?)', $TEMP['#user']['id'], $teacher_id, json_encode($arrayj), time())->returnStatus()){
+                        $deliver['status'] = 200;
+                    } else {
+                        $deliver = array(
+                            'status' => 400,
+                            'error' => $TEMP['#word']['error']
+                        );
+                    }
+                }
+            } else {
+                $deliver = array(
+                    'status' => 400,
+                    'error' => $error
+                );
             }
         } else {
             $deliver = array(
                 'status' => 400,
-                'error' => $error
+                'emptys' => $emptys
             );
         }
     } else {
         $deliver = array(
             'status' => 400,
-            'emptys' => $emptys
+            'error' => $TEMP['#word']['error']
         );
-    } 
+    }
 } else if($one == 'this-notes'){
     $deliver['status'] = 400;
     $emptys = array();
@@ -498,7 +554,7 @@ if($one == 'search-courses') {
     }
 
     if(empty($emptys)){
-        $note_mode = $dba->query('SELECT note_mode FROM plan WHERE (SELECT plan_id FROM courses WHERE id = '.$course_id.') = id')->fetchArray();
+        $note_mode = $dba->query('SELECT note_mode FROM plan p WHERE (SELECT plan_id FROM curriculum WHERE course_id = '.$course_id.' AND plan_id = p.id) = id')->fetchArray();
         $teacher_id = $dba->query('SELECT id FROM teacher WHERE user_id = '.$TEMP['#user']['id'].' AND course_id = '.$course_id)->fetchArray();
         $authorization = $dba->query('SELECT status, COUNT(*) AS count FROM authorization WHERE teacher_id = '.$teacher_id.' AND course_id = '.$course_id.' AND court = "'.$court.'" AND status = "pending"')->fetchArray();
         
@@ -573,7 +629,7 @@ if($one == 'search-courses') {
     $deliver['status'] = 400;
     $id = Specific::Filter($_POST['id']);
     if(isset($id) && is_numeric($id)){
-        $note_mode = $dba->query('SELECT note_mode FROM plan WHERE (SELECT plan_id FROM courses WHERE id = '.$id.') = id')->fetchArray();
+        $note_mode = $dba->query('SELECT note_mode FROM plan p WHERE (SELECT plan_id FROM curriculum WHERE course_id = '.$id.' AND plan_id = p.id) = id')->fetchArray();
         if(!empty($note_mode)){
             $deliver = array(
                 'status' => 200,

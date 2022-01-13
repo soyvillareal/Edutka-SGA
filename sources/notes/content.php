@@ -48,10 +48,11 @@ if(Specific::Teacher() == true){
     }
     $TEMP['#periods'] =  $dba->query('SELECT * FROM periods p WHERE (SELECT period_id FROM enrolled WHERE user_id = '.$TEMP['#user_id'].' AND course_id IN ('.implode(',', $my_courses).') AND period_id = p.id) = id')->fetchAll();
 }
+
 if(!empty($TEMP['#program_id'])){
 	$plan = $dba->query('SELECT * FROM plan WHERE program_id = '.$TEMP['#program_id'])->fetchArray();
 	$TEMP['#note_mode'] = $plan['note_mode'];
-	$courses = $dba->query('SELECT id FROM courses WHERE plan_id = '.$plan['id'])->fetchAll(false);
+	$courses = $dba->query('SELECT course_id FROM curriculum WHERE plan_id = '.$plan['id'])->fetchAll(false);
 	$sqls .= ' AND course_id IN ('.implode(',', $courses).') AND program_id = '.$TEMP['#program_id'];
 	$params .= (!empty($params) ? "&" : "?")."program={$TEMP['#program_id']}";
 }

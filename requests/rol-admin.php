@@ -23,8 +23,9 @@ if($one == 'search-course') {
                 $query .= " AND id <> $course_id";
             }
         }
+        
         if(isset($plan_id)){
-            $couarr = $dba->query('SELECT id FROM courses WHERE plan_id = '.$plan_id)->fetchAll(false);
+            $couarr = $dba->query('SELECT course_id FROM curriculum WHERE plan_id = '.$plan_id)->fetchAll(false);
             if(!empty($couarr)){
                 $query .= " AND id IN (".implode(',', $couarr).")";
             }
@@ -740,10 +741,6 @@ if($one == 'search-course') {
     if(isset($id) && is_numeric($id)){
         $items = $dba->query('SELECT program_id, name, resolution, date_approved, duration, credits, note_mode, status FROM plan WHERE id = '.$id)->fetchArray();
         $items['date_approved'] = date('Y-m-d', $items['date_approved']);
-        $courses = $dba->query('SELECT id, name FROM courses WHERE plan_id = '.$id)->fetchAll();
-        foreach ($courses as $course) {
-            $items['courses'][] = array('id' => $course['id'], 'name' => $course['name']);   
-        }
         if (!empty($items)) {
             $deliver = array(
                 'status' => 200,
@@ -901,11 +898,26 @@ if($one == 'search-course') {
     $deliver['status'] = 400;
     $id = Specific::Filter($_POST['id']);
     if (isset($id) && is_numeric($id)) {
-        if($dba->query('DELETE FROM plan WHERE id = '.$id)->returnStatus()){
-            if($dba->query('UPDATE courses SET plan_id = 0 WHERE plan_id = '.$id)->returnStatus()){
+        if($dba->query('SELECT COUNT(*) FROM curriculum WHERE plan_id = '.$id)->fetchArray() == 0){
+            if($dba->query('DELETE FROM plan WHERE id = '.$id)->returnStatus()){
                 $deliver['status'] = 200;
+            } else {
+                $deliver = array(
+                    'status' => 400,
+                    'error' => $TEMP['#word']['error']
+                );
             }
-        };
+        } else {
+            $deliver = array(
+                'status' => 400,
+                'error' => $TEMP['#word']['you_cannot_delete']
+            );
+        }
+    } else {
+        $deliver = array(
+            'status' => 400,
+            'error' => $TEMP['#word']['error']
+        );
     }
 } else if($one == 'search-plans') {
     $keyword = Specific::Filter($_POST['keyword']);
@@ -925,7 +937,7 @@ if($one == 'search-course') {
                 $TEMP['!date_approved'] = Specific::DateFormat($plan['date_approved']);
                 $TEMP['!duration'] = $plan['duration'];
                 $TEMP['!credits'] = $plan['credits'];
-                $TEMP['!courses'] = $dba->query('SELECT COUNT(*) FROM courses WHERE plan_id = '.$plan['id'])->fetchArray();
+                $TEMP['!courses'] = $dba->query('SELECT COUNT(*) FROM curriculum WHERE plan_id = '.$plan['id'])->fetchArray();
                 $TEMP['!note_mode'] = $plan['note_mode'];
                 $TEMP['!status'] = $TEMP['#word'][$plan['status']];
                 $TEMP['!time'] = Specific::DateFormat($plan['time']);
@@ -961,7 +973,7 @@ if($one == 'search-course') {
                 $TEMP['!date_approved'] = Specific::DateFormat($plan['date_approved']);
                 $TEMP['!duration'] = $plan['duration'];
                 $TEMP['!credits'] = $plan['credits'];
-                $TEMP['!courses'] = $dba->query('SELECT COUNT(*) FROM courses WHERE plan_id = '.$plan['id'])->fetchArray();
+                $TEMP['!courses'] = $dba->query('SELECT COUNT(*) FROM curriculum WHERE plan_id = '.$plan['id'])->fetchArray();
                 $TEMP['!note_mode'] = $plan['note_mode'];
                 $TEMP['!status'] = $TEMP['#word'][$plan['status']];
                 $TEMP['!time'] = Specific::DateFormat($plan['time']);
@@ -1226,6 +1238,128 @@ if($one == 'search-course') {
 			if($rule['count'] > 0){
 				$dba->query('UPDATE rule SET status = "enabled" WHERE id = '.$rule['id']);
 			}
+            $deliver['status'] = 200;
+        };
+    }
+} else if($one == 'this-curriculum'){
+    $deliver['status'] = 400;
+    $teatrues = array(true);
+    $types = array('add', 'edit');
+
+    $type = Specific::Filter($_POST['type']);
+    $id = Specific::Filter($_POST['id']);
+    $courses = Specific::Filter($_POST['courses']);
+
+    if(!empty($type) && in_array($type, $types)){
+        if(!empty($courses)){
+            $courses = explode(',', $courses);
+            if(!empty($courses)){
+                foreach ($courses as $course) {
+                    if($dba->query('SELECT COUNT(*) FROM courses WHERE id = '.$course)->fetchArray() > 0){
+                        $teatrues[] = true;
+                    } else {
+                        $teatrues[] = false;
+                    }
+                }
+            }
+            if (!in_array(false, $teatrues)) {
+                $instrues = array();
+                if($type == 'add'){
+                    for ($i=0; $i < count($courses); $i++) {
+                        if($dba->query('SELECT COUNT(*) FROM curriculum WHERE course_id = '.$courses[$i])->fetchArray() == 0){
+                            if($dba->query('INSERT INTO curriculum (course_id, plan_id, `time`) VALUES ('.$courses[$i].', '.$id.', '.time().')')->returnStatus()){
+                                $instrues[] = true; 
+                            } else {
+                                $deliver = array(
+                                    'status' => 400,
+                                    'error' => $TEMP['#word']['error']
+                                );
+                            }
+                        } else {  
+                            $instrues[] = false;
+                        }
+                    }
+                    if(!in_array(false, $instrues)){
+                        $deliver['status'] = 200;
+                    } else {
+                        $deliver = array(
+                            'status' => 400,
+                            'error' => 'Uno de los cursos ya está asignado a un plan de estudios'
+                        );
+                    }
+                } else {
+                    $courses_all = $dba->query('SELECT course_id FROM curriculum WHERE plan_id = '.$id)->fetchAll(false);
+                    $deleted = array_diff($courses_all, $courses);
+                    $addf = array_diff($courses, $courses_all);
+                    $adds = explode(',', implode(',', $addf));
+                    if(count($addf) > 0 || count($deleted) > 0){
+                        if(count($addf) > 0){
+                            for ($i=0; $i < count($adds); $i++) {
+                                if($dba->query('SELECT COUNT(*) FROM curriculum WHERE course_id = '.$adds[$i])->fetchArray() == 0){
+                                    if($dba->query('INSERT INTO curriculum (course_id, plan_id, `time`) VALUES ('.$adds[$i].', '.$id.', '.time().')')->returnStatus()){
+                                        $instrues[] = true;
+                                    } else {
+                                        $deliver = array(
+                                            'status' => 400,
+                                            'error' => $TEMP['#word']['error']
+                                        );
+                                    }
+                                } else {  
+                                    $instrues[] = false;
+                                }
+                            }
+                            if(!in_array(false, $instrues)){
+                                $deliver['status'] = 200;
+                            } else {
+                                $deliver['error'] = $TEMP['#word']['teacher_already_assigned'];
+                            }
+                        }
+                        if(count($deleted) > 0){
+                            if($dba->query('DELETE FROM curriculum WHERE course_id IN ('.implode(',', $deleted).')')->returnStatus()){
+                                $deliver['status'] = 200;
+                            }
+                        }
+                    } else {
+                        $deliver['status'] = 200;
+                    }
+                }
+            } else {
+                $deliver = array(
+                    'status' => 400,
+                    'errors' => $TEMP['#word']['please_enter_valid_value']
+                );
+            }
+        } else {
+            $deliver = array(
+                'status' => 400,
+                'errors' => $TEMP['#word']['this_field_is_empty']
+            );
+        }
+    } else {
+        $deliver = array(
+            'status' => 400,
+            'error' => $TEMP['#word']['error']
+        );
+    }
+} else if($one == 'get-citems'){
+    $id = Specific::Filter($_POST['id']);
+    if(isset($id) && is_numeric($id)){
+        $items = array();
+        $courses = $dba->query('SELECT * FROM curriculum WHERE plan_id = '.$id)->fetchAll();
+        foreach ($courses as $course) {
+            $name = $dba->query('SELECT name FROM courses WHERE id = '.$course['course_id'])->fetchArray();
+            $items['courses'][] = array('id' => $course['course_id'], 'name' => $name);   
+        }
+        if (!empty($items)) {
+            $deliver['status'] = 200;
+            $deliver['items'] = $items;
+        }
+    }
+} else if($one == 'delete-curriculum'){
+    $deliver['status'] = 400;
+    $id = Specific::Filter($_POST['id']);
+    if (isset($id) && is_numeric($id)) {
+        if($dba->query('DELETE FROM curriculum WHERE plan_id = '.$id)->returnStatus()){
             $deliver['status'] = 200;
         };
     }

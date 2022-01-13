@@ -209,8 +209,20 @@ if($one == 'get-foitems'){
                         if(count($addf) > 0){
                             for ($i=0; $i < count($adds); $i++) {
                                 if($dba->query('SELECT COUNT(*) FROM teacher WHERE user_id = '.$adds[$i].' AND course_id = '.$id.' AND period_id = '.$period_id)->fetchArray() == 0){
-                                    if($dba->query('INSERT INTO teacher (user_id, course_id, period_id, `time`) VALUES ('.$adds[$i].', '.$id.', '.$period_id.', '.time().')')->returnStatus()){
-                                        $instrues[] = true;
+                                    $teacher_id = $dba->query('INSERT INTO teacher (user_id, course_id, period_id, `time`) VALUES ('.$adds[$i].', '.$id.', '.$period_id.', '.time().')')->insertId();
+                                    if($teacher_id){
+                                        if(count($deleted) > 0){
+                                            if($dba->query('SELECT COUNT(*) FROM parameter p WHERE (SELECT id FROM teacher WHERE user_id IN ('.implode(',', $deleted).') AND course_id = '.$id.' AND period_id = '.$period_id.' AND id = p.teacher_id) = teacher_id')->fetchArray() > 0){
+                                                
+                                                if($dba->query('UPDATE parameter SET teacher_id = '.$teacher_id.' WHERE (SELECT id FROM teacher WHERE user_id IN ('.implode(',', $deleted).') AND course_id = '.$id.' AND period_id = '.$period_id.') = teacher_id')->returnStatus()){
+                                                    $instrues[] = true;
+                                                }
+                                            } else {
+                                                $instrues[] = true;
+                                            }
+                                        } else {
+                                            $instrues[] = true;
+                                        }
                                     } else {
                                         $deliver = array(
                                             'status' => 400,
@@ -228,7 +240,16 @@ if($one == 'get-foitems'){
                             }
                         }
                         if(count($deleted) > 0){
-                            if($dba->query('DELETE FROM teacher WHERE user_id IN ('.implode(',', $deleted).') AND course_id = '.$id.' AND period_id = '.$period_id)->returnStatus()){
+                            if($dba->query('SELECT COUNT(*) FROM parameter p WHERE (SELECT id FROM teacher WHERE user_id IN ('.implode(',', $deleted).') AND course_id = '.$id.' AND period_id = '.$period_id.' AND id = p.teacher_id) = teacher_id')->fetchArray() > 0){
+                                $parameter_id = $dba->query('SELECT id FROM parameter p WHERE (SELECT id FROM teacher WHERE user_id IN ('.implode(',', $deleted).') AND course_id = '.$id.' AND period_id = '.$period_id.' AND id = p.teacher_id) = teacher_id')->fetchArray();
+                                $add_id = $dba->query('SELECT id FROM teacher WHERE user_id = '.$teachers[0].' AND course_id = '.$id.' AND period_id = '.$period_id)->fetchArray();
+
+                                if($dba->query('UPDATE parameter SET teacher_id = '.$add_id.' WHERE id = '.$parameter_id)->returnStatus()){
+                                    if($dba->query('DELETE FROM teacher WHERE user_id IN ('.implode(',', $deleted).') AND course_id = '.$id.' AND period_id = '.$period_id)->returnStatus()){
+                                        $deliver['status'] = 200;
+                                    }
+                                }
+                            } else if($dba->query('DELETE FROM teacher WHERE user_id IN ('.implode(',', $deleted).') AND course_id = '.$id.' AND period_id = '.$period_id)->returnStatus()){
                                 $deliver['status'] = 200;
                             }
                         }
@@ -253,6 +274,18 @@ if($one == 'get-foitems'){
             'status' => 400,
             'error' => $TEMP['#word']['error']
         );
+    }
+} else if($one == 'delete-assing'){
+    $deliver['status'] = 400;
+    $id = Specific::Filter($_POST['id']);
+    $period_id = Specific::Filter($_POST['period_id']);
+    if (isset($id) && is_numeric($id) && isset($period_id) && is_numeric($period_id)) {
+        $teacher_id = $dba->query('SELECT id FROM teacher WHERE course_id = '.$id.' AND period_id = '.$period_id)->fetchArray();
+        if($dba->query('DELETE FROM teacher WHERE id = '.$teacher_id)->returnStatus()){
+            if($dba->query('DELETE FROM parameter WHERE teacher_id = '.$teacher_id)->returnStatus()){
+                $deliver['status'] = 200;
+            }
+        };
     }
 } else if($one == 'get-titems'){
     $id = Specific::Filter($_POST['id']);

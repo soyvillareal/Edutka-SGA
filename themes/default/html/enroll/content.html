@@ -146,6 +146,7 @@ addEvent(GS, 'change', function(){
 }), addEvent(D.querySelector('#search-enrolled'), "keyup", function(){
 	var self = this;
 	Req('{$url->{req/rol-student/search-enrolled}}', function(e){
+		console.log(e);
 	    GP.innerHTML = e.html;
 	    GA = D.querySelectorAll('.show_cmodal'), GB = D.querySelectorAll('.show_rcmodal'), GK = D.querySelectorAll('.show_rpmodal');
 		for(var j = 0, i = GB.length; j < i; j++) addEvent(GB[j], "click", GC);
@@ -202,7 +203,7 @@ addEvent(GS, 'change', function(){
 		   	SD.innerHTML = "";
 		   	return false;
 	    }
-	}, "POST", "&type=enroll&keyword=" + SV);
+	}, "POST", "&typet=enroll&keyword=" + SV);
 })<?php } ?>;
 for(var j = 0, i = GB.length; j < i; j++) addEvent(GB[j], "click", GC);
 for(var j = 0, i = GA.length; j < i; j++) addEvent(GA[j], "click", GH);

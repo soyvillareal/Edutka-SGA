@@ -56,14 +56,13 @@ if(!empty($courses)){
 	foreach ($courses as $course) {
 		if(Specific::Teacher() == true || Specific::Admin() == true){
 			if(is_numeric($TEMP['#period_id'])){
-				$parameters = $dba->query('SELECT parameters FROM parameter WHERE course_id = '.$course['id'].' AND period_id = '.$TEMP['#period_id'])->fetchArray();
+				$parameters = $dba->query('SELECT parameters FROM parameter p WHERE (SELECT id FROM teacher WHERE course_id = '.$course['id'].' AND period_id = '.$TEMP['#period_id'].' AND id = p.teacher_id) = teacher_id')->fetchArray();
 			}
 			$parameters = json_decode($parameters);
 		}
 		$preknowledge = explode(',', $course['preknowledge']);
 		$assignments = $dba->query('SELECT period_id FROM teacher WHERE course_id = '.$course['id'])->fetchAll(false);
 		$assignments = array_unique($assignments);
-
 		if(Specific::Teacher() == true){
 			if(is_numeric($TEMP['#period_id'])){
 				$teachers = $dba->query('SELECT names FROM users u WHERE (SELECT user_id FROM teacher WHERE user_id = u.id AND course_id = '.$course['id'].' AND period_id = '.$TEMP['#period_id'].') = id')->fetchAll(false);
@@ -82,13 +81,29 @@ if(!empty($courses)){
 		}
 		
 
+        $TEMP['!program'] = $TEMP['#word']['pending'];
+
+		$plans = $dba->query('SELECT plan_id FROM curriculum WHERE course_id = '.$course['id'])->fetchAll(false);
+		if(!empty($plans)){
+	        $programs = $dba->query('SELECT name FROM programs p WHERE (SELECT program_id FROM plan WHERE id IN ('.implode(',', $plans).') AND program_id = p.id) = id')->fetchAll(false);
+
+	        if(count($programs) == 2){
+	            $TEMP['!program'] = "{$programs[0]} {$TEMP['#word']['and']} {$programs[1]}";
+	        } else if(count($programs) > 2){
+	            $end = end($programs);
+	            array_pop($programs);
+	            $TEMP['!program'] = implode(', ', $programs)." {$TEMP['#word']['and']} $end";
+	        } else {
+	            $TEMP['!program'] = $programs[0];
+	        }
+	    }
+
 		$TEMP['!id'] = $course['id'];
         $TEMP['!code'] = $course['code'];
 		$TEMP['!name'] = $course['name'];
 		$TEMP['!assignments'] = count($assignments);
 		$TEMP['!preknowledge'] = !empty($course['preknowledge']) ? count($preknowledge) : 0;
 		$TEMP['!parameters'] = count($parameters);
-		$TEMP['!program'] = $course['plan_id'] == 0 ? $TEMP['#word']['pending'] : $dba->query('SELECT name FROM programs p WHERE (SELECT program_id FROM plan WHERE program_id ='.$course['plan_id'].' AND program_id = p.id) = id')->fetchArray();
 		$TEMP['!semester'] = $course['semester'];
 		$TEMP['!credits'] = $course['credits'];
 		$TEMP['!quota'] = ($course['quota']-$enrolled). "/{$course['quota']}";
