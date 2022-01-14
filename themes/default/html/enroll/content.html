@@ -78,11 +78,20 @@
 </div>
 <div class="background-pointer"></div>
 <div class="cont-alert" id="alert-enrollc">
-   <h2 class="<?php echo($TEMP['#admin'] == false || $TEMP['#academic'] == false) ? 'no-margin ' : ''?>padding-b10 color-red">{$word->enter_course_code}</h2>
-   <?php if($TEMP['#admin'] == false || $TEMP['#academic'] == false) { ?>
+   <?php if($TEMP['#student'] == true) { ?>
+   <h2 class="no-margin padding-b10 color-red">{$word->enter_course_code}</h2>
    <input id="course-code" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue background-grely color-black" />
    <?php } else { ?>
-   <p>{$word->are_sure_want_make_registration}</p>
+   <h2 class="padding-b10 color-red">{$word->enroll} {$word->course}</h2>
+   	<p id="registered-course" class="hidden">{$word->are_sure_want_make_registration}</p>
+   	<p id="unregistered-course" class="font-medium margin-auto">
+        <span class="color-black">Matricular en el periodo: </span>
+        <select id="period_id" class="border-none mw-w-100 border-radius-12 text-center padding-5 font-low animated-easy caret-down background-grely color-black">
+            <?php foreach($TEMP['#period_all'] as $period) { ?>
+            <option value="<?php echo $period['id']; ?>"><?php echo $period['name']; ?></option>
+            <?php } ?>
+        </select>
+    </p>
    <?php } ?>
    <div class="padding-t25">
       <button class="btn-noway background-grely border-radius-4 padding-10 color-black hover-button font-uppercase" id="cancel-ecalert">{$word->cancel}</button>
@@ -115,6 +124,7 @@ var GA = D.querySelectorAll('.show_cmodal'),
 	GK = D.querySelectorAll('.show_rpmodal'),
 	GY = D.querySelector('#type'),
 	GS = D.querySelector('#program_id'),
+	GO = D.querySelector("#period_id"),
 	GI = D.querySelector('#register-ecnroll'),
 	GL = D.querySelector('#register-epnroll'),
 	GJ = D.querySelector('#alert-enrollc'),
@@ -123,7 +133,29 @@ var GA = D.querySelectorAll('.show_cmodal'),
 	GE = D.querySelector('#alert-cancel'),
 	GP = D.querySelector('#container-enrolled'),
 	GC = function(){
-		GJ.style.display = "block", D.body.style.overflow = "hidden", GI.setAttribute('data-id', this.getAttribute('data-id')), GI.setAttribute('data-plan', this.getAttribute('data-plan'));
+		var self = this;
+		<?php if($TEMP['#student'] == true) { ?>
+		GJ.style.display = "block", D.body.style.overflow = "hidden", GI.setAttribute('data-id', self.getAttribute('data-id')), GI.setAttribute('data-plan', self.getAttribute('data-plan'));
+		<?php } else { ?>
+		var course_id = self.getAttribute('data-id'),
+			rcourse = D.querySelector('#registered-course'),
+			urcourse = D.querySelector('#unregistered-course'); 
+		console.log(self);
+	    self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
+		Req('{$url->{req/rol-academic/check-enroll}}', function(e){
+			console.log(e)
+	        if(e.status == 200){
+	        	if(e.cstatus == 'true'){
+	        		removeClass(rcourse, 'hidden'), addClass(urcourse, 'hidden');
+	        	} else {
+	        		addClass(rcourse, 'hidden'), removeClass(urcourse, 'hidden');
+	        	}
+	        	GJ.style.display = "block", D.body.style.overflow = "hidden", GI.setAttribute('data-id', course_id), GI.setAttribute('data-plan', self.getAttribute('data-plan')), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
+		    } else {
+		        loadAlert('{$word->error}', 1), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
+	        }
+		}, "POST", "&course_id=" + course_id + "&user_id={#user_id}<?php echo(count($TEMP['#programs']) > 1 && $TEMP['#type'] == 'course') ? '&program_id=" + D.querySelector("#program_id").value' : '&program_id={#program}"';?>);
+		<?php } ?>
 	},
     GH = function(){
         GE.style.display = "block", D.body.style.overflow = "hidden", GG.setAttribute('data-id', this.getAttribute('data-id'));
@@ -152,7 +184,7 @@ addEvent(GS, 'change', function(){
 		for(var j = 0, i = GB.length; j < i; j++) addEvent(GB[j], "click", GC);
 	    for(var j = 0, i = GA.length; j < i; j++) addEvent(GA[j], "click", GH);
 		for(var j = 0, i = GK.length; j < i; j++) addEvent(GK[j], "click", GM);
-	}, "POST", "&keyword=" + self.value + "&id={#user_id}&type={#type}<?php echo(count($TEMP['#programs']) > 1 && $TEMP['#type'] == 'course') ? '&program_id=" + D.querySelector("#program_id").value' : '&program_id={#program}"';?>)
+	}, "POST", "&keyword=" + self.value + "&id={#user_id}&typet={#type}<?php echo(count($TEMP['#programs']) > 1 && $TEMP['#type'] == 'course') ? '&program_id=" + D.querySelector("#program_id").value' : '&program_id={#program}"';?>)
 })<?php } ?>, addEvent(GG, "click", function(){
     var self = this; 
     self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
@@ -173,7 +205,7 @@ addEvent(GS, 'change', function(){
 	    } else {
 	        loadAlert(e.error, 1), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
         }
-	}, "POST", "&course_id=" + self.getAttribute('data-id') + "&user_id={#user_id}&plan_id=" + self.getAttribute('data-plan') + "<?php echo($TEMP['#admin'] == false || $TEMP['#academic'] == false) ? '&code="+D.querySelector("#course-code").value' : '"'?>);
+	}, "POST", "&course_id=" + self.getAttribute('data-id') + "&user_id={#user_id}&plan_id=" + self.getAttribute('data-plan') + "<?php echo($TEMP['#student'] == true) ? '&code="+D.querySelector("#course-code").value' : '&period_id=" + GO.value'?>);
 }), addEvent(GL, "click", function(){
     var self = this; 
     self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');

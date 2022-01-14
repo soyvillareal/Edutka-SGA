@@ -8,7 +8,16 @@
          <?php } ?>
       </div>
       <div class="dv-vertical-center margin-left-auto">
+         <?php if($TEMP['#student'] == true) { ?>
          <button class="{!status} btn-noway background-red hover-opacity color-white padding-10 border-radius-12 {!class_event} data-id="{!id}" data-plan="{!plan_id}">{!text}</button>
+         <?php } else { ?>
+         <button class="{!status} btn-noway background-red hover-opacity color-white padding-10 border-radius-12 {!class_event} data-id="{!id}" data-plan="{!plan_id}">
+            <span class="color-white">{!text}</span>
+            <div class="content-spinner-circle">
+               <div class="spinner-circle"></div>
+            </div>
+         </button>
+         <?php } ?>
       </div>
    </div>
    <?php if(!empty($TEMP['#enrolled'])){ ?>

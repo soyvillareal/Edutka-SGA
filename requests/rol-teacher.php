@@ -67,6 +67,9 @@ if($one == 'search-courses') {
                 }
             }
 
+
+            $TEMP['!program'] = $TEMP['#word']['pending'];
+
             $plans = $dba->query('SELECT plan_id FROM curriculum WHERE course_id = '.$course['id'])->fetchAll(false);
             if(!empty($plans)){
                 $programs = $dba->query('SELECT name FROM programs p WHERE (SELECT program_id FROM plan WHERE id IN ('.implode(',', $plans).') AND program_id = p.id) = id')->fetchAll(false);
@@ -81,8 +84,6 @@ if($one == 'search-courses') {
                     $TEMP['!program'] = $programs[0];
                 }
             }
-            $TEMP['!program'] = $TEMP['#word']['pending'];
-
 
             $TEMP['!id'] = $course['id'];
             $TEMP['!code'] = $course['code'];
@@ -168,6 +169,8 @@ if($one == 'search-courses') {
                     }
                 }
 
+                $TEMP['!program'] = $TEMP['#word']['pending'];
+
                 $plans = $dba->query('SELECT plan_id FROM curriculum WHERE course_id = '.$course['id'])->fetchAll(false);
                 if(!empty($plans)){
                     $programs = $dba->query('SELECT name FROM programs p WHERE (SELECT program_id FROM plan WHERE id IN ('.implode(',', $plans).') AND program_id = p.id) = id')->fetchAll(false);
@@ -182,7 +185,6 @@ if($one == 'search-courses') {
                         $TEMP['!program'] = $programs[0];
                     }
                 }
-                $TEMP['!program'] = $TEMP['#word']['pending'];
 
                 $TEMP['!id'] = $course['id'];
                 $TEMP['!code'] = $course['code'];
@@ -212,8 +214,8 @@ if($one == 'search-courses') {
         $type = Specific::Filter($_POST['typet']);
         if($type == 'notes' && Specific::Teacher() == true){
             $my_courses = $dba->query('SELECT course_id FROM teacher WHERE user_id = '.$TEMP['#user']['id'])->fetchAll(false);
-            $users = $dba->query('SELECT * FROM users u WHERE id != '.$TEMP['#user']['id'].' AND role = "student" AND (names LIKE "%'.$keyword.'%" OR surnames LIKE "%'.$keyword.'%") AND (SELECT user_id FROM enrolled WHERE user_id = u.id AND type = "course" AND course_id IN ('.implode(',', $my_courses).')) = id LIMIT 10')->fetchAll();
-            $deliver['XD'] = $users;
+            $users = $dba->query('SELECT user_id FROM enrolled WHERE type = "course" AND course_id IN ('.implode(',', $my_courses).')')->fetchAll(false);
+            $users = $dba->query('SELECT * FROM users u WHERE id != '.$TEMP['#user']['id'].' AND role = "student" AND (names LIKE "%'.$keyword.'%" OR surnames LIKE "%'.$keyword.'%") AND id IN ('.implode(',', $users).') LIMIT 10')->fetchAll();
         } else {
             $users = $dba->query('SELECT * FROM users WHERE id != '.$TEMP['#user']['id'].' AND role = "student" AND (names LIKE "%'.$keyword.'%" OR surnames LIKE "%'.$keyword.'%") LIMIT 10')->fetchAll();
         }
@@ -260,8 +262,8 @@ if($one == 'search-courses') {
                 $items = array();
             }
 
+            $parameter = $dba->query('SELECT * FROM parameter p WHERE (SELECT id FROM teacher WHERE course_id = '.$id.' AND period_id = '.$period_id.' AND id = p.teacher_id) = teacher_id')->fetchArray();
             if($type == 'notes'){
-                $parameter = $dba->query('SELECT * FROM parameter WHERE course_id = '.$id)->fetchArray();
                 $items['parameters'] = json_decode($parameter['parameters'], true);
                 $items['notes'] = json_decode($note['notes'], true);
                 if(isset($pos) && is_numeric($pos)){
@@ -270,7 +272,6 @@ if($one == 'search-courses') {
                     $items['notes'] = $notes;
                 }
             } else if(Specific::Teacher() == true){
-                $parameter = $dba->query('SELECT * FROM parameter p WHERE (SELECT id FROM teacher WHERE course_id = '.$id.' AND period_id = '.$period_id.' AND id = p.teacher_id) = teacher_id')->fetchArray();
                 $note_mode = $dba->query('SELECT note_mode FROM plan p WHERE (SELECT plan_id FROM curriculum WHERE course_id = '.$id.' AND plan_id = p.id) = id')->fetchArray();
 
                 if(isset($note_mode)){
@@ -356,8 +357,10 @@ if($one == 'search-courses') {
         if(empty($emptys)){
             if (empty($error)) {
                 $teachers = $dba->query('SELECT id FROM teacher WHERE course_id = '.$id.' AND period_id = '.$period_id)->fetchAll(false);
-                if($dba->query('SELECT COUNT(*) FROM parameter WHERE teacher_id IN ('.implode(',', $teachers).')')->fetchArray() > 0){
-                    if($dba->query('UPDATE parameter SET parameters = ? WHERE course_id = '.$id, json_encode($arrayj))->returnStatus()){
+                $teacher_id = $dba->query('SELECT id FROM teacher WHERE user_id = '.$TEMP['#user']['id'].' AND course_id = '.$id.' AND period_id = '.$period_id)->fetchArray();
+                $parameter_id = $dba->query('SELECT id FROM parameter WHERE teacher_id IN ('.implode(',', $teachers).')')->fetchArray();
+                if(!empty($parameter_id)){
+                    if($dba->query('UPDATE parameter SET parameters = ?, teacher_id = ?, `time` = ? WHERE id = '.$parameter_id, json_encode($arrayj), $teacher_id, time())->returnStatus()){
                         $deliver['status'] = 200;
                     } else {
                         $deliver = array(
@@ -366,7 +369,6 @@ if($one == 'search-courses') {
                         );
                     }
                 } else {
-                    $teacher_id = $dba->query('SELECT id FROM teacher WHERE user_id = '.$TEMP['#user']['id'].' AND course_id = '.$id.' AND period_id = '.$period_id)->fetchArray();
                     if($dba->query('INSERT INTO parameter (user_id, teacher_id, parameters, `time`) VALUES (?, ?, ?, ?)', $TEMP['#user']['id'], $teacher_id, json_encode($arrayj), time())->returnStatus()){
                         $deliver['status'] = 200;
                     } else {

@@ -124,6 +124,7 @@ var NU = D.querySelectorAll('.upload_note'),
 	NN = D.querySelector('#alert-notes'),
 	NT = D.querySelector('#this-note'),
 	NK = D.querySelector('#container-parameters'),
+	NP = D.querySelector('#periods'),
     NA = function(){
         var self = this,
             note_id = self.getAttribute('data-id'),
@@ -141,13 +142,13 @@ var NU = D.querySelectorAll('.upload_note'),
             } else {
                 self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
             }
-        }, "POST", "&type=notes&id=" + note_id + "&pos=" + pos)
+        }, "POST", "&type=notes&id=" + note_id + "&pos=" + pos + "&period_id=" + NP.value)
     },
 	keyword = "{#keyword_notes}";
 <?php if(count($TEMP['#programs']) > 1){ ?>
 addEvent(D.querySelector('#programs'), 'change', function(){
     preloadPage('&one=notes<?php echo($TEMP['#admin'] == true || $TEMP['#academic'] == true || $TEMP['#teacher'] == true) ? "&user={#user_id}" : "" ;?>&program='+this.value);
-}), <?php } if(count($TEMP['#periods']) > 1){ ?>addEvent(D.querySelector('#periods'), 'change', function(){
+}), <?php } if(count($TEMP['#periods']) > 1){ ?>addEvent(NP, 'change', function(){
     preloadPage('&one=notes<?php echo($TEMP['#admin'] == true || $TEMP['#academic'] == true || $TEMP['#teacher'] == true) ? "&user={#user_id}" : "" ;?>&program={#program_id}&period='+this.value);
 })
 <?php } ?>

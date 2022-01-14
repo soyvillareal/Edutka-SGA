@@ -860,6 +860,12 @@ addEvent(D.querySelector('#cancel-alert'), 'click', function(){
 });
 <?php } ?>
 
+<?php if(!empty($TEMP['#periods'])){ ?>
+addEvent(gxy, 'change', function(){
+    preloadPage("&one=courses&period_id=" + this.value);
+})
+<?php } ?>
+
 <?php if($TEMP['#admin'] == true || $TEMP['#academic'] == true){ ?>
 addEvent(gtt, 'change', function(){
     console.log('XD');
@@ -1076,9 +1082,7 @@ addEvent(gw.querySelector('#tips-val-prek'), "keyup", function(e){
             self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading'), loadAlert(e.error, 1);
         }
     }, "POST", "&id=" + self.getAttribute('data-id'));
-})<?php if(!empty($TEMP['#periods'])){ ?>, addEvent(gxy, 'change', function(){
-    preloadPage("&one=courses&period_id=" + this.value);
-})<?php } ?>;
+});
 <?php } ?>
 for(var j = 0, i = go.length; j < i; j++) addEvent(go[j], "click", gk);
 <?php } ?>

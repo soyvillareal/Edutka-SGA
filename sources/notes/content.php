@@ -67,6 +67,9 @@ $TEMP['#load_url'] = Specific::Url("notes$params");
 $TEMP['#notes'] = $dba->query('SELECT * FROM notes'.(!empty($TEMP['#period_id']) ? ' n ' : ' ').'WHERE user_id = '.$TEMP['#user_id'].$sqls)->fetchAll();
 if(!empty($TEMP['#notes'])){
 	foreach ($TEMP['#notes'] as $note) {
+		if(is_numeric($TEMP['#period_id'])){
+			$parameters = $dba->query('SELECT parameters FROM parameter p WHERE (SELECT id FROM teacher WHERE course_id = '.$note['course_id'].' AND period_id = '.$TEMP['#period_id'].' AND id = p.teacher_id) = teacher_id')->fetchArray();
+		}
 		$notes = json_decode($note['notes'], true);
 		$course = $dba->query('SELECT * FROM courses WHERE id = '.$note['course_id'])->fetchArray();
 		$period = $dba->query('SELECT * FROM periods p WHERE (SELECT period_id FROM enrolled WHERE user_id = '.$TEMP['#user_id'].' AND course_id = '.$note['course_id'].' AND type = "course" AND period_id = p.id) = id')->fetchArray();
@@ -88,11 +91,12 @@ if(!empty($TEMP['#notes'])){
 		$TEMP['!id'] = $note['id'];
 	    $TEMP['!period'] = $period['name'];
 	    $TEMP['!course'] = $course['name'];
-	    $TEMP['!parameters'] = $course['parameters'];
+	    $TEMP['!parameters'] = $parameters;
+
 	    if($TEMP['#note_mode'] == '30-30-40'){
 	    	for ($i=0; $i < 3; $i++) { 
 		    	$anotes = array();
-		        $parameters = json_decode($course['parameters'], true)[$i];
+		        $parameters = json_decode($TEMP['!parameters'], true)[$i];
 		        foreach ($parameters as $key => $param) {
 		        	$anotes[] = (($notes[$i][$key]/100)*$param['percent']);
 		        }
@@ -109,7 +113,7 @@ if(!empty($TEMP['#notes'])){
 		    }
 	    } else {
 	    	$anotes = array();
-		    $parameters = json_decode($course['parameters'], true);
+		    $parameters = json_decode($TEMP['!parameters'], true);
 		    foreach ($parameters as $key => $param) {
 		      	$anotes[] = (($notes[$key]/100)*$param['percent']);
 		    }

@@ -332,5 +332,19 @@ if($one == 'get-foitems'){
         $html .= Specific::Maket('not-found/result-for');
     }
     $deliver['html'] = $html;
+} else if($one == 'check-enroll'){
+    $deliver['status'] = 400;
+    $id = Specific::Filter($_POST['course_id']);
+    $user_id = Specific::Filter($_POST['user_id']);
+    $program_id = Specific::Filter($_POST['program_id']);
+    if(!empty($id) && is_numeric($id) && !empty($user_id) && is_numeric($user_id)){
+        $period_id = $dba->query('SELECT id FROM periods WHERE status = "enabled" AND start < '.time().' AND final > '.time())->fetchArray();
+        $periods = $dba->query('SELECT period_id FROM enrolled WHERE user_id = '.$user_id.' AND course_id = '.$id.' AND program_id = '.$program_id)->fetchAll(false);
+        $deliver['status'] = 200;
+        $deliver['cstatus'] = 'false';
+        if(in_array($period_id, $periods)){
+            $deliver['cstatus'] = 'true';
+        }
+    }
 }
 ?>

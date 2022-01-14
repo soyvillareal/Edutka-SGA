@@ -13,8 +13,8 @@ $TEMP['#user_id'] = $TEMP['#user']['id'];
 if(isset($_GET['user']) && (Specific::Admin() == true || Specific::Academic() == true)){
 	$TEMP['#user_id'] = Specific::Filter($_GET['user']);
 	if(Specific::Admin() == true || Specific::Academic() == true){
-		$TEMP['#user'] = Specific::Data($TEMP['#user_id']);
-		$TEMP['full_name'] = $TEMP['#user']['full_name'];
+		$user = Specific::Data($TEMP['#user_id']);
+		$TEMP['full_name'] = $user['full_name'];
 	}
 }
 
@@ -49,7 +49,7 @@ $TEMP['#load_url'] = Specific::Url("enroll$params");
 $TEMP['#enrolled'] = $dba->query('SELECT * FROM enrolled WHERE user_id = '.$TEMP['#user_id'].$sqls)->fetchAll();
 $programs = $dba->query('SELECT program_id FROM enrolled WHERE user_id = '.$TEMP['#user_id'].' AND type = "program"')->fetchAll(false);
 
-$TEMP['#program'] = $TEMP["#user"]["program"];
+$TEMP['#program'] = isset($user) ? $user["program"] : $TEMP["#user"]["program"];
 $TEMP['#programs'] = 0;
 if(!empty($programs)){
 	$TEMP['#programs'] = $dba->query('SELECT * FROM programs WHERE id IN ('.implode(',', $programs).')')->fetchAll();
@@ -100,7 +100,7 @@ if(!empty($TEMP['#enrolled'])){
 		}
 		$TEMP['!class_event'] = $enroll['type'] == 'course' ? 'show_rcmodal"' : 'show_rpmodal"';
 		if($enroll['status'] == 'cancelled'){
-			if(Specific::Admin() == false || Specific::Academic() == false){
+			if(Specific::Student() == true){
 				$TEMP['!class_event'] = 'cursor-disabled" disabled';
 			}
 		} else {
@@ -117,6 +117,7 @@ if(!empty($TEMP['#enrolled'])){
 	$TEMP['enrolled'] .= Specific::Maket("not-found/enroll");
 }
 
+$TEMP['#period_all'] = $dba->query('SELECT * FROM periods')->fetchAll();
 
 $TEMP['#page']        = 'enroll';
 $TEMP['#title']       = $TEMP['#word']['enroll'] . ' - ' . $TEMP['#settings']['title'];
