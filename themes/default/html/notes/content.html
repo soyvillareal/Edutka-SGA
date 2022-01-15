@@ -118,9 +118,23 @@
     </div>
 </div>
 <div class="background-pointer"></div>
+<div class="cont-alert" id="alert-popup">
+   	<h2 class="no-margin color-red">{$word->important}</h2>
+   	<?php if($TEMP['#teacher'] === true){ ?>
+   	<p class="margin-t15">{$word->you_cant_upload_ratings_yet} <a class="color-blue" href="{$url->{courses}}" target="_blank">{$word->here}</a>.</p>
+   	<?php } else { ?>
+   	<p class="margin-t15">{$word->you_cant_upload_grades_because_teacher}</p>
+	<?php } ?>
+   	<div class="padding-t25">
+      	<button id="close-palert" class="btn-noway background-red border-radius-4 padding-10 color-white hover-button font-uppercase">{$word->close}</button>
+   	</div>
+</div>
+<div class="background-pointer"></div>
 <script type="text/javascript">
 var NU = D.querySelectorAll('.upload_note'),
     NZ = D.querySelectorAll('.see_params'),
+	NS = D.querySelectorAll('.show_popalert'),
+	NY = D.querySelector('#alert-popup'),
 	NN = D.querySelector('#alert-notes'),
 	NT = D.querySelector('#this-note'),
 	NK = D.querySelector('#container-parameters'),
@@ -142,7 +156,10 @@ var NU = D.querySelectorAll('.upload_note'),
             } else {
                 self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
             }
-        }, "POST", "&type=notes&id=" + note_id + "&pos=" + pos + "&period_id=" + NP.value)
+        }, "POST", "&type=notes&id=" + note_id + "&pos=" + pos + "&period_id=<?php echo(count($TEMP['#periods']) > 1) ? '" + NP.value' : '{#period_id}"';?>)
+    },
+    GW = function(){
+    	NY.style.display = "block", D.body.style.overflow = "hidden";
     },
 	keyword = "{#keyword_notes}";
 <?php if(count($TEMP['#programs']) > 1){ ?>
@@ -230,7 +247,10 @@ addEvent(NT, 'click', function(){
 		   	return false;
 	    }
 	}, "POST", "&typet=notes&keyword=" + SV);
-})
+}), addEvent(D.querySelector('#close-palert'), 'click', function(){
+    NY.style.display = "", D.body.style.overflow = "";
+});
+for(var j = 0, i = NS.length; j < i; j++) addEvent(NS[j], "click", GW);	
 for(var j = 0, i = NU.length; j < i; j++) addEvent(NU[j], "click", NA);	
 <?php } ?>
 <?php if($TEMP['#student']){ ?>

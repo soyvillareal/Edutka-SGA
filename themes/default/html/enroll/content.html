@@ -85,7 +85,7 @@
    <h2 class="padding-b10 color-red">{$word->enroll} {$word->course}</h2>
    	<p id="registered-course" class="hidden">{$word->are_sure_want_make_registration}</p>
    	<p id="unregistered-course" class="font-medium margin-auto">
-        <span class="color-black">Matricular en el periodo: </span>
+        <span class="color-black">{$word->enroll_in_the_period} </span>
         <select id="period_id" class="border-none mw-w-100 border-radius-12 text-center padding-5 font-low animated-easy caret-down background-grely color-black">
             <?php foreach($TEMP['#period_all'] as $period) { ?>
             <option value="<?php echo $period['id']; ?>"><?php echo $period['name']; ?></option>

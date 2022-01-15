@@ -12,6 +12,13 @@
                </div>
                <div class="cont-cell-header padding-lr20 color-secondary">
                   {$word->note}
+                  <?php if($TEMP['#student'] === false && empty($TEMP['!parameters'])){ ?>
+                  <button class="show_popalert btn-noway position-absolute color-red">
+                     <svg class="dv-xs" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path fill="currentColor" d="M13,17h-2v-6h2V17z M13,7h-2v2h2V7z M12,3c-4.96,0-9,4.04-9,9s4.04,9,9,9c4.96,0,9-4.04,9-9S16.96,3,12,3 M12,2 c5.52,0,10,4.48,10,10s-4.48,10-10,10C6.48,22,2,17.52,2,12S6.48,2,12,2L12,2z"></path>
+                     </svg>
+                  </button>
+                  <?php } ?>
                </div>
                <div class="cont-cell-header padding-lr20 color-secondary">
                   {$word->percentage}
@@ -26,7 +33,7 @@
                <div class="cont-cell-header padding-lr20 color-black">
                   <?php if($TEMP['!first'] == 0){ ?>
                   <?php if($TEMP['#student'] == false){ ?>
-                  <button class="upload_note btn-noway color-blue underline-hover<?php echo(empty($TEMP['!parameters']) || ((!in_array('first', $TEMP['!authorization']) && $TEMP['#student'] == false) && $TEMP['#admin'] == false && $TEMP['#academic'] == false)) ? ' cursor-disabled" disabled' : '"';?><?php echo($TEMP['#note_mode'] == '30-30-40') ? ' data-pos="0"' : '';?> data-id="{!id}">{$word->upload_note}</button>
+                  <button class="upload_note btn-noway<?php echo(!empty($TEMP['!parameters'])) ? ' color-blue ' : ' color-red ';?>underline-hover<?php echo(empty($TEMP['!parameters']) || ((!in_array('first', $TEMP['!authorization']) && $TEMP['#student'] == false) && $TEMP['#admin'] == false && $TEMP['#academic'] == false)) ? ' cursor-disabled" disabled' : '"';?><?php echo($TEMP['#note_mode'] == '30-30-40') ? ' data-pos="0"' : '';?> data-id="{!id}">{$word->upload_note}</button>                  
                   <?php } else { ?>
                   {!first}
                   <?php } ?>
@@ -46,7 +53,7 @@
                <div class="cont-cell-header padding-lr20 color-black">
                   <?php if($TEMP['!second'] == 0){ ?>
                   <?php if($TEMP['#student'] == false){ ?>
-                  <button class="upload_note btn-noway color-blue underline-hover<?php echo(empty($TEMP['!parameters']) || ((!in_array('second', $TEMP['!authorization']) && $TEMP['#student'] == false) && $TEMP['#admin'] == false && $TEMP['#academic'] == false)) ? ' cursor-disabled" disabled' : '"';?> data-pos="1" data-id="{!id}">{$word->upload_note}</button>
+                  <button class="upload_note btn-noway<?php echo(!empty($TEMP['!parameters'])) ? ' color-blue ' : ' color-red ';?>underline-hover<?php echo(empty($TEMP['!parameters']) || ((!in_array('second', $TEMP['!authorization']) && $TEMP['#student'] == false) && $TEMP['#admin'] == false && $TEMP['#academic'] == false)) ? ' cursor-disabled" disabled' : '"';?> data-pos="1" data-id="{!id}">{$word->upload_note}</button>
                   <?php } else { ?>
                   {!second}
                   <?php } ?>
@@ -65,7 +72,14 @@
                <div class="cont-cell-header padding-lr20 color-black">
                   <?php if($TEMP['!third'] == 0){ ?>
                   <?php if($TEMP['#student'] == false){ ?>
-                  <button class="upload_note btn-noway color-blue underline-hover<?php echo(empty($TEMP['!parameters']) || ((!in_array('third', $TEMP['!authorization']) && $TEMP['#student'] == false) && $TEMP['#admin'] == false && $TEMP['#academic'] == false)) ? ' cursor-disabled" disabled' : '"';?> data-pos="2" data-id="{!id}">{$word->upload_note}</button>
+                  <button class="upload_note btn-noway<?php echo(!empty($TEMP['!parameters'])) ? ' color-blue ' : ' color-red ';?>underline-hover<?php echo($TEMP['#last_eval'] == false || empty($TEMP['!parameters']) || ((!in_array('third', $TEMP['!authorization']) && $TEMP['#student'] == false) && $TEMP['#admin'] == false && $TEMP['#academic'] == false)) ? ' cursor-disabled" disabled' : '"';?> data-pos="2" data-id="{!id}">{$word->upload_note}</button>
+                  <?php if($TEMP['#last_eval'] == false){ ?>
+                  <a class="position-absolute" href="{$url->{rules}}?article=42" target="_blank">
+                     <svg class="dv-xs" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M13,17h-2v-6h2V17z M13,7h-2v2h2V7z M12,3c-4.96,0-9,4.04-9,9s4.04,9,9,9c4.96,0,9-4.04,9-9S16.96,3,12,3 M12,2 c5.52,0,10,4.48,10,10s-4.48,10-10,10C6.48,22,2,17.52,2,12S6.48,2,12,2L12,2z"></path>
+                     </svg>
+                  </a>
+                  <?php } ?>
                   <?php } else { ?>
                   {!third}
                   <?php } ?>
@@ -101,7 +115,7 @@
                </div>
                <div class="cont-cell-header padding-lr20 color-black">
                   {!average}
-                  <?php if($TEMP['!evalfinal'] == true || $TEMP['!approved'] == false){ ?>
+                  <?php if($TEMP['#note_mode'] == '30-30-40' && ($TEMP['!evalfinal'] == true || $TEMP['!approved'] == false)){ ?>
                   <a class="position-absolute" href="{$url->{rules}}?article={!article}" target="_blank">
                      <svg class="dv-xs" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path d="M13,17h-2v-6h2V17z M13,7h-2v2h2V7z M12,3c-4.96,0-9,4.04-9,9s4.04,9,9,9c4.96,0,9-4.04,9-9S16.96,3,12,3 M12,2 c5.52,0,10,4.48,10,10s-4.48,10-10,10C6.48,22,2,17.52,2,12S6.48,2,12,2L12,2z"></path>

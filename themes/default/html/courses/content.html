@@ -743,7 +743,7 @@ addEvent(GY, 'click', function(){
                         if(elN.value != ''){
                             removeClass(elN, 'border-red'), removeClass(elN, 'boxshadow-red'), GZ.querySelector('.text-error').innerText = "";
                         }
-                        addClass(elP, 'border-red'), addClass(elP, 'boxshadow-red'), GZ.querySelector('.text-error').innerText = "La suma de estos valores debe ser 100", timeDelay(function(){
+                        addClass(elP, 'border-red'), addClass(elP, 'boxshadow-red'), GZ.querySelector('.text-error').innerText = "{$word->sum_these_values_must_be}", timeDelay(function(){
                             addClass(GI, 'efect-boom'), timeDelay(function(){
                                 removeClass(GI, 'efect-boom')
                             }, 200)
@@ -798,7 +798,7 @@ addEvent(GY, 'click', function(){
                             if(elN.value != ''){
                                 removeClass(elN, 'border-red'), removeClass(elN, 'boxshadow-red'), GZ.querySelector('.text-error').innerText = "";
                             }
-                            addClass(elP, 'border-red'), addClass(elP, 'boxshadow-red'), el2.querySelector('.text-error').innerText = "La suma de estos valores debe ser 100", timeDelay(function(){
+                            addClass(elP, 'border-red'), addClass(elP, 'boxshadow-red'), el2.querySelector('.text-error').innerText = "{$word->sum_these_values_must_be}", timeDelay(function(){
                                 addClass(GI, 'efect-boom'), timeDelay(function(){
                                     removeClass(GI, 'efect-boom')
                                 }, 200)
@@ -826,7 +826,7 @@ addEvent(GY, 'click', function(){
                     if(elN.value != ''){
                         removeClass(elN, 'border-red'), removeClass(elN, 'boxshadow-red'), GZ.querySelector('.text-error').innerText = "";
                     }
-                    addClass(elP, 'border-red'), addClass(elP, 'boxshadow-red'), GZ.querySelector('.text-error').innerText = "La suma de estos valores debe ser 100", timeDelay(function(){
+                    addClass(elP, 'border-red'), addClass(elP, 'boxshadow-red'), GZ.querySelector('.text-error').innerText = "{$word->sum_these_values_must_be}", timeDelay(function(){
                         addClass(GI, 'efect-boom'), timeDelay(function(){
                             removeClass(GI, 'efect-boom')
                         }, 200)
@@ -872,7 +872,7 @@ addEvent(gtt, 'change', function(){
     if(this.value == <?php echo $TEMP['#period_now']['id'];?>){
         grr.innerText = "{$word->it_period_that_force}";
     } else {
-        grr.innerText = "Este periodo no se encuentra vigente, pero puede ser asignado.";
+        grr.innerText = "{$word->this_period_not_valid_but_can_be_assigned}";
     }
 }), addEvent(ga, "keyup", function(e){
     let SV = this.value;
@@ -905,7 +905,7 @@ addEvent(gtt, 'change', function(){
     Req('{$url->{req/rol-academic/delete-assing}}', function(e){
         console.log(e);
         if(e.status == 200){
-            gcc.style.display = "", loadAlert("¡Asignacion eliminada con exito!"), preloadPage('&one=courses');
+            gcc.style.display = "", loadAlert("{$word->assignment_successfully_removed}"), preloadPage('&one=courses');
         } else {
             loadAlert('{$word->error}', 1), gyy.removeAttribute('disabled'), removeClass(gyy, 'spinner-is-loading');
         }
@@ -998,7 +998,7 @@ addEvent(gw.querySelector('#tips-val-prek'), "keyup", function(e){
             gn.innerHTML = "";
             return false;
         }
-    }, "POST", "&keyword=" + SV + "&type=" + GB.getAttribute('data-type') + "&course_id=" + GB.getAttribute('data-id'));
+    }, "POST", "&keyword=" + SV + "&typet=" + GB.getAttribute('data-type') + "&course_id=" + GB.getAttribute('data-id'));
 }), addEvent(ga, "keydown", function(e){
     keyTag(e.which, this, ZO, GX, GP)
 }), addEvent(D.querySelector('#show-pmodal'), 'click', function(){

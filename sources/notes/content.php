@@ -78,14 +78,18 @@ if(!empty($TEMP['#notes'])){
 		$TEMP['!authorization'] = Specific::Admin() == true || Specific::Academic() == true ? array('first', 'second', 'third') : $authorization;
 
 		$teachers = $dba->query('SELECT names FROM users u WHERE (SELECT user_id FROM teacher WHERE user_id = u.id AND course_id = '.$note['course_id'].') = id')->fetchAll(false);
-		if(count($teachers) == 2){
-			$teachers = "{$teachers[0]} {$TEMP['#word']['and']} {$teachers[1]}";
-		} else if(count($teachers) > 2){
-			$end = end($teachers);
-			array_pop($teachers);
-			$teachers = implode(', ', $teachers)." {$TEMP['#word']['and']} $end";
+		if(!empty($teachers)){
+			if(count($teachers) == 2){
+				$TEMP['!teacher'] = "{$teachers[0]} {$TEMP['#word']['and']} {$teachers[1]}";
+			} else if(count($teachers) > 2){
+				$end = end($teachers);
+				array_pop($teachers);
+				$TEMP['!teacher'] = implode(', ', $teachers)." {$TEMP['#word']['and']} $end";
+			} else {
+				$TEMP['!teacher'] = $teachers[0];
+			}
 		} else {
-			$teachers = $teachers[0];
+			$TEMP['!teacher'] = $TEMP['#word']['pending'];
 		}
 
 		$TEMP['!id'] = $note['id'];
@@ -104,9 +108,15 @@ if(!empty($TEMP['#notes'])){
 		    }
 			$TEMP['!first'] = $notes[0];
 		    $TEMP['!second'] = $notes[1];
+
+		    $TEMP['#last_eval'] = false;
+		    if((($notes[0]*0.3)+($notes[1]*0.3)) >= $TEMP['#nnevf']){
+		    	$TEMP['#last_eval'] = true;
+		    }
+
 		    $TEMP['!third'] = $notes[2];
 	    	$TEMP['!average'] = $average[] = round((($notes[0]*0.3)+($notes[1]*0.3)+($notes[2]*0.4)), 2);
-		    if($TEMP['!average'] > 0 && $notes[2] < $TEMP['#nmtc']){
+		    if($TEMP['!average'] >= 0 && $notes[2] < $TEMP['#nmtc']){
 		    	$TEMP['!evalfinal'] = true;
 		    	$TEMP['!article'] = 43;
 		    	$TEMP['!average'] = $average[] = round($notes[2], 2);
@@ -122,7 +132,6 @@ if(!empty($TEMP['#notes'])){
 	    	$TEMP['!average'] = $average[] = round($notes, 2);
 	    }
 
-	    $TEMP['!teacher'] = $teachers;
 	    $TEMP['!approved'] = ($course['type'] == 'practice' && $TEMP['!average'] >= $TEMP['#nmcnt']) || ($course['type'] == 'theoretical' && $TEMP['!average'] >= $TEMP['#nmct']) ? true : false;
 	    if($TEMP['!approved'] == false){
 	    	$avekey[] = $TEMP['!average'];
@@ -130,7 +139,7 @@ if(!empty($TEMP['#notes'])){
 	    	$TEMP['!article'] = 60;
 	    }
 	    $TEMP['!status'] = $TEMP['!period_final'] == true ? $TEMP['#word']['finalized'] : $TEMP['#word']['in_progress'];
-	    $TEMP['notes'] .= Specific::Maket("notes/includes/notes");
+	    $TEMP['notes'] .= Specific::Maket("notes/includes/notes-list");
 	}
 	Specific::DestroyMaket();
 	$TEMP['#semesbad'] = count($avekey) >= $TEMP['#cers'];

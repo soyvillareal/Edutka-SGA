@@ -21,15 +21,14 @@ if($one == 'search-enrolled'){
         if($type == 'course'){
         	if(!empty($program_id)){
         		$courses = $dba->query('SELECT course_id FROM curriculum c WHERE (SELECT id FROM plan WHERE program_id = '.$program_id.' AND id = c.plan_id) = plan_id')->fetchAll(false);
-
+        		$deliver['XD'] = $courses;
 	        	if(!empty($courses)){
-	        		$query .= " AND id IN (".implode(',', $courses).")";
+	        		$searchs = $dba->query('SELECT * FROM '.$type.'s'.$query.' AND id IN ('.implode(',', $courses).')')->fetchAll();
 	        	}
-        	} else {
-        		$query .= " AND id = 0";
         	}
+        } else {
+        	$searchs = $dba->query('SELECT * FROM '.$type.'s'.$query)->fetchAll();
         }
-       	$searchs = $dba->query('SELECT * FROM '.$type.'s'.$query)->fetchAll();
 	    if (!empty($searchs)) {
 	    	$period_id = $dba->query('SELECT id FROM periods WHERE status = "enabled" AND start < '.time().' AND final > '.time())->fetchArray();
 	        foreach ($searchs as $search) {
@@ -266,7 +265,7 @@ if($one == 'search-enrolled'){
 	    	} else {
 	    		$deliver = array(
 		       		'status' => 400,
-		       		'error' => $TEMP['#word']['please_enter__code_this_course']
+		       		'error' => $TEMP['#word']['please_enter_code_this_course']
 		       	);
 	    	}
 	    } else {

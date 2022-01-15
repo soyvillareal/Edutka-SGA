@@ -241,7 +241,7 @@
     <div class="cont-dialog">
         <div class="cont-popup background-white">
             <div class="top-header">
-                <div class="padding-t15 padding-b15 w-100 font-lowly color-black">Malla curricular</div>
+                <div class="padding-t15 padding-b15 w-100 font-lowly color-black">{$word->curriculum}</div>
             </div>
             <div class="content-modal-body color-grey">
                 <div class="group-validate display-block position-relative w-100 padding-25 margin-auto">
@@ -282,7 +282,7 @@
 </div>
 <div class="background-pointer"></div>
 <div class="cont-alert" id="alert-cdelete">
-   <h2 class="color-red">{$word->delete} Malla curricular</h2>
+   <h2 class="color-red">{$word->delete} {$word->curriculum}</h2>
    <p>{$word->this_action_cannot_undone_continue}</p>
    <div class="padding-t25">
       <button class="btn-noway background-grely border-radius-4 padding-10 color-black hover-button font-uppercase" id="cancel-adalert">{$word->cancel}</button>
@@ -431,7 +431,7 @@ addEvent(gdd, 'click', GDD), addEvent(D.querySelector('#cancel-adalert'), 'click
     Req('{$url->{req/rol-admin/delete-curriculum}}', function(e){
         console.log(e);
         if(e.status == 200){
-            gcc.style.display = "", loadAlert("¡Malla curricular eliminada con exito!"), preloadPage('&one=more&page=plans');
+            gcc.style.display = "", loadAlert("{$word->curriculum_mesh_successfully_removed}"), preloadPage('&one=more&page=plans');
         } else {
             loadAlert('{$word->error}', 1), gyy.removeAttribute('disabled'), removeClass(gyy, 'spinner-is-loading');
         }
@@ -461,7 +461,7 @@ addEvent(gdd, 'click', GDD), addEvent(D.querySelector('#cancel-adalert'), 'click
             if(e.error != undefined){
                 loadAlert(e.error, 1);
             } else {
-                loadAlert("¡Malla curricular actualizada con exito!")
+                loadAlert("{$word->curriculum_updated_successfully}")
             }
         } else {
             if (e.errors != undefined) {
@@ -495,6 +495,7 @@ addEvent(ga, "keydown", function(e){
     } else if(e.which != 13 || e.keyCode != 13){
         removeClass(gl, 'hidden');
     }
+    console.log(gd.getAttribute('data-id'));
     Req('{$url->{req/rol-admin/search-course}}', function(e) {
         console.log(e);
         if(e.html != ''){
@@ -508,7 +509,7 @@ addEvent(ga, "keydown", function(e){
             gl.innerHTML = "";
             return false;
         }
-    }, "POST", "&type=" + GB.getAttribute('data-type') + "&keyword=" + SV + "&courses=" + GK.value + "&plan_id=" + GB.getAttribute('data-id'));
+    }, "POST", "&typet=" + gd.getAttribute('data-type') + "&keyword=" + SV + "&courses=" + GK.value + "&plan_id=" + gd.getAttribute('data-id'));
 }), addEvent(D.querySelector('#show-pmodal'), 'click', function(){
     var gz = ZO.querySelectorAll('.tipsit-choice');
     GK.value = "", GX = [], GI.style.display = "block", D.body.style.overflow = "hidden", GB.setAttribute('data-type', 'add'), GB.removeAttribute('data-id'), scrollTo(0, GV);

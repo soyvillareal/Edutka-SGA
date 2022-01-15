@@ -11,32 +11,33 @@ if ($TEMP['#loggedin'] === false || Specific::Admin() === false) {
 if($one == 'search-course') {
     $nextrues = array(true);
     $keyword = Specific::Filter($_POST['keyword']);
-    $type = Specific::Filter($_POST['type']);
+    $type = Specific::Filter($_POST['typet']);
     $course_id = Specific::Filter($_POST['course_id']);
     $plan_id = Specific::Filter($_POST['plan_id']);
+    $courses = Specific::Filter($_POST['courses']);
     $html = '';
     $query = '';
     if(!empty($keyword)){
         $query .= " WHERE (id LIKE '%$keyword%' OR name LIKE '%$keyword%' OR code LIKE '%$keyword%')";
         if($type == 'edit'){
-            if(isset($course_id)){
+            if(!empty($course_id)){
                 $query .= " AND id <> $course_id";
             }
         }
-        
-        if(isset($plan_id)){
-            $couarr = $dba->query('SELECT course_id FROM curriculum WHERE plan_id = '.$plan_id)->fetchAll(false);
-            if(!empty($couarr)){
-                $query .= " AND id IN (".implode(',', $couarr).")";
-            }
+        if(!empty($courses)){
+            $query .= " AND id NOT IN (".$courses.")";
+        }
+        if(!empty($plan_id)){
+            $query .= ' AND id NOT IN ((SELECT course_id FROM curriculum))';
         } else {
             $pcourses = $dba->query('SELECT courses FROM plan WHERE courses = '.$course_id)->fetchAll(false);
             if(!empty($pcourses)){
                 $query .= " AND id IN (".implode(',', $pcourses).")";
             }
         }
+        $courses = $dba->query('SELECT * FROM courses'.$query.' LIMIT 5')->fetchAll();
     }
-    $courses = $dba->query('SELECT * FROM courses'.$query.' LIMIT 5')->fetchAll();
+
     if (!empty($courses)) {
         foreach ($courses as $course) {
             $html .= "<button class='tipsit-search display-flex btn-noway border-bottom border-grey padding-10 background-hover' data-id='".$course['id']."' data-name='".$course['name']."'>".$course['name']."</button>";
@@ -1284,7 +1285,7 @@ if($one == 'search-course') {
                     } else {
                         $deliver = array(
                             'status' => 400,
-                            'error' => 'Uno de los cursos ya está asignado a un plan de estudios'
+                            'error' => $TEMP['#word']['one_courses_already_assigned_curriculum']
                         );
                     }
                 } else {

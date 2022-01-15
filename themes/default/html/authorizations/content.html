@@ -110,7 +110,7 @@
                             <select id="course_id" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue area_changed caret-down area_validate background-grely color-black">
                                 <option value selected>{$word->select_course}</option>
                                 <?php foreach($TEMP['#courses'] as $course){ ?>
-                                <option value="<?php echo $course['id']; ?>"><?php echo $course['name']; ?></option>
+                                <option value="<?php echo $course['id']; ?>"<?php echo(!in_array($course['id'], $courses)) ? 'disabled' : ''?>><?php echo $course['name']; ?></option>
                                 <?php } ?>
                             </select>
                             <div class="content-spinner-circle">
@@ -135,6 +135,7 @@
                             <div class="color-red text-left text-error font-low margin-t5"></div>
                         </div>
                     </div>
+                    <input id="court-unique" class="hidden" type="text" value="unique">
                 </div>
                 <div class="group-validate display-block position-relative w-100 padding-25">
                     <div class="display-flex flex-wrap">
@@ -221,9 +222,9 @@ addEvent(GC, 'change', function(){
     Req('{$url->{req/rol-teacher/cut-select}}', function(e){
         if(e.status == 200){
             if(e.note_mode == '30-30-40'){
-                removeClass(GK, 'hidden');
+                removeClass(GK, 'hidden'), GO = D.querySelector('#court'), console.log(GO.value);
             } else {
-                addClass(GK, 'hidden');
+                addClass(GK, 'hidden'), GO = D.querySelector('#court-unique'), console.log(GO.value);
             }
             self.removeAttribute('disabled'), removeClass(GK, 'spinner-is-loading');
         } else {
@@ -262,6 +263,7 @@ addEvent(GC, 'change', function(){
     }
     GB.setAttribute('disabled', true), addClass(GB, 'spinner-is-loading');
     Req('{$url->{req/rol-teacher/this-authorizations}}', function(e){
+        console.log(e);
         if(e.status == 200){
             GI.style.display = "", loadAlert("{$word->you_have_authorized_teacher_successfully}"), preloadPage('&one=authorizations');
         } else {

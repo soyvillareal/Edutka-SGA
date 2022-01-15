@@ -427,21 +427,29 @@ if($one == 'search-courses') {
                 $TEMP['!authorization'] = $dba->query('SELECT court FROM authorization WHERE status = "authorized" AND period_id = '.$period['id'].' AND course_id = '.$note['course_id'])->fetchAll(false);
                 if(in_array($court, $TEMP['!authorization']) || Specific::Admin() == true || Specific::Academic() == true){
                     if (empty($errors)) {
+                        $note_mode = $dba->query('SELECT note_mode FROM plan p WHERE (SELECT plan_id FROM curriculum WHERE course_id = '.$note['course_id'].' AND plan_id = p.id) = id')->fetchArray();
                         $notes = $params;
                         if(isset($pos)){
                             $notes = $note['notes'];
                             $notes = json_decode($notes, true);
                             $notes[$pos] = $params;
                         }
-                        if($dba->query('UPDATE notes SET notes = ? WHERE id = '.$id, json_encode($notes))->returnStatus()){
-                            $deliver['status'] = 200;
-                            Specific::SendNotification(array(
-                                'from_id' => $TEMP['#user']['id'],
-                                'to_id' => $note['user_id'],
-                                'course_id' => $note['user_id'],
-                                'type' => "'note'",
-                                'time' => time()
-                            ));
+                        if(((($notes[0][0]*0.3)+($notes[1][0]*0.3)) >= $TEMP['#nnevf']) || $note_mode == '100' || in_array($pos, array(0, 1))){
+                            if($dba->query('UPDATE notes SET notes = ? WHERE id = '.$id, json_encode($notes))->returnStatus()){
+                                $deliver['status'] = 200;
+                                Specific::SendNotification(array(
+                                    'from_id' => $TEMP['#user']['id'],
+                                    'to_id' => $note['user_id'],
+                                    'course_id' => $note['user_id'],
+                                    'type' => "'note'",
+                                    'time' => time()
+                                ));
+                            }
+                        } else {
+                            $deliver = array(
+                                'status' => 400,
+                                'error' => $TEMP['#word']['error']
+                            );
                         }
                     } else {
                         $deliver = array(
@@ -557,6 +565,7 @@ if($one == 'search-courses') {
 
     if(empty($emptys)){
         $note_mode = $dba->query('SELECT note_mode FROM plan p WHERE (SELECT plan_id FROM curriculum WHERE course_id = '.$course_id.' AND plan_id = p.id) = id')->fetchArray();
+        $courses = $dba->query('SELECT course_id FROM teacher t WHERE user_id = '.$TEMP['#user']['id'].' AND (SELECT id FROM periods WHERE final > '.time().' AND id = t.period_id) = period_id')->fetchAll(false);
         $teacher_id = $dba->query('SELECT id FROM teacher WHERE user_id = '.$TEMP['#user']['id'].' AND course_id = '.$course_id)->fetchArray();
         $authorization = $dba->query('SELECT status, COUNT(*) AS count FROM authorization WHERE teacher_id = '.$teacher_id.' AND course_id = '.$course_id.' AND court = "'.$court.'" AND status = "pending"')->fetchArray();
         
@@ -564,55 +573,60 @@ if($one == 'search-courses') {
             if(!in_array($course_id, $dba->query('SELECT id FROM courses c WHERE (SELECT course_id FROM teacher WHERE user_id = '.$TEMP['#user']['id'].' AND course_id = c.id) = id')->fetchAll(false))){
                 $errors[] = 'course_id';
             }
-            if($note_mode == '100'){
-                $court = 'only';
-            } else if(!in_array($court, $courts)){
+            if($note_mode == '30-30-40' && !in_array($court, $courts)){
                 $errors[] = 'court';
             }
-            if (empty($errors)) {
-                $period = $dba->query('SELECT *, COUNT(*) AS count FROM periods WHERE status = "enabled" AND start < '.time().' AND final > '.time())->fetchArray();
-                if($period['count'] > 0){
-                    if($dba->query('SELECT COUNT(*) FROM authorization WHERE status <> "denied" AND course_id = "'.$course_id.'" AND court = "'.$court.'" AND period_id = '.$period['id'])->fetchArray() == 0){
-                        if($type == 'add'){
-                            if($dba->query('INSERT INTO authorization (user_id, teacher_id, course_id, description, court, expires, status, `time`) VALUES (0, '.$teacher_id.', '.$course_id.', "'.$description.'", "'.$court.'", 0, "pending", '.time().')')->returnStatus()){
-                                $deliver['status'] = 200;
-                                $users = $dba->query('SELECT id FROM users WHERE role = "admin" AND role = "academic"')->fetchAll();
-                                foreach ($users as $user) {
-                                    Specific::SendNotification(array(
-                                        'from_id' => $TEMP['#user']['id'],
-                                        'to_id' => $user['id'],
-                                        'course_id' => $course_id,
-                                        'type' => "'authorize'",
-                                        'time' => time()
-                                    ));
+            if((($note_mode == '100' && $court == 'unique') || $note_mode == '30-30-40') && in_array($course_id, $courses)){
+                if (empty($errors)) {
+                    $period = $dba->query('SELECT *, COUNT(*) AS count FROM periods WHERE status = "enabled" AND start < '.time().' AND final > '.time())->fetchArray();
+                    if($period['count'] > 0){
+                        if($dba->query('SELECT COUNT(*) FROM authorization WHERE status <> "denied" AND course_id = "'.$course_id.'" AND court = "'.$court.'" AND period_id = '.$period['id'])->fetchArray() == 0){
+                            if($type == 'add'){
+                                if($dba->query('INSERT INTO authorization (user_id, teacher_id, course_id, description, court, expires, status, `time`) VALUES (0, '.$teacher_id.', '.$course_id.', "'.$description.'", "'.$court.'", 0, "pending", '.time().')')->returnStatus()){
+                                    $deliver['status'] = 200;
+                                    $users = $dba->query('SELECT id FROM users WHERE role = "admin" AND role = "academic"')->fetchAll();
+                                    foreach ($users as $user) {
+                                        Specific::SendNotification(array(
+                                            'from_id' => $TEMP['#user']['id'],
+                                            'to_id' => $user['id'],
+                                            'course_id' => $course_id,
+                                            'type' => "'authorize'",
+                                            'time' => time()
+                                        ));
+                                    }
+                                } else {
+                                    $deliver = array(
+                                        'status' => 400,
+                                        'error' => $TEMP['#word']['error']
+                                    );
                                 }
-                            } else {
-                                $deliver = array(
-                                    'status' => 400,
-                                    'error' => $TEMP['#word']['error']
-                                );
+                            } else if(isset($id) && is_numeric($id)){
+                                if($dba->query('UPDATE authorization SET description = ?, court = ? WHERE id = '.$id, $description, $court)->returnStatus()){
+                                    $deliver['status'] = 200;
+                                }
                             }
-                        } else if(isset($id) && is_numeric($id)){
-                            if($dba->query('UPDATE authorization SET description = ?, court = ? WHERE id = '.$id, $description, $court)->returnStatus()){
-                                $deliver['status'] = 200;
-                            }
+                        } else {
+                            $deliver = array(
+                                'status' => 400,
+                                'error' => "{$TEMP['#word']['there_already_authorization_court_period']}: {$period['name']}"
+                            );
                         }
                     } else {
                         $deliver = array(
                             'status' => 400,
-                            'error' => "{$TEMP['#word']['there_already_authorization_court_period']}: {$period['name']}"
+                            'error' => $TEMP['#word']['there_no_active_period_moment']
                         );
                     }
                 } else {
                     $deliver = array(
                         'status' => 400,
-                        'error' => $TEMP['#word']['there_no_active_period_moment']
+                        'errors' => $errors
                     );
                 }
             } else {
                 $deliver = array(
                     'status' => 400,
-                    'errors' => $errors
+                    'error' => $TEMP['#word']['error']
                 );
             }
         } else {
