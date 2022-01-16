@@ -17,6 +17,8 @@
     var D = document,
         W = window,
         M = '{#now_url}',
+        DE = null,
+        DS = 0,
         DW = W.innerWidth || D.documentElement.clientWidth || D.body.clienWidth,
         DOWN = false,
         CN = 0,
@@ -203,6 +205,13 @@
         removeEvent = (node, event, handler, capture = !1, passive = !1) => {
           node.removeEventListener(event, handler, supportsPassive() && passive ? {passive: passive} : capture);
           return node.addEventListener;
+        },
+        doubleClick = (node, handler) => {
+          addEvent(node, "click", function () {
+              1 == ++DS ? (DE = timeDelay(function () {
+                DS = 0; 
+              }, 300)) : (handler(this), clearTimeout(DE), (DS = 0));
+          })
         },
         hasClass = (e, t) => {
           return "classList" in D.documentElement ? void 0 !== e.classList && e.classList.contains(t) : new RegExp("\\b" + t + "\\b").test(e.className);

@@ -1228,6 +1228,15 @@ h5 {
 .pos-top {
     top: 0;
 }
+
+.pos-tmed {
+    top: 50%;
+}
+
+.pos-rowr {
+    right: -25px;
+}
+
 .dv-vertical-center {
     display: -ms-flexbox;
     display: -webkit-flex;
@@ -1570,6 +1579,10 @@ h5 {
 
 .margin-b50 {
     margin-bottom: 50px
+}
+
+.margin-rowt {
+    margin-top: -20px;
 }
 
 .no-margin {
@@ -2109,7 +2122,7 @@ h5 {
     .settings-items li a:not(.last) {
         border-bottom: 1px solid;
     }
-    .cont-label {
+    .cont-label:not(.mob-dlabel) {
         width: 100%;
     }
     .cont-alert {

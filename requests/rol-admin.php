@@ -594,6 +594,105 @@ if($one == 'search-course') {
                 'emptys' => $emptys
             );
         }
+} else if($one == 'this-dates'){
+    $deliver['status'] = 400;
+    $emptys = array();
+    $errors = array();
+
+    $id = Specific::Filter($_POST['id']);
+    $dates = Specific::Filter($_POST['dates']);
+    $dates = html_entity_decode($dates);
+    $dates = json_decode($dates);
+
+    if(!empty($id) && is_numeric($id) && !empty($dates)){
+        $params = json_encode($params);
+        $params = json_decode($params);
+
+        if($dba->query('SELECT COUNT(*) FROM periods WHERE id = '.$id)->fetchArray() > 0){
+            $datesD = array(1, 2, 3, 4, 8, 9, 11, 12);
+            if(strtotime($dates[1]) > strtotime($dates[2])){
+                $errors[] = 0;
+            }
+            if(strtotime($dates[3]) > strtotime($dates[4])){
+                $errors[] = 1;
+            }
+            if(strtotime($dates[8]) > strtotime($dates[9])){
+                $errors[] = 2;
+            }
+            if(strtotime($dates[11]) > strtotime($dates[12])){
+                $errors[] = 3;
+            }
+            if (empty($errors)) {
+                if($dba->query('UPDATE periods SET dates = ? WHERE id = '.$id, json_encode($dates))->returnStatus()){
+                    $deliver['status'] = 200;
+                }
+            } else {
+                $deliver = array(
+                    'status' => 400,
+                    'errors' => $errors
+                );
+            }
+        } else {
+            $deliver = array(
+                'status' => 400,
+                'error' => $TEMP['#word']['error']
+            );
+        }
+    } else {
+        $deliver = array(
+            'status' => 400,
+            'error' => $TEMP['#word']['error']
+        );
+    }
+} else if($one == 'get-ditems'){
+    $id = Specific::Filter($_POST['id']);
+    if(!empty($id) && is_numeric($id)){
+        $items = $dba->query('SELECT dates FROM periods WHERE id = '.$id)->fetchArray();
+        $items = json_decode($items, true);
+        $dates = array();
+
+        $dates[0] = $items[0];
+        $dates[1] = array($items[1], $items[2]);
+        $dates[2] = array($items[3], $items[4]);
+        $dates[3] = $items[5];
+        $dates[4] = $items[6];
+        $dates[5] = $items[7];
+        $dates[6] = array($items[8], $items[9]);
+        $dates[7] = $items[10];
+        $dates[8] = array($items[11], $items[12]);
+        $dates[9] = $items[13];
+        $dates[10] = $items[14];
+        $dates[11] = $items[15];
+        $dates[12] = $items[16];
+
+        foreach ($dates as $key => $value) {
+            if (is_array($value)){
+                foreach ($value as $k => $val) {
+                    if(empty($val)) {
+                        $dates[$key][$k] = $TEMP['#word']['pending'];
+                    } else {
+                        $val = strtotime($val);
+                        $dates[$key][$k] = Specific::DateFormat($val);
+                    }
+                }
+            } else {
+                if(empty($value)) {
+                    $dates[$key] = $TEMP['#word']['pending'];
+                } else {
+                    $value = strtotime($value);
+                    $dates[$key] = Specific::DateFormat($value);
+                }
+            }
+        }
+
+        if (!empty($items)) {
+            $deliver = array(
+                'status' => 200,
+                'items' => $items,
+                'dates' => $dates
+            );
+        }
+    }
 } else if($one == 'table-periods'){
     $page = Specific::Filter($_POST['page_id']);
     if(!empty($page) && is_numeric($page) && isset($page) && $page > 0){
