@@ -154,7 +154,7 @@ var NU = D.querySelectorAll('.upload_note'),
                 }
                 NN.style.display = "block", D.body.style.overflow = "hidden"<?php if($TEMP['#student'] == false){ ?><?php echo($TEMP['#note_mode'] == '30-30-40') ? ", NT.setAttribute('data-pos', pos)" : "";?>, NT.setAttribute('data-id', note_id), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');<?php } ?>
             } else {
-                self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
+                loadAlert('{$word->error}', 1), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
             }
         }, "POST", "&type=notes&id=" + note_id + "&pos=" + pos + "&period_id=<?php echo(count($TEMP['#periods']) > 1) ? '" + NP.value' : '{#period_id}"';?>)
     },

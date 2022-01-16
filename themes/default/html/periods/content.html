@@ -22,7 +22,7 @@
                                             {$word->name}
                                         </div>
                                         <div class="cont-cell-header padding-lr20 color-black">
-                                            Fechas
+                                            {$word->dates}
                                         </div>
                                         <div class="cont-cell-header padding-lr20 color-black">
                                             {$word->start}
@@ -182,21 +182,21 @@
         <div class="cont-popup background-white">
             <div class="top-header">
                 <div class="padding-t15 padding-b15 w-100 font-lowly color-black">
-                    Periodo academico
+                    {$word->academic_period} (<span id="text-pname"></span>)
                 </div>
             </div>
             <div class="content-modal-body color-grey">
                 <div class="group-validate display-block margin-t15 position-relative w-100 padding-25">
                     <div class="display-flex flex-wrap">
                         <div class="cont-label dv-vertical-center">
-                            <label class="color-black">Area</label>
+                            <label class="color-black">{$word->area}</label>
                         </div>
                         <div class="flex-grow">
-                            <select id="screen" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue caret-down area_changed_date background-grely color-black">
-                                <option value="loads">Cargas academicas</option>
-                                <option value="tuition">Matriculas</option>
-                                <option value="qualifications">Habilitaciones</option>
-                                <option value="financial">Matricula financiera</option>
+                            <select id="screen" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue caret-down background-grely color-black">
+                                <option value="loads">{$word->academic_loads}</option>
+                                <option value="tuition">{$word->academic_enrollment}</option>
+                                <option value="qualifications">{$word->qualifications}</option>
+                                <option value="financial">{$word->financial_tuition}</option>
                             </select>
                         </div>
                     </div>
@@ -205,7 +205,7 @@
                     <div class="group-validate display-block margin-t15 position-relative w-100 padding-25">
                         <div class="dv-vertical-center flex-wrap">
                             <div class="cont-label w-49 mob-dlabel ellipsis-horizontal">
-                                <label class="date_title color-black">Limite de cargas academicas</label>
+                                <label class="date_title color-black">{$word->academic_load_limit}</label>
                             </div>
                             <div class="flex-grow w-49">
                                 <div class="display-flex">
@@ -213,9 +213,9 @@
                                 </div>
                                 <div class="date_right position-relative margin-rowt hidden">
                                     <div class="display-flex">
-                                        <label class="color-red margin-left-auto">Limite</label>
+                                        <label class="color-red margin-left-auto">{$word->final}</label>
                                     </div>
-                                    <input class="date_input cont-input h-50 border-radius-12 animated-easy border-focus-blue area_changed_date area_validate_date background-grely margin-left-auto margin-r5 color-black" type="date">
+                                    <input class="date_input cont-input h-50 border-radius-12 animated-easy border-focus-blue area_validate_date background-grely margin-left-auto margin-r5 color-black" type="date">
                                     <div class="position-absolute pos-rowr pos-tmed">
                                         <button class="clear_date btn-noway hover-button color-red">
                                             <svg class="dv-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -233,12 +233,12 @@
                     <div class="group-validate display-block margin-t15 position-relative w-100 padding-25" data-pos="0">
                         <div class="dv-vertical-center flex-wrap">
                             <div class="cont-label w-49 mob-dlabel ellipsis-horizontal">
-                                <label class="date_title color-black">Matricula academica ordinaria</label>
+                                <label class="date_title color-black">{$word->ordinary_academic_registration}</label>
                                 <div class="date_left hidden">
                                     <div class="display-flex">
-                                        <label class="color-green margin-left-auto">Comienzo</label>
+                                        <label class="color-green margin-left-auto">{$word->start}</label>
                                     </div>
-                                    <input class="date_input cont-input h-50 border-radius-12 animated-easy border-focus-blue area_changed_date area_validate_date background-grely color-black" type="date">
+                                    <input class="date_input cont-input h-50 border-radius-12 animated-easy border-focus-blue area_validate_date background-grely color-black" type="date">
                                 </div>
                             </div>
                             <div class="flex-grow w-49">
@@ -247,9 +247,9 @@
                                 </div>
                                 <div class="date_right hidden">
                                     <div class="display-flex">
-                                        <label class="color-red margin-left-auto">Limite</label>
+                                        <label class="color-red margin-left-auto">{$word->final}</label>
                                     </div>
-                                    <input class="date_input cont-input h-50 border-radius-12 animated-easy border-focus-blue area_changed_date area_validate_date background-grely margin-left-auto margin-r5 color-black" type="date">
+                                    <input class="date_input cont-input h-50 border-radius-12 animated-easy border-focus-blue area_validate_date background-grely margin-left-auto margin-r5 color-black" type="date">
                                     <div class="position-absolute pos-right pos-tmed">
                                         <button class="clear_date btn-noway hover-button color-red">
                                             <svg class="dv-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -267,12 +267,12 @@
                     <div class="group-validate display-block margin-t15 position-relative w-100 padding-25" data-pos="1">
                         <div class="dv-vertical-center flex-wrap">
                             <div class="cont-label w-49 mob-dlabel ellipsis-horizontal">
-                                <label class="date_title color-black">Matricula academica extra-ordinaria</label>
+                                <label class="date_title color-black">{$word->extraordinary_academic_enrollment}</label>
                                 <div class="date_left hidden">
                                     <div class="display-flex">
-                                        <label class="color-green margin-left-auto">Comienzo</label>
+                                        <label class="color-green margin-left-auto">{$word->start}</label>
                                     </div>
-                                    <input class="date_input cont-input h-50 border-radius-12 animated-easy border-focus-blue area_changed_date area_validate_date background-grely color-black" type="date">
+                                    <input class="date_input cont-input h-50 border-radius-12 animated-easy border-focus-blue area_validate_date background-grely color-black" type="date">
                                 </div>
                             </div>
                             <div class="flex-grow w-49">
@@ -281,9 +281,9 @@
                                 </div>
                                 <div class="date_right hidden">
                                     <div class="display-flex">
-                                        <label class="color-red margin-left-auto">Limite</label>
+                                        <label class="color-red margin-left-auto">{$word->final}</label>
                                     </div>
-                                    <input class="date_input cont-input h-50 border-radius-12 animated-easy border-focus-blue area_changed_date area_validate_date background-grely margin-left-auto margin-r5 color-black" type="date">
+                                    <input class="date_input cont-input h-50 border-radius-12 animated-easy border-focus-blue area_validate_date background-grely margin-left-auto margin-r5 color-black" type="date">
                                     <div class="position-absolute pos-right pos-tmed">
                                         <button class="clear_date btn-noway hover-button color-red">
                                             <svg class="dv-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -301,7 +301,7 @@
                     <div class="group-validate display-block margin-t15 position-relative w-100 padding-25">
                         <div class="dv-vertical-center flex-wrap">
                             <div class="cont-label w-49 mob-dlabel ellipsis-horizontal">
-                                <label class="date_title color-black">Fecha limite adicion de espacios academicos</label>
+                                <label class="date_title color-black">{$word->deadline_adding_academic_spaces}</label>
                             </div>
                             <div class="flex-grow w-49">
                                 <div class="display-flex">
@@ -309,9 +309,9 @@
                                 </div>
                                 <div class="date_right position-relative margin-rowt hidden">
                                     <div class="display-flex">
-                                        <label class="color-red margin-left-auto">Limite</label>
+                                        <label class="color-red margin-left-auto">{$word->final}</label>
                                     </div>
-                                    <input class="date_input cont-input h-50 border-radius-12 animated-easy border-focus-blue area_changed_date area_validate_date background-grely margin-left-auto margin-r5 color-black" type="date">
+                                    <input class="date_input cont-input h-50 border-radius-12 animated-easy border-focus-blue area_validate_date background-grely margin-left-auto margin-r5 color-black" type="date">
                                     <div class="position-absolute pos-rowr pos-tmed">
                                         <button class="clear_date btn-noway hover-button color-red">
                                             <svg class="dv-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -326,7 +326,7 @@
                     <div class="group-validate display-block margin-t15 position-relative w-100 padding-25">
                         <div class="dv-vertical-center flex-wrap">
                             <div class="cont-label w-49 mob-dlabel ellipsis-horizontal">
-                                <label class="date_title color-black">Fecha limite cancelacion de espacios academicos</label>
+                                <label class="date_title color-black">{$word->deadline_cancellation_academic_spaces}</label>
                             </div>
                             <div class="flex-grow w-49">
                                 <div class="display-flex">
@@ -334,9 +334,9 @@
                                 </div>
                                 <div class="date_right position-relative margin-rowt hidden">
                                     <div class="display-flex">
-                                        <label class="color-red margin-left-auto">Limite</label>
+                                        <label class="color-red margin-left-auto">{$word->final}</label>
                                     </div>
-                                    <input class="date_input cont-input h-50 border-radius-12 animated-easy border-focus-blue area_changed_date area_validate_date background-grely margin-left-auto margin-r5 color-black" type="date">
+                                    <input class="date_input cont-input h-50 border-radius-12 animated-easy border-focus-blue area_validate_date background-grely margin-left-auto margin-r5 color-black" type="date">
                                     <div class="position-absolute pos-rowr pos-tmed">
                                         <button class="clear_date btn-noway hover-button color-red">
                                             <svg class="dv-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -351,7 +351,7 @@
                     <div class="group-validate display-block margin-t15 position-relative w-100 padding-25">
                         <div class="dv-vertical-center flex-wrap">
                             <div class="cont-label w-49 mob-dlabel ellipsis-horizontal">
-                                <label class="date_title color-black">Fecha limite legalizacion formato de matricula</label>
+                                <label class="date_title color-black">{$word->registration_format_legalization_deadline}</label>
                             </div>
                             <div class="flex-grow w-49">
                                 <div class="display-flex">
@@ -359,9 +359,9 @@
                                 </div>
                                 <div class="date_right position-relative margin-rowt hidden">
                                     <div class="display-flex">
-                                        <label class="color-red margin-left-auto">Limite</label>
+                                        <label class="color-red margin-left-auto">{$word->final}</label>
                                     </div>
-                                    <input class="date_input cont-input h-50 border-radius-12 animated-easy border-focus-blue area_changed_date area_validate_date background-grely margin-left-auto margin-r5 color-black" type="date">
+                                    <input class="date_input cont-input h-50 border-radius-12 animated-easy border-focus-blue area_validate_date background-grely margin-left-auto margin-r5 color-black" type="date">
                                     <div class="position-absolute pos-rowr pos-tmed">
                                         <button class="clear_date btn-noway hover-button color-red">
                                             <svg class="dv-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -373,15 +373,15 @@
                             </div>
                         </div>
                     </div>
-                    <div class="group-validate display-block margin-t15 position-relative w-100 padding-25" data-pos="3">
+                    <div class="group-validate display-block margin-t15 position-relative w-100 padding-25" data-pos="2">
                         <div class="dv-vertical-center flex-wrap">
                             <div class="cont-label w-49 mob-dlabel ellipsis-horizontal">
-                                <label class="date_title color-black">Fechas cambio docentetutor</label>
+                                <label class="date_title color-black">{$word->teacher_tutor_change_dates}</label>
                                 <div class="date_left hidden">
                                     <div class="display-flex">
-                                        <label class="color-green margin-left-auto">Comienzo</label>
+                                        <label class="color-green margin-left-auto">{$word->start}</label>
                                     </div>
-                                    <input class="date_input cont-input h-50 border-radius-12 animated-easy border-focus-blue area_changed_date area_validate_date background-grely color-black" type="date">
+                                    <input class="date_input cont-input h-50 border-radius-12 animated-easy border-focus-blue area_validate_date background-grely color-black" type="date">
                                 </div>
                             </div>
                             <div class="flex-grow w-49">
@@ -390,9 +390,9 @@
                                 </div>
                                 <div class="date_right hidden">
                                     <div class="display-flex">
-                                        <label class="color-red margin-left-auto">Limite</label>
+                                        <label class="color-red margin-left-auto">{$word->final}</label>
                                     </div>
-                                    <input class="date_input cont-input h-50 border-radius-12 animated-easy border-focus-blue area_changed_date area_validate_date background-grely margin-left-auto margin-r5 color-black" type="date">
+                                    <input class="date_input cont-input h-50 border-radius-12 animated-easy border-focus-blue area_validate_date background-grely margin-left-auto margin-r5 color-black" type="date">
                                     <div class="position-absolute pos-right pos-tmed">
                                         <button class="clear_date btn-noway hover-button color-red">
                                             <svg class="dv-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -413,7 +413,7 @@
                     <div class="group-validate display-block margin-t15 position-relative w-100 padding-25">
                         <div class="dv-vertical-center flex-wrap">
                             <div class="cont-label w-49 mob-dlabel ellipsis-horizontal">
-                                <label class="date_title color-black">Fecha apertura habilitaciones</label>
+                                <label class="date_title color-black">{$word->authorization_opening_date}</label>
                             </div>
                             <div class="flex-grow w-49">
                                 <div class="display-flex">
@@ -421,9 +421,9 @@
                                 </div>
                                 <div class="date_right position-relative margin-rowt hidden">
                                     <div class="display-flex">
-                                        <label class="color-red margin-left-auto">Limite</label>
+                                        <label class="color-red margin-left-auto">{$word->final}</label>
                                     </div>
-                                    <input class="date_input cont-input h-50 border-radius-12 animated-easy border-focus-blue area_changed_date area_validate_date background-grely margin-left-auto margin-r5 color-black" type="date">
+                                    <input class="date_input cont-input h-50 border-radius-12 animated-easy border-focus-blue area_validate_date background-grely margin-left-auto margin-r5 color-black" type="date">
                                     <div class="position-absolute pos-rowr pos-tmed">
                                         <button class="clear_date btn-noway hover-button color-red">
                                             <svg class="dv-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -436,15 +436,15 @@
                         </div>
                     </div>
                     
-                    <div class="group-validate display-block margin-t15 position-relative w-100 padding-25" data-pos="4">
+                    <div class="group-validate display-block margin-t15 position-relative w-100 padding-25" data-pos="3">
                         <div class="dv-vertical-center flex-wrap">
                             <div class="cont-label w-49 mob-dlabel ellipsis-horizontal">
-                                <label class="date_title color-black">Fechas realizacion habilitaciones</label>
+                                <label class="date_title color-black">{$word->authorization_dates}</label>
                                 <div class="date_left hidden">
                                     <div class="display-flex">
-                                        <label class="color-green margin-left-auto">Comienzo</label>
+                                        <label class="color-green margin-left-auto">{$word->start}</label>
                                     </div>
-                                    <input class="date_input cont-input h-50 border-radius-12 animated-easy border-focus-blue area_changed_date area_validate_date background-grely color-black" type="date">
+                                    <input class="date_input cont-input h-50 border-radius-12 animated-easy border-focus-blue area_validate_date background-grely color-black" type="date">
                                 </div>
                             </div>
                             <div class="flex-grow w-49">
@@ -453,9 +453,9 @@
                                 </div>
                                 <div class="date_right hidden">
                                     <div class="display-flex">
-                                        <label class="color-red margin-left-auto">Limite</label>
+                                        <label class="color-red margin-left-auto">{$word->final}</label>
                                     </div>
-                                    <input class="date_input cont-input h-50 border-radius-12 animated-easy border-focus-blue area_changed_date area_validate_date background-grely margin-left-auto margin-r5 color-black" type="date">
+                                    <input class="date_input cont-input h-50 border-radius-12 animated-easy border-focus-blue area_validate_date background-grely margin-left-auto margin-r5 color-black" type="date">
                                     <div class="position-absolute pos-right pos-tmed">
                                         <button class="clear_date btn-noway hover-button color-red">
                                             <svg class="dv-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -473,7 +473,7 @@
                     <div class="group-validate display-block margin-t15 position-relative w-100 padding-25">
                         <div class="dv-vertical-center flex-wrap">
                             <div class="cont-label w-49 mob-dlabel ellipsis-horizontal">
-                                <label class="date_title color-black">Fecha limite registro notas habilitaciones</label>
+                                <label class="date_title color-black">{$word->registration_deadline_ratings_notes}</label>
                             </div>
                             <div class="flex-grow w-49">
                                 <div class="display-flex">
@@ -481,9 +481,9 @@
                                 </div>
                                 <div class="date_right position-relative margin-rowt hidden">
                                     <div class="display-flex">
-                                        <label class="color-red margin-left-auto">Limite</label>
+                                        <label class="color-red margin-left-auto">{$word->final}</label>
                                     </div>
-                                    <input class="date_input cont-input h-50 border-radius-12 animated-easy border-focus-blue area_changed_date area_validate_date background-grely margin-left-auto margin-r5 color-black" type="date">
+                                    <input class="date_input cont-input h-50 border-radius-12 animated-easy border-focus-blue area_validate_date background-grely margin-left-auto margin-r5 color-black" type="date">
                                     <div class="position-absolute pos-rowr pos-tmed">
                                         <button class="clear_date btn-noway hover-button color-red">
                                             <svg class="dv-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -500,7 +500,7 @@
                     <div class="group-validate display-block margin-t15 position-relative w-100 padding-25">
                         <div class="dv-vertical-center flex-wrap">
                             <div class="cont-label w-49 mob-dlabel ellipsis-horizontal">
-                                <label class="date_title color-black">Fecha limite Pronto Pago</label>
+                                <label class="date_title color-black">{$word->prompt_payment_deadline}</label>
                             </div>
                             <div class="flex-grow w-49">
                                 <div class="display-flex">
@@ -508,9 +508,9 @@
                                 </div>
                                 <div class="date_right position-relative margin-rowt hidden">
                                     <div class="display-flex">
-                                        <label class="color-red margin-left-auto">Limite</label>
+                                        <label class="color-red margin-left-auto">{$word->final}</label>
                                     </div>
-                                    <input class="date_input cont-input h-50 border-radius-12 animated-easy border-focus-blue area_changed_date area_validate_date background-grely margin-left-auto margin-r5 color-black" type="date">
+                                    <input class="date_input cont-input h-50 border-radius-12 animated-easy border-focus-blue area_validate_date background-grely margin-left-auto margin-r5 color-black" type="date">
                                     <div class="position-absolute pos-rowr pos-tmed">
                                         <button class="clear_date btn-noway hover-button color-red">
                                             <svg class="dv-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -525,7 +525,7 @@
                     <div class="group-validate display-block margin-t15 position-relative w-100 padding-25">
                         <div class="dv-vertical-center flex-wrap">
                             <div class="cont-label w-49 mob-dlabel ellipsis-horizontal">
-                                <label class="date_title color-black">Fecha limite de matricula ordinaria</label>
+                                <label class="date_title color-black">{$word->ordinary_enrollment_deadline}</label>
                             </div>
                             <div class="flex-grow w-49">
                                 <div class="display-flex">
@@ -533,9 +533,9 @@
                                 </div>
                                 <div class="date_right position-relative margin-rowt hidden">
                                     <div class="display-flex">
-                                        <label class="color-red margin-left-auto">Limite</label>
+                                        <label class="color-red margin-left-auto">{$word->final}</label>
                                     </div>
-                                    <input class="date_input cont-input h-50 border-radius-12 animated-easy border-focus-blue area_changed_date area_validate_date background-grely margin-left-auto margin-r5 color-black" type="date">
+                                    <input class="date_input cont-input h-50 border-radius-12 animated-easy border-focus-blue area_validate_date background-grely margin-left-auto margin-r5 color-black" type="date">
                                     <div class="position-absolute pos-rowr pos-tmed">
                                         <button class="clear_date btn-noway hover-button color-red">
                                             <svg class="dv-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -550,7 +550,7 @@
                     <div class="group-validate display-block margin-t15 position-relative w-100 padding-25">
                         <div class="dv-vertical-center flex-wrap">
                             <div class="cont-label w-49 mob-dlabel ellipsis-horizontal">
-                                <label class="date_title color-black">Fecha limite de matricula extemporanea</label>
+                                <label class="date_title color-black">{$word->late_enrollment_deadline}</label>
                             </div>
                             <div class="flex-grow w-49">
                                 <div class="display-flex">
@@ -558,9 +558,9 @@
                                 </div>
                                 <div class="date_right position-relative margin-rowt hidden">
                                     <div class="display-flex">
-                                        <label class="color-red margin-left-auto">Limite</label>
+                                        <label class="color-red margin-left-auto">{$word->final}</label>
                                     </div>
-                                    <input class="date_input cont-input h-50 border-radius-12 animated-easy border-focus-blue area_changed_date area_validate_date background-grely margin-left-auto margin-r5 color-black" type="date">
+                                    <input class="date_input cont-input h-50 border-radius-12 animated-easy border-focus-blue area_validate_date background-grely margin-left-auto margin-r5 color-black" type="date">
                                     <div class="position-absolute pos-rowr pos-tmed">
                                         <button class="clear_date btn-noway hover-button color-red">
                                             <svg class="dv-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -573,11 +573,10 @@
                         </div>
                     </div>
                 </div>
-
-
             </div>
             <div class="display-flex">
                 <div class="margin-left-auto margin-r25 margin-b15">
+                    <button class="btn-noway background-red border-radius-4 padding-10 color-white hover-button font-uppercase" id="reset-valert">{$word->reset}</button>
                     <button class="btn-noway background-grely border-radius-4 padding-10 color-black hover-button font-uppercase" id="cancel-valert">{$word->cancel}</button>
                     <button class="btn-noway background-blue border-radius-4 padding-10 color-black hover-opacity font-uppercase" id="this-date">
                         <span class="color-white">{$word->save}</span>
@@ -602,12 +601,12 @@ var GE = D.querySelectorAll('.show_emodal'),
     GY = D.querySelectorAll('.dbclick_date'),
     GL = D.querySelectorAll('.load-table-page'),
     GR = D.querySelectorAll('.area_changed_period'),
-    gr = D.querySelectorAll('.area_changed_date'),
     gu = D.querySelectorAll('.date_input'),
     GV = D.querySelector('.content-modal-body'),
     GA = D.querySelector('#search-periods'),
     GB = D.querySelector('#this-period'),
     GP = D.querySelector('#this-date'),
+    gs = D.querySelector('#reset-valert'),
     GQ = D.querySelector('#delete-period'),
     GI = D.querySelector('#alert-periods'),
     GK = D.querySelector('#alert-dates'),
@@ -644,7 +643,7 @@ var GE = D.querySelectorAll('.show_emodal'),
                 }
                 GI.style.display = "block", D.body.style.overflow = "hidden", GB.setAttribute('data-id', period_id), GB.setAttribute('data-type', 'edit'), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
             } else {
-                self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
+                loadAlert('{$word->error}', 1), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
             }
         }, "POST", "&id=" + period_id)
     },
@@ -653,32 +652,25 @@ var GE = D.querySelectorAll('.show_emodal'),
             GZ = el.querySelector('.date_left'),
             GH = el.querySelector('.date_right');
         addClass(e, 'hidden'), removeClass(GH, 'hidden'), GZ && (addClass(el.querySelector('.date_title'), 'hidden'), removeClass(GZ, 'hidden'));
-
-
-        /*for (var j = 0, i = GY.length; j < i; j++){
-            var el = GY[j].parentNode.parentNode.parentNode,
-                GZ = el.querySelector('.date_left'),
-                GH = el.querySelector('.date_right');
-            addClass(GY[j], 'hidden'), removeClass(GH, 'hidden'), GZ && (addClass(el.querySelector('.date_title'), 'hidden'), removeClass(GZ, 'hidden'));
-        }*/
     },
     gj = function(){
         var el = this.parentNode.parentNode.parentNode.parentNode.parentNode,
             GZ = el.querySelector('.date_left'),
             GH = el.querySelector('.date_right'),
             gh = el.querySelector('.dbclick_date ');
-        GH.querySelector('input').value = '', removeClass(gh, 'hidden'), addClass(GH, 'hidden'), GZ && (gl = GZ.querySelector('input'), el.querySelector('.clear_date').style.marginTop = '', el.querySelector('.text-error').innerText = '', removeClass(gl, 'border-red'), removeClass(gl, 'boxshadow-red'), gl.value = '', removeClass(el.querySelector('.date_title'), 'hidden'), addClass(GZ, 'hidden'));
+        gr = GH.querySelector('input'), removeClass(gr, 'border-red'), removeClass(gr, 'boxshadow-red'), GH.querySelector('input').value = '', removeClass(gh, 'hidden'), addClass(GH, 'hidden'), GZ && (gl = GZ.querySelector('input'), el.querySelector('.clear_date').style.marginTop = '', el.querySelector('.text-error').innerText = '', removeClass(gl, 'border-red'), removeClass(gl, 'boxshadow-red'), gl.value = '', removeClass(el.querySelector('.date_title'), 'hidden'), addClass(GZ, 'hidden'));
     },
     GD = function(){
         GT.style.display = "block", D.body.style.overflow = "hidden", GQ.setAttribute('data-id', this.getAttribute('data-id'));
     },
-    GN = function(){
-        var self = this,
+    GN = function(self, reset = false){
+        var self = self.isTrusted == true ? this : self,
             period_id = self.getAttribute('data-id');
         self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
         Req('{$url->{req/rol-admin/get-ditems}}', function(e){
             console.log(e);
             if(e.status == 200){
+                D.querySelector('#text-pname').innerText = e.name;
                 for (var key in e.items) {
                     gu[key].value = e.items[key];
                 }
@@ -686,7 +678,7 @@ var GE = D.querySelectorAll('.show_emodal'),
                     if(Array.isArray(e.dates[key])){
                         for (var key2 in e.dates[key]) {
                             if(e.dates[key][key2] != '{$word->pending}') {
-                                GY[key].innerText = 'Desde el ' + e.dates[key][1] + ' hasta el ' + e.dates[key][2];
+                                GY[key].innerText = '{$word->from_the} ' + e.dates[key][1] + ' {$word->until_the} ' + e.dates[key][2];
                             } else {
                                 GY[key].innerText = e.dates[key][key2];
                             }
@@ -695,14 +687,14 @@ var GE = D.querySelectorAll('.show_emodal'),
                         GY[key].innerText = e.dates[key];
                     }
                 }
-                GK.style.display = "block", D.body.style.overflow = "hidden", GP.setAttribute('data-id', period_id), GP.setAttribute('data-type', 'edit'), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
+                for (var j = 0, i = gu.length; j < i; j++){
+                    gu[j].max = e.final;
+                }
+                !reset && (GK.style.display = "block", D.body.style.overflow = "hidden", GP.setAttribute('data-id', period_id), gs.setAttribute('data-id', period_id)), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
             } else {
-                self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
+                loadAlert('{$word->error}', 1), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
             }
-        }, "POST", "&id=" + period_id)
-
-
-        
+        }, "POST", "&id=" + period_id)  
     },
     TA = 1,
     TT = {#total_pages};
@@ -727,36 +719,55 @@ addEvent(D.querySelector('#screen'), 'change', function(){
     GT.style.display = "", D.body.style.overflow = "";
 }), addEvent(D.querySelector('#cancel-valert'), 'click', function(){
     GK.style.display = "", D.body.style.overflow = "";
+}), addEvent(gs, 'click', function(){
+    GN(this, true)
 }), addEvent(GP, 'click', function(){
     var self = this,
         gv = [],
         ge = [];
+
     for (var j = 0, i = gc.length; j < i; j++){
         var el = gc[j].parentNode.parentNode.parentNode,
-            GZ = el.querySelector('.date_left'),
-            GH = el.querySelector('.date_right');
-
-
-        if(GZ && ge.indexOf(el) == -1){
-            ge.push(el)
-            var gl = GZ.querySelector('input'),
-                dateStart = gl.value.split('-'),
-                dateFinal = GH.querySelector('input').value.split('-');
-            if(dateStart[0] > dateFinal[0] || dateStart[1] > dateFinal[1] || dateStart[2] > dateFinal[2]){
-                el.querySelector('.text-error').innerText = '*{$word->must_be_less_completion}', el.querySelector('.clear_date').style.marginTop = '-13px', addClass(gl, 'border-red'), addClass(gl, 'boxshadow-red'), timeDelay(function(){
+            nd = Array.prototype.slice.call(D.querySelectorAll('[data-pos] .flex-wrap'));
+        if(nd.indexOf(el) != -1 && ge.indexOf(el) == -1){
+            var gl = el.querySelector('.date_left input'),
+                gr = el.querySelector('.date_right input');
+            if(gl.value != '' && gr.value == '' || gr.value != '' && gl.value == ''){
+                el.querySelector('.text-error').innerText = '*{$word->this_field_is_empty}', el.querySelector('.clear_date').style.marginTop = '-13px', timeDelay(function(){
                     addClass(GI, 'efect-boom'), timeDelay(function(){
                         removeClass(GI, 'efect-boom')
                     }, 200)
                 }, 700);
-                return false;
+                if(gr.value != '' && gl.value == '') {
+                    addClass(gl, 'border-red'), addClass(gl, 'boxshadow-red');
+                } else {
+                    removeClass(gl, 'border-red'), removeClass(gl, 'boxshadow-red');
+                }
+                if(gl.value != '' && gr.value == '') {
+                    addClass(gr, 'border-red'), addClass(gr, 'boxshadow-red');
+                } else {
+                    removeClass(gr, 'border-red'), removeClass(gr, 'boxshadow-red');
+                }
+                return false
             } else {
-                el.querySelector('.text-error').innerText = '', el.querySelector('.clear_date').style.marginTop = '', removeClass(gl, 'border-red'), removeClass(gl, 'boxshadow-red')
+                var dateStart = gl.value.split('-'),
+                    dateFinal = gr.value.split('-');
+                if(dateStart[0] > dateFinal[0] || dateStart[1] > dateFinal[1] || dateStart[2] > dateFinal[2]){
+                    el.querySelector('.text-error').innerText = '*{$word->must_be_less_completion}', el.querySelector('.clear_date').style.marginTop = '-13px', addClass(gl, 'border-red'), addClass(gl, 'boxshadow-red'), timeDelay(function(){
+                        addClass(GI, 'efect-boom'), timeDelay(function(){
+                            removeClass(GI, 'efect-boom')
+                        }, 200)
+                    }, 700);
+                    return false;
+                } else {
+                    el.querySelector('.text-error').innerText = '', el.querySelector('.clear_date').style.marginTop = '', removeClass(gl, 'border-red'), removeClass(gl, 'boxshadow-red')
+                }
             }
+            ge.push(el);
         }
     }
-    for (var j = 0, i = gu.length; j < i; j++) gv.push(gu[j].value);
 
-    console.log(JSON.stringify(gv));
+    for (var j = 0, i = gu.length; j < i; j++) gv.push(gu[j].value);
     GB.setAttribute('disabled', true), addClass(GB, 'spinner-is-loading');
     Req('{$url->{req/rol-admin/this-dates}}', function(e){
         console.log(e);
@@ -773,13 +784,24 @@ addEvent(D.querySelector('#screen'), 'change', function(){
                         }, 200)
                     }, 700);
                 }
+            } else if (e.emptys != undefined) {
+                for (var j = 0, i = e.emptys.length; j < i; j++){
+                    var el = D.querySelector('[data-pos="'+e.emptys[j]+'"]'),
+                        GZ = el.querySelector('.date_left input'),
+                        GH = el.querySelector('.date_right input');
+                    console.log(el), console.log(GZ);
+                    el.querySelector('.text-error').innerText = '*{$word->please_make_sure_fill_all_fields_first}', el.querySelector('.clear_date').style.marginTop = '-13px', addClass(GZ, 'border-red'), addClass(GZ, 'boxshadow-red'), addClass(GH, 'border-red'), addClass(GH, 'boxshadow-red'), timeDelay(function(){
+                        addClass(GI, 'efect-boom'), timeDelay(function(){
+                            removeClass(GI, 'efect-boom')
+                        }, 200)
+                    }, 700);
+                }
             } else {
                 loadAlert(e.error, 1)
             }
             GB.removeAttribute('disabled'), removeClass(GB, 'spinner-is-loading');
         }
     }, "POST", "&id=" + self.getAttribute('data-id') + "&dates=" + JSON.stringify(gv))
-
 }), addEvent(GB, 'click', function(){
     var self = this,
         type = self.getAttribute('data-type');

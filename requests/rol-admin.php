@@ -164,6 +164,7 @@ if($one == 'search-course') {
         );
     }
 } else if($one == 'get-pitems'){
+    $deliver['status'] = 400;
     $id = Specific::Filter($_POST['id']);
     if(isset($id) && is_numeric($id)){
         $items = $dba->query('SELECT name, faculty_id, title, snies, level, semesters, mode FROM programs WHERE id = '.$id)->fetchArray();
@@ -361,6 +362,7 @@ if($one == 'search-course') {
         );
     }
 } else if($one == 'get-fitems'){
+    $deliver['status'] = 400;
     $id = Specific::Filter($_POST['id']);
     if(isset($id) && is_numeric($id)){
         $items = $dba->query('SELECT name, status FROM faculty WHERE id = '.$id)->fetchArray();
@@ -445,6 +447,7 @@ if($one == 'search-course') {
         $deliver['html'] = $html;
     }
 } else if($one == 'get-peitems'){
+    $deliver['status'] = 400;
     $id = Specific::Filter($_POST['id']);
     if(isset($id) && is_numeric($id)){
         $items = $dba->query('SELECT name, start, final, status FROM periods WHERE id = '.$id)->fetchArray();
@@ -601,35 +604,67 @@ if($one == 'search-course') {
 
     $id = Specific::Filter($_POST['id']);
     $dates = Specific::Filter($_POST['dates']);
-    $dates = html_entity_decode($dates);
-    $dates = json_decode($dates);
 
     if(!empty($id) && is_numeric($id) && !empty($dates)){
-        $params = json_encode($params);
-        $params = json_decode($params);
-
+        $dates = html_entity_decode($dates);
+        $dates = json_decode($dates);
+        
         if($dba->query('SELECT COUNT(*) FROM periods WHERE id = '.$id)->fetchArray() > 0){
-            $datesD = array(1, 2, 3, 4, 8, 9, 11, 12);
-            if(strtotime($dates[1]) > strtotime($dates[2])){
-                $errors[] = 0;
+            if(!empty($dates[1]) && empty($dates[2]) || empty($dates[1]) && !empty($dates[2])){
+                $emptys[] = 0;
             }
-            if(strtotime($dates[3]) > strtotime($dates[4])){
-                $errors[] = 1;
+            if(!empty($dates[3]) && empty($dates[4]) || empty($dates[3]) && !empty($dates[4])){
+                $emptys[] = 1;
             }
-            if(strtotime($dates[8]) > strtotime($dates[9])){
-                $errors[] = 2;
+            if(!empty($dates[8]) && empty($dates[9]) || empty($dates[8]) && !empty($dates[9])){
+                $emptys[] = 2;
             }
-            if(strtotime($dates[11]) > strtotime($dates[12])){
-                $errors[] = 3;
+            if(!empty($dates[11]) && empty($dates[12]) || empty($dates[11]) && !empty($dates[12])){
+                $emptys[] = 3;
             }
-            if (empty($errors)) {
-                if($dba->query('UPDATE periods SET dates = ? WHERE id = '.$id, json_encode($dates))->returnStatus()){
-                    $deliver['status'] = 200;
+            $aerror = array();
+            foreach ($dates as $key => $value) {
+                $value = strtotime($value);
+                $aerror[$key] = false;
+                if($value > $dba->query('SELECT final FROM periods WHERE id = '.$id)->fetchArray()){
+                    $aerror[$key] = true;
+                }
+            }
+
+            if(in_array($aerror, true)){
+                if(empty($emptys)){
+                    if(strtotime($dates[1]) > strtotime($dates[2])){
+                        $errors[] = 0;
+                    }
+                    if(strtotime($dates[3]) > strtotime($dates[4])){
+                        $errors[] = 1;
+                    }
+                    if(strtotime($dates[8]) > strtotime($dates[9])){
+                        $errors[] = 2;
+                    }
+                    if(strtotime($dates[11]) > strtotime($dates[12])){
+                        $errors[] = 3;
+                    }
+                    if (empty($errors)) {
+                        if($dba->query('UPDATE periods SET dates = ? WHERE id = '.$id, json_encode($dates))->returnStatus()){
+                            $deliver['status'] = 200;
+                        }
+                    } else {
+                        $deliver = array(
+                            'status' => 400,
+                            'errors' => $errors
+                        );
+                    }
+                } else {
+                    $deliver = array(
+                        'status' => 400,
+                        'emptys' => $emptys
+                    );
                 }
             } else {
                 $deliver = array(
                     'status' => 400,
-                    'errors' => $errors
+                    'error' => $TEMP['#word']['error']
                 );
             }
         } else {
@@ -645,6 +680,7 @@ if($one == 'search-course') {
         );
     }
 } else if($one == 'get-ditems'){
+    $deliver['status'] = 400;
     $id = Specific::Filter($_POST['id']);
     if(!empty($id) && is_numeric($id)){
         $items = $dba->query('SELECT dates FROM periods WHERE id = '.$id)->fetchArray();
@@ -672,7 +708,7 @@ if($one == 'search-course') {
                         $dates[$key][$k] = $TEMP['#word']['pending'];
                     } else {
                         $val = strtotime($val);
-                        $dates[$key][$k] = Specific::DateFormat($val);
+                        $dates[$key][$k] = Specific::DateFormat($val, true);
                     }
                 }
             } else {
@@ -680,16 +716,20 @@ if($one == 'search-course') {
                     $dates[$key] = $TEMP['#word']['pending'];
                 } else {
                     $value = strtotime($value);
-                    $dates[$key] = Specific::DateFormat($value);
+                    $dates[$key] = Specific::DateFormat($value, true);
                 }
             }
         }
+
+        $period = $dba->query('SELECT name, final FROM periods WHERE id = '.$id)->fetchArray();
 
         if (!empty($items)) {
             $deliver = array(
                 'status' => 200,
                 'items' => $items,
-                'dates' => $dates
+                'dates' => $dates,
+                'name' => $period['name'],
+                'final' => date('Y-m-d', $period['final'])
             );
         }
     }
@@ -720,10 +760,10 @@ if($one == 'search-course') {
         $deliver['html'] = $html;
     }
 } else if($one == 'get-uitems'){
+    $deliver['status'] = 400;
     $id = Specific::Filter($_POST['id']);
     if(isset($id) && is_numeric($id)){
         $items = $dba->query('SELECT dni, names, surnames, role, status FROM users WHERE id = '.$id)->fetchArray();
-        $deliver['XD'] = 'XD';
         if (!empty($items)) {
             $deliver = array(
                 'status' => 200,
@@ -837,6 +877,7 @@ if($one == 'search-course') {
         $deliver['html'] = $html;
     }
 } else if($one == 'get-plitems'){
+    $deliver['status'] = 400;
     $id = Specific::Filter($_POST['id']);
     if(isset($id) && is_numeric($id)){
         $items = $dba->query('SELECT program_id, name, resolution, date_approved, duration, credits, note_mode, status FROM plan WHERE id = '.$id)->fetchArray();
@@ -1086,6 +1127,7 @@ if($one == 'search-course') {
         $deliver['html'] = $html;
     }
 } else if($one == 'get-aitems'){
+    $deliver['status'] = 400;
     $id = Specific::Filter($_POST['id']);
     if(isset($id) && is_numeric($id)){
         $items = $dba->query('SELECT description, court, expires, status FROM authorization WHERE id = '.$id)->fetchArray();
@@ -1442,6 +1484,7 @@ if($one == 'search-course') {
         );
     }
 } else if($one == 'get-citems'){
+    $deliver['status'] = 400;
     $id = Specific::Filter($_POST['id']);
     if(isset($id) && is_numeric($id)){
         $items = array();

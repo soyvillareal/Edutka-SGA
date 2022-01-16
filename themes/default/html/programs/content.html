@@ -270,7 +270,7 @@ var GE = D.querySelectorAll('.show_emodal'),
                 for (var key in e.items) D.querySelector('#'+key).value = e.items[key];
                 GI.style.display = "block", D.body.style.overflow = "hidden", GB.setAttribute('data-id', program_id), GB.setAttribute('data-type', 'edit'), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
             } else {
-                self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
+                loadAlert('{$word->error}', 1), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
             }
         }, "POST", "&id=" + program_id)
     },

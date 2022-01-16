@@ -592,7 +592,7 @@ var GE = D.querySelectorAll('.show_emodal'),
                 <?php } ?>
                 GI.style.display = "block", D.body.style.overflow = "hidden", GB.setAttribute('data-id', course_id), GB.setAttribute('data-type', 'edit'), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
             } else {
-                self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
+                loadAlert('{$word->error}', 1), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
             }
         }, "POST", "&type=courses&period_id={#period_id}&id=" + course_id)
     },
@@ -623,7 +623,7 @@ var GE = D.querySelectorAll('.show_emodal'),
                     }
                     gc.style.display = "block", D.body.style.overflow = "hidden", gd.setAttribute('data-id', course_id), gd.setAttribute('data-type', type), gd.setAttribute('data-id', course_id), gdd.setAttribute('data-id', self.getAttribute('data-id')), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
                 } else {
-                    self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
+                    loadAlert('{$word->error}', 1), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
                 }
             }, "POST", "&id=" + self.getAttribute('data-id'));
             
@@ -971,7 +971,7 @@ addEvent(gtt, 'change', function(){
             for (var j = 0, i = e.items['teachers'].length; j < i; j++) createTag(ZO, GX, GP, ga, gl, e.items['teachers'][j]['name'], e.items['teachers'][j]['id']);
             removeClass(gdd, 'hidden'), self.removeAttribute('disabled'), removeClass(ct, 'spinner-is-loading');
         } else {
-            self.removeAttribute('disabled'), removeClass(ct, 'spinner-is-loading');
+            loadAlert('{$word->error}', 1), self.removeAttribute('disabled'), removeClass(ct, 'spinner-is-loading');
         }
     }, "POST", "&id=" + gd.getAttribute('data-id') + "&period_id=" + self.value)
 });

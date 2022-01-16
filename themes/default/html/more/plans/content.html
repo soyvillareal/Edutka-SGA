@@ -354,7 +354,7 @@ var GE = D.querySelectorAll('.show_emodal'),
                 for (var key in e.items) D.querySelector('#'+key).value = e.items[key];
                 GI.style.display = "block", D.body.style.overflow = "hidden", GB.setAttribute('data-id', plan_id), GB.setAttribute('data-type', 'edit'), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
             } else {
-                self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
+                loadAlert('{$word->error}', 1), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
             }
         }, "POST", "&id=" + plan_id)
     },
@@ -379,7 +379,7 @@ var GE = D.querySelectorAll('.show_emodal'),
 
                     gc.style.display = "block", D.body.style.overflow = "hidden", gd.setAttribute('data-id', course_id), gd.setAttribute('data-type', type), gdd.setAttribute('data-id', self.getAttribute('data-id')), gd.setAttribute('data-id', course_id), removeClass(gdd, 'hidden'), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
                 } else {
-                    self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
+                    loadAlert('{$word->error}', 1), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
                 }
             }, "POST", "&id=" + self.getAttribute('data-id') + "&period_id=" + self.value)
 

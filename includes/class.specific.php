@@ -285,6 +285,18 @@ class Specific {
 	    return $site_url . '/' . $params;
 	}
 
+	public static function ValidateDates($id, $pos){
+		global $TEMP, $dba;
+
+		$data = array();
+		$items = $dba->query('SELECT dates FROM periods WHERE id = '.$id)->fetchArray();
+		if(!empty($items)){
+        	$data = json_decode($items, true);
+		}
+
+        return $data[$pos];
+	}
+
 	public static function GetSessions($value = array()){
 	    $data = array();
 	    $data['ip'] = 'Unknown';
@@ -341,13 +353,16 @@ class Specific {
 	    }
 	}
 
-	public static function DateFormat($ptime) {
+	public static function DateFormat($ptime, $complete = false) {
 	    global $TEMP; 
 	    $date = date("j-m-Y", $ptime); 
 	    $month = strtolower(strftime("%B", strtotime($date))); 
 	    $month = $TEMP['#word'][$month];
-	    $B = mb_substr($month, 0, 3, 'UTF-8');     
+	    $B = mb_substr($month, 0, 3, 'UTF-8');
 	    $dateFinaly = strftime("%e " . $B . ". %Y", strtotime($date));
+	    if($complete == true){
+	    	$dateFinaly = strftime("%e {$TEMP['#word']['of']} " . $month . " {$TEMP['#word']['of']} %Y", strtotime($date));
+	    }
 	    return $dateFinaly;
 	}
 

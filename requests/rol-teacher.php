@@ -232,6 +232,7 @@ if($one == 'search-courses') {
         }
     }
 } else if($one == 'get-citems'){
+    $deliver['status'] = 400;
     $id = Specific::Filter($_POST['id']);
     $period_id = Specific::Filter($_POST['period_id']);
     $type = Specific::Filter($_POST['type']);
@@ -262,8 +263,8 @@ if($one == 'search-courses') {
                 $items = array();
             }
 
-            $parameter = $dba->query('SELECT * FROM parameter p WHERE (SELECT id FROM teacher WHERE course_id = '.$id.' AND period_id = '.$period_id.' AND id = p.teacher_id) = teacher_id')->fetchArray();
             if($type == 'notes'){
+                $parameter = $dba->query('SELECT * FROM parameter p WHERE (SELECT id FROM teacher WHERE course_id = '.$id.' AND period_id = '.$period_id.' AND id = p.teacher_id) = teacher_id')->fetchArray();
                 $items['parameters'] = json_decode($parameter['parameters'], true);
                 $items['notes'] = json_decode($note['notes'], true);
                 if(isset($pos) && is_numeric($pos)){
@@ -272,6 +273,7 @@ if($one == 'search-courses') {
                     $items['notes'] = $notes;
                 }
             } else if(Specific::Teacher() == true){
+                $parameter = $dba->query('SELECT * FROM parameter p WHERE (SELECT id FROM teacher WHERE course_id = '.$id.' AND period_id = '.$period_id.' AND id = p.teacher_id) = teacher_id')->fetchArray();
                 $note_mode = $dba->query('SELECT note_mode FROM plan p WHERE (SELECT plan_id FROM curriculum WHERE course_id = '.$id.' AND plan_id = p.id) = id')->fetchArray();
 
                 if(isset($note_mode)){
@@ -654,6 +656,7 @@ if($one == 'search-courses') {
         }
     }
 } else if($one == 'get-aitems'){
+    $deliver['status'] = 400;
     $id = Specific::Filter($_POST['id']);
     if(isset($id) && is_numeric($id)){
         $items = $dba->query('SELECT course_id, description, court, status FROM authorization WHERE id = '.$id)->fetchArray();

@@ -202,7 +202,7 @@ var GP = D.querySelectorAll('.area_validate'),
                 }
                 GI.style.display = "block", D.body.style.overflow = "hidden", removeClass(GK, 'hidden'), addClass(GS, 'hidden'), GB.setAttribute('data-id', auth_id), GB.setAttribute('data-type', 'edit'), GU.innerText = "{$word->save}", self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
             } else {
-                self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
+                loadAlert('{$word->error}', 1), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
             }
         }, "POST", "&id=" + auth_id)
     },

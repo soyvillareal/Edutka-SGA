@@ -224,7 +224,7 @@ var GE = D.querySelectorAll('.show_emodal'),
                 for (var j = 0, i = ge['access'].length; j < i; j++) createTag(ge['access'][j]);
                 GI.style.display = "block", D.body.style.overflow = "hidden", GB.setAttribute('data-id', form_id), GB.setAttribute('data-type', 'edit'), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
             } else {
-                self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
+                loadAlert('{$word->error}', 1), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
             }
         }, "POST", "&id=" + form_id)
     },

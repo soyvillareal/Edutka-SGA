@@ -307,6 +307,7 @@ if($one == 'search-enrolled'){
 	    }
     }
 } else if($one == 'get-citems'){
+    $deliver['status'] = 400;
     $id = Specific::Filter($_POST['id']);
     $period_id = Specific::Filter($_POST['period_id']);
     $type = Specific::Filter($_POST['type']);

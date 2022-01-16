@@ -9,6 +9,7 @@ if ($TEMP['#loggedin'] === false && (Specific::Admin() === false || Specific::Ac
 }
 
 if($one == 'get-foitems'){
+    $deliver['status'] = 400;
     $id = Specific::Filter($_POST['id']);
     if(isset($id) && is_numeric($id)){
         $items = $dba->query('SELECT form_key, access, expire, status FROM forms WHERE id = '.$id)->fetchArray();
@@ -288,6 +289,7 @@ if($one == 'get-foitems'){
         };
     }
 } else if($one == 'get-titems'){
+    $deliver['status'] = 400;
     $id = Specific::Filter($_POST['id']);
     $period_id = Specific::Filter($_POST['period_id']);
     if(isset($id) && is_numeric($id)){
@@ -304,6 +306,7 @@ if($one == 'get-foitems'){
         }
     }
 } else if($one == 'get-periods'){
+    $deliver['status'] = 400;
     $id = Specific::Filter($_POST['id']);
     if(isset($id) && is_numeric($id)){
         $periods = $dba->query('SELECT period_id FROM teacher WHERE course_id = '.$id)->fetchAll(false);

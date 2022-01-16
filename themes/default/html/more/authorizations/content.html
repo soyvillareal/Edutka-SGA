@@ -192,7 +192,7 @@ var GC = D.querySelectorAll('.area_validate'),
                 }
                 GI.style.display = "block", D.body.style.overflow = "hidden", GB.setAttribute('data-id', auth_id), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
             } else {
-                self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
+                loadAlert('{$word->error}', 1), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
             }
         }, "POST", "&id=" + auth_id)
     },
