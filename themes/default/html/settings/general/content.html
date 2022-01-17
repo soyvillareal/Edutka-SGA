@@ -30,7 +30,6 @@
                 </div>
                 <div class="flex-grow">
                     <input id="names" readonly="true" type="text" class="cont-input h-50 border-radius-12 background-grely color-black" value="{$me->names}">
-                    <div class="color-red text-left text-error font-low margin-t5"></div>
                 </div>
             </div>
         </div>
@@ -41,7 +40,6 @@
                 </div>
                 <div class="flex-grow">
                     <input id="surnames" readonly="true" type="text" class="cont-input h-50 border-radius-12 background-grely color-black" value="{$me->surnames}">
-                    <div class="color-red text-left text-error font-low margin-t5"></div>
                 </div>
             </div>
         </div>
@@ -78,6 +76,28 @@
                     <span class="middle-unverified color-black<?php echo($TEMP['#settings']['validate_email'] == 'on' && empty($TEMP['#user']['change_email'])) ? ' hidden" id="re-center"' : '"' ?>> - </span>
                     <button class="btn-noway color-blue underline-hover<?php echo($TEMP['#settings']['validate_email'] == 'on' && empty($TEMP['#user']['change_email'])) ? ' hidden' : '' ?>" id="resend-change-email">{$word->resend_email}</button>
                     <?php } ?>
+                </div>
+            </div>
+        </div>
+        <div class="group-validate display-block margin-t15 position-relative w-100 padding-25">
+            <div class="display-flex flex-wrap">
+                <div class="cont-label dv-vertical-center">
+                    <label class="color-black">{$word->cell_phone}</label>
+                </div>
+                <div class="flex-grow">
+                    <input id="cellphone" type="number" class="cont-input number h-50 input_key border-radius-12 background-grely color-black" value="{$me->cellphone}">
+                    <div class="color-red text-left text-error font-low margin-t5"></div>
+                </div>
+            </div>
+        </div>
+        <div class="group-validate display-block margin-t15 position-relative w-100 padding-25">
+            <div class="display-flex flex-wrap">
+                <div class="cont-label dv-vertical-center">
+                    <label class="color-black">{$word->phone}</label>
+                </div>
+                <div class="flex-grow">
+                    <input id="phone" type="number" placeholder="{$word->optional}" class="cont-input number h-50 input_key border-radius-12 background-grely color-black" value="{$me->phone}">
+                    <div class="color-red text-left text-error font-low margin-t5"></div>
                 </div>
             </div>
         </div>
@@ -222,8 +242,10 @@ var GL = D.querySelectorAll('.area_validate'),
     Gb = D.querySelector(".content-avatar img"),
     Gm = D.querySelector('#resend-change-email'),
     Gh = D.querySelector('#delete-email'),
+    Gq = D.querySelector('#cellphone'),
+    Gw = D.querySelector('#phone'),
     bDisabled = function(){
-        if(GM.value != '' && GU.value != '' && GF.value != '' && GG.value != '' && GD.value != '' && GJ.value != '' && GR.value != ''){
+        if(GM.value != '' && Gq.value != '' && GU.value != '' && GF.value != '' && GG.value != '' && GD.value != '' && GJ.value != '' && GR.value != ''){
             GB.removeAttribute('disabled'), GX = !0;
         } else {
             GB.setAttribute('disabled', true), GX = !1;
@@ -298,7 +320,7 @@ var GL = D.querySelectorAll('.area_validate'),
         loadAlert('{$word->the_operation_canceled_connection_interrupted}', 1);
     })
 }), addEvent(GB, "click", function(){
-    if(GM.value == '' || GU.value == '' || GF.value == '' || GG.value == '' || GD.value == '' || GJ.value == '' || GR.value == '' || !GX){
+    if(GM.value == '' || Gq.value == '' || GU.value == '' || GF.value == '' || GG.value == '' || GD.value == '' || GJ.value == '' || GR.value == '' || !GX){
         for (var j = 0, i = GL.length; j < i; j++){
             var el = GL[j],
                 GZ = el.parentNode,
@@ -388,7 +410,7 @@ var GL = D.querySelectorAll('.area_validate'),
             }
             removeClass(GS, 'hidden'), removeClass(GB, 'spinner-is-loading'), GB.removeAttribute('disabled');
         }
-    }, "POST", "&about=" + D.querySelector('#about').value + "&settings-email=" + GM.value + "&gender=" + GG.value + "&province=" + GU.value + "&municipality=" + GF.value + "&day=" + GD.value + "&month=" + GJ.value + "&year=" + GR.value)
+    }, "POST", "&about=" + D.querySelector('#about').value + "&settings-email=" + GM.value + "&cellphone=" + Gq.value + "&phone=" + Gw.value + "&gender=" + GG.value + "&province=" + GU.value + "&municipality=" + GF.value + "&day=" + GD.value + "&month=" + GJ.value + "&year=" + GR.value)
 }), addEvent(D.querySelector('#cancel-malert'), 'click', function(){
     removeClass(D.querySelector('#untab-menu'), 'toggle-guid'), GV.style.display = "", D.body.style.overflow = "", D.body.style.overflow = "";
 }), addEvent(D.querySelector('#droped-here'), 'click', function(){

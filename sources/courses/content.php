@@ -104,7 +104,7 @@ if(!empty($courses)){
 		$TEMP['!assignments'] = count($assignments);
 		$TEMP['!preknowledge'] = !empty($course['preknowledge']) ? count($preknowledge) : 0;
 		$TEMP['!parameters'] = count($parameters);
-		$TEMP['!semester'] = $course['semester'];
+		$TEMP['!qualification'] = $TEMP['#word'][$course['qualification']];
 		$TEMP['!credits'] = $course['credits'];
 		$TEMP['!quota'] = ($course['quota']-$enrolled). "/{$course['quota']}";
 		$TEMP['!type'] = $TEMP['#word'][$course['type']];

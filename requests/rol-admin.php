@@ -50,7 +50,7 @@ if($one == 'search-course') {
     $deliver['html'] = $html;
 } else if($one == 'this-courses'){
     $deliver['status'] = 400;
-    $semesters  = array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+    $qualifications  = array('activated', 'deactivated');
     $credits  = array(1, 2, 3, 4);
     $types  = array('practice', 'theoretical');
     $schedules  = array('daytime', 'nightly');
@@ -63,7 +63,7 @@ if($one == 'search-course') {
     $code = Specific::Filter($_POST['code']);
     $name = Specific::Filter($_POST['name']);
     $preknowledge = Specific::Filter($_POST['preknowledge']);
-    $semester = Specific::Filter($_POST['semester']);
+    $qualification = Specific::Filter($_POST['qualification']);
     $credit = Specific::Filter($_POST['credits']);
     $quota = Specific::Filter($_POST['quota']);
     $typec = Specific::Filter($_POST['typec']);
@@ -75,8 +75,8 @@ if($one == 'search-course') {
     if(empty($name)){
         $emptys[] = 'name';
     }
-    if(empty($semester)){
-        $emptys[] = 'semester';
+    if(empty($qualification)){
+        $emptys[] = 'qualification';
     }
     if(empty($credit)){
         $emptys[] = 'credits';
@@ -106,8 +106,8 @@ if($one == 'search-course') {
                 $errors[] = 'preknowledge';
             }
         }
-        if(!in_array($semester, $semesters)){
-            $errors[] = 'semester';
+        if(!in_array($qualification, $qualifications)){
+            $errors[] = 'qualification';
         }
         if(!in_array($credit, $credits)){
             $errors[] = 'credits';
@@ -121,11 +121,11 @@ if($one == 'search-course') {
         if (empty($errors)) {
             if(!empty($type)){
                 if($type == 'add'){
-                    if($dba->query('INSERT INTO courses (code, name, preknowledge, semester, credits, quota, type, schedule, `time`) VALUES ("'.$code.'", "'.$name.'", "'.$preknowledge.'", '.$semester.', '.$credit.', '.$quota.', "'.$typec.'", "'.$schedule.'",'.time().')')->returnStatus()){
+                    if($dba->query('INSERT INTO courses (code, name, preknowledge, qualification, credits, quota, type, schedule, `time`) VALUES ("'.$code.'", "'.$name.'", "'.$preknowledge.'", '.$qualification.', '.$credit.', '.$quota.', "'.$typec.'", "'.$schedule.'",'.time().')')->returnStatus()){
                         $deliver['status'] = 200;
                     }
                 } else if(isset($id) && is_numeric($id)){
-                    if($dba->query('UPDATE courses SET code = ?, name = ?, preknowledge = ?, semester = ?, credits = ?, quota = ?, type = ?, schedule = ? WHERE id = '.$id, $code, $name, $preknowledge, $semester, $credit, $quota, $typec, $schedule)->returnStatus()){
+                    if($dba->query('UPDATE courses SET code = ?, name = ?, preknowledge = ?, qualification = ?, credits = ?, quota = ?, type = ?, schedule = ? WHERE id = '.$id, $code, $name, $preknowledge, $qualification, $credit, $quota, $typec, $schedule)->returnStatus()){
                         $deliver['status'] = 200;
                     }
                 }

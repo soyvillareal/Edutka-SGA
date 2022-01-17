@@ -23,12 +23,16 @@ if ($one == 'general') {
     $month = Specific::Filter($_POST['month']);
     $year = Specific::Filter($_POST['year']);
 
-    $dni = Specific::Filter($_POST['dni']);
     $email = Specific::Filter($_POST['settings-email']);
+    $cellphone = Specific::Filter($_POST['cellphone']);
+    $phone = Specific::Filter($_POST['phone']);
     $gender = Specific::Filter($_POST['gender']);
 
     if (empty($email)) {
         $emptys[] = 'settings-email';
+    }
+    if (empty($cellphone)) {
+        $emptys[] = 'cellphone';
     }
     if($day != $d || $month != $m || $year != $y && $age_changed < 1){
         if(empty($day)){
@@ -72,6 +76,16 @@ if ($one == 'general') {
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $errors[] = array('error' => $TEMP['#word']['email_invalid_characters'], 'el' => 'settings-email');
         }
+        if (!is_numeric($cellphone) || strlen($cellphone) > 12) {
+            $errors[] = array('error' => $TEMP['#word']['invalid_cell_phone'], 'el' => 'cellphone');
+        }
+        if (!empty($phone)){
+            if(!is_numeric($phone) || strlen($phone) > 12) {
+                $errors[] = array('error' => $TEMP['#word']['invalid_phone'], 'el' => 'phone');
+            }
+        } else {
+            $phone = 'NULL';
+        }
             
         if (!isset($errors)) {
             $update_data = '';
@@ -112,7 +126,7 @@ if ($one == 'general') {
                 }
             }
                 
-            $update = $dba->query('UPDATE users SET gender = '.$gen.', age_changed = '.$age_changed.', date_birthday = '.$date_birthday->getTimestamp().', province = "'.Specific::Filter($_POST['province']).'", municipality = '.Specific::Filter($_POST['municipality']).', about = "'.Specific::Filter($_POST['about']).'"'.$update_data.' WHERE id = '.$TEMP['#user']['id'])->returnStatus();
+            $update = $dba->query('UPDATE users SET cellphone = '.$cellphone.', phone = '.$phone.', gender = '.$gen.', age_changed = '.$age_changed.', date_birthday = '.$date_birthday->getTimestamp().', province = "'.Specific::Filter($_POST['province']).'", municipality = '.Specific::Filter($_POST['municipality']).', about = "'.Specific::Filter($_POST['about']).'"'.$update_data.' WHERE id = '.$TEMP['#user']['id'])->returnStatus();
             if ($update){
                 $deliver['status'] = 200;
                 $deliver['message'] = $TEMP['#word']['setting_updated'];

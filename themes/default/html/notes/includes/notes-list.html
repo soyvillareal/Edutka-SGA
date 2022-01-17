@@ -13,7 +13,7 @@
                <div class="cont-cell-header padding-lr20 color-secondary">
                   {$word->note}
                   <?php if($TEMP['#student'] === false && empty($TEMP['!parameters'])){ ?>
-                  <button class="show_popalert btn-noway position-absolute color-red">
+                  <button class="show_npopalert btn-noway position-absolute color-red">
                      <svg class="dv-xs" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path fill="currentColor" d="M13,17h-2v-6h2V17z M13,7h-2v2h2V7z M12,3c-4.96,0-9,4.04-9,9s4.04,9,9,9c4.96,0,9-4.04,9-9S16.96,3,12,3 M12,2 c5.52,0,10,4.48,10,10s-4.48,10-10,10C6.48,22,2,17.52,2,12S6.48,2,12,2L12,2z"></path>
                      </svg>
@@ -94,6 +94,59 @@
             <?php } ?>
          </div>
       </div>
+
+      <?php if($TEMP['!qualification'] == true){ ?>
+      <div class="scroll-table-header border-all margin-t15 border-blue border-radius-12">
+         <div class="display-inline-flex">
+            <div class="cont-table-header display-flex padding-t15 padding-b15 border-bottom border-blue">
+               <div class="cont-cell-header padding-lr20 color-secondary">
+                  {$word->qualification}
+                  <a class="position-absolute" href="{$url->{rules}}?article=48" target="_blank">
+                     <svg class="dv-xs" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M13,17h-2v-6h2V17z M13,7h-2v2h2V7z M12,3c-4.96,0-9,4.04-9,9s4.04,9,9,9c4.96,0,9-4.04,9-9S16.96,3,12,3 M12,2 c5.52,0,10,4.48,10,10s-4.48,10-10,10C6.48,22,2,17.52,2,12S6.48,2,12,2L12,2z"></path>
+                     </svg>
+                  </a>
+               </div>
+               <div class="cont-cell-header padding-lr20 color-secondary">
+                  {$word->note}
+                  <button class="show_qpopalert btn-noway position-absolute color-black">
+                     <svg class="dv-xs" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path fill="currentColor" d="M13,17h-2v-6h2V17z M13,7h-2v2h2V7z M12,3c-4.96,0-9,4.04-9,9s4.04,9,9,9c4.96,0,9-4.04,9-9S16.96,3,12,3 M12,2 c5.52,0,10,4.48,10,10s-4.48,10-10,10C6.48,22,2,17.52,2,12S6.48,2,12,2L12,2z"></path>
+                     </svg>
+                  </button>
+               </div>
+               <div class="cont-cell-header padding-lr20 color-secondary">
+                  {$word->percentage}
+               </div>
+            </div>
+         </div>
+         <div id="container-pages" class="display-inline-block"> 
+            <div class="content-row-table dv-vertical-center padding-t15 padding-b15">
+               <div class="cont-cell-header padding-lr20 color-black">
+                  {$word->unique_cut}
+               </div>
+               <div class="cont-cell-header padding-lr20 color-black">
+                  <?php if($TEMP['!first'] == 0){ ?>
+                  <?php if($TEMP['#student'] == false){ ?>
+                  <button class="upload_qualification btn-noway color-blue underline-hover<?php echo(false) ? ' cursor-disabled" disabled' : '"';?> data-nid="{!id}" data-cid="{!cid}">{$word->upload_note}</button>
+                  <?php } else { ?>
+                  <button class="request_qualification btn-noway color-blue underline-hover<?php echo(false) ? ' cursor-disabled" disabled' : '"';?> data-nid="{!id}" data-cid="{!cid}">
+                     <span class="color-blue">Solicitar</span>
+                     <div class="content-spinner-circle">
+                         <div class="spinner-circle"></div>
+                     </div>
+                  </button>
+                  <?php } ?>
+                  <?php } else { ?>
+                  {!qualification}
+                  <?php } ?>
+               </div>
+               <div class="cont-cell-header padding-lr20 color-black">100%</div>
+            </div>
+         </div>
+      </div>
+      <?php } ?>
+
       <div class="scroll-table-header margin-t15 border-all <?php echo($TEMP['!approved'] == true || $TEMP['!period_final'] == false) ? 'border-blue ' : 'border-red ';?>border-radius-12">
          <div class="display-inline-flex">
             <div class="cont-table-header display-flex padding-t15 padding-b15 border-bottom <?php echo($TEMP['!approved'] == true || $TEMP['!period_final'] == false) ? 'border-blue' : 'border-red';?>">

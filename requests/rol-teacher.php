@@ -91,7 +91,7 @@ if($one == 'search-courses') {
             $TEMP['!assignments'] = count($assignments);
             $TEMP['!preknowledge'] = !empty($course['preknowledge']) ? count($preknowledge) : 0;
             $TEMP['!parameters'] = count($parameters);
-            $TEMP['!semester'] = $course['semester'];
+            $TEMP['!qualification'] = $TEMP['#word'][$course['qualification']];
             $TEMP['!credits'] = $course['credits'];
             $TEMP['!quota'] = ($course['quota']-$enrolled). "/{$course['quota']}";
             $TEMP['!type'] = $TEMP['#word'][$course['type']];
@@ -192,7 +192,7 @@ if($one == 'search-courses') {
                 $TEMP['!assignments'] = count($assignments);
                 $TEMP['!preknowledge'] = !empty($course['preknowledge']) ? count($preknowledge) : 0;
                 $TEMP['!parameters'] = count($parameters);
-                $TEMP['!semester'] = $course['semester'];
+                $TEMP['!qualification'] = $TEMP['#word'][$course['qualification']];
                 $TEMP['!credits'] = $course['credits'];
                 $TEMP['!quota'] = ($course['quota']-$enrolled). "/{$course['quota']}";
                 $TEMP['!type'] = $TEMP['#word'][$course['type']];
@@ -244,7 +244,7 @@ if($one == 'search-courses') {
         }
         if(Specific::Admin() == true || Specific::Academic() == true || Specific::Teacher() == true){
             if(Specific::Admin() == true || Specific::Academic() == true){
-                $items = $dba->query('SELECT name, preknowledge, code, semester, credits, quota, type, schedule FROM courses WHERE id = '.$id)->fetchArray();
+                $items = $dba->query('SELECT name, preknowledge, code, qualification, credits, quota, type, schedule FROM courses WHERE id = '.$id)->fetchArray();
                 $teachers = $dba->query('SELECT * FROM teacher WHERE course_id = '.$id)->fetchAll();
                 foreach ($teachers as $teacher) {
                     $names = $dba->query('SELECT names FROM users WHERE id = '.$teacher['user_id'])->fetchArray();

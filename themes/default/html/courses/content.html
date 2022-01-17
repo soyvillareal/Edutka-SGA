@@ -48,7 +48,7 @@
                                         </div>
                                         <?php } ?>
                                         <div class="cont-cell-header padding-lr20 color-black">
-                                            {$word->semester}
+                                            {$word->qualification}
                                         </div>
                                         <div class="cont-cell-header padding-lr20 color-black">
                                             {$word->credits}
@@ -193,13 +193,12 @@
                 <div class="group-validate display-block margin-t15 position-relative w-100 padding-25">
                     <div class="display-flex flex-wrap">
                         <div class="cont-label dv-vertical-center">
-                            <label class="color-black">{$word->semester}</label>
+                            <label class="color-black">{$word->qualification}</label>
                         </div>
                         <div class="flex-grow">
-                            <select id="semester" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue caret-down area_changed area_validate background-grely color-black">
-                                <?php for ($i=1; $i < 11; $i++) { ?>
-                                <option value="<?php echo $i; ?>"><?php echo $i; ?> {$word->semester}</option>
-                                <?php } ?>
+                            <select id="qualification" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue caret-down area_changed area_validate background-grely color-black">
+                                <option value="activated">{$word->activated}</option>
+                                <option value="deactivated">{$word->deactivated}</option>
                             </select>
                             <div class="color-red text-left text-error font-low margin-t5"></div>
                         </div>
@@ -476,7 +475,7 @@ var GE = D.querySelectorAll('.show_emodal'),
     GU = D.querySelector('#name'),
     GF = D.querySelector('#program_id'),
     gq = D.querySelector('#preknowledge'),
-    GJ = D.querySelector('#semester'),
+    GJ = D.querySelector('#qualification'),
     GK = D.querySelector('#credits'),
     GN = D.querySelector('#quota'),
     GO = D.querySelector('#type'),
@@ -1071,7 +1070,7 @@ addEvent(gw.querySelector('#tips-val-prek'), "keyup", function(e){
             }
             GB.removeAttribute('disabled'), removeClass(GB, 'spinner-is-loading');
         }
-    }, "POST", "&type=" + type + "&id=" + self.getAttribute('data-id') + "&code=" + GM.value + "&name=" + GU.value + "&program_id=" + GF.value + "&teacher=" + GP.value + "&preknowledge=" + gq.value + "&semester=" + GJ.value + "&credits=" + GK.value + "&quota=" + GN.value + "&typec=" + GO.value + "&schedule=" + GY.value)
+    }, "POST", "&type=" + type + "&id=" + self.getAttribute('data-id') + "&code=" + GM.value + "&name=" + GU.value + "&program_id=" + GF.value + "&teacher=" + GP.value + "&preknowledge=" + gq.value + "&qualification=" + GJ.value + "&credits=" + GK.value + "&quota=" + GN.value + "&typec=" + GO.value + "&schedule=" + GY.value)
 }), addEvent(GQ, "click", function(){
     var self = this; 
     self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');

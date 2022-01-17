@@ -331,5 +331,40 @@ if($one == 'search-enrolled'){
             $deliver['items'] = $items;
         }
     }
+} else if($one == 'get-settings'){
+	$deliver['status'] = 400;
+	$id = Specific::Filter($_POST['id']);
+	$course_id = Specific::Filter($_POST['course_id']);
+
+	if(!empty($id) && is_numeric($id) && !empty($course_id) && is_numeric($course_id)){
+		if(Specific::IsOwner($id)){
+			$cellphone = $dba->query('SELECT cellphone FROM users WHERE id = '.$id)->fetchArray();
+			$qualification = $dba->query('SELECT qualification FROM courses WHERE id = '.$course_id)->fetchArray();
+			if($qualification == 'activated'){
+				$deliver = array(
+					'status' => 200,
+					'cell' => $cellphone
+				);
+			}
+		}
+	}
+} else if($one == 'request-qualifications'){
+	$deliver['status'] = 400;
+	$id = Specific::Filter($_POST['id']);
+	$course_id = Specific::Filter($_POST['course_id']);
+	$period_id = Specific::Filter($_POST['period_id']);
+	$note_id = Specific::Filter($_POST['note_id']);
+
+	if(!empty($id) && is_numeric($id) && !empty($course_id) && is_numeric($course_id) && !empty($period_id) && is_numeric($period_id) && !empty($note_id) && is_numeric($note_id)){
+		if(Specific::IsOwner($id)){
+			$cellphone = $dba->query('SELECT cellphone FROM users WHERE id = '.$id)->fetchArray();
+			$qualification = $dba->query('SELECT qualification FROM courses WHERE id = '.$course_id)->fetchArray();
+			if(!empty($cellphone) && $qualification == 'activated'){
+				if($dba->query('INSERT INTO qualification (user_id, course_id, period_id, note_id, `time`) VALUES('.$id.','.$course_id.', '.$period_id.', '.$note_id.', '.time().')')->returnStatus()){
+					$deliver['status'] = 200;
+				}
+			}
+		}
+	}
 }
 ?>

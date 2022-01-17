@@ -93,6 +93,10 @@ if(!empty($TEMP['#notes'])){
 		}
 
 		$TEMP['!id'] = $note['id'];
+
+		$TEMP['!cid'] = $note['course_id'];
+		$TEMP['!qualification'] = $course['qualification'] == 'activated' ? true : false;
+
 	    $TEMP['!period'] = $period['name'];
 	    $TEMP['!course'] = $course['name'];
 	    $TEMP['!parameters'] = $parameters;
