@@ -36,6 +36,9 @@ if ($TEMP['#loggedin'] === false) {
 				} else if($value['type'] == 'auth_denied'){
 					$TEMP['!text'] = "{$TEMP['#word']['your_authorization_upload_grades_course_denied']} <b>$course</b> {$TEMP['#word']['was_denied']}";
 					$TEMP['!url'] = Specific::Url('authorizations');
+				} else if($value['type'] == 'qualification'){
+					$TEMP['!text'] = "{$TEMP['#word']['you_have_just_applied_course']} <b>$course</b>";
+					$TEMP['!url'] = Specific::Url('more?page=qualifications');
 				}
 				$TEMP['!id'] = $value['id'];
 				$TEMP['!data'] = $user_data;

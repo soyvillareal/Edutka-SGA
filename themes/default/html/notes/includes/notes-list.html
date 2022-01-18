@@ -72,8 +72,8 @@
                <div class="cont-cell-header padding-lr20 color-black">
                   <?php if($TEMP['!third'] == 0){ ?>
                   <?php if($TEMP['#student'] == false){ ?>
-                  <button class="upload_note btn-noway<?php echo(!empty($TEMP['!parameters'])) ? ' color-blue ' : ' color-red ';?>underline-hover<?php echo($TEMP['#last_eval'] == false || empty($TEMP['!parameters']) || ((!in_array('third', $TEMP['!authorization']) && $TEMP['#student'] == false) && $TEMP['#admin'] == false && $TEMP['#academic'] == false)) ? ' cursor-disabled" disabled' : '"';?> data-pos="2" data-id="{!id}">{$word->upload_note}</button>
-                  <?php if($TEMP['#last_eval'] == false){ ?>
+                  <button class="upload_note btn-noway<?php echo(!empty($TEMP['!parameters'])) ? ' color-blue ' : ' color-red ';?>underline-hover<?php echo($TEMP['!last_eval'] == false || empty($TEMP['!parameters']) || ((!in_array('third', $TEMP['!authorization']) && $TEMP['#student'] == false) && $TEMP['#admin'] == false && $TEMP['#academic'] == false)) ? ' cursor-disabled" disabled' : '"';?> data-pos="2" data-id="{!id}">{$word->upload_note}</button>
+                  <?php if($TEMP['!last_eval'] == false){ ?>
                   <a class="position-absolute" href="{$url->{rules}}?article=42" target="_blank">
                      <svg class="dv-xs" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path d="M13,17h-2v-6h2V17z M13,7h-2v2h2V7z M12,3c-4.96,0-9,4.04-9,9s4.04,9,9,9c4.96,0,9-4.04,9-9S16.96,3,12,3 M12,2 c5.52,0,10,4.48,10,10s-4.48,10-10,10C6.48,22,2,17.52,2,12S6.48,2,12,2L12,2z"></path>
@@ -95,7 +95,7 @@
          </div>
       </div>
 
-      <?php if($TEMP['!qualification'] == true){ ?>
+      <?php if($TEMP['!qcstatus'] == 'activated' && $TEMP['!fah'] == true && $TEMP['!can_qua'] == true){ ?>
       <div class="scroll-table-header border-all margin-t15 border-blue border-radius-12">
          <div class="display-inline-flex">
             <div class="cont-table-header display-flex padding-t15 padding-b15 border-bottom border-blue">
@@ -109,11 +109,13 @@
                </div>
                <div class="cont-cell-header padding-lr20 color-secondary">
                   {$word->note}
+                  <?php if($TEMP['!qexists'] == false){ ?>
                   <button class="show_qpopalert btn-noway position-absolute color-black">
                      <svg class="dv-xs" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path fill="currentColor" d="M13,17h-2v-6h2V17z M13,7h-2v2h2V7z M12,3c-4.96,0-9,4.04-9,9s4.04,9,9,9c4.96,0,9-4.04,9-9S16.96,3,12,3 M12,2 c5.52,0,10,4.48,10,10s-4.48,10-10,10C6.48,22,2,17.52,2,12S6.48,2,12,2L12,2z"></path>
                      </svg>
                   </button>
+                  <?php } ?>
                </div>
                <div class="cont-cell-header padding-lr20 color-secondary">
                   {$word->percentage}
@@ -126,19 +128,73 @@
                   {$word->unique_cut}
                </div>
                <div class="cont-cell-header padding-lr20 color-black">
-                  <?php if($TEMP['!first'] == 0){ ?>
                   <?php if($TEMP['#student'] == false){ ?>
-                  <button class="upload_qualification btn-noway color-blue underline-hover<?php echo(false) ? ' cursor-disabled" disabled' : '"';?> data-nid="{!id}" data-cid="{!cid}">{$word->upload_note}</button>
+                  <div class="qualification">
+                     <button class="upload_qualification btn-noway underline-hover<?php echo(($TEMP['!flrnh'] == true || $TEMP['!period_final'] == true) && $TEMP['#teacher'] == true) ? ' color-red cursor-disabled" disabled' : ' color-blue"';?>>{!qualification_text}</button>
+                     <?php if($TEMP['!flrnh'] == true || $TEMP['!period_final'] == true){ ?>
+                     <a class="position-absolute" href="{$url->{academic-calendar}}" target="_blank">
+                        <svg class="dv-xs" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                           <path d="M13,17h-2v-6h2V17z M13,7h-2v2h2V7z M12,3c-4.96,0-9,4.04-9,9s4.04,9,9,9c4.96,0,9-4.04,9-9S16.96,3,12,3 M12,2 c5.52,0,10,4.48,10,10s-4.48,10-10,10C6.48,22,2,17.52,2,12S6.48,2,12,2L12,2z"></path>
+                        </svg>
+                     </a>
+                     <?php } ?>
+                     <div class="qualification_note display-flex hidden">
+                        <input type="text" class="cont-input border-radius-12 background-grely color-black margin-r5" value="{!qualification_val}"/>
+                        <button class="clear_note btn-noway hover-button color-red margin-r5">
+                           <svg class="dv-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                              <path fill="currentColor" d="M 12 13.17 L 5.17 20 L 4 18.832 L 10.83 12 L 4 5.17 L 5.17 4 L 12 10.83 L 18.832 4 L 20 5.17 L 13.17 12 L 20 18.832 L 18.832 20 Z"></path>
+                           </svg>
+                        </button>
+                        <button class="upload_qnote btn-noway hover-button color-green" data-pid="{!period_id}" data-id="{!id}">
+                           <span class="color-green">
+                              <svg class="dv-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                 <path fill="currentColor" d="M 3.2 13.055 L 8.825 18.7 L 20.8 6.585 L 19.53 5.3 L 8.825 16.131 L 4.47 11.724 Z"></path>
+                              </svg>
+                           </span>
+                           <div class="content-spinner-circle">
+                               <div class="spinner-circle"></div>
+                           </div>
+                        </button>
+                     </div>
+                  </div>
                   <?php } else { ?>
-                  <button class="request_qualification btn-noway color-blue underline-hover<?php echo(false) ? ' cursor-disabled" disabled' : '"';?> data-nid="{!id}" data-cid="{!cid}">
-                     <span class="color-blue">Solicitar</span>
+                  <?php if($TEMP['!qexists'] == false){ ?>
+                  <button class="request_qualification btn-noway underline-hover<?php echo($TEMP['!frh_2'] == true || $TEMP['!period_final'] == true) ? ' cursor-disabled" disabled' : '"';?> data-id="{!id}">
+                     <span class="<?php echo($TEMP['!frh_2'] == true) ? 'color-red' : 'color-blue';?>">{$word->request}</span>
                      <div class="content-spinner-circle">
                          <div class="spinner-circle"></div>
                      </div>
                   </button>
+                  <?php if($TEMP['!frh_2'] == true || $TEMP['!period_final'] == true){ ?>
+                  <a class="position-absolute" href="{$url->{academic-calendar}}" target="_blank">
+                     <svg class="dv-xs" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M13,17h-2v-6h2V17z M13,7h-2v2h2V7z M12,3c-4.96,0-9,4.04-9,9s4.04,9,9,9c4.96,0,9-4.04,9-9S16.96,3,12,3 M12,2 c5.52,0,10,4.48,10,10s-4.48,10-10,10C6.48,22,2,17.52,2,12S6.48,2,12,2L12,2z"></path>
+                     </svg>
+                  </a>
                   <?php } ?>
                   <?php } else { ?>
-                  {!qualification}
+                  <?php if($TEMP['!qstatus'] == 'pending'){ ?>
+                  <span class="<?php echo($TEMP['!frh_2'] == true) ? 'color-red' : 'color-blue';?>">{$word->requested}</span>
+                  <?php if($TEMP['!frh_2'] == true){ ?>
+                  <a class="position-absolute" href="{$url->{academic-calendar}}" target="_blank">
+                     <svg class="dv-xs" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M13,17h-2v-6h2V17z M13,7h-2v2h2V7z M12,3c-4.96,0-9,4.04-9,9s4.04,9,9,9c4.96,0,9-4.04,9-9S16.96,3,12,3 M12,2 c5.52,0,10,4.48,10,10s-4.48,10-10,10C6.48,22,2,17.52,2,12S6.48,2,12,2L12,2z"></path>
+                     </svg>
+                  </a>
+                  <?php } ?>
+                  <?php } else if($TEMP['!qstatus'] == 'rejected') { ?>
+                  <span class="color-red">{$word->rejected}</span>
+                  <?php if($TEMP['!frh_2'] == true){ ?>
+                  <a class="position-absolute" href="{$url->{academic-calendar}}" target="_blank">
+                     <svg class="dv-xs" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M13,17h-2v-6h2V17z M13,7h-2v2h2V7z M12,3c-4.96,0-9,4.04-9,9s4.04,9,9,9c4.96,0,9-4.04,9-9S16.96,3,12,3 M12,2 c5.52,0,10,4.48,10,10s-4.48,10-10,10C6.48,22,2,17.52,2,12S6.48,2,12,2L12,2z"></path>
+                     </svg>
+                  </a>
+                  <?php } ?>
+                  <?php } else { ?>
+                  {!qualification_note}
+                  <?php } ?>
+                  <?php } ?>
                   <?php } ?>
                </div>
                <div class="cont-cell-header padding-lr20 color-black">100%</div>
@@ -168,7 +224,7 @@
                </div>
                <div class="cont-cell-header padding-lr20 color-black">
                   {!average}
-                  <?php if($TEMP['#note_mode'] == '30-30-40' && ($TEMP['!evalfinal'] == true || $TEMP['!approved'] == false)){ ?>
+                  <?php if($TEMP['#note_mode'] == '30-30-40' && $TEMP['!qexists'] == false && ($TEMP['!evalfinal'] == true || $TEMP['!approved'] == false)){ ?>
                   <a class="position-absolute" href="{$url->{rules}}?article={!article}" target="_blank">
                      <svg class="dv-xs" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path d="M13,17h-2v-6h2V17z M13,7h-2v2h2V7z M12,3c-4.96,0-9,4.04-9,9s4.04,9,9,9c4.96,0,9-4.04,9-9S16.96,3,12,3 M12,2 c5.52,0,10,4.48,10,10s-4.48,10-10,10C6.48,22,2,17.52,2,12S6.48,2,12,2L12,2z"></path>

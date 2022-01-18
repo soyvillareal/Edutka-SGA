@@ -285,16 +285,26 @@ class Specific {
 	    return $site_url . '/' . $params;
 	}
 
-	public static function ValidateDates($id, $pos){
-		global $TEMP, $dba;
+	public static function ValidateDates($id, $pos, $validate = 0){
+		global $dba;
 
-		$data = array();
-		$items = $dba->query('SELECT dates FROM periods WHERE id = '.$id)->fetchArray();
-		if(!empty($items)){
-        	$data = json_decode($items, true);
+		$rdate = false;
+		$dates = $dba->query('SELECT dates FROM periods WHERE id = '.$id)->fetchArray();
+		if(!empty($dates)){
+        	$data = json_decode($dates, true)[$pos];
+        	if($validate == 0){
+        		if(!empty($data)){
+	        		$rdate = time() > strtotime($data);
+        		}
+	        } else {
+	        	$rdate = time() > strtotime($data) || empty($data);
+	        	if($validate == 1){
+	        		$rdate = strtotime($data) > time() || empty($data);
+	        	}
+	        }
 		}
 
-        return $data[$pos];
+        return $rdate;
 	}
 
 	public static function GetSessions($value = array()){

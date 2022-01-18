@@ -169,7 +169,6 @@ var GC = D.querySelectorAll('.area_validate'),
     GI = D.querySelector('#alert-authorizations'),
     GB = D.querySelector('#this-auth'),
     GJ = D.querySelector('#expires'),
-    GH = D.querySelector('#description'),
     GU = D.querySelector('#status'),
     TE = D.querySelector('#navigation-after'),
     TO = D.querySelector('#navigation-before'),
@@ -200,9 +199,7 @@ var GC = D.querySelectorAll('.area_validate'),
     TT = {#total_pages};
 
 addEvent(GB, 'click', function(){
-    var self = this,
-        GZ = GJ.parentNode;
-    console.log(GJ.value, GU.value);
+    var self = this;
     if(GJ.value == '' || GU.value == ''){
         for (var j = 0, i = GC.length; j < i; j++){
             var el = GC[j],

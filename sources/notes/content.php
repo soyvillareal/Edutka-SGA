@@ -66,6 +66,18 @@ $TEMP['#load_url'] = Specific::Url("notes$params");
 
 $TEMP['#notes'] = $dba->query('SELECT * FROM notes'.(!empty($TEMP['#period_id']) ? ' n ' : ' ').'WHERE user_id = '.$TEMP['#user_id'].$sqls)->fetchAll();
 if(!empty($TEMP['#notes'])){
+	$qua_arr = array();
+	foreach ($TEMP['#notes'] as $note) {
+		$qua_arr[] = 'false';
+		$course = $dba->query('SELECT * FROM courses WHERE id = '.$note['course_id'])->fetchArray();
+		if($course['qualification'] == 'activated' && round((($notes[0]*0.3)+($notes[1]*0.3)+($notes[2]*0.4)), 2) <= $TEMP['#nmdph']){
+			$qua_arr[] = 'true';
+		}
+	}
+
+
+	$atrues = array_count_values($qua_arr)['true'];
+
 	foreach ($TEMP['#notes'] as $note) {
 		if(is_numeric($TEMP['#period_id'])){
 			$parameters = $dba->query('SELECT parameters FROM parameter p WHERE (SELECT id FROM teacher WHERE course_id = '.$note['course_id'].' AND period_id = '.$TEMP['#period_id'].' AND id = p.teacher_id) = teacher_id')->fetchArray();
@@ -93,13 +105,43 @@ if(!empty($TEMP['#notes'])){
 		}
 
 		$TEMP['!id'] = $note['id'];
-
-		$TEMP['!cid'] = $note['course_id'];
-		$TEMP['!qualification'] = $course['qualification'] == 'activated' ? true : false;
-
 	    $TEMP['!period'] = $period['name'];
 	    $TEMP['!course'] = $course['name'];
 	    $TEMP['!parameters'] = $parameters;
+
+	    $TEMP['!qcstatus'] = $course['qualification'];
+
+		$qualification = $dba->query('SELECT note, status, COUNT(*) as count FROM qualification WHERE note_id = '.$note['id'])->fetchArray();
+
+		$fa = Specific::ValidateDates($period['id'], 17, 2);
+		$TEMP['!can_qua'] = false;
+		if(Specific::Student() == true && $fa == true){
+			$TEMP['!can_qua'] = true;
+		}
+		$TEMP['!qexists'] = false;
+		if(Specific::Student() == true){
+			$TEMP['!fah'] = true;
+		}
+
+		if($qualification['count'] > 0){
+			$TEMP['!qualification_note'] = 0;
+			$TEMP['!period_id'] = $period['id'];
+			$TEMP['!qualification_val'] = $qualification['note'];
+			$TEMP['!qualification_text'] = $TEMP['#word']['upload_note'];
+			if($qualification['note'] != NULL){
+				$TEMP['!qualification_text'] = $TEMP['!qualification_note'] = $qualification['note'];
+			}
+			$TEMP['!qexists'] = true;
+			$TEMP['!qstatus'] = $qualification['status'];
+			if(($qualification['status'] == 'accepted' || (Specific::Student() == true && $fa == true)) && $fa == true && ($atrues == 1 || $atrues == 2) || Specific::Admin() == true || Specific::Academic() == true){
+			    $TEMP['!can_qua'] = true;
+			}
+			$TEMP['!fah'] = Specific::ValidateDates($period['id'], 10, 1);
+			$TEMP['!frh_2'] = Specific::ValidateDates($period['id'], 12);
+			$TEMP['!flrnh'] = Specific::ValidateDates($period['id'], 13);
+		}
+
+
 
 	    if($TEMP['#note_mode'] == '30-30-40'){
 	    	for ($i=0; $i < 3; $i++) { 
@@ -112,18 +154,23 @@ if(!empty($TEMP['#notes'])){
 		    }
 			$TEMP['!first'] = $notes[0];
 		    $TEMP['!second'] = $notes[1];
+		    $TEMP['!third'] = $notes[2];
 
-		    $TEMP['#last_eval'] = false;
+		    $TEMP['!last_eval'] = false;
 		    if((($notes[0]*0.3)+($notes[1]*0.3)) >= $TEMP['#nnevf']){
-		    	$TEMP['#last_eval'] = true;
+		    	$TEMP['!last_eval'] = true;
 		    }
 
-		    $TEMP['!third'] = $notes[2];
-	    	$TEMP['!average'] = $average[] = round((($notes[0]*0.3)+($notes[1]*0.3)+($notes[2]*0.4)), 2);
-		    if($TEMP['!average'] >= 0 && $notes[2] < $TEMP['#nmtc']){
-		    	$TEMP['!evalfinal'] = true;
-		    	$TEMP['!article'] = 43;
-		    	$TEMP['!average'] = $average[] = round($notes[2], 2);
+		    unset($TEMP['!evalfinal']);
+			unset($TEMP['!article']);
+		    $TEMP['!average'] = $average[] = $qualification['note'];
+		    if($qualification['note'] == NULL){
+		    	$TEMP['!average'] = $average[] = round((($notes[0]*0.3)+($notes[1]*0.3)+($notes[2]*0.4)), 2);
+				if($TEMP['!average'] >= 0 && $notes[2] < $TEMP['#nmtc']){
+			    	$TEMP['!evalfinal'] = true;
+			    	$TEMP['!article'] = 43;
+			    	$TEMP['!average'] = $average[] = round($notes[2], 2);
+			    }
 		    }
 	    } else {
 	    	$anotes = array();
@@ -133,7 +180,11 @@ if(!empty($TEMP['#notes'])){
 		    }
 		    $notes = array_sum($anotes);
 			$TEMP['!first'] = $notes;
-	    	$TEMP['!average'] = $average[] = round($notes, 2);
+
+		    $TEMP['!average'] = $average[] = $qualification['note'];
+		    if($qualification['note'] == NULL){
+		    	$TEMP['!average'] = $average[] = round($notes, 2);
+		    }
 	    }
 
 	    $TEMP['!approved'] = ($course['type'] == 'practice' && $TEMP['!average'] >= $TEMP['#nmcnt']) || ($course['type'] == 'theoretical' && $TEMP['!average'] >= $TEMP['#nmct']) ? true : false;
@@ -146,7 +197,10 @@ if(!empty($TEMP['#notes'])){
 	    $TEMP['notes'] .= Specific::Maket("notes/includes/notes-list");
 	}
 	Specific::DestroyMaket();
-	$TEMP['#semesbad'] = count($avekey) >= $TEMP['#cers'];
+
+	if(Specific::Teacher() == false){
+		$TEMP['#semesbad'] = Specific::ValidateDates($TEMP['#period_id'], 17, 2) == true && count($avekey) >= $TEMP['#cers'];
+	}
 	$TEMP['average'] = round(array_sum($average)/count($average), 2);
 } else {
 	$TEMP['notes'] .= Specific::Maket("not-found/notes");

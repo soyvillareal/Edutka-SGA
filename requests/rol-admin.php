@@ -624,14 +624,16 @@ if($one == 'search-course') {
             }
             $aerror = array();
             foreach ($dates as $key => $value) {
-                $value = strtotime($value);
-                $aerror[$key] = false;
-                if($value > $dba->query('SELECT final FROM periods WHERE id = '.$id)->fetchArray()){
-                    $aerror[$key] = true;
+                $aerror[$key] = true;
+                if(!empty($value)){
+                    $value = strtotime($value);
+                    if($value > $dba->query('SELECT final FROM periods WHERE id = '.$id)->fetchArray()){
+                        $aerror[$key] = false;
+                    }
                 }
             }
 
-            if(in_array($aerror, true)){
+            if(!in_array(false, $aerror)){
                 if(empty($emptys)){
                     if(strtotime($dates[1]) > strtotime($dates[2])){
                         $errors[] = 0;
@@ -685,8 +687,11 @@ if($one == 'search-course') {
     if(!empty($id) && is_numeric($id)){
         $items = $dba->query('SELECT dates FROM periods WHERE id = '.$id)->fetchArray();
         $items = json_decode($items, true);
-        $dates = array();
+        if(empty($items)){
+            $items = ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""];
+        }
 
+        $dates = array();
         $dates[0] = $items[0];
         $dates[1] = array($items[1], $items[2]);
         $dates[2] = array($items[3], $items[4]);
@@ -700,6 +705,7 @@ if($one == 'search-course') {
         $dates[10] = $items[14];
         $dates[11] = $items[15];
         $dates[12] = $items[16];
+        $dates[13] = $items[17];
 
         foreach ($dates as $key => $value) {
             if (is_array($value)){
@@ -1161,7 +1167,7 @@ if($one == 'search-course') {
             $emptys[] = 'status';
         }
         if(empty($emptys)){
-                $expire = explode('-', $expires);
+            $expire = explode('-', $expires);
             if(!checkdate($expire[1], $expire[2], $expire[0])){
                 $errors[] = 'expires';
             }
@@ -1274,6 +1280,134 @@ if($one == 'search-course') {
                 $TEMP['!status'] = $TEMP['#word'][$auth['status']];
                 $TEMP['!time'] = Specific::DateFormat($auth['time']);
                 $html .= Specific::Maket('more/authorizations/includes/authorizations-list');
+            }
+            Specific::DestroyMaket();
+            $deliver['status'] = 200;
+        }
+        $deliver['status'] = 200;
+        $deliver['html'] = $html;
+    }
+} else if($one == 'get-qitems'){
+    $deliver['status'] = 400;
+    $id = Specific::Filter($_POST['id']);
+    if(isset($id) && is_numeric($id)){
+        $items = $dba->query('SELECT user_id, note_id, note, status FROM qualification WHERE id = '.$id)->fetchArray();
+        $items['course'] = $dba->query('SELECT name FROM courses c WHERE (SELECT course_id FROM notes n WHERE id = '.$items['note_id'].' AND course_id = c.id) = id')->fetchArray();
+        $data = Specific::Data($items['user_id']);
+        $items['applicant'] = $data['full_name'];
+        $items['email'] = $data['email'];
+        $items['cellphone'] = $data['cellphone'];
+        $items['phone'] = 'true';
+        if(!empty($data['phone'])){
+            $items['phone'] = $data['phone'];
+        }
+        unset($items['user_id']);
+        unset($items['note_id']);
+
+        if (!empty($items)) {
+            $deliver = array(
+                'status' => 200,
+                'items' => $items
+            );
+        }
+    }
+} else if($one == 'this-qualifications'){
+    $deliver['status'] = 400;
+    $emptys = array();
+    $errors = array();
+    $statusa = array('accepted', 'pending', 'rejected');
+    $id = Specific::Filter($_POST['id']);
+    $note = Specific::Filter($_POST['note']);
+    $status = Specific::Filter($_POST['status']);
+    if(isset($id) && is_numeric($id)){
+        if(empty($status)){
+            $emptys[] = 'status';
+        }
+        if(empty($emptys)){
+            $qualification = $dba->query('SELECT note FROM qualification WHERE id = '.$id)->fetchArray();
+            if(!in_array($status, $statusa)){
+                $errors[] = array('el' => 'status', 'text' => 'please_enter_valid_value');
+            }
+            if(!empty($note) && ($note > $TEMP['#nm'] || $note < 0)){
+                $errors[] = array('el' => 'note', 'text' => 'please_enter_valid_value');
+            }
+            if(empty($note)){
+                $note = NULL;
+                if($qualification != NULL){
+                    $errors[] = array('el' => 'note', 'text' => 'this_field_is_empty');
+                }
+            }
+            if(empty($errors)){
+                if($dba->query('UPDATE qualification SET note = ?, status = ? WHERE id = '.$id, $note, $status)->returnStatus()){
+                    $deliver['status'] = 200;
+                }
+            } else {
+                $deliver = array(
+                    'status' => 400,
+                    'errors' => $errors
+                );
+            }
+        } else {
+            $deliver = array(
+                'status' => 400,
+                'emptys' => $emptys
+            );
+        }
+    } else {
+        $deliver = array(
+            'status' => 400,
+            'error' => $TEMP['#word']['error']
+        );
+    }
+} else if($one == 'search-qualifications') {
+    $keyword = Specific::Filter($_POST['keyword']);
+        $html = '';
+        $query = '';
+        if(!empty($keyword)){
+            $query .= " a WHERE id LIKE '%$keyword%' OR (SELECT id FROM users WHERE (dni LIKE '%$keyword%' OR names LIKE '%$keyword%' OR surnames LIKE '%$keyword%') AND id = a.user_id) = user_id";
+        }
+        $qualifications = $dba->query('SELECT * FROM qualification'.$query.' LIMIT ? OFFSET ?', 10, 1)->fetchAll();
+        $deliver['total_pages'] = $dba->totalPages;
+        if(!empty($qualifications)){
+            foreach ($qualifications as $qua) {
+                $TEMP['!id'] = $qua['id'];
+                $TEMP['!applicant'] = $dba->query('SELECT names FROM users WHERE id = '.$qua['user_id'])->fetchArray();
+                $TEMP['!course'] = $dba->query('SELECT name FROM courses c WHERE (SELECT course_id FROM notes n WHERE id = '.$qua['note_id'].' AND course_id = c.id) = id')->fetchArray();
+                $TEMP['!note'] = empty($qua['note']) ? $TEMP['#word']['undefined'] : $qua['note'];
+                $TEMP['!status'] = $TEMP['#word'][$qua['status']];
+                $TEMP['!time'] = Specific::DateFormat($qua['time']);
+                $html .= Specific::Maket('more/qualifications/includes/qualifications-list');
+            }
+            Specific::DestroyMaket();
+            $deliver['status'] = 200;
+        } else {
+            if(!empty($keyword)){
+                $TEMP['keyword'] = $keyword;
+                $html .= Specific::Maket('not-found/result-for');
+            } else {
+                $html .= Specific::Maket('not-found/qualifications');
+            }
+        }
+        $deliver['html'] = $html;
+} else if($one == 'table-qualifications'){
+    $page = Specific::Filter($_POST['page_id']);
+    if(!empty($page) && is_numeric($page) && isset($page) && $page > 0){
+        $html = "";
+        $query = '';
+        $keyword = Specific::Filter($_POST['keyword']);
+        if(!empty($keyword)){
+            $query .= " a WHERE id LIKE '%$keyword%' OR (SELECT id FROM users WHERE (dni LIKE '%$keyword%' OR names LIKE '%$keyword%' OR surnames LIKE '%$keyword%') AND id = a.user_id) = user_id";
+        }
+        $qualifications = $dba->query('SELECT * FROM qualification'.$query.' LIMIT ? OFFSET ?', 10, $page)->fetchAll();
+        if (!empty($qualifications)) {
+            foreach ($qualifications as $qua) {
+                $TEMP['!id'] = $qua['id'];
+                $TEMP['!applicant'] = $dba->query('SELECT names FROM users WHERE id = '.$qua['user_id'])->fetchArray();
+                $TEMP['!course'] = $dba->query('SELECT name FROM courses c WHERE (SELECT course_id FROM notes n WHERE id = '.$qua['note_id'].' AND course_id = c.id) = id')->fetchArray();
+                $TEMP['!note'] = empty($qua['note']) ? $TEMP['#word']['undefined'] : $qua['note'];
+                $TEMP['!status'] = $TEMP['#word'][$qua['status']];
+                $TEMP['!time'] = Specific::DateFormat($qua['time']);
+                $html .= Specific::Maket('more/qualifications/includes/qualifications-list');
             }
             Specific::DestroyMaket();
             $deliver['status'] = 200;

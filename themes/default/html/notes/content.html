@@ -124,7 +124,7 @@
    	<div class="padding-t25">
       	<button id="cancel-qalert" class="btn-noway background-red border-radius-4 padding-10 color-white hover-button font-uppercase">{$word->cancel}</button>
         <button id="request-qualification" class="btn-noway background-blue border-radius-4 padding-10 color-black hover-opacity font-uppercase">
-            <span class="color-white">Solicitar</span>
+            <span class="color-white">{$word->request}</span>
             <div class="content-spinner-circle">
                 <div class="spinner-circle"></div>
             </div>
@@ -161,6 +161,9 @@
 <script type="text/javascript">
 var NW = D.querySelectorAll('.number'),
 	NR = D.querySelectorAll('.request_qualification'),
+	NM = D.querySelectorAll('.upload_qualification'),
+	NF = D.querySelectorAll('.upload_qnote'),
+	NJ = D.querySelectorAll('.clear_note'),
 	NU = D.querySelectorAll('.upload_note'),
     NZ = D.querySelectorAll('.see_params'),
 	NS = D.querySelectorAll('.show_npopalert'),
@@ -202,7 +205,7 @@ var NW = D.querySelectorAll('.number'),
     },
     ND = function(){
     	var self = this,
-    		course_id = self.getAttribute('data-cid');
+    		note_id = self.getAttribute('data-id');
     	self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
 	    Req('{$url->{req/rol-student/get-settings}}', function(e){
 	    	console.log(e);
@@ -212,11 +215,11 @@ var NW = D.querySelectorAll('.number'),
 	        	} else {
 	        		NC.innerText = 'Toda su informacion será enviada y luego nos pondremos en contacto con usted mendiante esta misma.', addClass(NX, 'hidden'), removeClass(NB, 'hidden');
 	        	}
-	            NO.style.display = "block", D.body.style.overflow = "hidden", NB.setAttribute('data-nid', self.getAttribute('data-nid')), NB.setAttribute('data-cid', course_id), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
+	            NO.style.display = "block", D.body.style.overflow = "hidden", NB.setAttribute('data-id', note_id), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
 	        } else {
 	        	loadAlert("{$word->error}", 1), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
 	    	}
-	    }, "POST", "&id={$me->id}&course_id=" + course_id)
+	    }, "POST", "&id={$me->id}&note_id=" + note_id)
     },
 	keyword = "{#keyword_notes}";
 <?php if(count($TEMP['#programs']) > 1){ ?>
@@ -324,15 +327,49 @@ addEvent(NB, 'click', function(){
         } else {
             loadAlert('{$word->error}', 1), NB.removeAttribute('disabled'), removeClass(NB, 'spinner-is-loading');
         }
-    }, "POST", "&id={$me->id}&period_id={#period_id}&note_id=" + self.getAttribute('data-nid') + "&course_id=" + self.getAttribute('data-cid'))
-})
-<?php } ?>
-for(var j = 0, i = NQ.length; j < i; j++) addEvent(NQ[j], "click", NH);
-<?php if($TEMP['#student']){ ?>
+    }, "POST", "&id={$me->id}&period_id={#period_id}&note_id=" + self.getAttribute('data-id'))
+});
 for(var j = 0, i = NW.length; j < i; j++) addEvent(NW[j], 'input', function(){
     this.value = this.value.replace(/[^0-9]/gi, '');
 });
 for(var j = 0, i = NZ.length; j < i; j++) addEvent(NZ[j], "click", NA);
 for(var j = 0, i = NR.length; j < i; j++) addEvent(NR[j], "click", ND);
 <?php } ?>
+for(var j = 0, i = NQ.length; j < i; j++) addEvent(NQ[j], "click", NH);
+for(var j = 0, i = NF.length; j < i; j++) addEvent(NF[j], 'click', function(){
+	var self = this,
+		el = self.parentNode,
+		NI = el.parentNode,
+		NV = el.querySelector('input'),
+		NE = NI.querySelector('.qualification_note'),
+		NL = NI.querySelector('.upload_qualification');
+
+	self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
+    Req('{$url->{req/rol-teacher/this-qualification}}', function(e){
+    	console.log(e);
+        if(e.status == 200){
+            NL.innerText = e.note, addClass(NE, 'hidden'), removeClass(NL, 'hidden'), removeClass(NV, 'border-red'), removeClass(NV, 'boxshadow-red'), loadAlert("{$word->note_updated_successfully}"), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
+        } else {
+            if(e.empty != undefined){
+                loadAlert('*{$word->this_field_is_empty}', 1)
+            } else {
+                loadAlert(e.error, 1)
+            }
+            addClass(NV, 'border-red'), addClass(NV, 'boxshadow-red'), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
+        }
+    }, "POST", "&note_id=" + self.getAttribute('data-id') + "&period_id=" + self.getAttribute('data-pid') + "&note=" + NV.value)
+});
+for(var j = 0, i = NM.length; j < i; j++) doubleClick(NM[j], function(self){
+	var el = self.parentNode,
+		NL = el.querySelector('.qualification_note'),
+		Nl = el.querySelector('a[target="_blank"]');
+	removeClass(NL, 'hidden'), addClass(self, 'hidden'), addClass(Nl, 'hidden');
+});
+for(var j = 0, i = NJ.length; j < i; j++) addEvent(NJ[j], 'click', function(){
+	var self = this.parentNode,
+		el = self.parentNode,
+		NL = el.querySelector('.upload_qualification'),
+		Nl = el.querySelector('a[target="_blank"]');
+	addClass(self, 'hidden'), removeClass(NL, 'hidden'), removeClass(Nl, 'hidden');
+});
 </script>

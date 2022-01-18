@@ -93,9 +93,7 @@
     <div class="cont-dialog">
         <div class="cont-popup background-white">
             <div class="top-header">
-                <div class="padding-t15 padding-b15 w-100 font-lowly color-black">
-                    {$word->add_new_academic_term}
-                </div>
+                <div id="title-period" class="padding-t15 padding-b15 w-100 font-lowly color-black"></div>
             </div>
             <div class="content-modal-body color-grey">
                 <div class="group-validate display-block position-relative w-100 padding-25">
@@ -197,6 +195,7 @@
                                 <option value="tuition">{$word->academic_enrollment}</option>
                                 <option value="qualifications">{$word->qualifications}</option>
                                 <option value="financial">{$word->financial_tuition}</option>
+                                <option value="ending">{$word->ending}</option>
                             </select>
                         </div>
                     </div>
@@ -573,6 +572,34 @@
                         </div>
                     </div>
                 </div>
+
+                <div id="screen-ending" class="items-date hidden">
+                    <div class="group-validate display-block margin-t15 position-relative w-100 padding-25">
+                        <div class="dv-vertical-center flex-wrap">
+                            <div class="cont-label w-49 mob-dlabel ellipsis-horizontal">
+                                <label class="date_title color-black">{$word->completion_of_activities}</label>
+                            </div>
+                            <div class="flex-grow w-49">
+                                <div class="display-flex">
+                                    <button class="dbclick_date btn-noway hover-button ellipsis-horizontal font-low color-black margin-left-auto margin-right-auto">Lunes 30 de Agosto de 2021</button>
+                                </div>
+                                <div class="date_right position-relative margin-rowt hidden">
+                                    <div class="display-flex">
+                                        <label class="color-red margin-left-auto">{$word->final}</label>
+                                    </div>
+                                    <input class="date_input cont-input h-50 border-radius-12 animated-easy border-focus-blue area_validate_date background-grely margin-left-auto margin-r5 color-black" type="date">
+                                    <div class="position-absolute pos-rowr pos-tmed">
+                                        <button class="clear_date btn-noway hover-button color-red">
+                                            <svg class="dv-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                <path fill="currentColor" d="M 12 13.17 L 5.17 20 L 4 18.832 L 10.83 12 L 4 5.17 L 5.17 4 L 12 10.83 L 18.832 4 L 20 5.17 L 13.17 12 L 20 18.832 L 18.832 20 Z"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="display-flex">
                 <div class="margin-left-auto margin-r25 margin-b15">
@@ -604,6 +631,7 @@ var GE = D.querySelectorAll('.show_emodal'),
     gu = D.querySelectorAll('.date_input'),
     GV = D.querySelector('.content-modal-body'),
     GA = D.querySelector('#search-periods'),
+    Gq = D.querySelector('#title-period'),
     GB = D.querySelector('#this-period'),
     GP = D.querySelector('#this-date'),
     gs = D.querySelector('#reset-valert'),
@@ -641,7 +669,7 @@ var GE = D.querySelectorAll('.show_emodal'),
                     }
                     D.querySelector('#'+key).value = e.items[key];
                 }
-                GI.style.display = "block", D.body.style.overflow = "hidden", GB.setAttribute('data-id', period_id), GB.setAttribute('data-type', 'edit'), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
+                Gq.innerText = '{$word->edit_academic_period}', GI.style.display = "block", D.body.style.overflow = "hidden", GB.setAttribute('data-id', period_id), GB.setAttribute('data-type', 'edit'), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
             } else {
                 loadAlert('{$word->error}', 1), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
             }
@@ -657,8 +685,9 @@ var GE = D.querySelectorAll('.show_emodal'),
         var el = this.parentNode.parentNode.parentNode.parentNode.parentNode,
             GZ = el.querySelector('.date_left'),
             GH = el.querySelector('.date_right'),
-            gh = el.querySelector('.dbclick_date ');
-        gr = GH.querySelector('input'), removeClass(gr, 'border-red'), removeClass(gr, 'boxshadow-red'), GH.querySelector('input').value = '', removeClass(gh, 'hidden'), addClass(GH, 'hidden'), GZ && (gl = GZ.querySelector('input'), el.querySelector('.clear_date').style.marginTop = '', el.querySelector('.text-error').innerText = '', removeClass(gl, 'border-red'), removeClass(gl, 'boxshadow-red'), gl.value = '', removeClass(el.querySelector('.date_title'), 'hidden'), addClass(GZ, 'hidden'));
+            gh = el.querySelector('.dbclick_date');
+            console.log(gh);
+        gh.innerText = '{$word->pending}', gr = GH.querySelector('input'), removeClass(gr, 'border-red'), removeClass(gr, 'boxshadow-red'), GH.querySelector('input').value = '', removeClass(gh, 'hidden'), addClass(GH, 'hidden'), GZ && (gl = GZ.querySelector('input'), el.querySelector('.clear_date').style.marginTop = '', el.querySelector('.text-error').innerText = '', removeClass(gl, 'border-red'), removeClass(gl, 'boxshadow-red'), gl.value = '', removeClass(el.querySelector('.date_title'), 'hidden'), addClass(GZ, 'hidden'));
     },
     GD = function(){
         GT.style.display = "block", D.body.style.overflow = "hidden", GQ.setAttribute('data-id', this.getAttribute('data-id'));
@@ -711,7 +740,7 @@ addEvent(D.querySelector('#screen'), 'change', function(){
 }), addEvent(GU, 'keyup', function(){
     GO.value = this.value.split('-')[0];
 }), addEvent(D.querySelector('#show-pmodal'), 'click', function(){
-    GI.style.display = "block", D.body.style.overflow = "hidden", GB.setAttribute('data-type', 'add'), GB.removeAttribute('data-id'), scrollTo(0, GV);
+    Gq.innerText = '{$word->add_new_academic_term}', GI.style.display = "block", D.body.style.overflow = "hidden", GB.setAttribute('data-type', 'add'), GB.removeAttribute('data-id'), scrollTo(0, GV);
     for(var j = 0, i = GC.length; j < i; j++) GC[j].value = (GC[j].nodeName != 'SELECT') ? '' : GC[j].children[0].getAttribute('value');
 }), addEvent(D.querySelector('#cancel-alert'), 'click', function(){
     GI.style.display = "", D.body.style.overflow = "";

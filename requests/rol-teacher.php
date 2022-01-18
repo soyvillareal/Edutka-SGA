@@ -483,6 +483,77 @@ if($one == 'search-courses') {
             'error' => $TEMP['#word']['error']
         );
     }
+} else if($one == 'this-qualification') {
+    $deliver['status'] = 400;
+
+    $note = Specific::Filter($_POST['note']);
+    $note_id = Specific::Filter($_POST['note_id']);
+    $period_id = Specific::Filter($_POST['period_id']);
+
+    if(!empty($note_id)){
+        $qualification = $dba->query('SELECT status, COUNT(*) as count FROM qualification WHERE note_id = '.$note_id)->fetchArray();
+        $final = $dba->query('SELECT final FROM periods WHERE id = '.$period_id)->fetchArray();
+
+        if(((Specific::Teacher() == true && Specific::ValidateDates($period_id, 17, 2) == true && Specific::ValidateDates($period_id, 13) == false && $qualification['status'] == 'accepted') && time() < $final || Specific::Admin() == true || Specific::Academic() == true) && $qualification['count'] > 0){
+            if(isset($note)){
+                $course = $dba->query('SELECT qualification, type FROM courses c WHERE (SELECT course_id FROM notes WHERE id = '.$note_id.' AND course_id = c.id) = id')->fetchArray();
+                if(($note >= 3.5 && $course['type'] == 'practice') || $course['type'] == 'theoretical' || $note == 0){
+                    if(($note >= 3.2 && $course['type'] == 'theoretical') || $course['type'] == 'practice' || $note == 0){
+                        if($note >= 0){
+                            if($note <= $TEMP['#nm']){
+                                if($dba->query('UPDATE qualification SET note = "'.$note.'", status = "accepted" WHERE note_id = '.$note_id)->returnStatus()){
+                                    $deliver = array(
+                                        'status' => 200,
+                                        'note' => $note
+                                    );
+                                } else {
+                                    $deliver = array(
+                                        'status' => 400,
+                                        'error' => $TEMP['#word']['error']
+                                    );
+                                }
+                            } else {
+                                $deliver = array(
+                                    'status' => 400,
+                                    'error' => $TEMP['#word']['the_maximum_grade_is']
+                                );
+                            }
+                        } else {
+                            $deliver = array(
+                                'status' => 400,
+                                'error' => $TEMP['#word']['please_enter_valid_value']
+                            );
+                        }
+                    } else {
+                        $deliver = array(
+                            'status' => 400,
+                            'error' => "{$TEMP['#word']['minimum_mark_must_be_equal_greater_than']} {$TEMP['#nmat']}"
+                        );
+                    }
+                } else {
+                    $deliver = array(
+                        'status' => 400,
+                        'error' => "{$TEMP['#word']['minimum_mark_must_be_equal_greater_than']} {$TEMP['#nmant']}"
+                    );
+                }
+            } else {
+                $deliver = array(
+                    'status' => 400,
+                    'empty' => $TEMP['#word']['please_complete_the_information']
+                );
+            }
+        } else {
+            $deliver = array(
+                'status' => 400,
+                'error' => $TEMP['#word']['error']
+            );
+        }
+    } else {
+        $deliver = array(
+            'status' => 400,
+            'error' => $TEMP['#word']['error']
+        );
+    }
 } else if($one == 'search-authorizations') {
     $keyword = Specific::Filter($_POST['keyword']);
         $html = '';
