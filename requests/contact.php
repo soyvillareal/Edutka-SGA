@@ -29,7 +29,7 @@ if((filter_var($_POST['email'], FILTER_VALIDATE_EMAIL) || empty($_POST['email'])
 		    'from_name' => $name,
         	'reply_to' => $email,
 		    'to_email' => $TEMP['#settings']['smtp_username'],
-		    'to_name' => $TEMP['#settings']['name'],
+		    'to_name' => $TEMP['#settings']['title'],
 		    'subject' => $subject,
 		    'charSet' => 'UTF-8',
 		    'message_body' => $message

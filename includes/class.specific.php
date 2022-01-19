@@ -274,9 +274,33 @@ class Specific {
 
 	public static function SendNotification($data = array()){
 	    global $TEMP, $dba;
-	    if (empty($data) || !is_array($data) || $TEMP['#user']['id'] == $to_id || $dba->query('SELECT COUNT(*) FROM notifications WHERE from_id = '.$data['from_id'].' AND to_id = '.$data['to_id'].' AND course_id = '.$data['course_id'].' AND type = '.$data['type'])->fetchArray() > 0) {
+	    if (empty($data) || !is_array($data) || $TEMP['#user']['id'] == $data['to_id'] || $dba->query('SELECT COUNT(*) FROM notifications WHERE from_id = '.$data['from_id'].' AND to_id = '.$data['to_id'].' AND course_id = '.$data['course_id'].' AND type = '.$data['type'])->fetchArray() > 0) {
 	        return false;
 	    }
+
+	    $to_user = self::Data($data['to_id']);
+	    $from_user = $dba->query('SELECT names FROM users WHERE id = '.$data['from_id'])->fetchArray();
+	    $type = str_replace("'", "", $data['type']);
+	    $course_id = str_replace("'", "", $data['course_id']);
+	    $course = $dba->query('SELECT name FROM courses WHERE id = '.$course_id)->fetchArray();
+	    $notifycon = $TEMP['#notifycon'][$type];
+
+		$TEMP['name'] = $to_user['names'];
+	    $TEMP['text'] = "<b>$from_user</b> {$notifycon['text']}: <b>$course</b>";
+	    $TEMP['url'] = $notifycon['url'];
+	    $TEMP['footer'] = $TEMP['#word']['just_ignore_this_message'];
+	    self::SendEmail(array(
+	        'from_email' => $TEMP['#settings']['smtp_username'],
+	        'from_name' => $TEMP['#settings']['title'],
+	        'to_email' => $to_user['email'],
+	        'to_name' => $to_user['full_name'],
+	        'subject' => str_replace("#REPLACE#", $TEMP['#settings']['title'], $notifycon['title']),
+	        'charSet' => 'UTF-8',
+	        'message_body' => self::Maket('emails/includes/notification'),
+	        'is_html' => true
+	    ));
+
+
 	    return $dba->query('INSERT INTO notifications ('.implode(',', array_keys($data)).') VALUES ('.implode(',', array_values($data)).')')->returnStatus();
 	}
 

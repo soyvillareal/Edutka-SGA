@@ -201,7 +201,7 @@ var GW = D.querySelectorAll('.show_vmodal'),
         var self = this,
             qua_id = self.getAttribute('data-id');
         self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
-        Req('{$url->{req/rol-admin/get-qitems}}', function(e){
+        Req('{$url->{req/rol-academic/get-qitems}}', function(e){
             console.log(e);
             if(e.status == 200){
                 for (var key in e.items) {
@@ -237,7 +237,7 @@ addEvent(GB, 'click', function(){
     }
 
     GB.setAttribute('disabled', true), addClass(GB, 'spinner-is-loading');
-    Req('{$url->{req/rol-admin/this-qualifications}}', function(e){
+    Req('{$url->{req/rol-academic/this-qualifications}}', function(e){
         console.log(e);
         if(e.status == 200){
             GI.style.display = "", loadAlert("{$word->enable_upgraded_successfully}"), preloadPage('&one=more&page=qualifications');
@@ -275,7 +275,7 @@ addEvent(GB, 'click', function(){
 }), addEvent(GA, 'keyup', function(){
     var self = this,
         TZ = D.querySelector('#table-footer');
-    Req('{$url->{req/rol-admin/search-qualifications}}', function(e){
+    Req('{$url->{req/rol-academic/search-qualifications}}', function(e){
         console.log(e);
         if(e.status == 200){
             <?php echo($TEMP['#total_pages'] > 1) ? "TT = e.total_pages, TA = 1, TO.setAttribute('disabled', true), TR.setAttribute('disabled', true), TE.removeAttribute('disabled'), TS.removeAttribute('disabled'), D.querySelector('#total-pages').innerText = TT, TN.innerText = TA, TZ && (TT <= 1 ? TZ.style.display = 'none' : TZ.removeAttribute('style')), " : ""?>D.querySelector('#container-pages').innerHTML = e.html, loadPage(D.querySelectorAll('a[target="_self"]')), GW = D.querySelectorAll('.show_vmodal');
@@ -323,7 +323,7 @@ for (var j = 0, i = GL.length; j < i; j++) addEvent(GL[j], "click", function(){
         TS.setAttribute('disabled', true);
         TE.setAttribute('disabled', true);
     }
-    Req("{$url->{req/rol-admin/table-qualifications}}", function(e){
+    Req("{$url->{req/rol-academic/table-qualifications}}", function(e){
         if(e.status == 200){
             D.querySelector('#container-pages').innerHTML = e.html, GW = D.querySelectorAll('.show_vmodal');
             for(var j = 0, i = GW.length; j < i; j++) addEvent(GW[j], "click", GD);

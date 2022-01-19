@@ -179,7 +179,7 @@ var GC = D.querySelectorAll('.area_validate'),
         var self = this,
             auth_id = self.getAttribute('data-id');
         self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
-        Req('{$url->{req/rol-admin/get-aitems}}', function(e){
+        Req('{$url->{req/rol-academic/get-aitems}}', function(e){
             if(e.status == 200){
                 for (var key in e.items) {
                     var el = D.querySelector('#'+key),
@@ -228,7 +228,7 @@ addEvent(GB, 'click', function(){
     }
 
     GB.setAttribute('disabled', true), addClass(GB, 'spinner-is-loading');
-    Req('{$url->{req/rol-admin/this-authorizations}}', function(e){
+    Req('{$url->{req/rol-academic/this-authorizations}}', function(e){
         console.log(e);
         if(e.status == 200){
             GI.style.display = "", loadAlert("{$word->you_have_authorized_teacher_successfully}"), preloadPage('&one=more&page=authorizations');
@@ -266,7 +266,7 @@ addEvent(GB, 'click', function(){
 }), addEvent(GA, 'keyup', function(){
     var self = this,
         TZ = D.querySelector('#table-footer');
-    Req('{$url->{req/rol-admin/search-authorizations}}', function(e){
+    Req('{$url->{req/rol-academic/search-authorizations}}', function(e){
         console.log(e);
         if(e.status == 200){
             <?php echo($TEMP['#total_pages'] > 1) ? "TT = e.total_pages, TA = 1, TO.setAttribute('disabled', true), TR.setAttribute('disabled', true), TE.removeAttribute('disabled'), TS.removeAttribute('disabled'), D.querySelector('#total-pages').innerText = TT, TN.innerText = TA, TZ && (TT <= 1 ? TZ.style.display = 'none' : TZ.removeAttribute('style')), " : ""?>D.querySelector('#container-pages').innerHTML = e.html, loadPage(D.querySelectorAll('a[target="_self"]')), GW = D.querySelectorAll('.show_vmodal');
@@ -314,7 +314,7 @@ for (var j = 0, i = GL.length; j < i; j++) addEvent(GL[j], "click", function(){
         TS.setAttribute('disabled', true);
         TE.setAttribute('disabled', true);
     }
-    Req("{$url->{req/rol-admin/table-authorizations}}", function(e){
+    Req("{$url->{req/rol-academic/table-authorizations}}", function(e){
         if(e.status == 200){
             D.querySelector('#container-pages').innerHTML = e.html, GW = D.querySelectorAll('.show_vmodal');
             for(var j = 0, i = GW.length; j < i; j++) addEvent(GW[j], "click", GD);

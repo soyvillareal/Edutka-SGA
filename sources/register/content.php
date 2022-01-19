@@ -11,7 +11,7 @@ if(!empty($TEMP['#form_key'])){
 	$TEMP['#load_url']    = Specific::Url('register/'.$TEMP['#form_key']);
 }
 
-$page = (empty($form) || time() >= $form['expire'] || $form['status'] == 'deactivated') && Specific::Academic() == false ? 'invalid-auth' : 'register';
+$page = (empty($form) || time() >= $form['expire'] || $form['status'] == 'deactivated') && Specific::Academic() == false && Specific::Admin() == false ? 'invalid-auth' : 'register';
 
 $TEMP['#bubbles'] = Specific::Bubbles();
 

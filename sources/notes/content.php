@@ -42,13 +42,15 @@ if(Specific::Admin() == true || Specific::Academic() == true || Specific::Teache
 }
 
 if(Specific::Teacher() == true){
-    $sqls .= ' AND course_id IN ('.implode(',', $my_courses).')';
-    if(empty($_GET['period'])){
-    	$TEMP['#period_id'] = $dba->query('SELECT max(period_id) FROM enrolled WHERE (SELECT course_id FROM notes WHERE user_id = '.$TEMP['#user_id'].' AND course_id = '.end($my_courses).') = course_id')->fetchArray();
-    }
-    $TEMP['#periods'] =  $dba->query('SELECT * FROM periods p WHERE (SELECT period_id FROM enrolled WHERE user_id = '.$TEMP['#user_id'].' AND course_id IN ('.implode(',', $my_courses).') AND period_id = p.id) = id')->fetchAll();
+    if(!empty($TEMP['#keyword_notes'])){
+	    $sqls .= ' AND course_id IN ('.implode(',', $my_courses).')';
+	    if(empty($_GET['period'])){
+	    	$TEMP['#period_id'] = $dba->query('SELECT max(period_id) FROM enrolled WHERE (SELECT course_id FROM notes WHERE user_id = '.$TEMP['#user_id'].' AND course_id = '.end($my_courses).') = course_id')->fetchArray();
+	    }
+	    $periods = $dba->query('SELECT period_id FROM enrolled WHERE user_id = '.$TEMP['#user_id'].' AND course_id IN ('.implode(',', $my_courses).')')->fetchAll(false);
+	    $TEMP['#periods'] =  $dba->query('SELECT * FROM periods WHERE id IN ('.implode(',', $periods).')')->fetchAll();
+	}
 }
-
 if(!empty($TEMP['#program_id'])){
 	$plan = $dba->query('SELECT * FROM plan WHERE program_id = '.$TEMP['#program_id'])->fetchArray();
 	$TEMP['#note_mode'] = $plan['note_mode'];
@@ -113,7 +115,7 @@ if(!empty($TEMP['#notes'])){
 
 		$qualification = $dba->query('SELECT note, status, COUNT(*) as count FROM qualification WHERE note_id = '.$note['id'])->fetchArray();
 
-		$fa = Specific::ValidateDates($period['id'], 17, 2);
+		$fa = Specific::ValidateDates($TEMP['#period_id'], 17, 2);
 		$TEMP['!can_qua'] = false;
 		if(Specific::Student() == true && $fa == true){
 			$TEMP['!can_qua'] = true;
@@ -125,7 +127,6 @@ if(!empty($TEMP['#notes'])){
 
 		if($qualification['count'] > 0){
 			$TEMP['!qualification_note'] = 0;
-			$TEMP['!period_id'] = $period['id'];
 			$TEMP['!qualification_val'] = $qualification['note'];
 			$TEMP['!qualification_text'] = $TEMP['#word']['upload_note'];
 			if($qualification['note'] != NULL){
@@ -136,9 +137,9 @@ if(!empty($TEMP['#notes'])){
 			if(($qualification['status'] == 'accepted' || (Specific::Student() == true && $fa == true)) && $fa == true && ($atrues == 1 || $atrues == 2) || Specific::Admin() == true || Specific::Academic() == true){
 			    $TEMP['!can_qua'] = true;
 			}
-			$TEMP['!fah'] = Specific::ValidateDates($period['id'], 10, 1);
-			$TEMP['!frh_2'] = Specific::ValidateDates($period['id'], 12);
-			$TEMP['!flrnh'] = Specific::ValidateDates($period['id'], 13);
+			$TEMP['!fah'] = Specific::ValidateDates($TEMP['#period_id'], 10, 1);
+			$TEMP['!frh_2'] = Specific::ValidateDates($TEMP['#period_id'], 12);
+			$TEMP['!flrnh'] = Specific::ValidateDates($TEMP['#period_id'], 13);
 		}
 
 

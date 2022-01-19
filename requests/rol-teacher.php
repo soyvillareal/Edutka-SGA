@@ -439,13 +439,15 @@ if($one == 'search-courses') {
                         if(((($notes[0][0]*0.3)+($notes[1][0]*0.3)) >= $TEMP['#nnevf']) || $note_mode == '100' || in_array($pos, array(0, 1))){
                             if($dba->query('UPDATE notes SET notes = ? WHERE id = '.$id, json_encode($notes))->returnStatus()){
                                 $deliver['status'] = 200;
-                                Specific::SendNotification(array(
-                                    'from_id' => $TEMP['#user']['id'],
-                                    'to_id' => $note['user_id'],
-                                    'course_id' => $note['user_id'],
-                                    'type' => "'note'",
-                                    'time' => time()
-                                ));
+                                if(Specific::Teacher() == true){
+                                    Specific::SendNotification(array(
+                                        'from_id' => $TEMP['#user']['id'],
+                                        'to_id' => $note['user_id'],
+                                        'course_id' => $note['user_id'],
+                                        'type' => "'note'",
+                                        'time' => time()
+                                    ));
+                                }
                             }
                         } else {
                             $deliver = array(
@@ -491,12 +493,12 @@ if($one == 'search-courses') {
     $period_id = Specific::Filter($_POST['period_id']);
 
     if(!empty($note_id)){
-        $qualification = $dba->query('SELECT status, COUNT(*) as count FROM qualification WHERE note_id = '.$note_id)->fetchArray();
+        $qualification = $dba->query('SELECT user_id, status, COUNT(*) as count FROM qualification WHERE note_id = '.$note_id)->fetchArray();
         $final = $dba->query('SELECT final FROM periods WHERE id = '.$period_id)->fetchArray();
 
         if(((Specific::Teacher() == true && Specific::ValidateDates($period_id, 17, 2) == true && Specific::ValidateDates($period_id, 13) == false && $qualification['status'] == 'accepted') && time() < $final || Specific::Admin() == true || Specific::Academic() == true) && $qualification['count'] > 0){
             if(isset($note)){
-                $course = $dba->query('SELECT qualification, type FROM courses c WHERE (SELECT course_id FROM notes WHERE id = '.$note_id.' AND course_id = c.id) = id')->fetchArray();
+                $course = $dba->query('SELECT id, qualification, type FROM courses c WHERE (SELECT course_id FROM notes WHERE id = '.$note_id.' AND course_id = c.id) = id')->fetchArray();
                 if(($note >= 3.5 && $course['type'] == 'practice') || $course['type'] == 'theoretical' || $note == 0){
                     if(($note >= 3.2 && $course['type'] == 'theoretical') || $course['type'] == 'practice' || $note == 0){
                         if($note >= 0){
@@ -506,6 +508,15 @@ if($one == 'search-courses') {
                                         'status' => 200,
                                         'note' => $note
                                     );
+                                    if(Specific::Teacher() == true){
+                                        Specific::SendNotification(array(
+                                            'from_id' => $TEMP['#user']['id'],
+                                            'to_id' => $qualification['user_id'],
+                                            'course_id' => $course['id'],
+                                            'type' => "'qualification_note'",
+                                            'time' => time()
+                                        ));
+                                    }
                                 } else {
                                     $deliver = array(
                                         'status' => 400,

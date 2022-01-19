@@ -4,7 +4,7 @@ if ($TEMP['#loggedin'] === false) {
     exit();
 }
 
-if (Specific::Admin() == false) {
+if (Specific::Admin() == false && Specific::Academic() == false) {
     header("Location: " . Specific::Url('404'));
     exit();
 }

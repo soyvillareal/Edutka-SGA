@@ -71,6 +71,58 @@ $TEMP['#admin'] = Specific::Admin();
 $TEMP['#academic'] = Specific::Academic();
 $TEMP['#teacher'] = Specific::Teacher();
 $TEMP['#student'] = Specific::Student();
+$TEMP['#notifycon'] = array(
+  'note' => array(
+    'title' => $TEMP['#word']['they_uploaded_your_note_in'],
+    'text' => "{$TEMP['#word']['just_uploaded_your_grade_course']}",
+    'url' => Specific::Url('notes')
+  ),
+  'authorize' => array(
+    'title' => $TEMP['#word']['were_asked_permission_upload_grade_in'],
+    'text' => "{$TEMP['#word']['just_applied_authorization_in_the_course']}",
+    'url' => Specific::Url('more?page=authorizations')
+  ),
+  'auth_authorized' => array(
+    'title' => $TEMP['#word']['were_authorized_upload_note_in'],
+    'text' => "{$TEMP['#word']['you_authorized_upload_grades_course_of']}",
+    'url' => Specific::Url('authorizations')
+  ),
+  'auth_denied' => array(
+    'title' => $TEMP['#word']['they_responded_request_in'],
+    'text' => "{$TEMP['#word']['your_authorization_denied_upload_grades_course_denied']}",
+    'url' => Specific::Url('authorizations')
+  ),
+  'req_qualification' => array(
+    'title' => $TEMP['#word']['they_asked_authorization_in'],
+    'text' => "{$TEMP['#word']['you_have_just_applied_course']}",
+    'url' => Specific::Url('more?page=qualifications')
+  ),
+  'qualification_note' => array(
+    'title' => $TEMP['#word']['they_uploaded_note_qualification_in'],
+    'text' => "{$TEMP['#word']['just_uploaded_note_qualification_course']}",
+    'url' => Specific::Url('notes')
+  ),
+  'quate_accepted' => array(
+    'title' => $TEMP['#word']['were_authorized_upload_note_in'],
+    'text' => "{$TEMP['#word']['authorized_upload_qualification_note_course']}",
+    'url' => Specific::Url('notes')
+  ),
+  'quate_rejected' => array(
+    'title' => $TEMP['#word']['they_canceled_authorization_in'],
+    'text' => "{$TEMP['#word']['have_withdrawn_authorization_upload_qualification_note']}",
+    'url' => Specific::Url('notes')
+  ),
+  'quast_accepted' => array(
+    'title' => $TEMP['#word']['they_answered_request_authorization_in'],
+    'text' => "{$TEMP['#word']['accepted_request_authorization_course']}",
+    'url' => Specific::Url('notes')
+  ),
+  'quast_rejected' => array(
+    'title' => $TEMP['#word']['they_answered_request_authorization_in'],
+    'text' => "{$TEMP['#word']['rejected_request_qualify_course']}",
+    'url' => Specific::Url('notes')
+  )
+);
 $TEMP['#provinces'] = array(
 	'antioquia' => 'Antioquía',
 	'amazonas' => 'Amazonas',

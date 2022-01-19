@@ -58,7 +58,7 @@ if ($TEMP['#loggedin'] === true && !in_array($one, array('verify-change-email', 
 					$TEMP['name'] = $name;
 	                $send_email_data = array(
 	                   	'from_email' => $TEMP['#settings']['smtp_username'],
-	                    'from_name' => $TEMP['#settings']['name'],
+	                    'from_name' => $TEMP['#settings']['title'],
 	                    'to_email' => $to_access['email'],
 	                    'to_name' => $name,
 	                    'subject' => $TEMP['#word']['authentication'],
@@ -116,7 +116,7 @@ if ($TEMP['#loggedin'] === true && !in_array($one, array('verify-change-email', 
 		$TEMP['name'] = $user['names'];
 	    $send_email_data = array(
 	        'from_email' => $TEMP['#settings']['smtp_username'],
-	        'from_name' => $TEMP['#settings']['name'],
+	        'from_name' => $TEMP['#settings']['title'],
 	        'to_email' => $user['email'],
 	        'to_name' => $user['names'],
 	        'subject' => $TEMP['#word']['authentication'],
@@ -144,6 +144,7 @@ if ($TEMP['#loggedin'] === true && !in_array($one, array('verify-change-email', 
 		);
 	}
 } else if($one == 'resend-email'){
+	$deliver['status'] = 400;
 	$ukey = Specific::Filter($_POST['ukey']);
 	$token = Specific::Filter($_POST['tokenu']);
 	if(!empty($ukey)){
@@ -163,7 +164,7 @@ if ($TEMP['#loggedin'] === true && !in_array($one, array('verify-change-email', 
 
 			$send_email = Specific::SendEmail(array(
 				'from_email' => $TEMP['#settings']['smtp_username'],
-	            'from_name' => $TEMP['#settings']['name'],
+	            'from_name' => $TEMP['#settings']['title'],
 				'to_email' => $user['email'],
 				'to_name' => $user['names'],
 				'subject' => $TEMP['#word']['verify_your_account'],
@@ -176,6 +177,11 @@ if ($TEMP['#loggedin'] === true && !in_array($one, array('verify-change-email', 
 				    'status' => 200,
 				    'token' => $token,
 			   		'message' => $TEMP['#word']['email_sent']
+				);
+			} else {
+				$deliver = array(
+				    'status' => 302,
+			   		'url' => Specific::Url()
 				);
 			}
 		} else {
@@ -238,7 +244,7 @@ if ($TEMP['#loggedin'] === true && !in_array($one, array('verify-change-email', 
 			$TEMP['name'] = $user['names'];
            	$send_email_data = array(
            		'from_email' => $TEMP['#settings']['smtp_username'],
-	            'from_name' => $TEMP['#settings']['name'],
+	            'from_name' => $TEMP['#settings']['title'],
            		'to_email' => $email,
            		'to_name' => $user['names'],
            		'subject' => $TEMP['#word']['reset_your_password'],
@@ -439,7 +445,7 @@ if ($TEMP['#loggedin'] === true && !in_array($one, array('verify-change-email', 
 
 		                $send_email = Specific::SendEmail(array(
 		                    'from_email' => $TEMP['#settings']['smtp_username'],
-			                'from_name' => $TEMP['#settings']['name'],
+			                'from_name' => $TEMP['#settings']['title'],
 		                    'to_email' => $email,
 		                    'to_name' => $names,
 		                    'subject' => $TEMP['#word']['verify_your_account'],
@@ -551,7 +557,7 @@ if ($TEMP['#loggedin'] === true && !in_array($one, array('verify-change-email', 
 
 	    $send_email_data = array(
 	        'from_email' => $TEMP['#settings']['smtp_username'],
-	        'from_name' => $TEMP['#settings']['name'],
+	        'from_name' => $TEMP['#settings']['title'],
 	        'to_email' => $user['change_email'],
 	        'to_name' => $user['names'],
 	        'subject' => $TEMP['#word']['verify_your_account'],

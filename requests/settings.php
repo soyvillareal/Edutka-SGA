@@ -108,7 +108,7 @@ if ($one == 'general') {
 
                     $send_email = Specific::SendEmail(array(
                         'from_email' => $TEMP['#settings']['smtp_username'],
-                        'from_name' => $TEMP['#settings']['name'],
+                        'from_name' => $TEMP['#settings']['title'],
                         'to_email' => $email,
                         'to_name' => $TEMP['#user']['name'],
                         'subject' => $TEMP['#word']['verify_your_account'],

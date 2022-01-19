@@ -219,7 +219,7 @@ if($one == 'search-enrolled'){
 						        		$teachers = $dba->query('SELECT user_id FROM teacher WHERE course_id = '.$course_id)->fetchAll(false);
 						        		foreach ($teachers as $teacher) {
 						        			Specific::SendNotification(array(
-							                    'from_id' => $TEMP['#user']['id'],
+							                    'from_id' => $user_id,
 							                    'to_id' => $teacher,
 							                    'course_id' => $course_id,
 							                    'type' => "'enroll'",
@@ -368,7 +368,7 @@ if($one == 'search-enrolled'){
 				if($qualification_exists == 0){
 					$course = $dba->query('SELECT id, qualification FROM courses c WHERE (SELECT course_id FROM notes WHERE id = '.$note_id.' AND course_id = c.id) = id')->fetchArray();
 					if(!empty($cellphone) && $course['qualification'] == 'activated'){
-						if($dba->query('INSERT INTO qualification (user_id, note_id, `time`) VALUES('.$id.', '.$note_id.', '.time().')')->returnStatus()){
+						if($dba->query('INSERT INTO qualification (user_id, note_id, period_id, `time`) VALUES('.$id.', '.$note_id.', '.$period_id.', '.time().')')->returnStatus()){
 							$deliver['status'] = 200;
 							$users = $dba->query('SELECT id FROM users WHERE role = "admin" OR role = "academic"')->fetchAll(false);
 						    foreach ($users as $user) {
@@ -376,7 +376,7 @@ if($one == 'search-enrolled'){
 								    'from_id' => $TEMP['#user']['id'],
 								    'to_id' => $user,
 								    'course_id' => $course['id'],
-								    'type' => "'qualification'",
+								    'type' => "'req_qualification'",
 								    'time' => time()
 								));
 							}

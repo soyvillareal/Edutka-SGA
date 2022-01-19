@@ -224,9 +224,9 @@ var NW = D.querySelectorAll('.number'),
 	keyword = "{#keyword_notes}";
 <?php if(count($TEMP['#programs']) > 1){ ?>
 addEvent(D.querySelector('#programs'), 'change', function(){
-    preloadPage('&one=notes<?php echo($TEMP['#admin'] == true || $TEMP['#academic'] == true || $TEMP['#teacher'] == true) ? "&user={#user_id}" : "" ;?>&program='+this.value);
+    preloadPage('&one=notes&keyword={#keyword_notes}<?php echo($TEMP['#admin'] == true || $TEMP['#academic'] == true || $TEMP['#teacher'] == true) ? "&user={#user_id}" : "" ;?>&program='+this.value);
 }), <?php } if(count($TEMP['#periods']) > 1){ ?>addEvent(NP, 'change', function(){
-    preloadPage('&one=notes<?php echo($TEMP['#admin'] == true || $TEMP['#academic'] == true || $TEMP['#teacher'] == true) ? "&user={#user_id}" : "" ;?>&program={#program_id}&period='+this.value);
+    preloadPage('&one=notes&keyword={#keyword_notes}<?php echo($TEMP['#admin'] == true || $TEMP['#academic'] == true || $TEMP['#teacher'] == true) ? "&user={#user_id}" : "" ;?>&program={#program_id}&period='+this.value);
 })
 <?php } ?>
 addEvent(D.querySelector('#close-qpalert'), 'click', function(){
@@ -357,7 +357,7 @@ for(var j = 0, i = NF.length; j < i; j++) addEvent(NF[j], 'click', function(){
             }
             addClass(NV, 'border-red'), addClass(NV, 'boxshadow-red'), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
         }
-    }, "POST", "&note_id=" + self.getAttribute('data-id') + "&period_id=" + self.getAttribute('data-pid') + "&note=" + NV.value)
+    }, "POST", "&note_id=" + self.getAttribute('data-id') + "&period_id={#period_id}&note=" + NV.value)
 });
 for(var j = 0, i = NM.length; j < i; j++) doubleClick(NM[j], function(self){
 	var el = self.parentNode,

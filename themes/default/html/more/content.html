@@ -8,11 +8,6 @@
 					</a>
 				</li>
 				<li>
-					<a class="dv-vertical-center background-blue hover-button padding-5 border-all border-bluly color-white<?php echo ($TEMP['#page'] == 'plans') ? ' active': '';?>" href="{$url->{more}}?page=plans" target="_self">
-						{$word->study_plans}
-					</a>
-				</li>
-				<li>
 					<a class="dv-vertical-center background-blue hover-button padding-5 border-all border-bluly color-white last<?php echo ($TEMP['#page'] == 'authorizations') ? ' active': '';?>" href="{$url->{more}}?page=authorizations" target="_self">
 						{$word->authorizations}
 					</a>
@@ -22,11 +17,18 @@
 						{$word->qualifications}
 					</a>
 				</li>
+				<?php if($TEMP['#admin'] === true){ ?>
+				<li>
+					<a class="dv-vertical-center background-blue hover-button padding-5 border-all border-bluly color-white<?php echo ($TEMP['#page'] == 'plans') ? ' active': '';?>" href="{$url->{more}}?page=plans" target="_self">
+						{$word->study_plans}
+					</a>
+				</li>
 				<li>
 					<a class="dv-vertical-center background-blue hover-button padding-5 border-all border-bluly color-white last<?php echo ($TEMP['#page'] == 'rules') ? ' active': '';?>" href="{$url->{more}}?page=rules" target="_self">
 						{$word->rules}
 					</a>
 				</li>
+				<?php } ?>
 			</ul>
 		</div>
 		<div class="margin-t10 padding-b50">
