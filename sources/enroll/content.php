@@ -66,21 +66,24 @@ if(!empty($TEMP['#enrolled'])){
 	foreach ($TEMP['#enrolled'] as $enroll) {
 		if($enroll['type'] == 'course'){
 			$course = $dba->query('SELECT name FROM courses WHERE id = '.$enroll['course_id'])->fetchArray();
-			$periodc = $dba->query('SELECT name FROM periods p WHERE (SELECT period_id FROM enrolled WHERE type = "course" AND user_id = '.$TEMP['#user_id'].' AND course_id = '.$enroll['course_id'].' AND period_id = p.id) = id')->fetchArray();
+			$periodc = $dba->query('SELECT name, final FROM periods WHERE id = '.$enroll['period_id'])->fetchArray();
 
-			$teachers = $dba->query('SELECT names FROM users u WHERE (SELECT user_id FROM teacher WHERE user_id = u.id AND course_id = '.$enroll['course_id'].') = id')->fetchAll(false);
-			if(count($teachers) == 2){
-				$teachers = "{$teachers[0]} {$TEMP['#word']['and']} {$teachers[1]}";
-			} else if(count($teachers) > 2){
-				$end = end($teachers);
-				array_pop($teachers);
-				$teachers = implode(', ', $teachers)." {$TEMP['#word']['and']} $end";
+			$teachers = $dba->query('SELECT names FROM users u WHERE (SELECT user_id FROM teacher WHERE user_id = u.id AND course_id = '.$enroll['course_id'].' AND period_id = '.$enroll['period_id'].') = id')->fetchAll(false);
+			if(!empty($teachers)){
+				if(count($teachers) == 2){
+					$TEMP['!teacher'] = "{$teachers[0]} {$TEMP['#word']['and']} {$teachers[1]}";
+				} else if(count($teachers) > 2){
+					$end = end($teachers);
+					array_pop($teachers);
+					$TEMP['!teacher'] = implode(', ', $teachers)." {$TEMP['#word']['and']} $end";
+				} else {
+					$TEMP['!teacher'] = $teachers[0];
+				}
 			} else {
-				$teachers = $teachers[0];
+				$TEMP['!teacher'] = $TEMP['#word']['pending'];
 			}
-
-			$TEMP['!teacher'] = $teachers;
-			$TEMP['!name'] = "{$course} ".(!is_array($periodc) ? "($periodc)" : "");
+		
+			$TEMP['!name'] = "$course ({$periodc['name']})";
 			$TEMP['!color'] = 'purple';
 		} else {
 			$program = $dba->query('SELECT * FROM programs WHERE id = '.$enroll['program_id'])->fetchArray();
@@ -104,7 +107,10 @@ if(!empty($TEMP['#enrolled'])){
 				$TEMP['!class_event'] = 'cursor-disabled" disabled';
 			}
 		} else {
-			$TEMP['!class_event'] = 'show_cmodal"';
+			$TEMP['!class_event'] = 'cursor-disabled" disabled';
+			if(time() < $periodc['final'] || Specific::Academic() == true || Specific::Admin() == true){
+				$TEMP['!class_event'] = 'show_cmodal"';
+			}
 		}
 		$TEMP['!status'] = $enroll['status'];
 	    $TEMP['!type'] = "{$TEMP['#word'][$enroll['type']]} ({$TEMP['#word'][$enroll['status']]})";

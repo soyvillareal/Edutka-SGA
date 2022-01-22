@@ -16,7 +16,7 @@ if(!empty($qualifications)){
 	foreach ($qualifications as $qua) {
 		$course_id = $dba->query('SELECT course_id FROM notes n WHERE id = '.$qua['note_id'])->fetchArray();
 		$TEMP['!id'] = $qua['id'];
-		$TEMP['!applicant'] = $dba->query('SELECT names FROM users WHERE id = '.$qua['user_id'])->fetchArray();
+		$TEMP['!applicant'] = $dba->query('SELECT names FROM users WHERE (SELECT user_id FROM notes WHERE id = '.$qua['note_id'].') = id')->fetchArray();
 		$TEMP['!course'] = $dba->query('SELECT name FROM courses c WHERE (SELECT course_id FROM notes n WHERE id = '.$qua['note_id'].' AND course_id = c.id) = id')->fetchArray();
 		$TEMP['!note'] = empty($qua['note']) ? $TEMP['#word']['undefined'] : $qua['note'];
 		$TEMP['!status'] = $TEMP['#word'][$qua['status']];

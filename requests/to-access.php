@@ -6,9 +6,11 @@ if ($TEMP['#loggedin'] === true && !in_array($one, array('verify-change-email', 
 	);
     echo json_encode($deliver);
     exit();
-} else if($one == 'login'){
+}
+
+if($one == 'login'){
 	$deliver['status'] = 400;
-	$error   = '';
+	$error = '';
 	$emptys = array();
 	$dni = Specific::Filter($_POST['dni']);
 	$password = Specific::Filter($_POST['password']);
@@ -63,19 +65,19 @@ if ($TEMP['#loggedin'] === true && !in_array($one, array('verify-change-email', 
 	                    'to_name' => $name,
 	                    'subject' => $TEMP['#word']['authentication'],
 	                    'charSet' => 'UTF-8',
-	                    'message_body' => Specific::Maket('emails/includes/authentication'),
+	                    'text_body' => Specific::Maket('emails/includes/authentication'),
 	                    'is_html' => true
 	                );
 	                $send = Specific::SendEmail($send_email_data);
-			       	if($send){
+			       	if($send == true){
 		                $deliver = array(
 						    'status' => 401,
 		            		'url' => "&one=authentication&tokenu=$token&ukey=".$ukey
 						);
 	                } else {
 						$deliver = array(
-						    'status' => 400,
-						    'message' => $TEMP['#word']['error_occurred_to_send_mail']
+							'status' => 400,
+							'error' => $TEMP['#word']['error_occurred_to_send_mail']
 						);
 					}
 	            } else {
@@ -92,12 +94,12 @@ if ($TEMP['#loggedin'] === true && !in_array($one, array('verify-change-email', 
       	} else {
 	        $deliver = array(
 		        'status' => 401,
-	       		'err' => $error
+	       		'error' => $error
 		    );
 	    }
 	} else {
 		$deliver = array(
-			'status' => 400,
+			'status' => 204,
 			'emptys' => $emptys
 		);
 	}
@@ -121,35 +123,34 @@ if ($TEMP['#loggedin'] === true && !in_array($one, array('verify-change-email', 
 	        'to_name' => $user['names'],
 	        'subject' => $TEMP['#word']['authentication'],
 	        'charSet' => 'UTF-8',
-	        'message_body' => Specific::Maket('emails/includes/authentication'),
+	        'text_body' => Specific::Maket('emails/includes/authentication'),
 	        'is_html' => true
 	    );
 	    $send = Specific::SendEmail($send_email_data);
-		if($send){
+		if($send == true){
 			$deliver = array(
 				'status' => 200,
-				'token' => $token,
-		       	'message' => $TEMP['#word']['email_sent']
+				'token' => $token
 			);
 		} else {
 			$deliver = array(
 				'status' => 400,
-		       	'message' => $TEMP['#word']['error_occurred_to_send_mail']
+		       	'error' => $TEMP['#word']['error_occurred_to_send_mail']
 			);
 		}
 	} else {
 		$deliver = array(
 		    'status' => 204,
-	   		'message' => $TEMP['#word']['error']
+	   		'error' => $TEMP['#word']['error']
 		);
 	}
 } else if($one == 'resend-email'){
 	$deliver['status'] = 400;
 	$ukey = Specific::Filter($_POST['ukey']);
 	$token = Specific::Filter($_POST['tokenu']);
-	if(!empty($ukey)){
+	if(!empty($ukey) && !empty($token)){
 		$user = $dba->query('SELECT * FROM users WHERE ukey = "'.$ukey.'" AND token = "'.$token.'"')->fetchArray();
-		if(!empty($token) && !empty($user)) {
+		if(!empty($user)) {
 			$code = rand(111111,999999);
 			$token = sha1($code);
 			$dba->query('UPDATE users SET token = "'.$token.'" WHERE ukey = "'.$ukey.'"');
@@ -162,151 +163,175 @@ if ($TEMP['#loggedin'] === true && !in_array($one, array('verify-change-email', 
 			$TEMP['footer'] = '<a target="_blank" href="'.Specific::Url("not-me/$token/$ukey").'" style="color: #999; text-decoration: underline;">'.$TEMP['#word']['let_us_know'].'</a>.';
 			$TEMP['type'] = 'verify';
 
-			$send_email = Specific::SendEmail(array(
+			$send = Specific::SendEmail(array(
 				'from_email' => $TEMP['#settings']['smtp_username'],
 	            'from_name' => $TEMP['#settings']['title'],
 				'to_email' => $user['email'],
 				'to_name' => $user['names'],
 				'subject' => $TEMP['#word']['verify_your_account'],
 				'charSet' => 'UTF-8',
-		        'message_body' => Specific::Maket('emails/includes/verify-email'),
+		        'text_body' => Specific::Maket('emails/includes/verify-email'),
 				'is_html' => true
 			));
-			if($send_email){
+			if($send == true){
 				$deliver = array(
 				    'status' => 200,
-				    'token' => $token,
-			   		'message' => $TEMP['#word']['email_sent']
+				    'token' => $token
 				);
 			} else {
 				$deliver = array(
-				    'status' => 302,
-			   		'url' => Specific::Url()
+				    'status' => 400,
+			   		'error' => $TEMP['#word']['error_occurred_to_send_mail']
 				);
 			}
 		} else {
 			$deliver = array(
-			    'status' => 302,
-		   		'url' => Specific::Url()
+			    'status' => 204,
+	   			'error' => $TEMP['#word']['error']
 			);
 		}
 	} else {
 		$deliver = array(
-		    'status' => 400,
-	   		'message' => $TEMP['#word']['error']
+		    'status' => 204,
+	   		'error' => $TEMP['#word']['error']
 		);
 	}
 } else if($one == 'verify-code'){
 	$deliver['status'] = 400;
 	$ukey = Specific::Filter($_POST['ukey']);
 	$token = Specific::Filter($_POST['tokenu']);
-	$user = $dba->query('SELECT * FROM users WHERE ukey = "'.$ukey.'" AND token = "'.md5($token).'"')->fetchArray();
-	if ($TEMP['#settings']['authentication'] == 'on' && !empty($ukey) && !empty($token) && !empty($user)) {
-	    $token = md5(rand(111111, 999999));
-		$session_id          = sha1(Specific::RandomKey()) . md5(time());
-	    $insert = $dba->query('INSERT INTO sessions (user_id, session_id, time) VALUES ('.$user['id'].',"'.$session_id.'",'.time().')')->insertId();
-	    $_SESSION['session_id'] = $session_id;
-	    setcookie("session_id", $session_id, time() + 315360000, "/");
-	    $dba->query('UPDATE users SET ip = "'.Specific::GetClientIp().'", token = "'.$token.'" WHERE id = '.$user['id']);
-	    $deliver = array(
-		    'status' => 200,
-		    'url' => !empty($_POST['to']) ? $_POST['to'] : Specific::Url()
-		);
-	} else {
-		$deliver = array(
-		    'status' => 400,
-		    'message' => $TEMP['#word']['wrong_confirm_code']
-		);
+	if($TEMP['#settings']['authentication'] == 'on' && !empty($ukey)){
+		if(!empty($token)){
+			$user = $dba->query('SELECT * FROM users WHERE ukey = "'.$ukey.'" AND token = "'.md5($token).'"')->fetchArray();
+			if (!empty($user)) {
+			    $token = md5(rand(111111, 999999));
+				$session_id = sha1(Specific::RandomKey()).md5(time());
+			    if($dba->query('INSERT INTO sessions (user_id, session_id, time) VALUES ('.$user['id'].',"'.$session_id.'",'.time().')')->returnStatus()){
+			    	$_SESSION['session_id'] = $session_id;
+				    setcookie("session_id", $session_id, time() + 315360000, "/");
+				    $dba->query('UPDATE users SET ip = "'.Specific::GetClientIp().'", token = "'.$token.'" WHERE id = '.$user['id']);
+				    $deliver = array(
+					    'status' => 200,
+					    'url' => !empty($_POST['to']) ? $_POST['to'] : Specific::Url()
+					);
+			    }
+			} else {
+				$deliver = array(
+				    'status' => 400,
+				    'error' => $TEMP['#word']['wrong_confirm_code']
+				);
+			}
+		} else {
+			$deliver = array(
+				'status' => 400,
+				'error' => $TEMP['#word']['confirm_code']
+			);
+		}
 	}
 } else if($one == 'forgot-password'){
 	$deliver['status'] = 400;
 	$error = '';
 	$email = Specific::Filter($_POST['email']);
-    if(!empty($email)) {
-        $user = $dba->query('SELECT * FROM users WHERE email = "'.$email.'"')->fetchArray();
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $error = $TEMP['#word']['email_invalid_characters'];
-        } else if(empty($user)){
-        	$error = $TEMP['#word']['email_not_exist'];
-        }
-        if ($user['status'] == 'deactivated') {
-	        $deliver = array(
-	         	'status' => 401,
-	           	'html' => $TEMP['#word']['account_was_deactivated_owner_email_related'] . ' ' . $TEMP['#word']['if_you_need_more_help'] . ' <a class="color-blue" href="'.Specific::Url('contact').'" target="_self">' . $TEMP['#word']['contact_our_helpdesk'] . '</a>'
-	        );
-	    }else if (empty($error)) {
-           	$user = Specific::Data($user['id']);
-           	$code = time() + rand(111111,999999);
-           	$token = sha1($code);
-           	$dba->query('UPDATE users SET token = "'.$token.'" WHERE id = '.$user['id']);
-
-           	$TEMP['token'] = $token;
-			$TEMP['name'] = $user['names'];
-           	$send_email_data = array(
-           		'from_email' => $TEMP['#settings']['smtp_username'],
-	            'from_name' => $TEMP['#settings']['title'],
-           		'to_email' => $email,
-           		'to_name' => $user['names'],
-           		'subject' => $TEMP['#word']['reset_your_password'],
-           		'charSet' => 'UTF-8',
-           		'message_body' => Specific::Maket('emails/includes/reset-password'),
-           		'is_html' => true
-           	);
-            $send = Specific::SendEmail($send_email_data);
-            $status = $send ? 200 : 400;
-            $message = $send ? $TEMP['#word']['email_sent'] : $TEMP['#word']['error_occurred_to_send_mail'];
-            $deliver = array(
-			    'status' => $status,
-			    'message' => $message
-			);
-        } else {
-        	$deliver = array(
-			    'status' => 400,
-			    'error' => $error
-			);
-        }
+   
+    if (empty($email)) {
+        $error = $TEMP['#word']['this_field_is_empty'];
+    } else if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $error = $TEMP['#word']['email_invalid_characters'];
     }
-} else if($one == 'reset-password'){
-	$deliver['status'] = 400;
-	$error   = '';
-	$emptys = array();
-	$token = Specific::Filter($_POST['tokenu']);
-	$password        = Specific::Filter($_POST['password']);
-	$re_password      = Specific::Filter($_POST['re-password']);
-	$user_id = $dba->query('SELECT id FROM users WHERE token = "'.$token.'"')->fetchArray();
-	if(empty($password)){
-		$emptys[] = 'password';
-	}
-	if(empty($password)){
-		$emptys[] = 're-password';
-	}
-	if (empty($emptys)) {
-	    if (empty($token) && empty($user_id)){
-	    	$error = $TEMP['#word']['error'];
-	    }else if ($password != $re_password) {
-	        $error = $TEMP['#word']['password_not_match'];
-	    } else if (strlen($password) < 4 || strlen($password) > 25) {
-	        $error = $TEMP['#word']['password_is_short'];
-	    }
-	    if (empty($error)) {
-	       	$token = sha1(time() + rand(111111,999999));
-	       	if ($dba->query('UPDATE users SET password = "'.sha1($password).'", token = "'.$token.'" WHERE id = '.$user_id)->returnStatus()) {
+
+	if (empty($error)) {
+	    $user = $dba->query('SELECT * FROM users WHERE email = "'.$email.'"')->fetchArray();
+		if(!empty($user)){
+	    	if ($user['status'] == 'deactivated') {
 		        $deliver = array(
-				    'status' => 200,
-					'url' => '&one=login'
-				);
+		         	'status' => 401,
+		           	'html' => $TEMP['#word']['account_was_deactivated_owner_email_related'] . ' ' . $TEMP['#word']['if_you_need_more_help'] . ' <a class="color-blue" href="'.Specific::Url('contact').'" target="_self">' . $TEMP['#word']['contact_our_helpdesk'] . '</a>'
+		        );
+		    } else {
+	           	$user = Specific::Data($user['id']);
+	           	$code = time() + rand(111111,999999);
+	           	$token = sha1($code);
+	           	$dba->query('UPDATE users SET token = "'.$token.'" WHERE id = '.$user['id']);
+
+	           	$TEMP['token'] = $token;
+				$TEMP['name'] = $user['names'];
+	           	$send_email_data = array(
+	           		'from_email' => $TEMP['#settings']['smtp_username'],
+		            'from_name' => $TEMP['#settings']['title'],
+	           		'to_email' => $email,
+	           		'to_name' => $user['names'],
+	           		'subject' => $TEMP['#word']['reset_your_password'],
+	           		'charSet' => 'UTF-8',
+	           		'text_body' => Specific::Maket('emails/includes/reset-password'),
+	           		'is_html' => true
+	           	);
+	            $send = Specific::SendEmail($send_email_data);
+	            if($send == true){
+	            	$deliver['status'] = 200;
+	            } else {
+	            	$deliver = array(
+					    'status' => 400,
+					    'error' => $TEMP['#word']['error_occurred_to_send_mail']
+					);
+	            }
 	        }
 	    } else {
 	    	$deliver = array(
-			    'status' => 400,
-			    'message' => $error
-			);
+	    		'status' => 400,
+	    		'error' => $TEMP['#word']['email_not_exist']
+	    	);
 	    }
-	} else {
-		$deliver = array(
-		    'status' => 400,
-		    'emptys' => $emptys
+    } else {
+        $deliver = array(
+			'status' => 400,
+			'error' => $error
 		);
+    }
+} else if($one == 'reset-password'){
+	$deliver['status'] = 400;
+	$errors = array();
+	$emptys = array();
+	$token = Specific::Filter($_POST['tokenu']);
+	$password = Specific::Filter($_POST['password']);
+	$re_password = Specific::Filter($_POST['re-password']);
+	if(!empty($token)){
+		$user_id = $dba->query('SELECT id FROM users WHERE token = "'.$token.'"')->fetchArray();
+		if(empty($password)){
+			$emptys[] = 'password';
+		}
+		if(empty($password)){
+			$emptys[] = 're-password';
+		}
+		if(!empty($user_id)){
+			if (empty($emptys)) {
+			    if ($password != $re_password) {
+			        $errors = array('error' => $TEMP['#word']['password_not_match'], 'el' => 're-password');
+			    }
+			    if (strlen($password) < 4 || strlen($password) > 25) {
+			        $errors = array('error' => $TEMP['#word']['password_is_short'], 'el' => 'error');
+			    }
+
+			    if (empty($errors)) {
+			       	$token = sha1(time() + rand(111111,999999));
+			       	if ($dba->query('UPDATE users SET password = "'.sha1($password).'", token = "'.$token.'" WHERE id = '.$user_id)->returnStatus()) {
+				        $deliver = array(
+						    'status' => 200,
+							'url' => '&one=login'
+						);
+			        }
+			    } else {
+			    	$deliver = array(
+						'status' => 400,
+						'errors' => $errors
+					);
+			    }
+			} else {
+				$deliver = array(
+				    'status' => 400,
+				    'emptys' => $emptys
+				);
+			}
+		}
 	}
 } else if($one == 'register'){
 	$deliver['status'] = 400;
@@ -358,7 +383,6 @@ if ($TEMP['#loggedin'] === true && !in_array($one, array('verify-change-email', 
 
 	$access = $dba->query('SELECT access FROM forms WHERE form_key = "'.$form_key.'"')->fetchArray();
 	$access = explode(',', $access);
-
 	if(empty($emptys)){
         if ($dba->query('SELECT COUNT(*) FROM users WHERE dni = "'.$dni.'"')->fetchArray() > 0) {
             $errors[] = array('error' => $TEMP['#word']['document_already_exists'], 'el' => 'dni');
@@ -409,14 +433,14 @@ if ($TEMP['#loggedin'] === true && !in_array($one, array('verify-change-email', 
 				$password = sha1($password);
 	            $insert_array = array(
 	            	'ukey' => "'$ukey'",
-	                'dni' => "'$dni'",
+	                'dni' => "$dni",
 	                'names' => "'$names'",
 	                'surnames' => "'$surnames'",
 	                'password' => "'$password'",
 	                'email' => "'$email'",
 	                'ip' => "'$ip'",
 	                'gender' => "'$gender'",
-	                'status' => $TEMP['#settings']['validate_email'] == 'on' ? 'pending' : 'active',
+	                'status' => $TEMP['#settings']['validate_email'] == 'on' ? "'pending'" : "'active'",
 	                'token' => "'$token'",
 	                'date_birthday' => $date_birthday->getTimestamp(),
 	                'time' => time()
@@ -433,6 +457,7 @@ if ($TEMP['#loggedin'] === true && !in_array($one, array('verify-change-email', 
 	                }
 	            }
 	            $user_id = $dba->query('INSERT INTO users ('.implode(',', array_keys($insert_array)).') VALUES ('.implode(',', array_values($insert_array)).')')->insertId();
+
 	            if($user_id) {
 		            if ($TEMP['#settings']['validate_email'] == 'on') {
 						$TEMP['ukey'] = $ukey;
@@ -443,25 +468,22 @@ if ($TEMP['#loggedin'] === true && !in_array($one, array('verify-change-email', 
 						$TEMP['footer'] = '<a target="_blank" href="'.Specific::Url("not-me/$token/$ukey").'" style="color: #999; text-decoration: underline;">'.$TEMP['#word']['let_us_know'].'</a>.';
 						$TEMP['type'] = 'verify';
 
-		                $send_email = Specific::SendEmail(array(
+		                $send = Specific::SendEmail(array(
 		                    'from_email' => $TEMP['#settings']['smtp_username'],
 			                'from_name' => $TEMP['#settings']['title'],
 		                    'to_email' => $email,
 		                    'to_name' => $names,
 		                    'subject' => $TEMP['#word']['verify_your_account'],
 		                    'charSet' => 'UTF-8',
-					        'message_body' => Specific::Maket('emails/includes/verify-email'),
+					        'text_body' => Specific::Maket('emails/includes/verify-email'),
 		                    'is_html' => true
 		                ));
-		                if($send_email){
-			                $deliver = array(
-							    'status' => 200,
-							    'message' => $TEMP['#word']['successfully_joined_desc']
-							);
+		                if($send == true){
+			                $deliver['status'] = 200;
 		               	} else {
 							$deliver = array(
 							    'status' => 400,
-							    'message' => $TEMP['#word']['error_occurred_to_send_mail']
+							    'error' => $TEMP['#word']['error_occurred_to_send_mail']
 							);
 						}
 		            } else {
@@ -486,7 +508,7 @@ if ($TEMP['#loggedin'] === true && !in_array($one, array('verify-change-email', 
         } else {
         	$deliver = array(
 				'status' => 400,
-			    'err' => $errors
+			    'errors' => $errors
 			);
         }
     } else {
@@ -499,82 +521,116 @@ if ($TEMP['#loggedin'] === true && !in_array($one, array('verify-change-email', 
 	$deliver['status'] = 400;
 	$ukey = Specific::Filter($_POST['ukey']);
 	$token = Specific::Filter($_POST['tokenu']);
-	$user = $dba->query('SELECT * FROM users WHERE ukey = "'.$ukey.'" AND token = "'.sha1($token).'"')->fetchArray();
-	if(!empty($token) && !empty($ukey) && !empty($user)){
-		if ($dba->query('UPDATE users SET status = "active", token = "'.sha1(rand(111111,999999)).'" WHERE id = '.$user['id'])->returnStatus()) {
-			$session_id          = sha1(Specific::RandomKey()) . md5(time());
-		    $insert = $dba->query('INSERT INTO sessions (user_id, session_id, time) VALUES ('.$user['id'].',"'.$session_id.'",'.time().')')->insertid();
-		    $_SESSION['session_id'] = $session_id;
-		    setcookie("session_id", $session_id, time() + 315360000, "/");
+	if(!empty($token)){
+		if(!empty($ukey)){
+			$user = $dba->query('SELECT * FROM users WHERE ukey = "'.$ukey.'" AND token = "'.sha1($token).'"')->fetchArray();
+			if(!empty($user)){
+				if ($dba->query('UPDATE users SET status = "active", token = "'.sha1(rand(111111,999999)).'" WHERE id = '.$user['id'])->returnStatus()) {
+					$session_id = sha1(Specific::RandomKey()).md5(time());
+				    if($dba->query('INSERT INTO sessions (user_id, session_id, time) VALUES ('.$user['id'].',"'.$session_id.'",'.time().')')->returnStatus()){
+				    	$_SESSION['session_id'] = $session_id;
+					    setcookie("session_id", $session_id, time() + 315360000, "/");
+					    $deliver = array(
+							'status' => 200,
+							'url' => Specific::Url()
+						);
+				    }
+				}
+			} else {
+				$deliver = array(
+					'status' => 400,
+					'error' => $TEMP['#word']['wrong_confirm_code']
+				);
+			}
 		}
-		$deliver = array(
-			'status' => 200,
-			'message' => $TEMP['#word']['new_email_verified'],
-			'url' => Specific::Url()
-		);
 	} else {
 		$deliver = array(
 			'status' => 400,
-			'message' => $TEMP['#word']['error']
+			'error' => $TEMP['#word']['confirm_code']
 		);
 	}
 } else if($one == 'verify-change-email'){
 	$deliver['status'] = 400;
 	$ukey = Specific::Filter($_POST['ukey']);
 	$token = Specific::Filter($_POST['tokenu']);
-	$user = $dba->query('SELECT * FROM users WHERE ukey = "'.$ukey.'" AND token = "'.md5($token).'"')->fetchArray();
-	if (!empty($ukey) && !empty($token) && !empty($user) && Specific::IsOwner($user['id'])) {
-		$code = rand(111111, 999999);
-	    $token = md5($code);
-	    if($dba->query('UPDATE users SET token = ?, email = ?, change_email = ? WHERE id = '.$user['id'], $token, $user['change_email'], NULL)->returnStatus()){
-	    	$deliver = array(
-			    'status' => 200,
-			    'url' => 'settings'
+	if (!empty($ukey)) {
+		if(!empty($token)){
+			$user = $dba->query('SELECT * FROM users WHERE ukey = "'.$ukey.'" AND token = "'.md5($token).'"')->fetchArray();
+			if(!empty($user)){
+				if(Specific::IsOwner($user['id'])){
+					$code = rand(111111, 999999);
+				    $token = md5($code);
+				    if($dba->query('UPDATE users SET token = ?, email = ?, change_email = ? WHERE id = '.$user['id'], $token, $user['change_email'], NULL)->returnStatus()){
+				    	$deliver = array(
+						    'status' => 200,
+						    'url' => 'settings'
+						);
+				    }
+				}
+			} else {
+				$deliver = array(
+					'status' => 400,
+					'error' => $TEMP['#word']['wrong_confirm_code']
+				);
+			}
+		} else {
+			$deliver = array(
+				'status' => 400,
+				'error' => $TEMP['#word']['confirm_code']
 			);
-	    }
-	} else {
-		$deliver = array(
-		    'status' => 400,
-		    'message' => $TEMP['#word']['wrong_confirm_code']
-		);
+		}
 	}
 } else if($one == 'resend-change-email'){
 	$ukey = Specific::Filter($_POST['ukey']);
 	$token = Specific::Filter($_POST['tokenu']);
-	$user = $dba->query('SELECT * FROM users WHERE ukey = "'.$ukey.'" AND token = "'.$token.'"')->fetchArray();
-	if (!empty($user)) {
-	    $code = rand(111111, 999999);
-	    $token = md5($code);
-	    $dba->query('UPDATE users SET token = "'.$token.'" WHERE ukey = "'.$ukey.'"');
+	if(!empty($ukey) && !empty($token)){
+		$user = $dba->query('SELECT * FROM users WHERE ukey = "'.$ukey.'" AND token = "'.$token.'"')->fetchArray();
+		if (!empty($user)) {
+		    $code = rand(111111, 999999);
+		    $token = md5($code);
+		    $dba->query('UPDATE users SET token = "'.$token.'" WHERE ukey = "'.$ukey.'"');
 
-	    $TEMP['ukey'] = $ukey;
-		$TEMP['token'] = $token;
-		$TEMP['code'] = $code;
-		$TEMP['name'] = $user['names'];
-		$TEMP['text'] = $TEMP['#word']['check_your_new_email'];
-        $TEMP['footer'] = $TEMP['#word']['just_ignore_this_message'];
-        $TEMP['type'] = 'change';
+		    $TEMP['ukey'] = $ukey;
+			$TEMP['token'] = $token;
+			$TEMP['code'] = $code;
+			$TEMP['name'] = $user['names'];
+			$TEMP['text'] = $TEMP['#word']['check_your_new_email'];
+	        $TEMP['footer'] = $TEMP['#word']['just_ignore_this_message'];
+	        $TEMP['type'] = 'change';
 
-	    $send_email_data = array(
-	        'from_email' => $TEMP['#settings']['smtp_username'],
-	        'from_name' => $TEMP['#settings']['title'],
-	        'to_email' => $user['change_email'],
-	        'to_name' => $user['names'],
-	        'subject' => $TEMP['#word']['verify_your_account'],
-	        'charSet' => 'UTF-8',
-	        'message_body' => Specific::Maket('emails/includes/verify-email'),
-	        'is_html' => true
-	    );
-	    $send = Specific::SendEmail($send_email_data);
-		$deliver = array(
-			'status' => $send ? 200 : 400,
-			'token' => $token,
-	       	'message' => $send ? $TEMP['#word']['email_sent'] : $TEMP['#word']['error_occurred_to_send_mail']
-		);
+		    $send_email_data = array(
+		        'from_email' => $TEMP['#settings']['smtp_username'],
+		        'from_name' => $TEMP['#settings']['title'],
+		        'to_email' => $user['change_email'],
+		        'to_name' => $user['names'],
+		        'subject' => $TEMP['#word']['verify_your_account'],
+		        'charSet' => 'UTF-8',
+		        'text_body' => Specific::Maket('emails/includes/verify-email'),
+		        'is_html' => true
+		    );
+		    $send = Specific::SendEmail($send_email_data);
+		    if($send == true){
+		    	$deliver = array(
+					'status' => 200,
+					'token' => $token
+				);
+		    } else {
+		    	$deliver = array(
+					'status' => 400,
+			       	'error' => $TEMP['#word']['error_occurred_to_send_mail']
+				);
+		    }
+			
+		} else {
+			$deliver = array(
+			    'status' => 204,
+		   		'error' => $TEMP['#word']['error']
+			);
+		}
 	} else {
 		$deliver = array(
-		    'status' => 204,
-	   		'message' => $TEMP['#word']['error']
+			'status' => 204,
+		   	'error' => $TEMP['#word']['error']
 		);
 	}
 } else if($one == 'bubbles'){

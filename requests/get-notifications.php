@@ -1,12 +1,5 @@
 <?php 
-if ($TEMP['#loggedin'] === false) {
-	$deliver = array(
-		'status' => 400,
-		'error' => $TEMP['#word']['error']
-	);
-    echo json_encode($deliver);
-    exit();
-} else {
+if ($TEMP['#loggedin'] === true) {
 	$html = "";
 	$type = Specific::Filter($_POST['type']);
 	if ($type == 'new') {
@@ -18,19 +11,14 @@ if ($TEMP['#loggedin'] === false) {
 	} else if ($type == 'click'){
 		$deliver['status'] = 304;
 		$notifications = $dba->query('SELECT * FROM notifications WHERE to_id = '.$TEMP['#user']['id'].' ORDER BY id DESC LIMIT 10')->fetchAll();
-		if(count($notifications) > 0){
+		if(!empty($notifications)){
 			$site_title = $TEMP['#settings']['title'];
 			foreach ($notifications as $value) {
 				$user_data = Specific::Data($value['from_id']);
-				$course = $dba->query('SELECT name FROM courses WHERE id = '.$value['course_id'])->fetchArray();
-				$TEMP['!text'] = "{$TEMP['#word']['enrolled_your_course']}: <b>$course</b>";
-				$TEMP['!url'] = '#';
-
 				$notifycon = $TEMP['#notifycon'][$value['type']];
-
+				$course = $dba->query('SELECT name FROM courses WHERE id = '.$value['course_id'])->fetchArray();
 				$TEMP['!text'] = "{$notifycon['text']}: <b>$course</b>";
 				$TEMP['!url'] = $notifycon['url'];
-
 				$TEMP['!id'] = $value['id'];
 				$TEMP['!data'] = $user_data;
 				$TEMP['!point_active'] = $value['seen'] == 0 ? ' background-red' : '';
@@ -42,7 +30,8 @@ if ($TEMP['#loggedin'] === false) {
 			$dba->query('UPDATE notifications SET seen = '.time().' WHERE to_id = '.$TEMP['#user']['id']);
 			$deliver = array(
 				'status' => 200,
-				'html' => $html
+				'html' => $html,
+				'XD' => $notifications
 			);
 		}
 	}

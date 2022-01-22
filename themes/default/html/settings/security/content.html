@@ -90,9 +90,9 @@ var YF = D.querySelectorAll('#log-out-session'),
 addEvent(D.querySelector("#authentication"), "change", function(){
     Req("{$url->{req/settings/authentication}}", function(e){
         if (e.status == 200) {
-            loadAlert(e.message);
+            loadAlert("{$word->setting_updated}");
         } else {
-            loadAlert('{$word->error}', 1);
+            loadAlert(e.error, 1);
         }
     }, "POST", "&authentication=" + this.value)
 });
@@ -102,11 +102,13 @@ addEvent(D.querySelector('#cancel-alert'), 'click', YD), addEvent(D.querySelecto
     var self = this,
         id = self.getAttribute('data-id');
     Req("{$url->{req/settings/delete-session}}", function(e){
-        console.log(e);
-        if (e.reload == true) {
-            location.reload();
-        } else if (e.status == 200) {
+        if (e.status == 200) {
+            if (e.reload == true) {
+                location.reload();
+            }
             D.querySelector('#session_' + id).remove();
+        } else {
+            loadAlert(e.error, 1);
         }
         YD();
     }, "POST", "&id=" + id)
@@ -161,7 +163,7 @@ for (var j = 0, i = YL.length; j < i; j++) addEvent(YL[j], "click", function(){
             var YF = D.querySelectorAll('#log-out-session');
             for (var j = 0, i = YF.length; j < i; j++) addEvent(YF[j], "click", YP);
         } else {
-            YE.setAttribute('disabled', true), YO.setAttribute('disabled', true), YR.setAttribute('disabled', true), YS.setAttribute('disabled', true), YA = 1, loadAlert('{$word->error}', 1);
+            YE.setAttribute('disabled', true), YO.setAttribute('disabled', true), YR.setAttribute('disabled', true), YS.setAttribute('disabled', true), YA = 1, loadAlert(e.error, 1);
         }
     }, "POST", "&page_id=" + YA + "&type=sessions")
 });

@@ -24,9 +24,11 @@
 	<div class="cont-cell-header padding-lr20 color-black">
 		{!preknowledge}
 	</div>
+	<?php if($TEMP['#teacher'] === true){ ?>
 	<div class="cont-cell-header padding-lr20 color-black">
 		{!parameters}
 	</div>
+    <?php } ?>
 	<div class="cont-cell-header padding-lr20 color-black">
 		{!program}
 	</div>
@@ -41,9 +43,11 @@
 	<div class="cont-cell-header padding-lr20 color-black">
 		{!credits}
 	</div>
+	<?php if($TEMP['#teacher'] === true){ ?>
 	<div class="cont-cell-header padding-lr20 color-black">
 		{!quota}
 	</div>
+    <?php } ?>
 	<div class="cont-cell-header padding-lr20 color-black">
 		{!type}
 	</div>

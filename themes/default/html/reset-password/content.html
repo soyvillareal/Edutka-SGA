@@ -68,14 +68,13 @@ var RI = D.querySelectorAll('.input_key'),
 			}
 			return false;
 		}
-		addClass(RB, 'spinner-is-loading');
-		RB.setAttribute('disabled', true);
+		addClass(RB, 'spinner-is-loading'), RB.setAttribute('disabled', true);
 		Req("{$url->{req/to-access/reset-password}}", function(e){
+			console.log(e);
 			if(e.status == 200){
 				preloadPage(e.url);
 			} else {
-				removeClass(RB, 'spinner-is-loading');
-				RB.removeAttribute('disabled');
+				removeClass(RB, 'spinner-is-loading'), RB.removeAttribute('disabled');
 				if(e.emptys != undefined){
 					for (var j = 0, i = e.emptys.length; j < i; j++){
 						var el = D.querySelector('#'+e.emptys[j]);
@@ -85,6 +84,17 @@ var RI = D.querySelectorAll('.input_key'),
 							}, 200)
 						}, 700);
 					}
+				} else if(e.errors != undefined){
+					for (var j = 0, i = e.errors.length; j < i; j++){
+						var el = D.querySelector('#'+e.errors[j]);
+						el.parentNode.querySelector('.text-error').innerText = '*'+e.errors[j]['error'], addClass(el, 'border-red'), addClass(el, 'boxshadow-red'), timeDelay(function(){
+							addClass(LG, 'efect-boom'), timeDelay(function(){
+								removeClass(LG, 'efect-boom')
+							}, 200)
+						}, 700);
+					}
+				} else {
+					loadAlert(e.error, 1);
 				}
 			}
 		}, "POST", "&password=" + RM.value + "&re-password=" + RR.value + "&tokenu={$tokenu}")
@@ -129,7 +139,18 @@ for (var j = 0, i = RI.length; j < i; j++) addEvent(RI[j], 'keyup', function(e){
 	if(e.which != 13 || e.keyCode != 13){
 		var self = this,
 			RA = self.id,
-			RW = self.value;
+			RW = self.value,
+			el = self.parentNode.querySelector('.text-error'),
+			RQ = function(){
+				RX = !0;
+				if((RA == 'password' || RA == 're-password') && D.querySelector('#'+RA).value != '' && RM.value == RR.value){
+					RR.parentNode.querySelector('.text-error').innerText = "", removeClass(RR, 'border-red'), removeClass(RR, 'boxshadow-red'), timeDelay(function(){
+						addClass(LG, 'efect-boom'), timeDelay(function(){
+							removeClass(LG, 'efect-boom')
+						}, 200)
+					}, 700);
+				}
+			};
 		if(RM.value != '' && RR.value != ''){
 			RB.removeAttribute('disabled');
 		} else {
@@ -141,22 +162,11 @@ for (var j = 0, i = RI.length; j < i; j++) addEvent(RI[j], 'keyup', function(e){
 		}
 		Req("{$url->{req/key-validate}}", function(e){
 			if(e.status == 200){
-				var msg = e.message;
-				if(msg == ''){
-					removeClass(self, 'border-red'), removeClass(self, 'boxshadow-red');
-				} else {
-					addClass(self, 'border-red'), addClass(self, 'boxshadow-red');
-				}
-				self.parentNode.querySelector('.text-error').innerText = msg, RX = !0;
-				if((RA == 'password' || RA == 're-password') && D.querySelector('#'+RA).value != '' && RM.value == RR.value){
-					RR.parentNode.querySelector('.text-error').innerText = "", removeClass(RR, 'border-red'), removeClass(RR, 'boxshadow-red'), timeDelay(function(){
-						addClass(LG, 'efect-boom'), timeDelay(function(){
-							removeClass(LG, 'efect-boom')
-						}, 200)
-					}, 700);
-				}
+				el.innerText = "", removeClass(self, 'border-red'), removeClass(self, 'boxshadow-red'), RQ();
+			} else if(e.status == 302){
+				el.innerText = e.error, addClass(self, 'border-red'), addClass(self, 'boxshadow-red'), RQ();
 			} else {
-				loadAlert(e.message, 1);
+				loadAlert(e.error, 1);
 			}
 		}, "POST", "&input=" + RW + "&type=" + RA + "&password=" + RM.value + "&re-password=" + RR.value)
 	}

@@ -4,9 +4,14 @@
 			<?php if($TEMP['#admin'] == true || $TEMP['#academic'] == true) { ?>
 			<div class="background-white border-radius-12 padding-25 margin-b10">
 				<label class="color-black">{$word->search}</label>
-				<div class="content-search-notes position-relative margin-b10">
+				<div class="content-search position-relative margin-b10">
 					<div class="display-flex margin-auto border-radius-4">
 				        <input class="background-grely padding-10 border-focus-blue border-all border-grey border-top-left-radius border-top-right-radius w-100 color-black" type="text" id="search-users" name="keyword" autocomplete="off" value="{#keyword_enroll}"> 
+				        <div class="content-spinner-circle">
+                            <div class="content-spinner-circle">
+                                <div class="spinner-circle"></div>
+                            </div>
+                        </div>
 				    </div>
 			        <div class="search-down w-100 z-index-first position-absolute background-white"></div>
 			    </div>
@@ -29,8 +34,27 @@
 			            <option value="program"<?php echo($TEMP['#type'] == 'program') ? ' selected' : '';?>>{$word->program}</option>
 			            <option value="course"<?php echo($TEMP['#type'] == 'course') ? ' selected' : '';?>>{$word->course}</option>
 			        </select>
-			    	<div class="color-red text-left text-error font-low margin-t5"></div>
 			    </div>
+			    <label class="color-black">{$word->status}</label>
+			    <div class="content-types position-relative margin-b10">
+			    	<select id="status" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue caret-down background-grely color-black">
+			            <option value="registered" selected>{$word->registered}</option>
+			            <option value="without_registering">{$word->without_registering}</option>
+			            <?php if($TEMP['#type'] == 'course'){ ?>
+			            <option value="reprobate">{$word->reprobate}</option>
+			            <?php } ?>
+			        </select>
+			    </div>
+			    <?php if($TEMP['#type'] == 'course'){ ?>
+			    <label class="color-black">{$word->working_day}</label>
+			    <div class="content-types position-relative margin-b10">
+			    	<select id="working_day" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue caret-down background-grely color-black">
+			            <option value="all" selected>{$word->all}</option>
+			            <option value="daytime">{$word->daytime}</option>
+			            <option value="nightly">{$word->nightly}</option>
+			        </select>
+			    </div>
+			    <?php } ?>
 				<?php if(count($TEMP['#programs']) > 1 && $TEMP['#type'] == 'course'){ ?>
 				<label class="color-black">{$word->programs}</label>
 			    <div class="content-types position-relative margin-b10">
@@ -39,13 +63,17 @@
 	                    <option value="<?php echo $program['id']; ?>"<?php echo($program['id'] == $TEMP['#program_id']) ? ' selected' : '';?>><?php echo $program['name']; ?></option>
 	                    <?php } ?>
 				    </select>
-			    	<div class="color-red text-left text-error font-low margin-t5"></div>
 			    </div>
 				<?php } ?>
 				<label class="color-black">{$word->search}</label>
-				<div class="content-search-notes position-relative margin-b10">
+				<div class="content-search position-relative margin-b10">
 					<div class="display-flex margin-auto border-radius-4">
 				        <input class="background-grely padding-10 border-focus-blue border-all border-grey border-top-left-radius border-top-right-radius border-bottom-left-radius border-bottom-right-radius w-100 color-black" type="text" id="search-enrolled" name="keyword" autocomplete="off"> 
+				        <div class="content-spinner-circle">
+                            <div class="content-spinner-circle">
+                                <div class="spinner-circle"></div>
+                            </div>
+                        </div>
 			        </div>
 			        <div class="search-down z-index-first position-absolute background-white"></div>
 			    </div>
@@ -124,7 +152,10 @@ var GA = D.querySelectorAll('.show_cmodal'),
 	GK = D.querySelectorAll('.show_rpmodal'),
 	GY = D.querySelector('#type'),
 	GS = D.querySelector('#program_id'),
-	GO = D.querySelector("#period_id"),
+	GO = D.querySelector('#period_id'),
+	GD = D.querySelector('#working_day'),
+	GW = D.querySelector('#status'),
+	GU = D.querySelector('#search-enrolled'),
 	GI = D.querySelector('#register-ecnroll'),
 	GL = D.querySelector('#register-epnroll'),
 	GJ = D.querySelector('#alert-enrollc'),
@@ -146,16 +177,32 @@ var GA = D.querySelectorAll('.show_cmodal'),
 			console.log(e)
 	        if(e.status == 200){
 	        	if(e.cstatus == 'true'){
-	        		removeClass(rcourse, 'hidden'), addClass(urcourse, 'hidden');
+	        		removeClass(rcourse, 'hidden'), addClass(urcourse, 'hidden'), GO.value = e.period;
 	        	} else {
-	        		addClass(rcourse, 'hidden'), removeClass(urcourse, 'hidden');
+	        		addClass(rcourse, 'hidden'), removeClass(urcourse, 'hidden'), GO.value = GO.children[0].value;
 	        	}
 	        	GJ.style.display = "block", D.body.style.overflow = "hidden", GI.setAttribute('data-id', course_id), GI.setAttribute('data-plan', self.getAttribute('data-plan')), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
 		    } else {
-		        loadAlert('{$word->error}', 1), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
+		        loadAlert(e.error, 1), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
 	        }
 		}, "POST", "&course_id=" + course_id + "&user_id={#user_id}<?php echo(count($TEMP['#programs']) > 1 && $TEMP['#type'] == 'course') ? '&program_id=" + D.querySelector("#program_id").value' : '&program_id={#program}"';?>);
 		<?php } ?>
+	},
+	GT = function(){
+		var self = this,
+			GQ = self.parentNode;
+		addClass(GQ, 'spinner-is-loading');
+		Req('{$url->{req/rol-student/search-enrolled}}', function(e){
+			console.log(e);
+			if(e.status == 200){
+			    removeClass(GQ, 'spinner-is-loading'), GP.innerHTML = e.html, GA = D.querySelectorAll('.show_cmodal'), GB = D.querySelectorAll('.show_rcmodal'), GK = D.querySelectorAll('.show_rpmodal');
+				for(var j = 0, i = GB.length; j < i; j++) addEvent(GB[j], "click", GC);
+			    for(var j = 0, i = GA.length; j < i; j++) addEvent(GA[j], "click", GH);
+				for(var j = 0, i = GK.length; j < i; j++) addEvent(GK[j], "click", GM);
+			} else {
+				 removeClass(GQ, 'spinner-is-loading'), GP.innerHTML = e.html
+			}
+		}, "POST", "&keyword=" + GU.value + "&status=" + GW.value + "&id={#user_id}&typet={#type}<?php echo($TEMP['#type'] == 'course') ? '&working_day=" + GD.value + "' : ''; echo(count($TEMP['#programs']) > 1 && $TEMP['#type'] == 'course') ? '&program_id=" + D.querySelector("#program_id").value' : '&program_id={#program}"';?>)
 	},
     GH = function(){
         GE.style.display = "block", D.body.style.overflow = "hidden", GG.setAttribute('data-id', this.getAttribute('data-id'));
@@ -164,10 +211,11 @@ var GA = D.querySelectorAll('.show_cmodal'),
         GN.style.display = "block", D.body.style.overflow = "hidden", GL.setAttribute('data-id', this.getAttribute('data-id'));
     },
 	keyword = "{#keyword_enroll}";
-<?php if(count($TEMP['#programs']) > 1 && $TEMP['#type'] == 'course'){ ?>
-addEvent(GS, 'change', function(){
+
+<?php if($TEMP['#type'] == 'course'){ ?>
+addEvent(GD, 'change', GT), <?php if(count($TEMP['#programs']) > 1){ ?>addEvent(GS, 'change', function(){
 	preloadPage('&one=enroll<?php echo($TEMP["#admin"] == true || $TEMP["#academic"] == true) ? "&keyword={#keyword_enroll}&user={#user_id}" : ''?>&type=' + GY.value + '&program_id=' + this.value);
-}), <?php } ?>addEvent(D.querySelector('#close-ealert'), 'click', function(){
+}), <?php } ?><?php }?>addEvent(GW, 'change', GT), addEvent(D.querySelector('#close-ealert'), 'click', function(){
     GE.style.display = "", D.body.style.overflow = "";
 }), addEvent(D.querySelector('#cancel-ecalert'), 'click', function(){
     GJ.style.display = "", D.body.style.overflow = "";
@@ -175,24 +223,15 @@ addEvent(GS, 'change', function(){
     GN.style.display = "", D.body.style.overflow = "";
 })<?php if(!empty($TEMP['#keyword_enroll']) || $TEMP['#student'] == true) { ?>, addEvent(GY, 'change', function(){
     preloadPage('&one=enroll<?php echo($TEMP["#admin"] == true || $TEMP["#academic"] == true) ? "&keyword={#keyword_enroll}&user={#user_id}" : ''?>&type=' + this.value);
-}), addEvent(D.querySelector('#search-enrolled'), "keyup", function(){
-	var self = this;
-	Req('{$url->{req/rol-student/search-enrolled}}', function(e){
-		console.log(e);
-	    GP.innerHTML = e.html;
-	    GA = D.querySelectorAll('.show_cmodal'), GB = D.querySelectorAll('.show_rcmodal'), GK = D.querySelectorAll('.show_rpmodal');
-		for(var j = 0, i = GB.length; j < i; j++) addEvent(GB[j], "click", GC);
-	    for(var j = 0, i = GA.length; j < i; j++) addEvent(GA[j], "click", GH);
-		for(var j = 0, i = GK.length; j < i; j++) addEvent(GK[j], "click", GM);
-	}, "POST", "&keyword=" + self.value + "&id={#user_id}&typet={#type}<?php echo(count($TEMP['#programs']) > 1 && $TEMP['#type'] == 'course') ? '&program_id=" + D.querySelector("#program_id").value' : '&program_id={#program}"';?>)
-})<?php } ?>, addEvent(GG, "click", function(){
+}), addEvent(GU, "keyup", GT)<?php } ?>, addEvent(GG, "click", function(){
     var self = this; 
     self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
 	Req('{$url->{req/rol-student/cancel-enroll}}', function(e){
+		console.log(e);
         if(e.status == 200){
 	        loadAlert("{$word->registration_canceled_successfully}", 1), preloadPage("{#url_params}");
 	    } else {
-	        self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
+	        loadAlert(e.error, 1), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
         }
 	}, "POST", "&id=" + self.getAttribute('data-id'));
 })<?php if($TEMP['!status'] != 'cancelled' || $TEMP['#admin'] == true || $TEMP['#academic'] == true){ ?>, addEvent(GI, "click", function(){
@@ -213,11 +252,13 @@ addEvent(GS, 'change', function(){
         if(e.status == 200){
 	        loadAlert("{$word->you_have_successfully_enrolled}"), preloadPage("{#url_params}");
 	    } else {
-	        loadAlert("{$word->error}", 1), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
+	        loadAlert(e.error, 1), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
         }
 	}, "POST", "&id=" + self.getAttribute('data-id') + "&user_id={#user_id}");
 })<?php } if($TEMP['#admin'] == true || $TEMP['#academic'] == true) { ?>, addEvent(D.querySelector('#search-users'), "keyup", function(e){
-	let SV = this.value,
+	let self = this,
+		SV = self.value,
+		SQ = self.parentNode
 		SD = D.querySelector('.search-down');
 	if (SV == '') {
 		addClass(SD, 'hidden');
@@ -226,13 +267,12 @@ addEvent(GS, 'change', function(){
 	} else if(e.which != 13 || e.keyCode != 13){
 		removeClass(SD, 'hidden');
 	}
-	keyword = SV;
+	addClass(SQ, 'spinner-is-loading'), keyword = SV;
 	Req('{$url->{req/rol-teacher/search-users}}', function(e) {
 	    if (e.status == 200) {
-	   		SD.innerHTML = e.html, loadPage(SD.querySelectorAll('a[target="_self"]'));
+	   		removeClass(SQ, 'spinner-is-loading'), SD.innerHTML = e.html, loadPage(SD.querySelectorAll('a[target="_self"]'));
 	    } else {
-		    addClass(SD, 'hidden');
-		   	SD.innerHTML = "";
+		    removeClass(SQ, 'spinner-is-loading'), addClass(SD, 'hidden'), SD.innerHTML = "";
 		   	return false;
 	    }
 	}, "POST", "&typet=enroll&keyword=" + SV);

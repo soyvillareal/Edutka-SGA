@@ -84,22 +84,21 @@ var LI = D.querySelectorAll('.input_key'),
 		}
 		removeClass(LE, 'color-green'), removeClass(LE, 'border-green'), addClass(LB, 'spinner-is-loading'), LB.setAttribute('disabled', true);
 		Req("{$url->{req/to-access/login}}", function(e){
+			console.log(e);
 			if(e.status == 200){
 				window.location.reload();
 			} else if(e.status == 401) {
 				if(e.html != undefined) {
-					removeClass(LB, 'spinner-is-loading');
-					LB.removeAttribute('disabled');
-					LE.innerHTML = e.html;
+					removeClass(LB, 'spinner-is-loading'), LB.removeAttribute('disabled'), LE.innerHTML = e.html;
 					if(e.token != undefined){
 						addEvent(LE.querySelector('#resend-email'), 'click', function(){
 							var self = this;
 							self.setAttribute('disabled', true), self.innerText = '{$word->please_wait}';
 							Req("{$url->{req/to-access/resend-email}}", function(e){
 								if(e.status == 200){
-									self.removeAttribute('disabled'), self.innerText = '', addClass(LE, 'color-green'), addClass(LE, 'border-green'), LE.innerText = e.message;
+									self.removeAttribute('disabled'), self.innerText = '', addClass(LE, 'color-green'), addClass(LE, 'border-green'), LE.innerText = "{$word->email_sent}";
 								} else {
-									window.location = e.url;
+									self.removeAttribute('disabled'), self.innerText = '', addClass(LE, 'color-red'), addClass(LE, 'border-red'), LE.innerText = e.error;
 								}
 							}, "POST", "&tokenu=" + e.token + "&ukey=" + e.ukey)
 						})
@@ -109,19 +108,18 @@ var LI = D.querySelectorAll('.input_key'),
 				} else if(e.url != undefined){
 					preloadPage(e.url);
 				} else {
-					var els = e.err['el'],
+					var els = e.error['el'],
 						el = D.querySelector('#'+els),
 						elt = els == 'g-recaptcha' ? el.parentNode : el;
-					removeClass(LB, 'spinner-is-loading'), LB.removeAttribute('disabled'), elt.parentNode.querySelector('.text-error').innerText = '*'+e.err['error'], addClass(el, 'border-red'), addClass(el, 'boxshadow-red'), timeDelay(function(){
+					removeClass(LB, 'spinner-is-loading'), LB.removeAttribute('disabled'), elt.parentNode.querySelector('.text-error').innerText = '*'+e.error['error'], addClass(el, 'border-red'), addClass(el, 'boxshadow-red'), timeDelay(function(){
 						addClass(LG, 'efect-boom'), timeDelay(function(){
 							removeClass(LG, 'efect-boom')
 						}, 200)
 					}, 700);
 				}
 			} else {
-				removeClass(LB, 'spinner-is-loading');
-				LB.removeAttribute('disabled');
-				if(e.emptys != undefined){
+				removeClass(LB, 'spinner-is-loading'), LB.removeAttribute('disabled');
+				if(e.status == 204){
 					for (var j = 0, i = e.emptys.length; j < i; j++){
 						var el = D.querySelector('#'+e.emptys[j]);
 						el.parentNode.querySelector('.text-error').innerText = '*{$word->this_field_is_empty}', addClass(el, 'border-red'), addClass(el, 'boxshadow-red'), timeDelay(function(){
@@ -131,7 +129,7 @@ var LI = D.querySelectorAll('.input_key'),
 						}, 700)
 					}
 				} else {
-					LE.innerHTML = e.message;
+					LE.innerHTML = e.error;
 				}
 			}
 		}, "POST", "&dni=" + LU.value + "&password=" + LP.value + "&to={$to}"<?php echo $TEMP['#settings']['recaptcha'] == 'on' ? ' + "&recaptcha=" + D.querySelector("#g-recaptcha .g-recaptcha-response").value' : ''?>)

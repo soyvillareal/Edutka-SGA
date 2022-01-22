@@ -4,9 +4,14 @@
         <div class="background-white border-radius-12 padding-25 margin-b50">
             <div class="border-top-left-radius border-top-right-radius">
                 <label class="color-black">{$word->search}</label>
-                <div class="content-search-notes position-relative margin-b20">
+                <div class="content-search position-relative margin-b20">
                     <div class="display-flex margin-auto border-radius-4">
                         <input id="search-courses" class="background-grely padding-10 border-focus-blue border-all border-grey border-top-left-radius border-top-right-radius border-bottom-right-radius border-bottom-left-radius w-100 color-black" type="text" autocomplete="off">
+                        <div class="content-spinner-circle">
+                            <div class="content-spinner-circle">
+                                <div class="spinner-circle"></div>
+                            </div>
+                        </div>
                         <?php if($TEMP['#teacher'] === true && !empty($TEMP['#periods'])){ ?>
                         <select id="period_id" class="cont-input mw-w-100 h-50 border-radius-12 margin-l10 animated-easy border-focus-blue caret-down background-grely color-black">
                             <?php foreach($TEMP['#periods'] as $period){ ?>
@@ -36,9 +41,11 @@
                                         <div class="cont-cell-header padding-lr20 color-black">
                                             {$word->pre_knowledge}
                                         </div>
+                                        <?php if($TEMP['#teacher'] === true){ ?>
                                         <div class="cont-cell-header padding-lr20 color-black">
                                             {$word->parameters}
                                         </div>
+                                        <?php } ?>
                                         <div class="cont-cell-header padding-lr20 color-black">
                                             {$word->program}
                                         </div>
@@ -53,9 +60,11 @@
                                         <div class="cont-cell-header padding-lr20 color-black">
                                             {$word->credits}
                                         </div>
+                                        <?php if($TEMP['#teacher'] === true){ ?>
                                         <div class="cont-cell-header padding-lr20 color-black">
                                             {$word->quotas}
                                         </div>
+                                        <?php } ?>
                                         <div class="cont-cell-header padding-lr20 color-black">
                                             {$word->type}
                                         </div>
@@ -139,17 +148,6 @@
                 <div class="group-validate display-block position-relative w-100 padding-25">
                     <div class="display-flex flex-wrap">
                         <div class="cont-label dv-vertical-center">
-                            <label class="color-black">{$word->code}</label>
-                        </div>
-                        <div class="flex-grow">
-                            <input id="code" type="text" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue area_validate background-grely color-black"/>
-                            <div class="color-red text-left text-error font-low margin-t5"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="group-validate display-block position-relative w-100 padding-25">
-                    <div class="display-flex flex-wrap">
-                        <div class="cont-label dv-vertical-center">
                             <label class="color-black">{$word->name}</label>
                         </div>
                         <div class="flex-grow">
@@ -183,6 +181,11 @@
                             <ul id="tips-preknowledge" class="content-tips cont-input h-100 background-grely border-radius-12 animated-easy color-black">
                                 <li class="tipsit-new">
                                     <input id="tips-val-prek" class="color-black" type="text" autocomplete="off">
+                                    <div class="content-spinner-circle">
+                                        <div class="content-spinner-circle">
+                                            <div class="spinner-circle"></div>
+                                        </div>
+                                    </div>
                                     <div class="search-down position-absolute z-index-first background-white overflow-hidden border-all border-grey border-top-left-radius border-top-right-radius border-bottom-left-radius border-bottom-right-radius"></div>
                                 </li>
                             </ul>
@@ -384,7 +387,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="group-validate display-block position-relative w-100 padding-25 margin-auto">
+                <div id="search-users" class="group-validate display-block position-relative w-100 padding-25 margin-auto">
                     <div class="display-flex flex-wrap">
                         <div class="cont-label dv-vertical-center">
                             <label class="color-black">{$word->teacher}</label>
@@ -471,7 +474,6 @@ var GE = D.querySelectorAll('.show_emodal'),
     <?php if($TEMP['#admin'] == true){ ?>
     GQ = D.querySelector('#delete-course'),
     GT = D.querySelector('#alert-delete'),
-    GM = D.querySelector('#code'),
     GU = D.querySelector('#name'),
     GF = D.querySelector('#program_id'),
     gq = D.querySelector('#preknowledge'),
@@ -515,7 +517,7 @@ var GE = D.querySelectorAll('.show_emodal'),
     TN = D.querySelector('#page-now'),
     bDisabled = function(){
         <?php if($TEMP['#admin'] == true){ ?>
-        if(GM.value != '' && GU.value != '' && GF.value != '' && GP.value != '' && GJ.value != '' && GK.value != '' && GN.value != '' && GO.value != '' && GY.value != ''){
+        if(GU.value != '' && GF.value != '' && GJ.value != '' && GK.value != '' && GN.value != '' && GO.value != '' && GY.value != ''){
             GB.removeAttribute('disabled');
         } else {
             GB.setAttribute('disabled', true);
@@ -591,7 +593,7 @@ var GE = D.querySelectorAll('.show_emodal'),
                 <?php } ?>
                 GI.style.display = "block", D.body.style.overflow = "hidden", GB.setAttribute('data-id', course_id), GB.setAttribute('data-type', 'edit'), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
             } else {
-                loadAlert('{$word->error}', 1), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
+                loadAlert(e.error, 1), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
             }
         }, "POST", "&type=courses&period_id={#period_id}&id=" + course_id)
     },
@@ -622,7 +624,7 @@ var GE = D.querySelectorAll('.show_emodal'),
                     }
                     gc.style.display = "block", D.body.style.overflow = "hidden", gd.setAttribute('data-id', course_id), gd.setAttribute('data-type', type), gd.setAttribute('data-id', course_id), gdd.setAttribute('data-id', self.getAttribute('data-id')), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
                 } else {
-                    loadAlert('{$word->error}', 1), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
+                    loadAlert(e.error, 1), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
                 }
             }, "POST", "&id=" + self.getAttribute('data-id'));
             
@@ -665,11 +667,13 @@ var GE = D.querySelectorAll('.show_emodal'),
 
 addEvent(GA, 'keyup', function(){
     var self = this,
+        TQ = self.parentNode,
         TZ = D.querySelector('#table-footer');
+    addClass(TQ, 'spinner-is-loading');
     Req('{$url->{req/rol-teacher/search-courses}}', function(e){
         console.log(e);
         if(e.status == 200){
-            <?php echo($TEMP['#total_pages'] > 1) ? "TT = e.total_pages, TA = 1, TO.setAttribute('disabled', true), TR.setAttribute('disabled', true), TE.removeAttribute('disabled'), TS.removeAttribute('disabled'), D.querySelector('#total-pages').innerText = TT, TN.innerText = TA, TZ && (TT <= 1 ? TZ.style.display = 'none' : TZ.removeAttribute('style')), " : ""?>D.querySelector('#container-pages').innerHTML = e.html, loadPage(D.querySelectorAll('a[target="_self"]'));
+            <?php echo($TEMP['#total_pages'] > 1) ? "TT = e.total_pages, TA = 1, TO.setAttribute('disabled', true), TR.setAttribute('disabled', true), TE.removeAttribute('disabled'), TS.removeAttribute('disabled'), D.querySelector('#total-pages').innerText = TT, TN.innerText = TA, TZ && (TT <= 1 ? TZ.style.display = 'none' : TZ.removeAttribute('style')), " : ""?>removeClass(TQ, 'spinner-is-loading'), D.querySelector('#container-pages').innerHTML = e.html, loadPage(D.querySelectorAll('a[target="_self"]'));
             GE = D.querySelectorAll('.show_emodal'), GW = D.querySelectorAll('.show_dmodal');
             <?php if($TEMP['#admin'] == true || $TEMP['#academic'] == true){ ?>
             go = D.querySelectorAll('.show_amodal');
@@ -680,7 +684,7 @@ addEvent(GA, 'keyup', function(){
             for(var j = 0, i = GW.length; j < i; j++) addEvent(GW[j], "click", GD);
             <?php } ?>
         } else {
-            D.querySelector('#container-pages').innerHTML = e.html<?php echo($TEMP['#total_pages'] > 1) ? ', TZ.style.display = "none"' : '';?>; 
+            removeClass(TQ, 'spinner-is-loading'), D.querySelector('#container-pages').innerHTML = e.html<?php echo($TEMP['#total_pages'] > 1) ? ', TZ.style.display = "none"' : '';?>; 
         }
     }, "POST", "&user_id={#user_id}<?php echo($TEMP['#teacher'] === true && !empty($TEMP['#periods'])) ? '&period_id=" + gxy.value' : '"'; ?> + "&keyword=" + self.value)
 });
@@ -845,7 +849,7 @@ addEvent(GY, 'click', function(){
                         }, 700);
                 }
             } else {
-                loadAlert("{$word->error}", 1)
+                loadAlert(e.error, 1)
             }
             GB.removeAttribute('disabled'), removeClass(GB, 'spinner-is-loading');
         }
@@ -874,7 +878,8 @@ addEvent(gtt, 'change', function(){
         grr.innerText = "{$word->this_period_not_valid_but_can_be_assigned}";
     }
 }), addEvent(ga, "keyup", function(e){
-    let SV = this.value;
+    let SV = this.value,
+        TQ = D.querySelector('#search-users');
     if (SV == '') {
         addClass(gl, 'hidden');
         gl.innerHTML = "";
@@ -882,16 +887,16 @@ addEvent(gtt, 'change', function(){
     } else if(e.which != 13 || e.keyCode != 13){
         removeClass(gl, 'hidden');
     }
+    addClass(TQ, 'spinner-is-loading');
     Req('{$url->{req/rol-academic/search-teacher}}', function(e) {
         if(e.html != ''){
-            gl.innerHTML = e.html;
+            removeClass(TQ, 'spinner-is-loading'), gl.innerHTML = e.html;
             if (e.status == 200) {
                 var gg = ZO.querySelectorAll('.tipsit-search');
                 for(var j = 0, i = gg.length; j < i; j++) addEvent(gg[j], 'click', gh);
             }
         } else {
-            addClass(gl, 'hidden');
-            gl.innerHTML = "";
+            removeClass(TQ, 'spinner-is-loading'), addClass(gl, 'hidden'), gl.innerHTML = "";
             return false;
         }
     }, "POST", "&keyword=" + SV);
@@ -899,14 +904,13 @@ addEvent(gtt, 'change', function(){
     gcc.style.display = "", gc.style.display = "block", D.body.style.overflow = "hidden";
 }), addEvent(gyy, 'click', function(){
     var self = this;
-
     gyy.setAttribute('disabled', true), addClass(gyy, 'spinner-is-loading');
     Req('{$url->{req/rol-academic/delete-assing}}', function(e){
         console.log(e);
         if(e.status == 200){
             gcc.style.display = "", loadAlert("{$word->assignment_successfully_removed}"), preloadPage('&one=courses');
         } else {
-            loadAlert('{$word->error}', 1), gyy.removeAttribute('disabled'), removeClass(gyy, 'spinner-is-loading');
+            loadAlert(e.error, 1), gyy.removeAttribute('disabled'), removeClass(gyy, 'spinner-is-loading');
         }
     }, "POST", "&id=" + self.getAttribute('data-id') + "&period_id=" + gu.value);
 }), addEvent(gd, 'click', function(){
@@ -932,12 +936,9 @@ addEvent(gtt, 'change', function(){
     Req('{$url->{req/rol-academic/this-assings}}', function(e){
         console.log(e);
         if(e.status == 200){
-            gc.style.display = "", preloadPage('&one=courses');
-            if(e.error != undefined){
-                loadAlert(e.error, 1);
-            } else {
-                loadAlert(type == 'add' ? "{$word->assignment_created_successfully}" : "{$word->assignment_updated_successfully}")
-            }
+            gc.style.display = "", preloadPage('&one=courses'), loadAlert(type == 'add' ? "{$word->assignment_created_successfully}" : "{$word->assignment_updated_successfully}");
+        } else if(e.status == 302){
+            gc.style.display = "", preloadPage('&one=courses'), loadAlert(e.error, 1);
         } else {
             if (e.errors != undefined) {
                 var GZ = GP.parentNode,
@@ -970,47 +971,49 @@ addEvent(gtt, 'change', function(){
             for (var j = 0, i = e.items['teachers'].length; j < i; j++) createTag(ZO, GX, GP, ga, gl, e.items['teachers'][j]['name'], e.items['teachers'][j]['id']);
             removeClass(gdd, 'hidden'), self.removeAttribute('disabled'), removeClass(ct, 'spinner-is-loading');
         } else {
-            loadAlert('{$word->error}', 1), self.removeAttribute('disabled'), removeClass(ct, 'spinner-is-loading');
+            loadAlert(e.error, 1), self.removeAttribute('disabled'), removeClass(ct, 'spinner-is-loading');
         }
     }, "POST", "&id=" + gd.getAttribute('data-id') + "&period_id=" + self.value)
 });
 
 <?php if($TEMP['#admin'] === true){ ?>
 addEvent(gw.querySelector('#tips-val-prek'), "keyup", function(e){
-    let SV = this.value;
+    let self = this,
+        SV = self.value,
+        SQ = self.parentNode;
     if (SV == '') {
-        addClass(gn, 'hidden');
-        gn.innerHTML = "";
+        addClass(gn, 'hidden'), gn.innerHTML = "";
         return false;
     } else if(e.which != 13 || e.keyCode != 13){
         removeClass(gn, 'hidden');
     }
+    addClass(SQ, 'spinner-is-loading');
     Req('{$url->{req/rol-admin/search-course}}', function(e) {
+        console.log(e);
         if(e.html != ''){
-            gn.innerHTML = e.html;
+            removeClass(SQ, 'spinner-is-loading'), gn.innerHTML = e.html;
             if (e.status == 200) {
                 var gg = gw.querySelectorAll('.tipsit-search');
                 for(var j = 0, i = gg.length; j < i; j++) addEvent(gg[j], 'click', gm);
             }
         } else {
-            addClass(gn, 'hidden');
-            gn.innerHTML = "";
+            removeClass(SQ, 'spinner-is-loading'), addClass(gn, 'hidden'), gn.innerHTML = "";
             return false;
         }
-    }, "POST", "&keyword=" + SV + "&typet=" + GB.getAttribute('data-type') + "&course_id=" + GB.getAttribute('data-id'));
+    }, "POST", "&keyword=" + SV + "&typet=" + GB.getAttribute('data-type') + "&courses=" + gq.value + "&course_id=" + GB.getAttribute('data-id') + "&program_id=" + GF.value);
 }), addEvent(ga, "keydown", function(e){
     keyTag(e.which, this, ZO, GX, GP)
 }), addEvent(D.querySelector('#show-pmodal'), 'click', function(){
     var gz = gw.querySelectorAll('.tipsit-choice');
     GI.style.display = "block", D.body.style.overflow = "hidden", GB.setAttribute('data-type', 'add'), GB.removeAttribute('data-id'), scrollTo(0, GV);
-    for(var j = 0, i = GC.length; j < i; j++) GC[j].value = (GC[j].nodeName != 'SELECT') ? '' : GC[j].children[0].getAttribute('value');
+    for(var j = 0, i = GC.length; j < i; j++) GC[j].value = (GC[j].nodeName != 'SELECT') ? '' : (GC[j].id != 'period' ? GC[j].children[0].getAttribute('value') : '');
     for(var j = 0, i = gz.length; j < i; j++) gz[j].remove();
 }), addEvent(D.querySelector('#cancel-dalert'), 'click', function(){
     GT.style.display = "", D.body.style.overflow = "";
 }), addEvent(GB, 'click', function(){
     var self = this,
         type = self.getAttribute('data-type');
-    if(GM.value == '' || GU.value == '' || GF.value == '' || GP.value == '' || GJ.value == '' || GK.value == '' || GN.value == '' || GO.value == '' || GY.value == ''){
+    if(GU.value == '' || GF.value == '' || GJ.value == '' || GK.value == '' || GN.value == '' || GO.value == '' || GY.value == ''){
         for (var j = 0, i = GC.length; j < i; j++){
             var el = GC[j].id == 'tips-val-tea' ? GP : GC[j],
                 elb = GC[j].id == 'tips-val-tea' ? ZO : el,
@@ -1038,6 +1041,7 @@ addEvent(gw.querySelector('#tips-val-prek'), "keyup", function(e){
     }
     GB.setAttribute('disabled', true), addClass(GB, 'spinner-is-loading');
     Req('{$url->{req/rol-admin/this-courses}}', function(e){
+        console.log(e);
         if(e.status == 200){
             GI.style.display = "", loadAlert((type == 'add' ? "{$word->course_added_successfully}" : "{$word->course_updated_successfully}")), preloadPage('&one=courses');
         } else {
@@ -1066,11 +1070,11 @@ addEvent(gw.querySelector('#tips-val-prek'), "keyup", function(e){
                         }, 700);
                 }
             } else {
-                loadAlert("{$word->error}", 1)
+                loadAlert(e.error, 1)
             }
             GB.removeAttribute('disabled'), removeClass(GB, 'spinner-is-loading');
         }
-    }, "POST", "&type=" + type + "&id=" + self.getAttribute('data-id') + "&code=" + GM.value + "&name=" + GU.value + "&program_id=" + GF.value + "&teacher=" + GP.value + "&preknowledge=" + gq.value + "&qualification=" + GJ.value + "&credits=" + GK.value + "&quota=" + GN.value + "&typec=" + GO.value + "&schedule=" + GY.value)
+    }, "POST", "&type=" + type + "&id=" + self.getAttribute('data-id') + "&name=" + GU.value + "&program_id=" + GF.value + "&teacher=" + GP.value + "&preknowledge=" + gq.value + "&qualification=" + GJ.value + "&credits=" + GK.value + "&quota=" + GN.value + "&typec=" + GO.value + "&schedule=" + GY.value)
 }), addEvent(GQ, "click", function(){
     var self = this; 
     self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
@@ -1161,7 +1165,7 @@ for (var j = 0, i = GL.length; j < i; j++) addEvent(GL[j], "click", function(){
             for(var j = 0, i = GW.length; j < i; j++) addEvent(GW[j], "click", GD);
             <?php } ?>
         } else {
-            TE.setAttribute('disabled', true), TO.setAttribute('disabled', true), TR.setAttribute('disabled', true), TS.setAttribute('disabled', true), TA = 1, loadAlert('{$word->error}', 1);
+            TE.setAttribute('disabled', true), TO.setAttribute('disabled', true), TR.setAttribute('disabled', true), TS.setAttribute('disabled', true), TA = 1, loadAlert(e.error, 1);
         }
     }, "POST", "&page_id=" + TA + "&total-pages={#total_pages}&user_id={#user_id}&period_id={#period_id}&keyword=" + GA.value)
 });

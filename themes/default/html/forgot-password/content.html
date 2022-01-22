@@ -51,36 +51,21 @@ var FM = D.querySelector('#email'),
 			removeClass(FM, 'border-red'), removeClass(FM, 'boxshadow-red')
 		}
 		FE.innerText = "";
-		removeClass(FE, 'color-green');
-		removeClass(FE, 'border-green');
-		addClass(FB, 'spinner-is-loading');
-		FB.setAttribute('disabled', true);
+		removeClass(FE, 'color-green'), removeClass(FE, 'border-green'), addClass(FB, 'spinner-is-loading'), FB.setAttribute('disabled', true);
 		Req("{$url->{req/to-access/forgot-password}}", function(e){
+			console.log(e);
 			if(e.status == 200){
-				addClass(FE, 'color-green');
-				addClass(FE, 'border-green');
-				removeClass(FB, 'spinner-is-loading');
-				FB.removeAttribute('disabled');
-				FE.innerText = e.message;
+				addClass(FE, 'color-green'), addClass(FE, 'border-green'), removeClass(FB, 'spinner-is-loading'), FB.removeAttribute('disabled'), FE.innerText = "{$word->email_sent}";
+			} else if(e.status == 400){
+				removeClass(FB, 'spinner-is-loading'), FB.removeAttribute('disabled'), D.querySelector('.text-error').innerText = '*'+e.error, addClass(FM, 'border-red'), addClass(FM, 'boxshadow-red'), timeDelay(function(){
+					addClass(LG, 'efect-boom'), timeDelay(function(){
+						removeClass(LG, 'efect-boom')
+					}, 200)
+				}, 700);
+			} else if(e.status == 401){
+				removeClass(FB, 'spinner-is-loading'), FB.removeAttribute('disabled'), FE.innerHTML = e.html, loadPage(FE.querySelectorAll('a[target="_self"]'));
 			} else {
-				if(e.error != undefined){
-					removeClass(FB, 'spinner-is-loading');
-					FB.removeAttribute('disabled');
-					D.querySelector('.text-error').innerText = '*'+e.error, addClass(FM, 'border-red'), addClass(FM, 'boxshadow-red'), timeDelay(function(){
-						addClass(LG, 'efect-boom'), timeDelay(function(){
-							removeClass(LG, 'efect-boom')
-						}, 200)
-					}, 700);
-				} else if(e.html != undefined){
-					removeClass(FB, 'spinner-is-loading');
-					FB.removeAttribute('disabled');
-					FE.innerHTML = e.html;
-					loadPage(FE.querySelectorAll('a[target="_self"]'));
-				} else {
-					removeClass(FB, 'spinner-is-loading');
-					FB.removeAttribute('disabled');
-					FE.innerText = e.message;
-				}
+				removeClass(FB, 'spinner-is-loading'), FB.removeAttribute('disabled'), FE.innerText = e.error;
 			}
 		}, "POST", "&email=" + FM.value)
 	},

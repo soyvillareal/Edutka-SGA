@@ -794,6 +794,10 @@ h5 {
     opacity: 0;
     transform: translate(-50%, -50%);
 }
+.content-search .content-spinner-circle {
+    left: unset;
+    right: 0;
+}
 .spinner-circle {
     border-radius: 50%;
     height: 22px;
@@ -1140,10 +1144,10 @@ h5 {
 .move-cube-boom {
     margin-left: -100px;
 }
-.content-search-notes .search-down a:last-child, .tipsit-new .search-down button:last-child {
+.content-search .search-down a:last-child, .tipsit-new .search-down button:last-child {
     border-radius: 0 0 12px 12px;
 }
-.content-search-notes .search-down a, .tipsit-new .search-down button {
+.content-search .search-down a, .tipsit-new .search-down button {
     display: flex;
     width: 100%;
     padding: 4px 15px 4px 10px;

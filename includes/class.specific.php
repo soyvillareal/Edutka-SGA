@@ -251,7 +251,7 @@ class Specific {
 	        $mail->IsMail();
 	    }
 
-	    $content = $data['message_body'];
+	    $content = $data['text_body'];
 	    if($data['is_html'] == true){
 	    	$TEMP['title'] = $subject;
 		    $TEMP['body'] = $content;
@@ -286,7 +286,8 @@ class Specific {
 	    $notifycon = $TEMP['#notifycon'][$type];
 
 		$TEMP['name'] = $to_user['names'];
-	    $TEMP['text'] = "<b>$from_user</b> {$notifycon['text']}: <b>$course</b>";
+		$text = strtolower($notifycon['text']);
+	    $TEMP['text'] = "<b>$from_user</b> $text: <b>$course</b>";
 	    $TEMP['url'] = $notifycon['url'];
 	    $TEMP['footer'] = $TEMP['#word']['just_ignore_this_message'];
 	    self::SendEmail(array(
@@ -296,10 +297,9 @@ class Specific {
 	        'to_name' => $to_user['full_name'],
 	        'subject' => str_replace("#REPLACE#", $TEMP['#settings']['title'], $notifycon['title']),
 	        'charSet' => 'UTF-8',
-	        'message_body' => self::Maket('emails/includes/notification'),
+	        'text_body' => self::Maket('emails/includes/notification'),
 	        'is_html' => true
 	    ));
-
 
 	    return $dba->query('INSERT INTO notifications ('.implode(',', array_keys($data)).') VALUES ('.implode(',', array_values($data)).')')->returnStatus();
 	}

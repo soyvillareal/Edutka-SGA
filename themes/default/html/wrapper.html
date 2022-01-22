@@ -112,7 +112,7 @@
               timeDelay(function(){
                 DL.style.display = "";
               }, 1000), scrollTo(0);
-            }else{
+            } else {
               window.location.href = '{$url->{404}}';
             }          
           }, "GET");
@@ -520,6 +520,7 @@ var HA = D.querySelector('#get-notifications'),
       removeClass(HI, 'hidden'), addClass(HL, 'hidden'), addClass(HO, 'hidden');
     }
     Req("{$url->{req/get-notifications}}", function(e){
+      console.log(e);
       if (e.status == 200) {
         if (e.new) {
           HN.innerHTML = e.new, addClass(HA, 'color-red'), removeClass(HA, 'color-grey');

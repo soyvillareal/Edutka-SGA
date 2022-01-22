@@ -24,6 +24,11 @@
 		{!time}
 	</div>
 	<div class="cont-cell-header padding-lr20 color-black">
-		<button class="btn-noway underline-hover show_vmodal color-blue ellipsis-horizontal" data-id="{!id}">{$word->watch}</button>
+		<button class="btn-noway underline-hover show_vmodal color-blue ellipsis-horizontal" data-id="{!id}">
+			<span class="color-blue">{$word->watch}</span>
+            <div class="content-spinner-circle">
+                <div class="spinner-circle"></div>
+            </div>
+        </button>
 	</div>
 </div>

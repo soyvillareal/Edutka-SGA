@@ -234,7 +234,7 @@ addEvent(GR, 'click', function(){
         if(e.status == 200){
             loadAlert("{$word->regulation_removed_successfully}", 1), preloadPage('&one=more&page=rules');
         } else {
-            self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
+            loadAlert(e.error, 1), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
         }
     }, "POST", "&id=" + self.getAttribute('data-id'));
 }), addEvent(D.querySelector('#close-add'), 'click', function(){

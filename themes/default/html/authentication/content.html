@@ -102,8 +102,7 @@ var TI = D.querySelectorAll('.input_key'),
 					TH.querySelector('.text-error').innerText = "", removeClass(el, 'border-red'), removeClass(el, 'boxshadow-red');
 			}
 		}
-		addClass(TB, 'spinner-is-loading');
-		TB.setAttribute('disabled', true);
+		addClass(TB, 'spinner-is-loading'), TB.setAttribute('disabled', true);
 		Req("{$url->{req/to-access/verify-{$type}}}", function(e){
 			console.log(e);
 			if(e.status == 200){
@@ -115,13 +114,12 @@ var TI = D.querySelectorAll('.input_key'),
 					}
 				}, 2000)
 			} else {
-				removeClass(TB, 'spinner-is-loading');
-				TB.removeAttribute('disabled');
+				removeClass(TB, 'spinner-is-loading'), TB.removeAttribute('disabled');
 				for (var j = 0, i = TI.length; j < i; j++){
 					var el = TI[j];
 					addClass(el, 'border-red'), addClass(el, 'boxshadow-red');
 				}
-				TH.querySelector('.text-error').innerText = '*'+e.message;
+				TH.querySelector('.text-error').innerText = '*'+e.error;
 			}
 		}, "POST", "&tokenu=" + TC + "&ukey={$ukey}&to={$to}")
 	},
@@ -153,16 +151,16 @@ var TI = D.querySelectorAll('.input_key'),
 	self.setAttribute('disabled', true);
 	self.innerText = "{$word->please_wait}";
 	Req("{$url->{req/to-access/resend-{$type}}}", function(e){
-		console.log(e);
-		var clss = e.status == 200 ? 'color-green' : 'color-red';
-		if(e.status == 200 || e.status == 400){
-			TM = e.token, addClass(self, clss), self.innerText = e.message;
-			timeDelay(function(){
-				removeClass(self, clss)
-				self.innerText = "{$word->resend_code}", self.removeAttribute('disabled');
+		if(e.status == 200){
+			TM = e.token, addClass(self, 'color-green'), self.innerText = "{$word->email_sent}", timeDelay(function(){
+				removeClass(self, 'color-green'), self.innerText = "{$word->resend_code}", self.removeAttribute('disabled');
+			}, 3000)
+		} else if(e.status == 400){
+			addClass(self, 'color-red'), self.innerText = e.error, timeDelay(function(){
+				removeClass(self, 'color-red'), self.innerText = "{$word->resend_code}", self.removeAttribute('disabled');
 			}, 3000)
 		} else {
-			self.innerText = "{$word->resend_code}", self.removeAttribute('disabled'), loadAlert(e.message, 1);
+			self.innerText = "{$word->resend_code}", self.removeAttribute('disabled'), loadAlert(e.error, 1);
 		}
 	}, "POST", "&tokenu=" + TM + "&ukey={$ukey}")
 });

@@ -66,13 +66,18 @@ if(!empty($rules)){
     }
 }
 $TEMP['#plans'] = $dba->query('SELECT * FROM plan')->fetchAll();
+$TEMP['#programs'] = $dba->query('SELECT * FROM programs')->fetchAll();
 $TEMP['#faculties'] = $dba->query('SELECT * FROM faculty')->fetchAll();
 $TEMP['#admin'] = Specific::Admin();
 $TEMP['#academic'] = Specific::Academic();
 $TEMP['#teacher'] = Specific::Teacher();
 $TEMP['#student'] = Specific::Student();
 $TEMP['#notifycon'] = array(
-  'note' => array(
+  'enroll' => array(
+    'title' => $TEMP['#word']['they_enrolled_one_courses'],
+    'text' => "{$TEMP['#word']['just_enrolled_in_your_course']}",
+    'url' => Specific::Url('courses')
+  ), 'note' => array(
     'title' => $TEMP['#word']['they_uploaded_your_note_in'],
     'text' => "{$TEMP['#word']['just_uploaded_your_grade_course']}",
     'url' => Specific::Url('notes')

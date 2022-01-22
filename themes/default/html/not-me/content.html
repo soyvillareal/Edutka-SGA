@@ -100,7 +100,7 @@ addEvent(D.querySelector('#cancel-dalert'), 'click', GD), addEvent(GW, "click", 
         if (e.status == 200) {
             D.querySelector('#notme-title').innerText = '{$word->the_account_been_reported}', D.querySelector('#notme-content').innerHTML = '{$word->thanks_for_letting_us_know} {$word->if_you_need_more_help} <a class="color-blue" href="mailto:{$settings->email}" target="_blank">{$word->contact_our_helpdesk}</a>', D.querySelector('#notme-buttons').innerHTML = '<a class="color-white margin-auto" href="{$url->{home}}" target="_self"><button class="btn-noway margin-l10 position-relative background-blue hover-opacity border-radius-4 padding-10">{$word->return_to}</button></a>', GD();
         } else {
-        	removeClass(self, 'spinner-is-loading'), self.removeAttribute('disabled'), loadAlert("{$word->error}", 1);
+        	removeClass(self, 'spinner-is-loading'), self.removeAttribute('disabled'), loadAlert(e.error, 1);
         }
    	}, "POST", "&user_id={$id}&tokenu={$token}&ukey={$ukey}")
 });

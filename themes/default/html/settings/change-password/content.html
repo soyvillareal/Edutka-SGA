@@ -96,27 +96,25 @@ var PI = D.querySelectorAll('.input_key'),
                 }
             }
         }
-        addClass(PB, 'spinner-is-loading');
-        PB.setAttribute('disabled', true);
+        addClass(PB, 'spinner-is-loading'), PB.setAttribute('disabled', true);
         Req("{$url->{req/settings/change-password}}", function(e){
             if (e.status == 200) {
-                addClass(PS, 'hidden'), removeClass(PB, 'spinner-is-loading'), PB.removeAttribute('disabled'), loadAlert(e.message);
+                addClass(PS, 'hidden'), removeClass(PB, 'spinner-is-loading'), PB.removeAttribute('disabled'), loadAlert("{$word->setting_updated}");
                 for (var j = 0, i = PI.length; j < i; j++) PI[j].value = "";
             } else {
-                removeClass(PS, 'hidden'), removeClass(PB, 'spinner-is-loading');
-                PB.removeAttribute('disabled');
-                if(e.err != undefined){
-                    for (var j = 0, i = e.err.length; j < i; j++){
-                        var el = D.querySelector('#'+e.err[j]['el']),
+                removeClass(PS, 'hidden'), removeClass(PB, 'spinner-is-loading'), PB.removeAttribute('disabled');
+                if(e.errors != undefined){
+                    for (var j = 0, i = e.errors.length; j < i; j++){
+                        var el = D.querySelector('#'+e.errors[j]['el']),
                             GZ = el.parentNode,
                             GH = hasClass(GZ, 'group-validate') ? GZ : GZ.parentNode;
-                        GH.querySelector('.text-error').innerText = '*'+e.err[j]['error'], addClass(el, 'border-red'), addClass(el, 'boxshadow-red'), timeDelay(function(){
+                        GH.querySelector('.text-error').innerText = '*'+e.errors[j]['error'], addClass(el, 'border-red'), addClass(el, 'boxshadow-red'), timeDelay(function(){
                             addClass(PZ, 'efect-boom'), timeDelay(function(){
                                 removeClass(PZ, 'efect-boom')
                             }, 200)
                         }, 700);
                     }
-                } else {
+                } else if (e.emptys != undefined){
                     for (var j = 0, i = e.emptys.length; j < i; j++){
                         var el = D.querySelector('#'+e.emptys[j]),
                             GZ = el.parentNode,
@@ -126,9 +124,10 @@ var PI = D.querySelectorAll('.input_key'),
                                 removeClass(PZ, 'efect-boom')
                             }, 200)
                         }, 700);
-                        addClass(el, 'border-red');
-                        addClass(el, 'boxshadow-red');
+                        addClass(el, 'border-red'), addClass(el, 'boxshadow-red');
                     }
+                } else {
+                    loadAlert(e.error, 1)
                 }
             }
         }, "POST", "&current-password=" + D.querySelector('#current-password').value + "&password=" + D.querySelector('#password').value + "&re-password=" + D.querySelector('#re-password').value)
@@ -158,7 +157,14 @@ for (var j = 0, i = PI.length; j < i; j++) addEvent(PI[j], 'keyup', function(e){
             GW = self.value,
             GZ = self.parentNode,
             GH = hasClass(GZ, 'group-validate') ? GZ : GZ.parentNode,
-            GS = GA == 'password' ? PC : PP;
+            GS = GA == 'password' ? PC : PP,
+            el = GH.querySelector('.text-error'),
+            GF = function(){
+                PX = !0;
+                if((GA == 'password' || GA == 're-password') && D.querySelector('#'+GA).value != '' && PP.value == PC.value){
+                    GS.parentNode.parentNode.querySelector('.text-error').innerText = "", removeClass(GS, 'border-red'), removeClass(GS, 'boxshadow-red');
+                }
+            };
         if(PP.value != '' && PC.value != '' && PE.value != ''){
             PB.removeAttribute('disabled');
         } else {
@@ -170,22 +176,15 @@ for (var j = 0, i = PI.length; j < i; j++) addEvent(PI[j], 'keyup', function(e){
         }
         Req("{$url->{req/key-validate}}", function(e){
             if(e.status == 200){
-                var msg = e.message;
-                if(msg == ''){
-                    removeClass(self, 'border-red'), removeClass(self, 'boxshadow-red');
-                } else {
-                    addClass(self, 'border-red'), addClass(self, 'boxshadow-red'), timeDelay(function(){
-                        addClass(PZ, 'efect-boom'), timeDelay(function(){
-                            removeClass(PZ, 'efect-boom')
-                        }, 200)
-                    }, 700), PX = !0;
-                }
-                GH.querySelector('.text-error').innerText = msg;
-                if((GA == 'password' || GA == 're-password') && D.querySelector('#'+GA).value != '' && PP.value == PC.value){
-                    GS.parentNode.parentNode.querySelector('.text-error').innerText = "", removeClass(GS, 'border-red'), removeClass(GS, 'boxshadow-red');
-                }
+                el.innerText = "", removeClass(self, 'border-red'), removeClass(self, 'boxshadow-red'), GF();
+            } else if(e.status == 302){
+                el.innerText = e.error, addClass(self, 'border-red'), addClass(self, 'boxshadow-red'), timeDelay(function(){
+                    addClass(PZ, 'efect-boom'), timeDelay(function(){
+                        removeClass(PZ, 'efect-boom')
+                    }, 200)
+                }, 700), GF();
             } else {
-                loadAlert(e.message, 1);
+                loadAlert(e.error, 1);
             }
         }, "POST", "&input=" + GW + "&type=" + GA + "&password=" + PP.value + "&re-password=" + PC.value)
     }

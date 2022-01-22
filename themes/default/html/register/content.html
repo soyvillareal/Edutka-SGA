@@ -252,25 +252,26 @@ var GI = D.querySelectorAll('.input_key'),
 		}
 		removeClass(GE, 'color-green'), removeClass(GE, 'border-green'), addClass(GB, 'spinner-is-loading'), GB.setAttribute('disabled', true);
 		Req("{$url->{req/to-access/register}}", function(e){
+			console.log(e);
 			if(e.status == 200){
 				if(e.url == undefined){
-					addClass(GE, 'color-green'), addClass(GE, 'border-green'), removeClass(GB, 'spinner-is-loading'), GB.removeAttribute('disabled'), GE.innerText = e.message;
+					addClass(GE, 'color-green'), addClass(GE, 'border-green'), removeClass(GB, 'spinner-is-loading'), GB.removeAttribute('disabled'), GE.innerText = "{$word->successfully_joined_desc}";
 				} else {
 					window.location = e.url;
 				}
 			} else {
 				removeClass(GB, 'spinner-is-loading'), GB.removeAttribute('disabled');
-				if(e.err != undefined){
-					Gh(e.err);
-					for (var j = 0, i = e.err.length; j < i; j++){
-						var els = e.err[j]['el'],
+				if(e.errors != undefined){
+					Gh(e.errors);
+					for (var j = 0, i = e.errors.length; j < i; j++){
+						var els = e.errors[j]['el'],
 							elp = els.split('-'),
 							ela = elp.indexOf('g'),
 							elb = elp.indexOf('re'),
 							el = els.indexOf('-') == -1 || ela != -1 || elb != -1 ? D.querySelector('#'+els) : D.querySelector('#'+elp[0]),
 							GZ = el.parentNode,
 							GH = hasClass(GZ, 'group-validate') ? GZ : GZ.parentNode;
-						GH.querySelector('.text-error').innerText = '*'+e.err[j]['error'], timeDelay(function(){
+						GH.querySelector('.text-error').innerText = '*'+e.errors[j]['error'], timeDelay(function(){
 							addClass(Gc, 'efect-boom'), timeDelay(function(){
 								removeClass(Gc, 'efect-boom')
 							}, 200)
@@ -285,7 +286,7 @@ var GI = D.querySelectorAll('.input_key'),
 						}
 					}
 				} else if(e.emptys != undefined){
-					Gh(e.err);
+					Gh(e.emptys);
 					for (var j = 0, i = e.emptys.length; j < i; j++){
 						var el = D.querySelector('#'+e.emptys[j]),
 							GZ = el.parentNode,
@@ -377,28 +378,27 @@ for (var j = 0, i = GI.length; j < i; j++) addEvent(GI[j], 'keyup', function(e){
 			GW = self.value,
 			GZ = self.parentNode,
 			GH = hasClass(GZ, 'group-validate') ? GZ : GZ.parentNode,
+			el = GH.querySelector('.text-error'),
 			els = GH.querySelectorAll('.area_validate'),
-			GS = GA == 'password' ? GC : GP;
+			GS = GA == 'password' ? GC : GP,
+			Gq = function(){
+				GX = !0;
+				if((GA == 'password' || GA == 're-password') && D.querySelector('#'+GA).value != '' && GP.value == GC.value){
+					GS.parentNode.parentNode.querySelector('.text-error').innerText = "", removeClass(GS, 'border-red'), removeClass(GS, 'boxshadow-red');
+				}
+			};
 		bDisabled(), removeClass(GD, 'border-red'), removeClass(GD, 'boxshadow-red');
 		if(GW == ''){
 			GH.querySelector('.text-error').innerText = "", removeClass(self, 'border-red'), removeClass(self, 'boxshadow-red'), GX = !1;
 			return false;
 		}
 		Req("{$url->{req/key-validate}}", function(e){
-			console.log(e);
 			if(e.status == 200){
-				var msg = e.message;
-				if(msg == ''){
-					removeClass(self, 'border-red'), removeClass(self, 'boxshadow-red');
-				} else {
-					addClass(self, 'border-red'), addClass(self, 'boxshadow-red');
-				}
-				GH.querySelector('.text-error').innerText = msg, GX = !0;
-				if((GA == 'password' || GA == 're-password') && D.querySelector('#'+GA).value != '' && GP.value == GC.value){
-					GS.parentNode.parentNode.querySelector('.text-error').innerText = "", removeClass(GS, 'border-red'), removeClass(GS, 'boxshadow-red');
-				}
+				el.innerText = "", removeClass(self, 'border-red'), removeClass(self, 'boxshadow-red'), Gq();
+			} else if(e.status == 302){
+				el.innerText = e.error, addClass(self, 'border-red'), addClass(self, 'boxshadow-red'), Gq();
 			} else {
-				loadAlert(e.message, 1);
+				loadAlert(e.error, 1);
 			}
 		}, "POST", "&input=" + GW + "&type=" + GA + "&password=" + GP.value + "&re-password=" + GC.value)
 	}

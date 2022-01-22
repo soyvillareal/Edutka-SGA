@@ -4,15 +4,15 @@ if((filter_var($_POST['email'], FILTER_VALIDATE_EMAIL) || empty($_POST['email'])
 	$name = Specific::Filter($_POST['name']);
 	$subject = Specific::Filter($_POST['subject']);
 	$email = Specific::Filter($_POST['email']);
-	$message = Specific::Filter($_POST['message']);
+	$text = Specific::Filter($_POST['text']);
 	if (empty($name)){
         $emptys[] = 'name';
     }
     if(empty($email)){
         $emptys[] = 'email';
     }
-    if (empty($message)) {
-        $emptys[] = 'message';
+    if (empty($text)) {
+        $emptys[] = 'text';
     }
     
     $subject = $TEMP['#word']['other'];
@@ -32,17 +32,14 @@ if((filter_var($_POST['email'], FILTER_VALIDATE_EMAIL) || empty($_POST['email'])
 		    'to_name' => $TEMP['#settings']['title'],
 		    'subject' => $subject,
 		    'charSet' => 'UTF-8',
-		    'message_body' => $message
+		    'text_body' => $text
 		);
 		if(Specific::SendEmail($send_email_data)){
-			$deliver = array(
-				'status' => 200,
-				'message' => $TEMP['#word']['email_sent']
-			);
+			$deliver['status'] = 200;
 		} else {
 			$deliver = array(
 				'status' => 400,
-				'message' => $TEMP['#word']['could_not_send_message_error']
+				'error' => $TEMP['#word']['could_not_send_message_error']
 			);
 		}
     } else {
@@ -51,10 +48,5 @@ if((filter_var($_POST['email'], FILTER_VALIDATE_EMAIL) || empty($_POST['email'])
     		'emptys' => $emptys
     	);
     }
-} else {
-	$deliver = array(
-		'status' => 400,
-		'message' => $TEMP['#word']['error']
-	);
 }
 ?>

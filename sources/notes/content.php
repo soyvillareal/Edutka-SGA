@@ -59,7 +59,7 @@ if(!empty($TEMP['#program_id'])){
 	$params .= (!empty($params) ? "&" : "?")."program={$TEMP['#program_id']}";
 }
 if(!empty($TEMP['#period_id'])){
-	$sqls .= ' AND (SELECT course_id FROM enrolled WHERE user_id = '.$TEMP['#user_id'].' AND period_id = '.$TEMP['#period_id'].' AND type = "course" AND course_id = n.course_id) = course_id';
+	$sqls .= ' AND period_id = '.$TEMP['#period_id'];
 	$params .= "&period={$TEMP['#period_id']}";
 }
 
@@ -76,8 +76,6 @@ if(!empty($TEMP['#notes'])){
 			$qua_arr[] = 'true';
 		}
 	}
-
-
 	$atrues = array_count_values($qua_arr)['true'];
 
 	foreach ($TEMP['#notes'] as $note) {
@@ -86,12 +84,12 @@ if(!empty($TEMP['#notes'])){
 		}
 		$notes = json_decode($note['notes'], true);
 		$course = $dba->query('SELECT * FROM courses WHERE id = '.$note['course_id'])->fetchArray();
-		$period = $dba->query('SELECT * FROM periods p WHERE (SELECT period_id FROM enrolled WHERE user_id = '.$TEMP['#user_id'].' AND course_id = '.$note['course_id'].' AND type = "course" AND period_id = p.id) = id')->fetchArray();
+		$period = $dba->query('SELECT * FROM periods WHERE id = '.$TEMP['#period_id'])->fetchArray();
 		$TEMP['!period_final'] = time() > $period['final'];
 		$authorization = $dba->query('SELECT court FROM authorization WHERE status = "authorized" AND period_id = '.$period['id'].' AND course_id = '.$note['course_id'])->fetchAll(false);
 		$TEMP['!authorization'] = Specific::Admin() == true || Specific::Academic() == true ? array('first', 'second', 'third') : $authorization;
 
-		$teachers = $dba->query('SELECT names FROM users u WHERE (SELECT user_id FROM teacher WHERE user_id = u.id AND course_id = '.$note['course_id'].') = id')->fetchAll(false);
+		$teachers = $dba->query('SELECT names FROM users u WHERE (SELECT user_id FROM teacher WHERE user_id = u.id AND course_id = '.$note['course_id'].' AND period_id = '.$TEMP['#period_id'].') = id')->fetchAll(false);
 		if(!empty($teachers)){
 			if(count($teachers) == 2){
 				$TEMP['!teacher'] = "{$teachers[0]} {$TEMP['#word']['and']} {$teachers[1]}";

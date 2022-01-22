@@ -4,9 +4,14 @@
         <div class="background-white border-radius-12 padding-25 margin-b50">
             <div class="border-top-left-radius border-top-right-radius">
                 <label class="color-black">{$word->search}</label>
-                <div class="content-search-notes position-relative margin-b20">
+                <div class="content-search position-relative margin-b20">
                     <div class="display-flex margin-auto border-radius-4">
                         <input id="search-forms" class="background-grely padding-10 border-focus-blue border-all border-grey border-top-left-radius border-top-right-radius border-bottom-right-radius border-bottom-left-radius w-100 color-black" type="text" autocomplete="off">
+                        <div class="content-spinner-circle">
+                            <div class="content-spinner-circle">
+                                <div class="spinner-circle"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="content-forms">
@@ -224,7 +229,7 @@ var GE = D.querySelectorAll('.show_emodal'),
                 for (var j = 0, i = ge['access'].length; j < i; j++) createTag(ge['access'][j]);
                 GI.style.display = "block", D.body.style.overflow = "hidden", GB.setAttribute('data-id', form_id), GB.setAttribute('data-type', 'edit'), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
             } else {
-                loadAlert('{$word->error}', 1), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
+                loadAlert(e.error, 1), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
             }
         }, "POST", "&id=" + form_id)
     },
@@ -338,7 +343,7 @@ addEvent(D.querySelector('.number'), 'input', function(){
                         }, 700);
                 }
             } else {
-                loadAlert("{$word->error}", 1)
+                loadAlert(e.error, 1)
             }
             GB.removeAttribute('disabled'), removeClass(GB, 'spinner-is-loading');
         }
@@ -350,20 +355,22 @@ addEvent(D.querySelector('.number'), 'input', function(){
         if(e.status == 200){
             GT.style.display = "", loadAlert("{$word->form_successfully_removed}", 1), preloadPage('&one=forms');
         } else {
-            self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
+            loadAlert(e.error, 1), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
         }
     }, "POST", "&id=" + self.getAttribute('data-id'));
 }), addEvent(GA, 'keyup', function(){
     var self = this,
+        GY = self.parentNode,
         TZ = D.querySelector('#table-footer');
+    addClass(GY, 'spinner-is-loading');
     Req('{$url->{req/rol-academic/search-forms}}', function(e){
         console.log(e);
         if(e.status == 200){
-            <?php echo($TEMP['#total_pages'] > 1) ? "TT = e.total_pages, TA = 1, TO.setAttribute('disabled', true), TR.setAttribute('disabled', true), TE.removeAttribute('disabled'), TS.removeAttribute('disabled'), D.querySelector('#total-pages').innerText = TT, TN.innerText = TA, TZ && (TT <= 1 ? TZ.style.display = 'none' : TZ.removeAttribute('style')), " : ""?>D.querySelector('#container-pages').innerHTML = e.html, loadPage(D.querySelectorAll('a[target="_self"]')), GE = D.querySelectorAll('.show_emodal'), GW = D.querySelectorAll('.show_dmodal');
+            <?php echo($TEMP['#total_pages'] > 1) ? "TT = e.total_pages, TA = 1, TO.setAttribute('disabled', true), TR.setAttribute('disabled', true), TE.removeAttribute('disabled'), TS.removeAttribute('disabled'), D.querySelector('#total-pages').innerText = TT, TN.innerText = TA, TZ && (TT <= 1 ? TZ.style.display = 'none' : TZ.removeAttribute('style')), " : ""?>removeClass(GY, 'spinner-is-loading'), D.querySelector('#container-pages').innerHTML = e.html, loadPage(D.querySelectorAll('a[target="_self"]')), GE = D.querySelectorAll('.show_emodal'), GW = D.querySelectorAll('.show_dmodal');
             for(var j = 0, i = GE.length; j < i; j++) addEvent(GE[j], "click", GS);
             for(var j = 0, i = GW.length; j < i; j++) addEvent(GW[j], "click", GD);
         } else {
-            D.querySelector('#container-pages').innerHTML = e.html<?php echo($TEMP['#total_pages'] > 1) ? ', TZ.style.display = "none"' : '';?>; 
+            removeClass(GY, 'spinner-is-loading'), D.querySelector('#container-pages').innerHTML = e.html<?php echo($TEMP['#total_pages'] > 1) ? ', TZ.style.display = "none"' : '';?>; 
         }
     }, "POST", "&keyword=" + self.value)
 }), addEvent(GR, 'change', bDisabled);
@@ -414,7 +421,7 @@ for (var j = 0, i = GL.length; j < i; j++) addEvent(GL[j], "click", function(){
             for(var j = 0, i = GE.length; j < i; j++) addEvent(GE[j], "click", GS);
             for(var j = 0, i = GW.length; j < i; j++) addEvent(GW[j], "click", GD);
         } else {
-            TE.setAttribute('disabled', true), TO.setAttribute('disabled', true), TR.setAttribute('disabled', true), TS.setAttribute('disabled', true), TA = 1, loadAlert('{$word->error}', 1);
+            TE.setAttribute('disabled', true), TO.setAttribute('disabled', true), TR.setAttribute('disabled', true), TS.setAttribute('disabled', true), TA = 1, loadAlert(e.error, 1);
         }
     }, "POST", "&page_id=" + TA + "&total-pages={#total_pages}&keyword=" + GA.value)
 });

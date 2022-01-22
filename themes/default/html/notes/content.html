@@ -4,9 +4,14 @@
 			<?php if($TEMP['#admin'] == true || $TEMP['#academic'] == true || $TEMP['#teacher'] == true) { ?>
 			<div class="background-white border-radius-12 padding-25 margin-b10">
 				<label class="color-black">{$word->search}</label>
-				<div class="content-search-notes position-relative margin-b10">
+				<div class="content-search position-relative margin-b10">
 					<div class="display-flex margin-auto border-radius-4">
 				        <input class="background-grely padding-10 border-focus-blue border-all border-grey border-top-left-radius border-top-right-radius w-100 color-black" type="text" id="search-users" name="keyword" autocomplete="off" value="{#keyword_notes}"> 
+				        <div class="content-spinner-circle">
+                            <div class="content-spinner-circle">
+                                <div class="spinner-circle"></div>
+                            </div>
+                        </div>
 				    </div>
 			        <div class="search-down w-100 z-index-first position-absolute background-white"></div>
 			    </div>
@@ -193,7 +198,7 @@ var NW = D.querySelectorAll('.number'),
                 }
                 NN.style.display = "block", D.body.style.overflow = "hidden"<?php if($TEMP['#student'] == false){ ?><?php echo($TEMP['#note_mode'] == '30-30-40') ? ", NT.setAttribute('data-pos', pos)" : "";?>, NT.setAttribute('data-id', note_id), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');<?php } ?>
             } else {
-                loadAlert('{$word->error}', 1), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
+                loadAlert(e.error, 1), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
             }
         }, "POST", "&type=notes&id=" + note_id + "&pos=" + pos + "&period_id=<?php echo(count($TEMP['#periods']) > 1) ? '" + NP.value' : '{#period_id}"';?>)
     },
@@ -217,7 +222,7 @@ var NW = D.querySelectorAll('.number'),
 	        	}
 	            NO.style.display = "block", D.body.style.overflow = "hidden", NB.setAttribute('data-id', note_id), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
 	        } else {
-	        	loadAlert("{$word->error}", 1), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
+	        	loadAlert(e.error, 1), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
 	    	}
 	    }, "POST", "&id={$me->id}&note_id=" + note_id)
     },
@@ -291,7 +296,9 @@ addEvent(NT, 'click', function(){
         }
     }, "POST", "&id=" + self.getAttribute('data-id') + "&params=" + JSON.stringify(GO)<?php echo($TEMP['#note_mode'] == '30-30-40') ? ' + "&pos=" + self.getAttribute("data-pos")' : '';?>)
 }), <?php } ?>addEvent(D.querySelector('#search-users'), "keyup", function(e){
-	let SV = this.value,
+	let self = this,
+		SV = self.value,
+		SQ = self.parentNode,
 		SD = D.querySelector('.search-down');
 	if (SV == '') {
 		addClass(SD, 'hidden');
@@ -300,14 +307,13 @@ addEvent(NT, 'click', function(){
 	} else if(e.which != 13 || e.keyCode != 13){
 		removeClass(SD, 'hidden');
 	}
-	keyword = SV;
+	addClass(SQ, 'spinner-is-loading'), keyword = SV;
 	Req('{$url->{req/rol-teacher/search-users}}', function(e) {
 		console.log(e);
 	    if (e.status == 200) {
-	   		SD.innerHTML = e.html, loadPage(SD.querySelectorAll('a[target="_self"]'));
+	   		removeClass(SQ, 'spinner-is-loading'), SD.innerHTML = e.html, loadPage(SD.querySelectorAll('a[target="_self"]'));
 	    } else {
-		    addClass(SD, 'hidden');
-		   	SD.innerHTML = "";
+		    removeClass(SQ, 'spinner-is-loading'), addClass(SD, 'hidden'), SD.innerHTML = "";
 		   	return false;
 	    }
 	}, "POST", "&typet=notes&keyword=" + SV);
@@ -325,7 +331,7 @@ addEvent(NB, 'click', function(){
         if(e.status == 200){
             NO.style.display = "", loadAlert("¡Solicitud enviada con exito!"), preloadPage('{#url_params}');
         } else {
-            loadAlert('{$word->error}', 1), NB.removeAttribute('disabled'), removeClass(NB, 'spinner-is-loading');
+            loadAlert(e.error, 1), NB.removeAttribute('disabled'), removeClass(NB, 'spinner-is-loading');
         }
     }, "POST", "&id={$me->id}&period_id={#period_id}&note_id=" + self.getAttribute('data-id'))
 });

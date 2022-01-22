@@ -1,7 +1,10 @@
 <?php
 require_once('./includes/autoload.php');
 
-$deliver = array();
+$deliver = array(
+	'status' => 400,
+	'error' => $TEMP['#word']['error']
+);
 $one = Specific::Filter($_GET['one']);
 $token = Specific::Filter($_POST['token']);
 if (!empty($_GET['token'])) {
@@ -9,10 +12,7 @@ if (!empty($_GET['token'])) {
 }
 
 if (empty($token) || $token != $_SESSION['session_id']) {
-	$deliver = array(
-		'status' => 400,
-		'message' => $TEMP['#word']['invalid_request']
-	);
+	$deliver['error'] = $TEMP['#word']['invalid_request'];
 }
 
 if (!empty($_GET['request-name']) && !empty($token) && $token == $_SESSION['session_id']) {

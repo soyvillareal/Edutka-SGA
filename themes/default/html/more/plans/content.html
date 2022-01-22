@@ -4,9 +4,14 @@
         <div class="background-white border-radius-12 padding-25 margin-b50">
             <div class="border-top-left-radius border-top-right-radius">
                 <label class="color-black">{$word->search}</label>
-                <div class="content-search-notes position-relative margin-b20">
+                <div class="content-search position-relative margin-b20">
                     <div class="display-flex margin-auto border-radius-4">
                         <input id="search-plans" class="background-grely padding-10 border-focus-blue border-all border-grey border-top-left-radius border-top-right-radius border-bottom-right-radius border-bottom-left-radius w-100 color-black" type="text" autocomplete="off">
+                        <div class="content-spinner-circle">
+                            <div class="content-spinner-circle">
+                                <div class="spinner-circle"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="content-plans">
@@ -257,6 +262,11 @@
                             <ul id="tips-courses" class="content-tips cont-input h-100 background-grely border-radius-12 animated-easy color-black">
                                 <li class="tipsit-new">
                                     <input id="tips-val-cou" class="color-black area_validate" type="text" autocomplete="off">
+                                    <div class="content-spinner-circle">
+                                        <div class="content-spinner-circle">
+                                            <div class="spinner-circle"></div>
+                                        </div>
+                                    </div>
                                     <div class="search-down position-absolute z-index-first background-white overflow-hidden border-all border-grey border-top-left-radius border-top-right-radius border-bottom-left-radius border-bottom-right-radius"></div>
                                 </li>
                             </ul>
@@ -354,7 +364,7 @@ var GE = D.querySelectorAll('.show_emodal'),
                 for (var key in e.items) D.querySelector('#'+key).value = e.items[key];
                 GI.style.display = "block", D.body.style.overflow = "hidden", GB.setAttribute('data-id', plan_id), GB.setAttribute('data-type', 'edit'), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
             } else {
-                loadAlert('{$word->error}', 1), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
+                loadAlert(e.error, 1), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
             }
         }, "POST", "&id=" + plan_id)
     },
@@ -379,7 +389,7 @@ var GE = D.querySelectorAll('.show_emodal'),
 
                     gc.style.display = "block", D.body.style.overflow = "hidden", gd.setAttribute('data-id', course_id), gd.setAttribute('data-type', type), gdd.setAttribute('data-id', self.getAttribute('data-id')), gd.setAttribute('data-id', course_id), removeClass(gdd, 'hidden'), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
                 } else {
-                    loadAlert('{$word->error}', 1), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
+                    loadAlert(e.error, 1), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
                 }
             }, "POST", "&id=" + self.getAttribute('data-id') + "&period_id=" + self.value)
 
@@ -433,7 +443,7 @@ addEvent(gdd, 'click', GDD), addEvent(D.querySelector('#cancel-adalert'), 'click
         if(e.status == 200){
             gcc.style.display = "", loadAlert("{$word->curriculum_mesh_successfully_removed}"), preloadPage('&one=more&page=plans');
         } else {
-            loadAlert('{$word->error}', 1), gyy.removeAttribute('disabled'), removeClass(gyy, 'spinner-is-loading');
+            loadAlert(e.error, 1), gyy.removeAttribute('disabled'), removeClass(gyy, 'spinner-is-loading');
         }
     }, "POST", "&id=" + self.getAttribute('data-id'));
 }), addEvent(gd, 'click', function(){
@@ -457,12 +467,9 @@ addEvent(gdd, 'click', GDD), addEvent(D.querySelector('#cancel-adalert'), 'click
     Req('{$url->{req/rol-admin/this-curriculum}}', function(e){
         console.log(e);
         if(e.status == 200){
-            gc.style.display = "", preloadPage('&one=more&page=plans');
-            if(e.error != undefined){
-                loadAlert(e.error, 1);
-            } else {
-                loadAlert("{$word->curriculum_updated_successfully}")
-            }
+            gc.style.display = "", preloadPage('&one=more&page=plans'), loadAlert("{$word->curriculum_updated_successfully}");
+        } else if(e.status == 302){
+            loadAlert(e.error, 1);
         } else {
             if (e.errors != undefined) {
                 var GZ = GK.parentNode,
@@ -486,8 +493,10 @@ addEvent(gdd, 'click', GDD), addEvent(D.querySelector('#cancel-adalert'), 'click
 
 addEvent(ga, "keydown", function(e){
     keyTag(e.which, this, ZO, GX, GK)
-}), addEvent(ZO.querySelector('#tips-val-cou'), "keyup", function(e){
-    let SV = this.value;
+}), addEvent(ga, "keyup", function(e){
+    let self = this,
+        SV = self.value,
+        SQ = self.parentNode;
     if (SV == '') {
         addClass(gl, 'hidden');
         gl.innerHTML = "";
@@ -495,18 +504,17 @@ addEvent(ga, "keydown", function(e){
     } else if(e.which != 13 || e.keyCode != 13){
         removeClass(gl, 'hidden');
     }
-    console.log(gd.getAttribute('data-id'));
+    addClass(SQ, 'spinner-is-loading');
     Req('{$url->{req/rol-admin/search-course}}', function(e) {
         console.log(e);
         if(e.html != ''){
-            gl.innerHTML = e.html;
+            removeClass(SQ, 'spinner-is-loading'), gl.innerHTML = e.html;
             if (e.status == 200) {
                 var gg = ZO.querySelectorAll('.tipsit-search');
                 for(var j = 0, i = gg.length; j < i; j++) addEvent(gg[j], 'click', gh);
             }
         } else {
-            addClass(gl, 'hidden');
-            gl.innerHTML = "";
+            removeClass(SQ, 'spinner-is-loading'), addClass(gl, 'hidden'), gl.innerHTML = "";
             return false;
         }
     }, "POST", "&typet=" + gd.getAttribute('data-type') + "&keyword=" + SV + "&courses=" + GK.value + "&plan_id=" + gd.getAttribute('data-id'));
@@ -600,15 +608,17 @@ addEvent(ga, "keydown", function(e){
     }, "POST", "&id=" + self.getAttribute('data-id'));
 }), addEvent(GA, 'keyup', function(){
     var self = this,
+        TQ = self.parentNode,
         TZ = D.querySelector('#table-footer');
+    addClass(TQ, 'spinner-is-loading');
     Req('{$url->{req/rol-admin/search-plans}}', function(e){
         if(e.status == 200){
-            <?php echo($TEMP['#total_pages'] > 1) ? "TT = e.total_pages, TA = 1, TO.setAttribute('disabled', true), TR.setAttribute('disabled', true), TE.removeAttribute('disabled'), TS.removeAttribute('disabled'), D.querySelector('#total-pages').innerText = TT, TN.innerText = TA, TZ && (TT <= 1 ? TZ.style.display = 'none' : TZ.removeAttribute('style')), " : ""?>D.querySelector('#container-pages').innerHTML = e.html, loadPage(D.querySelectorAll('a[target="_self"]')), GE = D.querySelectorAll('.show_emodal'), GW = D.querySelectorAll('.show_dmodal'), go = D.querySelectorAll('.show_amodal');
+            <?php echo($TEMP['#total_pages'] > 1) ? "TT = e.total_pages, TA = 1, TO.setAttribute('disabled', true), TR.setAttribute('disabled', true), TE.removeAttribute('disabled'), TS.removeAttribute('disabled'), D.querySelector('#total-pages').innerText = TT, TN.innerText = TA, TZ && (TT <= 1 ? TZ.style.display = 'none' : TZ.removeAttribute('style')), " : ""?>removeClass(TQ, 'spinner-is-loading'), D.querySelector('#container-pages').innerHTML = e.html, loadPage(D.querySelectorAll('a[target="_self"]')), GE = D.querySelectorAll('.show_emodal'), GW = D.querySelectorAll('.show_dmodal'), go = D.querySelectorAll('.show_amodal');
             for(var j = 0, i = go.length; j < i; j++) addEvent(go[j], "click", gk);
             for(var j = 0, i = GE.length; j < i; j++) addEvent(GE[j], "click", GS);
             for(var j = 0, i = GW.length; j < i; j++) addEvent(GW[j], "click", GD);
         } else {
-            D.querySelector('#container-pages').innerHTML = e.html<?php echo($TEMP['#total_pages'] > 1) ? ', TZ.style.display = "none"' : '';?>; 
+            removeClass(TQ, 'spinner-is-loading'), D.querySelector('#container-pages').innerHTML = e.html<?php echo($TEMP['#total_pages'] > 1) ? ', TZ.style.display = "none"' : '';?>; 
         }
     }, "POST", "&keyword=" + self.value)
 });
@@ -666,7 +676,7 @@ for (var j = 0, i = GL.length; j < i; j++) addEvent(GL[j], "click", function(){
             for(var j = 0, i = GE.length; j < i; j++) addEvent(GE[j], "click", GS);
             for(var j = 0, i = GW.length; j < i; j++) addEvent(GW[j], "click", GD);
         } else {
-            TE.setAttribute('disabled', true), TO.setAttribute('disabled', true), TR.setAttribute('disabled', true), TS.setAttribute('disabled', true), TA = 1, loadAlert('{$word->error}', 1);
+            TE.setAttribute('disabled', true), TO.setAttribute('disabled', true), TR.setAttribute('disabled', true), TS.setAttribute('disabled', true), TA = 1, loadAlert(e.error, 1);
         }
     }, "POST", "&page_id=" + TA + "&total-pages={#total_pages}&keyword=" + GA.value)
 });

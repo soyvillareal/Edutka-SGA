@@ -273,14 +273,16 @@ var GL = D.querySelectorAll('.area_validate'),
         var self = this;
         self.setAttribute('disabled', true), self.innerText = "{$word->please_wait}";
         Req("{$url->{req/to-access/resend-change-email}}", function(e){
-            var clss = e.status == 200 ? 'color-green' : 'color-red';
-            if(e.status == 200 || e.status == 400){
-                Ga = e.token, addClass(self, clss), self.innerText = e.message;
-                timeDelay(function(){
-                    removeClass(self, clss), self.innerText = "{$word->resend_email}", self.removeAttribute('disabled');
+            if(e.status == 200){
+                Ga = e.token, addClass(self, 'color-green'), self.innerText = "{$word->email_sent}", timeDelay(function(){
+                    removeClass(self, 'color-green'), self.innerText = "{$word->resend_email}", self.removeAttribute('disabled');
+                }, 3000)
+            } else if(e.status == 400){
+                addClass(self, 'color-red'), self.innerText = e.error, timeDelay(function(){
+                    removeClass(self, 'color-red'), self.innerText = "{$word->resend_email}", self.removeAttribute('disabled');
                 }, 3000)
             } else {
-                self.innerText = "{$word->resend_email}", self.removeAttribute('disabled'), loadAlert(e.message, 1);
+                self.innerText = "{$word->resend_email}", self.removeAttribute('disabled'), loadAlert(e.error, 1);
             }
         }, "POST", "&tokenu="+Ga+"&id={$me->ukey}")
     },
@@ -291,7 +293,7 @@ var GL = D.querySelectorAll('.area_validate'),
             if(e.status == 200){
                 loadAlert("{$word->setting_updated}"), preloadPage('&one=settings');
             } else {
-                self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
+                loadAlert(e.error, 1), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
             }
         }, "POST", "&user_id={$me->id}");
     },
@@ -308,11 +310,9 @@ var GL = D.querySelectorAll('.area_validate'),
     self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
     Req("{$url->{req/settings/change-avatar}}?token={#token_session}", function(e){
         if (e.status == 200) {
-            location.reload(), Gz.style.display = "none", loadAlert(e.message);
-        } else if(e.status == 401){   
-            self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading'), loadAlert(e.error, 1);
+            location.reload(), Gz.style.display = "none", loadAlert("{$word->setting_updated}");
         } else {  
-            self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading'), loadAlert('{$word->error}', 1);
+            self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading'), loadAlert(e.error, 1);
         }
     }, "POST", GC, "avatar", function(){}, function(){}, function() {
         loadAlert('{$word->there_error_uploading_file}', 1);
@@ -357,8 +357,7 @@ var GL = D.querySelectorAll('.area_validate'),
             }
         }
     }
-    addClass(GB, 'spinner-is-loading');
-    GB.setAttribute('disabled', true);
+    addClass(GB, 'spinner-is-loading'), GB.setAttribute('disabled', true);
     Req("{$url->{req/settings/general}}", function(e){
         if (e.status == 200) {
             GX = !1;
@@ -368,25 +367,25 @@ var GL = D.querySelectorAll('.area_validate'),
                     GT = GE.querySelector('.text-error'),
                     Gc = GE.querySelector('#re-center'),
                     Gr = GE.querySelector('#resend-change-email');
-                Ga = e.token, GM.setAttribute('readonly', true), GT.innerText = "*{$word->unverified}", removeClass(GI, 'hidden'), removeClass(Gc, 'hidden'), removeClass(Gr, 'hidden'), addClass(GT, 'display-inline-flex'), removeClass(GT, 'hidden'), removeClass(GE, 'hidden'), addEvent(Gm, 'click', GP), addEvent(Gh, 'click', Gs);
-                addClass(D.querySelector('#untab-menu'), 'toggle-guid'), GV.style.display = "block", D.body.style.overflow = "hidden", GV.querySelector('#droped-here').setAttribute('href', '{$url->{change-email/'+e.token+'/{$me->ukey}}}');
+                Ga = e.token, GM.setAttribute('readonly', true), GT.innerText = "*{$word->unverified}", removeClass(GI, 'hidden'), removeClass(Gc, 'hidden'), removeClass(Gr, 'hidden'), addClass(GT, 'display-inline-flex'), removeClass(GT, 'hidden'), removeClass(GE, 'hidden'), addEvent(Gm, 'click', GP), addEvent(Gh, 'click', Gs), addClass(D.querySelector('#untab-menu'), 'toggle-guid'), GV.style.display = "block", D.body.style.overflow = "hidden", GV.querySelector('#droped-here').setAttribute('href', '{$url->{change-email/'+e.token+'/{$me->ukey}}}');
             } else {
-                loadAlert(e.message);
+                loadAlert("{$word->setting_updated}");
             }
             addClass(GS, 'hidden'), removeClass(GB, 'spinner-is-loading');
         } else {
-            if (e.err != undefined) {
-                for (var j = 0, i = e.err.length; j < i; j++){
-                    var els = e.err[j]['el'].split('-'),
-                        el = e.err[j]['el'].indexOf('-') == -1 ? D.querySelector('#'+e.err[j]['el']) : D.querySelector('#'+els[0]),
+            removeClass(GS, 'hidden'), removeClass(GB, 'spinner-is-loading'), GB.removeAttribute('disabled');
+            if (e.errors != undefined) {
+                for (var j = 0, i = e.errors.length; j < i; j++){
+                    var els = e.errors[j]['el'].split('-'),
+                        el = e.errors[j]['el'].indexOf('-') == -1 ? D.querySelector('#'+e.errors[j]['el']) : D.querySelector('#'+els[0]),
                         GZ = el.parentNode,
                         GH = hasClass(GZ, 'group-validate') ? GZ : GZ.parentNode;
-                    GH.querySelector('.text-error').innerText = '*'+e.err[j]['error'], timeDelay(function(){
+                    GH.querySelector('.text-error').innerText = '*'+e.errors[j]['error'], timeDelay(function(){
                         addClass(Gg, 'efect-boom'), timeDelay(function(){
                             removeClass(Gg, 'efect-boom')
                         }, 200)
                     }, 700);
-                    if(e.err[j]['el'].indexOf('-') == -1){
+                    if(e.errors[j]['el'].indexOf('-') == -1){
                         addClass(el, 'border-red');
                         addClass(el, 'boxshadow-red');
                     } else {
@@ -396,7 +395,7 @@ var GL = D.querySelectorAll('.area_validate'),
                         } 
                     }    
                 }
-            } else {
+            } else if(e.emptys != undefined){
                 for (var j = 0, i = e.emptys.length; j < i; j++){
                     var el = D.querySelector('#'+e.emptys[j]),
                         GZ = el.parentNode,
@@ -407,8 +406,9 @@ var GL = D.querySelectorAll('.area_validate'),
                             }, 200)
                         }, 700);
                 }
+            } else {
+                loadAlert(e.error, 1);
             }
-            removeClass(GS, 'hidden'), removeClass(GB, 'spinner-is-loading'), GB.removeAttribute('disabled');
         }
     }, "POST", "&about=" + D.querySelector('#about').value + "&settings-email=" + GM.value + "&cellphone=" + Gq.value + "&phone=" + Gw.value + "&gender=" + GG.value + "&province=" + GU.value + "&municipality=" + GF.value + "&day=" + GD.value + "&month=" + GJ.value + "&year=" + GR.value)
 }), addEvent(D.querySelector('#cancel-malert'), 'click', function(){
@@ -440,7 +440,8 @@ for (var j = 0, i = GK.length; j < i; j++) addEvent(GK[j], 'keyup', function(e){
             GW = self.value,
             GZ = self.parentNode,
             GH = hasClass(GZ, 'group-validate') ? GZ : GZ.parentNode,
-            els = GH.querySelectorAll('.area_validate');
+            els = GH.querySelectorAll('.area_validate'),
+            el = GH.querySelector('.text-error');
         bDisabled(), removeClass(GD, 'border-red'), removeClass(GD, 'boxshadow-red');
         if(GW == ''){
             GH.querySelector('.text-error').innerText = "", removeClass(self, 'border-red'), removeClass(self, 'boxshadow-red');
@@ -449,19 +450,15 @@ for (var j = 0, i = GK.length; j < i; j++) addEvent(GK[j], 'keyup', function(e){
         if(Array.prototype.slice.call(GO).indexOf(self)){
             Req("{$url->{req/key-validate}}", function(e){
                 if(e.status == 200){
-                    var msg = e.message;
-                    if(msg == ''){
-                        removeClass(self, 'border-red'), removeClass(self, 'boxshadow-red');
-                    } else {
-                        addClass(self, 'border-red'), addClass(self, 'boxshadow-red'), timeDelay(function(){
-                            addClass(Gg, 'efect-boom'), timeDelay(function(){
-                                removeClass(Gg, 'efect-boom')
-                            }, 200)
-                        }, 700);
-                    }
-                    GH.querySelector('.text-error').innerText = msg
+                    el.innerText = "", removeClass(self, 'border-red'), removeClass(self, 'boxshadow-red');
+                } else if(e.status == 302){
+                    el.innerText = e.error, addClass(self, 'border-red'), addClass(self, 'boxshadow-red'), timeDelay(function(){
+                        addClass(Gg, 'efect-boom'), timeDelay(function(){
+                            removeClass(Gg, 'efect-boom')
+                        }, 200)
+                    }, 700);
                 } else {
-                    loadAlert(e.message, 1);
+                    loadAlert(e.error, 1);
                 }
             }, "POST", "&input=" + GW + "&type=" + GA)
         }

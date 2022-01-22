@@ -16,7 +16,6 @@ if(isset($_GET['user']) && Specific::Admin() == true && Specific::Academic() == 
 
 $params = "";
 $query = '';
-$TEMP['#programs'] = $dba->query('SELECT * FROM programs')->fetchAll();
 $courses = array();
 
 if(Specific::Teacher() == true || Specific::Admin() == true){
@@ -54,17 +53,13 @@ $TEMP['#total_pages'] = $dba->totalPages;
 
 if(!empty($courses)){
 	foreach ($courses as $course) {
-		if(Specific::Teacher() == true || Specific::Admin() == true){
-			if(is_numeric($TEMP['#period_id'])){
-				$parameters = $dba->query('SELECT parameters FROM parameter p WHERE (SELECT id FROM teacher WHERE course_id = '.$course['id'].' AND period_id = '.$TEMP['#period_id'].' AND id = p.teacher_id) = teacher_id')->fetchArray();
-			}
-			$parameters = json_decode($parameters);
-		}
 		$preknowledge = explode(',', $course['preknowledge']);
 		$assignments = $dba->query('SELECT period_id FROM teacher WHERE course_id = '.$course['id'])->fetchAll(false);
 		$assignments = array_unique($assignments);
 		if(Specific::Teacher() == true){
 			if(is_numeric($TEMP['#period_id'])){
+				$parameters = $dba->query('SELECT parameters FROM parameter p WHERE (SELECT id FROM teacher WHERE course_id = '.$course['id'].' AND period_id = '.$TEMP['#period_id'].' AND id = p.teacher_id) = teacher_id')->fetchArray();
+				$parameters = json_decode($parameters);
 				$teachers = $dba->query('SELECT names FROM users u WHERE (SELECT user_id FROM teacher WHERE user_id = u.id AND course_id = '.$course['id'].' AND period_id = '.$TEMP['#period_id'].') = id')->fetchAll(false);
 				$enrolled = $dba->query('SELECT COUNT(*) FROM enrolled WHERE course_id = '.$course['id'])->fetchArray();
 				if(count($teachers) == 2){
@@ -77,6 +72,21 @@ if(!empty($courses)){
 					$teachers = $teachers[0];
 				}
 				$TEMP['!teacher'] = $teachers;
+				$TEMP['!quota'] = ($course['quota']-$enrolled). "/{$course['quota']}";
+
+				$paramarr = 0;
+			    if($note_mode == '30-30-40'){
+			    	for ($i=0; $i < count($parameters); $i++) {
+			    		for ($j=0; $j < count($parameters[$i]); $j++) { 
+				    		$paramarr++;
+				    	}
+			    	}
+			    } else {
+			    	for ($i=0; $i < count($parameters); $i++) {
+			    		$paramarr++;
+			    	}
+			    }
+				$TEMP['!parameters'] = $paramarr;
 			}
 		}
 		
@@ -98,15 +108,15 @@ if(!empty($courses)){
 	        }
 	    }
 
+	    $note_mode = $dba->query('SELECT note_mode FROM plan WHERE (SELECT plan_id FROM curriculum WHERE course_id = '.$course['id'].') = id')->fetchArray();
+
 		$TEMP['!id'] = $course['id'];
         $TEMP['!code'] = $course['code'];
 		$TEMP['!name'] = $course['name'];
 		$TEMP['!assignments'] = count($assignments);
 		$TEMP['!preknowledge'] = !empty($course['preknowledge']) ? count($preknowledge) : 0;
-		$TEMP['!parameters'] = count($parameters);
 		$TEMP['!qualification'] = $TEMP['#word'][$course['qualification']];
 		$TEMP['!credits'] = $course['credits'];
-		$TEMP['!quota'] = ($course['quota']-$enrolled). "/{$course['quota']}";
 		$TEMP['!type'] = $TEMP['#word'][$course['type']];
 		$TEMP['!schedule'] = $TEMP['#word'][$course['schedule']];
 		$TEMP['!time'] = Specific::DateFormat($course['time']);
