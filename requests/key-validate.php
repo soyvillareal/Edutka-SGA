@@ -1,5 +1,4 @@
 <?php 
-$deliver['status'] = 400;
 $input = Specific::Filter($_POST['input']);
 $type = Specific::Filter($_POST['type']);
 $page = Specific::Filter($_POST['page']);

@@ -4,69 +4,139 @@ if ($TEMP['#loggedin'] === false) {
 	exit();
 }
 
+
 $TEMP['#user_id'] = $TEMP['#user']['id'];
 if(isset($_GET['user']) && (Specific::Admin() == true || Specific::Academic() == true || Specific::Teacher() == true)){
 	$TEMP['#user_id'] = Specific::Filter($_GET['user']);
 }
 
-$user_data = Specific::Data($TEMP['#user_id']);
-$TEMP['#program_id'] = !empty($_GET['program']) ? Specific::Filter($_GET['program']) : $user_data['program'];
-$TEMP['#period_id'] = !empty($_GET['period']) ? Specific::Filter($_GET['period']) : $user_data['last_cenrolled'];
-$TEMP['#keyword_notes'] = Specific::Filter($_GET['keyword']);
-$TEMP['#role'] = Specific::Student() == true ? 'student' : 'teacher';
-
 $params = "";
 $sqls = '';
 $TEMP['average'] = '- -';
 
-
-if(Specific::Teacher() == true){
-    $my_courses = $dba->query('SELECT course_id FROM teacher WHERE user_id = '.$TEMP['#user']['id'])->fetchAll(false);
+$TEMP['#type'] = Specific::Filter($_GET['type']);
+$TEMP['#course_id'] = Specific::Filter($_GET['course_id']);
+$TEMP['#keyword_notes'] = Specific::Filter($_GET['keyword']);
+if(empty($_GET['type'])){
+	$TEMP['#type'] = 'user';
+}
+$TEMP['#role'] = 'teacher';
+if(Specific::Student() == true){
+	$TEMP['#role'] = 'student';
 }
 
-$TEMP['#programs'] = $dba->query('SELECT * FROM programs p WHERE (SELECT program_id FROM enrolled WHERE user_id = '.$TEMP['#user_id'].' AND program_id = p.id AND type = "program") = id')->fetchAll();
-
-$periods = $dba->query('SELECT period_id FROM enrolled WHERE type = "course" AND user_id = '.$TEMP['#user_id'])->fetchAll(false);
-
-if(!empty($periods)){
-	$TEMP['#periods'] = $dba->query('SELECT * FROM periods WHERE id IN ('.implode(',', $periods).')')->fetchAll();
-}
-
-if(Specific::Admin() == true || Specific::Academic() == true || Specific::Teacher() == true){
-	if(isset($_GET['keyword'])){
-		$params .= "?keyword=".$TEMP['#keyword_notes'];
+if($TEMP['#type'] == 'user'){
+	$user_data = Specific::Data($TEMP['#user_id']);
+	$TEMP['#program_id'] = Specific::Filter($_GET['program']);
+	if(empty($_GET['program'])){
+		$TEMP['#program_id'] = $user_data['program'];
 	}
-	if(isset($_GET['user'])){
-		$params .= "&user={$TEMP['#user_id']}";
-	}
-}
+	$TEMP['#period_id'] = Specific::Filter($_GET['period']);
+	$TEMP['#programs'] = $dba->query('SELECT * FROM programs p WHERE (SELECT program_id FROM enrolled WHERE user_id = '.$TEMP['#user_id'].' AND program_id = p.id AND type = "program") = id')->fetchAll();
 
-if(Specific::Teacher() == true){
-    if(!empty($TEMP['#keyword_notes'])){
-	    $sqls .= ' AND course_id IN ('.implode(',', $my_courses).')';
-	    if(empty($_GET['period'])){
-	    	$TEMP['#period_id'] = $dba->query('SELECT max(period_id) FROM enrolled WHERE (SELECT course_id FROM notes WHERE user_id = '.$TEMP['#user_id'].' AND course_id = '.end($my_courses).') = course_id')->fetchArray();
-	    }
-	    $periods = $dba->query('SELECT period_id FROM enrolled WHERE user_id = '.$TEMP['#user_id'].' AND course_id IN ('.implode(',', $my_courses).')')->fetchAll(false);
-	    $TEMP['#periods'] =  $dba->query('SELECT * FROM periods WHERE id IN ('.implode(',', $periods).')')->fetchAll();
+	if(!empty($TEMP['#keyword_notes']) || Specific::Student() == true){
+		if(empty($_GET['period'])){
+			$TEMP['#period_id'] = $dba->query('SELECT max(period_id) FROM enrolled WHERE type = "course" AND user_id = '.$TEMP['#user_id'].' AND program_id = '.$TEMP['#program_id'])->fetchArray();
+		}
+
+		$periods = $dba->query('SELECT period_id FROM enrolled WHERE type = "course" AND user_id = '.$TEMP['#user_id'].' AND program_id = '.$TEMP['#program_id'])->fetchAll(false);
+
+		if(!empty($periods)){
+			$TEMP['#periods'] = $dba->query('SELECT * FROM periods WHERE id IN ('.implode(',', $periods).')')->fetchAll();
+		}
+
+		if(Specific::Admin() == true || Specific::Academic() == true || Specific::Teacher() == true){
+			if(isset($_GET['keyword'])){
+				$params .= "?keyword=".$TEMP['#keyword_notes'];
+			}
+			if(isset($_GET['user'])){
+				$params .= "&user={$TEMP['#user_id']}";
+			}
+		}
+
+		if(Specific::Teacher() == true){
+		    if(!empty($TEMP['#keyword_notes'])){
+		    	$my_courses = $dba->query('SELECT course_id FROM teacher WHERE user_id = '.$TEMP['#user_id'].' AND period_id = '.$TEMP['#period_id'])->fetchAll(false);
+		    	if(!empty($my_courses)){
+				    $sqls .= ' AND course_id IN ('.implode(',', $my_courses).')';
+				    if(empty($_GET['period'])){
+				    	$TEMP['#period_id'] = $dba->query('SELECT max(period_id) FROM enrolled WHERE type = "course" AND user_id = '.$TEMP['#user_id'].' AND course_id = '.$my_courses[0].' AND program_id = '.$TEMP['#program_id'])->fetchArray();
+				    }
+				}
+			    $periods = $dba->query('SELECT period_id FROM enrolled WHERE user_id = '.$TEMP['#user_id'].' AND course_id IN ((SELECT course_id FROM teacher WHERE user_id = '.$TEMP['#user_id'].')) AND program_id = '.$TEMP['#program_id'])->fetchAll(false);
+			    if(!empty($periods)){
+			    	$TEMP['#periods'] =  $dba->query('SELECT * FROM periods WHERE id IN ('.implode(',', $periods).')')->fetchAll();
+			    }
+			}
+		}
+
+		if(!empty($TEMP['#program_id'])){
+			$plan = $dba->query('SELECT * FROM plan WHERE program_id = '.$TEMP['#program_id'])->fetchArray();
+			$TEMP['#note_mode'] = $plan['note_mode'];
+			$courses = $dba->query('SELECT course_id FROM curriculum WHERE plan_id = '.$plan['id'])->fetchAll(false);
+			$sqls .= ' AND course_id IN ('.implode(',', $courses).') AND program_id = '.$TEMP['#program_id'];
+			$params .= (!empty($params) ? "&" : "?")."program={$TEMP['#program_id']}";
+		}
+		if(!empty($TEMP['#period_id'])){
+			$sqls .= ' AND period_id = '.$TEMP['#period_id'];
+			$params .= "&period={$TEMP['#period_id']}";
+		}
+		$TEMP['#notes'] = $dba->query('SELECT * FROM notes'.(!empty($TEMP['#period_id']) ? ' n ' : ' ').'WHERE user_id = '.$TEMP['#user_id'].$sqls)->fetchAll();
 	}
-}
-if(!empty($TEMP['#program_id'])){
-	$plan = $dba->query('SELECT * FROM plan WHERE program_id = '.$TEMP['#program_id'])->fetchArray();
-	$TEMP['#note_mode'] = $plan['note_mode'];
-	$courses = $dba->query('SELECT course_id FROM curriculum WHERE plan_id = '.$plan['id'])->fetchAll(false);
-	$sqls .= ' AND course_id IN ('.implode(',', $courses).') AND program_id = '.$TEMP['#program_id'];
-	$params .= (!empty($params) ? "&" : "?")."program={$TEMP['#program_id']}";
-}
-if(!empty($TEMP['#period_id'])){
-	$sqls .= ' AND period_id = '.$TEMP['#period_id'];
-	$params .= "&period={$TEMP['#period_id']}";
+} else {
+	if(Specific::Admin() == true || Specific::Academic() == true || Specific::Teacher() == true){
+		if(Specific::Admin() == true || Specific::Academic() == true){
+			if(isset($_GET['keyword'])){
+				$params .= "?keyword=".$TEMP['#keyword_notes'];
+			}
+			if(isset($_GET['user'])){
+				$params .= "&user={$TEMP['#user_id']}";
+			}
+		}
+		$params .= "&type={$TEMP['#type']}";
+		$TEMP['#courses'] = $dba->query('SELECT * FROM courses c WHERE id IN ((SELECT course_id FROM teacher WHERE user_id = '.$TEMP['#user_id'].' AND period_id IN ((SELECT period_id FROM enrolled)) AND course_id = c.id))')->fetchAll();
+		if(!empty($TEMP['#course_id'])){
+			$TEMP['#program_id'] =  Specific::Filter($_GET['program']);
+			$TEMP['#period_id'] =  Specific::Filter($_GET['period']);
+			if(!empty($TEMP['#course_id'])){
+				if(empty($_GET['program'])){
+					$TEMP['#program_id'] = $dba->query('SELECT max(program_id) FROM enrolled WHERE course_id = '.$TEMP['#course_id'])->fetchArray();
+				}
+				if(empty($_GET['period'])){
+					$TEMP['#period_id'] = $dba->query('SELECT max(period_id) FROM enrolled WHERE course_id = '.$TEMP['#course_id'])->fetchArray();
+				}
+			}
+
+			if(!empty($TEMP['#course_id'])){
+				$sqls = ' WHERE course_id = '.$TEMP['#course_id'];
+				$params .= "&course_id={$TEMP['#course_id']}";
+			} else {
+				$sqls = ' WHERE course_id = 0';
+			}
+
+			$periods = $dba->query('SELECT period_id FROM enrolled e WHERE type = "course" AND (SELECT period_id FROM teacher WHERE user_id = '.$TEMP['#user_id'].' AND course_id = '.$TEMP['#course_id'].' AND period_id = e.period_id) = period_id AND program_id = '.$TEMP['#program_id'])->fetchAll(false);
+
+			$TEMP['#periods'] = $dba->query('SELECT * FROM periods WHERE id IN ('.implode(',', $periods).')')->fetchAll();
+			
+			if(!empty($TEMP['#program_id'])){
+				$plan = $dba->query('SELECT * FROM plan WHERE program_id = '.$TEMP['#program_id'])->fetchArray();
+				$TEMP['#note_mode'] = $plan['note_mode'];
+				$courses = $dba->query('SELECT course_id FROM curriculum WHERE plan_id = '.$plan['id'])->fetchAll(false);
+				$sqls .= ' AND course_id IN ('.implode(',', $courses).') AND program_id = '.$TEMP['#program_id'];
+				$params .= (!empty($params) ? "&" : "?")."program={$TEMP['#program_id']}";
+			}
+			if(!empty($TEMP['#period_id'])){
+				$sqls .= ' AND period_id = '.$TEMP['#period_id'];
+				$params .= "&period={$TEMP['#period_id']}";
+			}
+			$TEMP['#notes'] = $dba->query('SELECT * FROM notes'.(!empty($TEMP['#period_id']) ? ' n ' : ' ').$sqls)->fetchAll();
+		}
+	}
 }
 
 $TEMP['#url_params'] = str_replace('?', '&', "&one=notes$params");
 $TEMP['#load_url'] = Specific::Url("notes$params");
 
-$TEMP['#notes'] = $dba->query('SELECT * FROM notes'.(!empty($TEMP['#period_id']) ? ' n ' : ' ').'WHERE user_id = '.$TEMP['#user_id'].$sqls)->fetchAll();
 if(!empty($TEMP['#notes'])){
 	$qua_arr = array();
 	foreach ($TEMP['#notes'] as $note) {
@@ -88,6 +158,11 @@ if(!empty($TEMP['#notes'])){
 		$TEMP['!period_final'] = time() > $period['final'];
 		$authorization = $dba->query('SELECT court FROM authorization WHERE status = "authorized" AND period_id = '.$period['id'].' AND course_id = '.$note['course_id'])->fetchAll(false);
 		$TEMP['!authorization'] = Specific::Admin() == true || Specific::Academic() == true ? array('first', 'second', 'third') : $authorization;
+
+		if($TEMP['#type'] == 'course'){
+			$user = Specific::Data($note['user_id']);
+			$TEMP['!student'] = $user['full_name'];
+		}
 
 		$teachers = $dba->query('SELECT names FROM users u WHERE (SELECT user_id FROM teacher WHERE user_id = u.id AND course_id = '.$note['course_id'].' AND period_id = '.$TEMP['#period_id'].') = id')->fetchAll(false);
 		if(!empty($teachers)){

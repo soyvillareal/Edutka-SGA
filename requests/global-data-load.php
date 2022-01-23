@@ -28,7 +28,5 @@ if (isset($_GET['one'])) {
     $deliver['url'] = $TEMP['#load_url'];
     $deliver['html'] = $TEMP['#content'];
     $deliver['status'] = 200;
-} else {
-    $deliver['status'] = 400;
 }
 ?>

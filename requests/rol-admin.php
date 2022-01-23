@@ -73,7 +73,6 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
         }
         $deliver['html'] = $html;
     } else if($one == 'this-courses'){
-        $deliver['status'] = 400;
         $qualifications  = array('activated', 'deactivated');
         $credits  = array(1, 2, 3, 4);
         $types  = array('practice', 'theoretical');
@@ -167,7 +166,6 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
             );
         }
     } else if($one == 'delete-course'){
-        $deliver['status'] = 400;
         $id = Specific::Filter($_POST['id']);
         if (isset($id) && is_numeric($id)) {
             $enrolled_exists = $dba->query('SELECT COUNT(*) FROM enrolled WHERE course_id = '.$id)->fetchArray();
@@ -183,7 +181,6 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
             }
         }
     } else if($one == 'get-pitems'){
-        $deliver['status'] = 400;
         $id = Specific::Filter($_POST['id']);
         if(isset($id) && is_numeric($id)){
             $items = $dba->query('SELECT name, faculty_id, title, snies, level, semesters, mode FROM programs WHERE id = '.$id)->fetchArray();
@@ -195,7 +192,6 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
             }
         }
     } else if($one == 'this-programs'){
-        $deliver['status'] = 400;
         $semesters  = array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
         $modalities  = array('presential', 'distance', 'virtual');
         $faculties = $dba->query('SELECT id FROM faculty')->fetchAll(false);
@@ -269,7 +265,6 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
             );
         }
     } else if($one == 'delete-program'){
-        $deliver['status'] = 400;
         $id = Specific::Filter($_POST['id']);
         if (isset($id) && is_numeric($id)) {
             if($dba->query('DELETE FROM programs WHERE id = '.$id)->returnStatus()){
@@ -337,7 +332,6 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
             $deliver['html'] = $html;
         }
     } else if($one == 'this-faculty'){
-        $deliver['status'] = 400;
         $statusa = array('activated', 'deactivated');
         $id = Specific::Filter($_POST['id']);
         $type = Specific::Filter($_POST['type']);
@@ -381,7 +375,6 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
             );
         }
     } else if($one == 'get-fitems'){
-        $deliver['status'] = 400;
         $id = Specific::Filter($_POST['id']);
         if(isset($id) && is_numeric($id)){
             $items = $dba->query('SELECT name, status FROM faculty WHERE id = '.$id)->fetchArray();
@@ -421,7 +414,6 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
             }
             $deliver['html'] = $html;
     } else if($one == 'delete-faculty'){
-        $deliver['status'] = 400;
         $id = Specific::Filter($_POST['id']);
         if (isset($id) && is_numeric($id)) {
             $courses_exists = $dba->query('SELECT COUNT(*) FROM programs WHERE faculty_id = '.$id)->fetchArray();
@@ -461,7 +453,6 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
             $deliver['html'] = $html;
         }
     } else if($one == 'get-peitems'){
-        $deliver['status'] = 400;
         $id = Specific::Filter($_POST['id']);
         if(isset($id) && is_numeric($id)){
             $items = $dba->query('SELECT name, start, final, status FROM periods WHERE id = '.$id)->fetchArray();
@@ -509,7 +500,6 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
         }
         $deliver['html'] = $html;
     } else if($one == 'delete-period'){
-        $deliver['status'] = 400;
         $id = Specific::Filter($_POST['id']);
         if (isset($id) && is_numeric($id)) {
             $courses_exists = $dba->query('SELECT COUNT(*) FROM enrolled WHERE period_id = '.$id)->fetchArray();
@@ -525,7 +515,6 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
             }
         }
     } else if($one == 'this-periods'){
-        $deliver['status'] = 400;
         $statusa  = array('enabled', 'disabled');
         $emptys = array();
         $errors = array();
@@ -607,7 +596,6 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
                 );
             }
     } else if($one == 'this-dates'){
-        $deliver['status'] = 400;
         $emptys = array();
         $errors = array();
 
@@ -676,7 +664,6 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
             }
         }
     } else if($one == 'get-ditems'){
-        $deliver['status'] = 400;
         $id = Specific::Filter($_POST['id']);
         if(!empty($id) && is_numeric($id)){
             $items = $dba->query('SELECT dates FROM periods WHERE id = '.$id)->fetchArray();
@@ -760,7 +747,6 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
             $deliver['html'] = $html;
         }
     } else if($one == 'get-plitems'){
-        $deliver['status'] = 400;
         $id = Specific::Filter($_POST['id']);
         if(isset($id) && is_numeric($id)){
             $items = $dba->query('SELECT program_id, name, resolution, date_approved, duration, credits, note_mode, status FROM plan WHERE id = '.$id)->fetchArray();
@@ -773,7 +759,6 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
             }
         }
     } else if($one == 'this-plans'){
-        $deliver['status'] = 400;
         $programs = $dba->query('SELECT id FROM programs')->fetchAll(false);
         $modalities  = array('100', '30-30-40');
         $statusa  = array('enabled', 'disabled');
@@ -914,7 +899,6 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
             );
         }
     } else if($one == 'delete-plan'){
-        $deliver['status'] = 400;
         $id = Specific::Filter($_POST['id']);
         if (isset($id) && is_numeric($id)) {
             if($dba->query('SELECT COUNT(*) FROM curriculum WHERE plan_id = '.$id)->fetchArray() == 0){
@@ -995,7 +979,6 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
             $deliver['html'] = $html;
         }
     } else if($one == 'this-rules'){
-    	$deliver['status'] = 400;
     	$id = Specific::Filter($_POST['id']);
     	$rules = Specific::Filter($_POST['rules']);
     	$link = Specific::Filter($_POST['link']);
@@ -1070,7 +1053,6 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
     		);
     	}
     } else if($one == 'delete-rule'){
-        $deliver['status'] = 400;
         $id = Specific::Filter($_POST['id']);
         if (isset($id) && is_numeric($id)) {
             if($dba->query('DELETE FROM rule WHERE id = '.$id)->returnStatus()){
@@ -1082,7 +1064,6 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
             };
         }
     } else if($one == 'this-curriculum'){
-        $deliver['status'] = 400;
         $teatrues = array(true);
         $types = array('add', 'edit');
 
@@ -1170,7 +1151,6 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
             }
         }
     } else if($one == 'get-citems'){
-        $deliver['status'] = 400;
         $id = Specific::Filter($_POST['id']);
         if(isset($id) && is_numeric($id)){
             $items = array();
@@ -1185,7 +1165,6 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
             }
         }
     } else if($one == 'delete-curriculum'){
-        $deliver['status'] = 400;
         $id = Specific::Filter($_POST['id']);
         if (isset($id) && is_numeric($id)) {
             if($dba->query('DELETE FROM curriculum WHERE plan_id = '.$id)->returnStatus()){

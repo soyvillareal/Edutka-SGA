@@ -46,7 +46,7 @@ if(!empty($TEMP['#type'])){
 $TEMP['#url_params'] = str_replace('?', '&', "&one=enroll$params");
 $TEMP['#load_url'] = Specific::Url("enroll$params");
 
-$TEMP['#enrolled'] = $dba->query('SELECT * FROM enrolled WHERE user_id = '.$TEMP['#user_id'].$sqls)->fetchAll();
+$enrolled = $dba->query('SELECT * FROM enrolled WHERE user_id = '.$TEMP['#user_id'].$sqls)->fetchAll();
 $programs = $dba->query('SELECT program_id FROM enrolled WHERE user_id = '.$TEMP['#user_id'].' AND type = "program"')->fetchAll(false);
 
 $TEMP['#program'] = isset($user) ? $user["program"] : $TEMP["#user"]["program"];
@@ -58,12 +58,14 @@ if(!empty($programs)){
 $courses = $dba->query('SELECT COUNT(*) FROM enrolled WHERE user_id = '.$TEMP['#user_id'].' AND type = "course"')->fetchArray();
 
 $programs = count($programs);
+$TEMP['#enrolled'] = false;
 
 $TEMP['programs'] = $programs.($programs > 1 || $programs == 0 ? " {$TEMP['#word']['programs']}" : " {$TEMP['#word']['program']}");
 $TEMP['courses'] = $courses.($courses > 1 || $courses == 0 ? " {$TEMP['#word']['courses']}" : " {$TEMP['#word']['course']}");
 
-if(!empty($TEMP['#enrolled'])){
-	foreach ($TEMP['#enrolled'] as $enroll) {
+if(!empty($enrolled)){
+	$TEMP['#enrolled'] = true;
+	foreach ($enrolled as $enroll) {
 		if($enroll['type'] == 'course'){
 			$course = $dba->query('SELECT name FROM courses WHERE id = '.$enroll['course_id'])->fetchArray();
 			$periodc = $dba->query('SELECT name, final FROM periods WHERE id = '.$enroll['period_id'])->fetchArray();

@@ -214,7 +214,6 @@ class Specific {
 
 	    $user['program'] = $dba->query('SELECT max(program_id) FROM enrolled e WHERE type = "program" AND user_id = '.$user['id'])->fetchArray();
 
-	    $user['last_cenrolled'] = $dba->query('SELECT max(period_id) FROM enrolled WHERE type = "course" AND user_id = '.$user['id'])->fetchArray();
 
 	    $gender = $TEMP['#word']['male'];
 	    if($user['gender'] == 2){

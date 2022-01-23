@@ -80,7 +80,7 @@
 			</div>
 			<?php } ?>
 	   	    <div class="background-white border-radius-12 padding-25">
-	   	   		<?php if(($TEMP['#admin'] == true || $TEMP['#academic'] == true) && !empty($TEMP['#enrolled'])) { ?>
+	   	   		<?php if(($TEMP['#admin'] == true || $TEMP['#academic'] == true) && $TEMP['#enrolled'] == true) { ?>
 	   	    	<div class="font-medium text-center margin-t15 margin-b15">{$word->license_plates_of} <span class="color-black font-bold">{$full_name}</span></div>
 	   	    	<?php } ?>
 			    <div class="max-w-900 border-top-left-radius border-top-right-radius" id="container-enrolled">
@@ -215,13 +215,13 @@ var GA = D.querySelectorAll('.show_cmodal'),
 <?php if($TEMP['#type'] == 'course'){ ?>
 addEvent(GD, 'change', GT), <?php if(count($TEMP['#programs']) > 1){ ?>addEvent(GS, 'change', function(){
 	preloadPage('&one=enroll<?php echo($TEMP["#admin"] == true || $TEMP["#academic"] == true) ? "&keyword={#keyword_enroll}&user={#user_id}" : ''?>&type=' + GY.value + '&program_id=' + this.value);
-}), <?php } ?><?php }?>addEvent(GW, 'change', GT), addEvent(D.querySelector('#close-ealert'), 'click', function(){
+}), <?php } ?><?php }?>addEvent(D.querySelector('#close-ealert'), 'click', function(){
     GE.style.display = "", D.body.style.overflow = "";
 }), addEvent(D.querySelector('#cancel-ecalert'), 'click', function(){
     GJ.style.display = "", D.body.style.overflow = "";
 }), addEvent(D.querySelector('#cancel-epalert'), 'click', function(){
     GN.style.display = "", D.body.style.overflow = "";
-})<?php if(!empty($TEMP['#keyword_enroll']) || $TEMP['#student'] == true) { ?>, addEvent(GY, 'change', function(){
+})<?php if(!empty($TEMP['#keyword_enroll']) || $TEMP['#student'] == true) { ?>, addEvent(GW, 'change', GT), addEvent(GY, 'change', function(){
     preloadPage('&one=enroll<?php echo($TEMP["#admin"] == true || $TEMP["#academic"] == true) ? "&keyword={#keyword_enroll}&user={#user_id}" : ''?>&type=' + this.value);
 }), addEvent(GU, "keyup", GT)<?php } ?>, addEvent(GG, "click", function(){
     var self = this; 

@@ -115,7 +115,7 @@
                             <select id="course_id" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue area_changed caret-down area_validate background-grely color-black">
                                 <option value selected>{$word->select_course}</option>
                                 <?php foreach($TEMP['#courses'] as $course){ ?>
-                                <option value="<?php echo $course['id']; ?>"<?php echo(!in_array($course['id'], $courses)) ? 'disabled' : ''?>><?php echo $course['name']; ?></option>
+                                <option value="<?php echo $course['id']; ?>"<?php echo(!in_array($course['id'], $TEMP['#arrcou'])) ? 'disabled' : ''?>><?php echo $course['name']; ?></option>
                                 <?php } ?>
                             </select>
                             <div class="content-spinner-circle">
@@ -194,6 +194,7 @@ var GP = D.querySelectorAll('.area_validate'),
             auth_id = self.getAttribute('data-id');
         self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
         Req('{$url->{req/rol-teacher/get-aitems}}', function(e){
+            console.log(e);
             if(e.status == 200){
                 for (var key in e.items) {
                     if(key != 'status') {

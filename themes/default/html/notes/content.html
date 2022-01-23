@@ -3,6 +3,14 @@
 		<div class="margin-t10 margin-t50 padding-b50">
 			<?php if($TEMP['#admin'] == true || $TEMP['#academic'] == true || $TEMP['#teacher'] == true) { ?>
 			<div class="background-white border-radius-12 padding-25 margin-b10">
+				<label class="color-black">{$word->type}</label>
+			    <div class="content-types position-relative margin-b10">
+			    	<select id="type" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue caret-down background-grely color-black">
+			            <option value="user"<?php echo($TEMP['#type'] == 'user') ? ' selected' : '';?>>{$word->user}</option>
+			            <option value="course"<?php echo($TEMP['#type'] == 'course') ? ' selected' : '';?>>{$word->course}</option>
+			        </select>
+			    </div>
+			    <?php if($TEMP['#type'] == 'user' || $TEMP['#academic'] === true || $TEMP['#admin'] === true){ ?>
 				<label class="color-black">{$word->search}</label>
 				<div class="content-search position-relative margin-b10">
 					<div class="display-flex margin-auto border-radius-4">
@@ -15,9 +23,21 @@
 				    </div>
 			        <div class="search-down w-100 z-index-first position-absolute background-white"></div>
 			    </div>
+			    <?php } ?>
+			    <?php if($TEMP['#type'] == 'course' && (!empty($TEMP['#keyword_notes']) || $TEMP['#teacher'] === true)){ ?>
+			    <label class="color-black">{$word->courses}</label>
+			    <div class="content-types position-relative margin-b10">
+			        <select id="courses" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue area_changed caret-down background-grely color-black">
+			        	<option selected disabled>{$word->select_course}</option>
+			            <?php foreach ($TEMP['#courses'] as $key => $value) {?>
+			            <option value="<?php echo $value['id'];?>"<?php echo($value['id'] == $TEMP['#course_id']) ? ' selected' : '';?>><?php echo $value['name']; ?></option>
+			            <?php } ?>
+			        </select>
+			    </div>
+			    <?php } ?>
 			</div>
 			<?php } ?>
-			<?php if(count($TEMP['#programs']) > 1){ ?>
+			<?php if(count($TEMP['#programs']) > 1 && $TEMP['#type'] == 'user'){ ?>
 			<div class="text-center background-white border-radius-12 padding-25 margin-b10">
 				<div class="max-w-900 border-top-left-radius border-top-right-radius">
 					<div class="group-validate display-block position-relative w-100 padding-5">
@@ -183,6 +203,8 @@ var NW = D.querySelectorAll('.number'),
 	NK = D.querySelector('#container-parameters'),
 	NP = D.querySelector('#periods'),
 	NC = D.querySelector('#text-qualification'),
+	Nq = D.querySelector('#type'),
+	Nw = D.querySelector('#courses'),
     NA = function(){
         var self = this,
             note_id = self.getAttribute('data-id'),
@@ -227,11 +249,19 @@ var NW = D.querySelectorAll('.number'),
 	    }, "POST", "&id={$me->id}&note_id=" + note_id)
     },
 	keyword = "{#keyword_notes}";
-<?php if(count($TEMP['#programs']) > 1){ ?>
+
+
+<?php if($TEMP['#type'] == 'course' && (!empty($TEMP['#keyword_notes']) || $TEMP['#teacher'] === true)){ ?>
+addEvent(Nw, 'change', function(){
+    preloadPage('&one=notes<?php echo($TEMP["#academic"] === true || $TEMP["#admin"] === true) ? "&keyword={#keyword_notes}&user={#user_id}" : "";?>&type={#type}&course_id=' + this.value);
+})
+<?php } ?>
+
+<?php if(count($TEMP['#programs']) > 1 && $TEMP['#type'] == 'user'){ ?>
 addEvent(D.querySelector('#programs'), 'change', function(){
-    preloadPage('&one=notes&keyword={#keyword_notes}<?php echo($TEMP['#admin'] == true || $TEMP['#academic'] == true || $TEMP['#teacher'] == true) ? "&user={#user_id}" : "" ;?>&program='+this.value);
+    preloadPage('&one=notes&keyword={#keyword_notes}<?php echo($TEMP["#admin"] == true || $TEMP["#academic"] == true || $TEMP["#teacher"] == true) ? "&user={#user_id}" : "" ;?>&program='+this.value);
 }), <?php } if(count($TEMP['#periods']) > 1){ ?>addEvent(NP, 'change', function(){
-    preloadPage('&one=notes&keyword={#keyword_notes}<?php echo($TEMP['#admin'] == true || $TEMP['#academic'] == true || $TEMP['#teacher'] == true) ? "&user={#user_id}" : "" ;?>&program={#program_id}&period='+this.value);
+    preloadPage('&one=notes<?php echo($TEMP["#type"] == "course" && ($TEMP["#academic"] === true || $TEMP["#admin"] === true)) ? "&keyword={#keyword_notes}&user={#user_id}": ""; echo($TEMP["#type"] == "user") ? "&keyword={#keyword_notes}&program={#program_id}" : "&type={#type}&course_id={#course_id}"; echo(($TEMP['#admin'] == true || $TEMP['#academic'] == true || $TEMP['#teacher'] == true) && $TEMP["#type"] == "user") ? "&user={#user_id}" : "" ;?>&period='+this.value);
 })
 <?php } ?>
 addEvent(D.querySelector('#close-qpalert'), 'click', function(){
@@ -242,6 +272,9 @@ addEvent(D.querySelector('#close-qpalert'), 'click', function(){
     NO.style.display = "", D.body.style.overflow = "";
 });
 <?php if($TEMP['#admin'] == true || $TEMP['#academic'] == true || $TEMP['#teacher'] == true) { ?>
+addEvent(Nq, 'change', function(){
+    preloadPage('&one=notes&type=' + this.value);
+})
 <?php if(!empty($TEMP['#notes'])){ ?>
 addEvent(NT, 'click', function(){
     var self = this,
@@ -295,7 +328,7 @@ addEvent(NT, 'click', function(){
             NT.removeAttribute('disabled'), removeClass(NT, 'spinner-is-loading');
         }
     }, "POST", "&id=" + self.getAttribute('data-id') + "&params=" + JSON.stringify(GO)<?php echo($TEMP['#note_mode'] == '30-30-40') ? ' + "&pos=" + self.getAttribute("data-pos")' : '';?>)
-}), <?php } ?>addEvent(D.querySelector('#search-users'), "keyup", function(e){
+}), <?php } ?><?php if($TEMP['#type'] == 'user' || $TEMP['#academic'] === true || $TEMP['#admin'] === true){ ?>addEvent(D.querySelector('#search-users'), "keyup", function(e){
 	let self = this,
 		SV = self.value,
 		SQ = self.parentNode,
@@ -316,8 +349,11 @@ addEvent(NT, 'click', function(){
 		    removeClass(SQ, 'spinner-is-loading'), addClass(SD, 'hidden'), SD.innerHTML = "";
 		   	return false;
 	    }
-	}, "POST", "&typet=notes&keyword=" + SV);
-}), addEvent(D.querySelector('#close-npalert'), 'click', function(){
+	}, "POST", "&typet=<?php echo($TEMP['#type'] == 'user') ? 'notes' : 'teachers';?>&keyword=" + SV);
+}), <?php } else{ ?>
+
+
+<?php } ?>addEvent(D.querySelector('#close-npalert'), 'click', function(){
     NY.style.display = "", D.body.style.overflow = "";
 });
 for(var j = 0, i = NS.length; j < i; j++) addEvent(NS[j], "click", GW);

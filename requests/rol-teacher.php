@@ -219,7 +219,6 @@ if ($TEMP['#loggedin'] === true && (Specific::Admin() === true || Specific::Acad
             $deliver['html'] = $html;
         }
     } else if($one == 'search-users'){
-        $deliver['status'] = 400;
         if (!empty($_POST['keyword'])) {
             $html = '';
             $keyword = Specific::Filter($_POST['keyword']);
@@ -228,6 +227,8 @@ if ($TEMP['#loggedin'] === true && (Specific::Admin() === true || Specific::Acad
                 $my_courses = $dba->query('SELECT course_id FROM teacher WHERE user_id = '.$TEMP['#user']['id'])->fetchAll(false);
                 $users = $dba->query('SELECT user_id FROM enrolled WHERE type = "course" AND course_id IN ('.implode(',', $my_courses).')')->fetchAll(false);
                 $users = $dba->query('SELECT * FROM users u WHERE id != '.$TEMP['#user']['id'].' AND role = "student" AND (names LIKE "%'.$keyword.'%" OR surnames LIKE "%'.$keyword.'%") AND id IN ('.implode(',', $users).') LIMIT 10')->fetchAll();
+            } else if($type == 'teachers' && (Specific::Academic() == true || Specific::Admin() == true)){
+                $users = $dba->query('SELECT * FROM users WHERE id IN (SELECT user_id FROM teacher WHERE course_id IN ((SELECT course_id FROM enrolled)))')->fetchAll();
             } else {
                 $users = $dba->query('SELECT * FROM users WHERE id != '.$TEMP['#user']['id'].' AND role = "student" AND (names LIKE "%'.$keyword.'%" OR surnames LIKE "%'.$keyword.'%") LIMIT 10')->fetchAll();
             }
@@ -235,7 +236,11 @@ if ($TEMP['#loggedin'] === true && (Specific::Admin() === true || Specific::Acad
             if (!empty($users)) {
                 foreach ($users as $user) {
                     $full_name = "{$user['names']} {$user['surnames']}";
-                    $html .= "<a class='display-flex border-left border-right border-bottom border-grey padding-10 background-hover' href='".Specific::Url("$type?keyword={$full_name}&user={$user['id']}")."' target='_self'><div class='margin-right-auto color-black'>".$full_name.'</div></a>';
+                    $url = "$type?keyword={$full_name}&user={$user['id']}";
+                    if($type == 'teachers'){
+                        $url = "notes?type=course&keyword={$full_name}&user={$user['id']}";
+                    }
+                    $html .= "<a class='display-flex border-left border-right border-bottom border-grey padding-10 background-hover' href='".Specific::Url("$url")."' target='_self'><div class='margin-right-auto color-black'>".$full_name.'</div></a>';
                 }
                 $deliver = array(
                     'status' => 200,
@@ -244,7 +249,6 @@ if ($TEMP['#loggedin'] === true && (Specific::Admin() === true || Specific::Acad
             }
         }
     } else if($one == 'get-citems'){
-        $deliver['status'] = 400;
         $id = Specific::Filter($_POST['id']);
         $period_id = Specific::Filter($_POST['period_id']);
         $type = Specific::Filter($_POST['type']);
@@ -321,7 +325,6 @@ if ($TEMP['#loggedin'] === true && (Specific::Admin() === true || Specific::Acad
             }
         }
     } else if($one == 'this-courses'){
-        $deliver['status'] = 400;
         $emptys = array();
         $error = array();
 
@@ -396,7 +399,6 @@ if ($TEMP['#loggedin'] === true && (Specific::Admin() === true || Specific::Acad
             }
         }
     } else if($one == 'this-notes'){
-        $deliver['status'] = 400;
         $emptys = array();
         $errors = array();
 
@@ -473,8 +475,6 @@ if ($TEMP['#loggedin'] === true && (Specific::Admin() === true || Specific::Acad
             } 
         }
     } else if($one == 'this-qualification') {
-        $deliver['status'] = 400;
-
         $note = Specific::Filter($_POST['note']);
         $note_id = Specific::Filter($_POST['note_id']);
         $period_id = Specific::Filter($_POST['period_id']);
@@ -598,7 +598,6 @@ if ($TEMP['#loggedin'] === true && (Specific::Admin() === true || Specific::Acad
             $deliver['html'] = $html;
         }
     } else if($one == 'this-authorizations'){
-        $deliver['status'] = 400;
         $courts = array('first', 'second', 'third');
         $emptys = array();
         $errors = array();
@@ -688,7 +687,6 @@ if ($TEMP['#loggedin'] === true && (Specific::Admin() === true || Specific::Acad
             );
         }
     } else if($one == 'cut-select') {
-        $deliver['status'] = 400;
         $id = Specific::Filter($_POST['id']);
         if(isset($id) && is_numeric($id)){
             $note_mode = $dba->query('SELECT note_mode FROM plan p WHERE (SELECT plan_id FROM curriculum WHERE course_id = '.$id.' AND plan_id = p.id) = id')->fetchArray();
@@ -700,7 +698,6 @@ if ($TEMP['#loggedin'] === true && (Specific::Admin() === true || Specific::Acad
             }
         }
     } else if($one == 'get-aitems'){
-        $deliver['status'] = 400;
         $id = Specific::Filter($_POST['id']);
         if(isset($id) && is_numeric($id)){
             $items = $dba->query('SELECT course_id, description, court, status FROM authorization WHERE id = '.$id)->fetchArray();

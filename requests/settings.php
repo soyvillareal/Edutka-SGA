@@ -4,7 +4,6 @@ if ($TEMP['#loggedin'] === true) {
         $dates  = array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
         $emptys = array();
         $gen = 'male';
-        $deliver['status'] = 400;
 
         $age_changed = $TEMP['#user']['age_changed'];
         $d = $TEMP['#user']['birthday'];
@@ -174,14 +173,12 @@ if ($TEMP['#loggedin'] === true) {
             );
         }
     } else if ($one == 'authentication') {
-        $deliver['status'] = 400;
         if(in_array($_POST['authentication'], array(0, 1))){
             if($dba->query('UPDATE users SET authentication = '.Specific::Filter($_POST['authentication']).' WHERE id = '.$TEMP['#user']['id'])->returnStatus()){
                 $deliver['status'] = 200;
             }
         }
     } else if($one == 'change-avatar'){
-        $deliver['status'] = 400;
         if(!empty($_FILES['avatar'])){
             if(!empty($_FILES['avatar']['tmp_name'])){
                 $file_info = array(
@@ -242,7 +239,6 @@ if ($TEMP['#loggedin'] === true) {
             $deliver['html'] = $html;
         }
     } else if($one == 'delete-email'){
-        $deliver['status'] = 400;
         $user_id = Specific::Filter($_POST['user_id']);
         if(!empty($user_id) && Specific::IsOwner($user_id)){
             $code = rand(111111, 999999);

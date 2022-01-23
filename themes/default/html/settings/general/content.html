@@ -57,7 +57,7 @@
         <div class="<?php echo ($TEMP['#settings']['validate_email'] == 'on' && empty($TEMP['#user']['change_email'])) ? 'group-validate ' : ''?>display-block margin-t15 position-relative w-100 padding-25">
             <div class="display-flex flex-wrap">
                 <div class="cont-label dv-vertical-center">
-                    <label class="color-black">{$word->email_address}</label>
+                    <label class="color-black">*{$word->email_address}</label>
                 </div>
                 <div class="flex-grow">
                     <input id="settings-email" type="text" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue<?php echo ($TEMP['#settings']['validate_email'] == 'on' && empty($TEMP['#user']['change_email'])) ? ' input_key area_validate ' : ' '?>background-grely color-black"<?php echo ($TEMP['#settings']['validate_email'] == 'on' && !empty($TEMP['#user']['change_email'])) ? ' readonly="true" ' : ''?>value="<?php echo ($TEMP['#settings']['validate_email'] == 'on' && !empty($TEMP['#user']['change_email'])) ? '{$me->change_email}' : '{$me->email}'?>">
@@ -82,7 +82,7 @@
         <div class="group-validate display-block margin-t15 position-relative w-100 padding-25">
             <div class="display-flex flex-wrap">
                 <div class="cont-label dv-vertical-center">
-                    <label class="color-black">{$word->cell_phone}</label>
+                    <label class="color-black">*{$word->cell_phone}</label>
                 </div>
                 <div class="flex-grow">
                     <input id="cellphone" type="number" class="cont-input number h-50 input_key border-radius-12 background-grely color-black" value="{$me->cellphone}">
@@ -104,7 +104,7 @@
         <div class="group-validate display-block margin-t15 position-relative w-100 padding-25">
             <div class="display-flex flex-wrap">
                 <div class="cont-label dv-vertical-center">
-                    <label class="color-black">{$word->gender}</label>
+                    <label class="color-black">*{$word->gender}</label>
                 </div>
                 <div class="flex-grow">
                     <select id="gender" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue area_changed caret-down input_key area_validate background-grely color-black">
@@ -118,7 +118,7 @@
         <div class="group-validate display-block margin-t15 position-relative w-100 padding-25">
             <div class="display-flex flex-wrap">
                 <div class="cont-label dv-vertical-center">
-                    <label class="color-black">{$word->province}</label>
+                    <label class="color-black">*{$word->province}</label>
                 </div>
                 <div class="flex-grow">
                     <select id="province" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue area_changed caret-down background-grely color-black">
@@ -133,7 +133,7 @@
         <div class="group-validate display-block margin-t15 position-relative w-100 padding-25">
             <div class="display-flex flex-wrap">
                 <div class="cont-label dv-vertical-center">
-                    <label class="color-black">{$word->municipality}</label>
+                    <label class="color-black">*{$word->municipality}</label>
                 </div>
                 <div class="flex-grow">
                     <select id="municipality" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue area_changed caret-down background-grely color-black">
@@ -148,7 +148,7 @@
         <div class="group-validate display-block margin-t15 position-relative w-100 padding-25">
             <div class="display-flex flex-wrap">
                 <div class="cont-label dv-vertical-center">
-                    <label class="color-black">{$word->date_of_birth}</label>
+                    <label class="color-black">*{$word->date_of_birth}</label>
                 </div>
                 <div class="flex-grow">
                     <div class="display-flex">

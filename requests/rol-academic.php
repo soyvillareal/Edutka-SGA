@@ -1,7 +1,6 @@
 <?php 
 if ($TEMP['#loggedin'] === true && (Specific::Admin() === true || Specific::Academic() === true)) {
     if($one == 'get-foitems'){
-        $deliver['status'] = 400;
         $id = Specific::Filter($_POST['id']);
         if(isset($id) && is_numeric($id)){
             $items = $dba->query('SELECT form_key, access, expire, status FROM forms WHERE id = '.$id)->fetchArray();
@@ -15,7 +14,6 @@ if ($TEMP['#loggedin'] === true && (Specific::Admin() === true || Specific::Acad
             }
         }
     } else if($one == 'this-forms'){
-        $deliver['status'] = 400;
         $statusa  = array('activated', 'deactivated');
         $min = Specific::Filter($_POST['min']);
         $emptys = array();
@@ -78,7 +76,6 @@ if ($TEMP['#loggedin'] === true && (Specific::Admin() === true || Specific::Acad
             }
         }
     } else if($one == 'delete-form'){
-        $deliver['status'] = 400;
         $id = Specific::Filter($_POST['id']);
         if (isset($id) && is_numeric($id)) {
             if($dba->query('DELETE FROM forms WHERE id = '.$id)->returnStatus()){
@@ -146,7 +143,6 @@ if ($TEMP['#loggedin'] === true && (Specific::Admin() === true || Specific::Acad
             $deliver['html'] = $html;
         }
     } else if($one == 'this-assings'){
-        $deliver['status'] = 400;
         $teatrues = array(true);
         $types = array('add', 'edit');
 
@@ -257,7 +253,6 @@ if ($TEMP['#loggedin'] === true && (Specific::Admin() === true || Specific::Acad
             }
         }
     } else if($one == 'delete-assing'){
-        $deliver['status'] = 400;
         $id = Specific::Filter($_POST['id']);
         $period_id = Specific::Filter($_POST['period_id']);
         if (isset($id) && is_numeric($id) && isset($period_id) && is_numeric($period_id)) {
@@ -269,7 +264,6 @@ if ($TEMP['#loggedin'] === true && (Specific::Admin() === true || Specific::Acad
             };
         }
     } else if($one == 'get-titems'){
-        $deliver['status'] = 400;
         $id = Specific::Filter($_POST['id']);
         $period_id = Specific::Filter($_POST['period_id']);
         if(isset($id) && is_numeric($id)){
@@ -286,7 +280,6 @@ if ($TEMP['#loggedin'] === true && (Specific::Admin() === true || Specific::Acad
             }
         }
     } else if($one == 'get-periods'){
-        $deliver['status'] = 400;
         $id = Specific::Filter($_POST['id']);
         if(isset($id) && is_numeric($id)){
             $periods = $dba->query('SELECT period_id FROM teacher WHERE course_id = '.$id)->fetchAll(false);
@@ -316,7 +309,6 @@ if ($TEMP['#loggedin'] === true && (Specific::Admin() === true || Specific::Acad
         }
         $deliver['html'] = $html;
     } else if($one == 'check-enroll'){
-        $deliver['status'] = 400;
         $id = Specific::Filter($_POST['course_id']);
         $user_id = Specific::Filter($_POST['user_id']);
         $program_id = Specific::Filter($_POST['program_id']);
@@ -331,7 +323,6 @@ if ($TEMP['#loggedin'] === true && (Specific::Admin() === true || Specific::Acad
             }
         }
     } else if($one == 'get-uitems'){
-        $deliver['status'] = 400;
         $id = Specific::Filter($_POST['id']);
         if(isset($id) && is_numeric($id)){
             $sql = 'SELECT dni, names, surnames FROM users WHERE id = '.$id;
@@ -347,7 +338,6 @@ if ($TEMP['#loggedin'] === true && (Specific::Admin() === true || Specific::Acad
             }
         }
     } else if($one == 'this-users'){
-        $deliver['status'] = 400;
         $roles  = array('admin', 'academic', 'teacher', 'student');
         $statusa  = array(0, 1);
         $emptys = array();
@@ -465,7 +455,6 @@ if ($TEMP['#loggedin'] === true && (Specific::Admin() === true || Specific::Acad
             $deliver['html'] = $html;
         }
     } else if($one == 'get-aitems'){
-        $deliver['status'] = 400;
         $id = Specific::Filter($_POST['id']);
         if(isset($id) && is_numeric($id)){
             $items = $dba->query('SELECT description, court, expires, status FROM authorization WHERE id = '.$id)->fetchArray();
@@ -484,7 +473,6 @@ if ($TEMP['#loggedin'] === true && (Specific::Admin() === true || Specific::Acad
             }
         }
     } else if($one == 'this-authorizations'){
-        $deliver['status'] = 400;
         $emptys = array();
         $errors = array();
         $statusa = array('authorized', 'pending', 'denied');
@@ -610,7 +598,6 @@ if ($TEMP['#loggedin'] === true && (Specific::Admin() === true || Specific::Acad
             $deliver['html'] = $html;
         }
     } else if($one == 'get-qitems'){
-        $deliver['status'] = 400;
         $id = Specific::Filter($_POST['id']);
         if(isset($id) && is_numeric($id)){
             $items = $dba->query('SELECT note_id, note, status FROM qualification WHERE id = '.$id)->fetchArray();
@@ -634,7 +621,6 @@ if ($TEMP['#loggedin'] === true && (Specific::Admin() === true || Specific::Acad
             }
         }
     } else if($one == 'this-qualifications'){
-        $deliver['status'] = 400;
         $emptys = array();
         $errors = array();
         $statusa = array('accepted', 'pending', 'rejected');

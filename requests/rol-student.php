@@ -10,7 +10,7 @@ if ($TEMP['#loggedin'] === true && (Specific::Admin() === true || Specific::Acad
 	    $html = '';
 		$query = '';
 		$sql = '';
-
+		$TEMP['#enrolled'] = false;
 		$programs = $dba->query('SELECT program_id FROM enrolled WHERE type = "program" AND user_id = '.$id)->fetchAll(false);
 		
 		if($status == 'registered'){
@@ -24,6 +24,7 @@ if ($TEMP['#loggedin'] === true && (Specific::Admin() === true || Specific::Acad
 				    }
 			    	$query = " AND (SELECT id FROM courses WHERE (id LIKE '%$keyword%' OR name LIKE '%$keyword%')".$sql." AND id = e.course_id) = course_id";
 			    } else {
+			    	$query .= $sql;
 			    	if(in_array($working_day, array('daytime', 'nightly'))){
 			    		$query = " AND (SELECT id FROM courses WHERE schedule = '".$working_day."' AND id = e.course_id) = course_id";
 			    	}
@@ -36,6 +37,7 @@ if ($TEMP['#loggedin'] === true && (Specific::Admin() === true || Specific::Acad
 			$searchs = $dba->query('SELECT * FROM enrolled e WHERE user_id = '.$id.' AND type = "'.$type.'"'.$query)->fetchAll();
 
 			if(!empty($searchs)){
+				$TEMP['#enrolled'] = true;
 				foreach ($searchs as $enroll) {
 					if($enroll['type'] == 'course'){
 						$course = $dba->query('SELECT name FROM courses WHERE id = '.$enroll['course_id'])->fetchArray();
@@ -44,13 +46,13 @@ if ($TEMP['#loggedin'] === true && (Specific::Admin() === true || Specific::Acad
 						$teachers = $dba->query('SELECT names FROM users u WHERE (SELECT user_id FROM teacher WHERE user_id = u.id AND course_id = '.$enroll['course_id'].' AND period_id = '.$enroll['period_id'].') = id')->fetchAll(false);
 						if(!empty($teachers)){
 							if(count($teachers) == 2){
-								$teachers = "{$teachers[0]} {$TEMP['#word']['and']} {$teachers[1]}";
+								$TEMP['!teacher'] = "{$teachers[0]} {$TEMP['#word']['and']} {$teachers[1]}";
 							} else if(count($teachers) > 2){
 								$end = end($teachers);
 								array_pop($teachers);
-								$teachers = implode(', ', $teachers)." {$TEMP['#word']['and']} $end";
+								$TEMP['!teacher'] = implode(', ', $teachers)." {$TEMP['#word']['and']} $end";
 							} else {
-								$teachers = $teachers[0];
+								$TEMP['!teacher'] = $teachers[0];
 							}
 						} else {
 							$TEMP['!teacher'] = $TEMP['#word']['pending'];
@@ -112,11 +114,21 @@ if ($TEMP['#loggedin'] === true && (Specific::Admin() === true || Specific::Acad
 					if(in_array($working_day, array('daytime', 'nightly'))){
 				       	$query .= ' AND schedule = "'.$working_day.'"';
 				    }
+				    if($status == 'without_registering'){
+				    	$enrolled = $dba->query('SELECT course_id FROM enrolled WHERE user_id = '.$id.' AND type = "course" AND program_id = '.$program_id)->fetchAll(false);
+				    	if(!empty($enrolled)){
+				    		$query .= ' AND id NOT IN ('.implode(',', $enrolled).')';
+				    	}
+				    }
 					$courses = $dba->query("SELECT * FROM courses c WHERE (SELECT course_id FROM curriculum WHERE plan_id = ".$plan_id." AND course_id = c.id) = id".$query)->fetchAll();
 					if(!empty($courses)){
 						foreach ($courses as $course) {
 							$approved = false;
+
+							$enrolled = $dba->query('SELECT COUNT(*) FROM enrolled WHERE user_id = '.$id.' AND type = "course" AND course_id = '.$course['id'].' AND (SELECT id FROM periods WHERE status = "enabled" AND start < '.time().' AND final > '.time().') = period_id AND program_id = '.$program_id)->fetchArray();
+							$deliver['XD'][] = $enrolled;
 							$enroll = $dba->query('SELECT * FROM enrolled WHERE user_id = '.$id.' AND type = "course" AND course_id = '.$course['id'].' AND program_id = '.$program_id)->fetchArray();
+							
 							if($status == 'registered' || $status == 'reprobate'){
 								if(!empty($enroll)){
 									$note = $dba->query('SELECT * FROM notes WHERE user_id = '.$enroll['user_id'].' AND course_id = '.$enroll['course_id'].' AND period_id = '.$enroll['period_id'].' AND program_id = '.$program_id)->fetchArray();
@@ -160,28 +172,27 @@ if ($TEMP['#loggedin'] === true && (Specific::Admin() === true || Specific::Acad
 								}
 							}
 
-							if(($status == 'registered' && !empty($enroll)) || ($status == 'without_registering' && empty($enroll)) || ($status == 'reprobate' && !empty($enroll) && $approved == false)){
-
-								$teachers = $dba->query('SELECT names FROM users u WHERE (SELECT user_id FROM teacher WHERE user_id = u.id AND course_id = '.$course['id'].' AND period_id = '.$enroll['period_id'].') = id')->fetchAll(false);
-								if(!empty($teachers)){
-									if(count($teachers) == 2){
-										$teachers = "{$teachers[0]} {$TEMP['#word']['and']} {$teachers[1]}";
-									} else if(count($teachers) > 2){
-										$end = end($teachers);
-										array_pop($teachers);
-										$teachers = implode(', ', $teachers)." {$TEMP['#word']['and']} $end";
-									} else {
-										$teachers = $teachers[0];
-									}
-								} else {
-									$TEMP['!teacher'] = $TEMP['#word']['pending'];
-								}
-
+							if(($status == 'registered' && !empty($enroll)) || ($status == 'without_registering' && empty($enroll)) || ($status == 'reprobate' && !empty($enroll) && $approved == false && $enrolled == 0)){
 								$TEMP['!id'] = $course['id'];
 								$TEMP['!color'] = 'purple';
 								$TEMP['!plan_id'] = $plan_id;
 								$TEMP['!name'] = $course['name'];
 								if(($status == 'registered' && !empty($enroll)) || ($status == 'reprobate' && !empty($enroll) && $approved == false)){
+									$teachers = $dba->query('SELECT names FROM users u WHERE (SELECT user_id FROM teacher WHERE user_id = u.id AND course_id = '.$course['id'].' AND period_id = '.$enroll['period_id'].') = id')->fetchAll(false);
+									$TEMP['#enrolled'] = true;
+									if(!empty($teachers)){
+										if(count($teachers) == 2){
+											$TEMP['!teacher'] = "{$teachers[0]} {$TEMP['#word']['and']} {$teachers[1]}";
+										} else if(count($teachers) > 2){
+											$end = end($teachers);
+											array_pop($teachers);
+											$TEMP['!teacher'] = implode(', ', $teachers)." {$TEMP['#word']['and']} $end";
+										} else {
+											$TEMP['!teacher'] = $teachers[0];
+										}
+									} else {
+										$TEMP['!teacher'] = $TEMP['#word']['pending'];
+									}
 									$periodc = $dba->query('SELECT name, final FROM periods WHERE id = '.$enroll['period_id'])->fetchArray();
 									$TEMP['!name'] = "{$course['name']} ({$periodc['name']})";
 									$TEMP['!text'] = $TEMP['#word']['enroll'];
@@ -221,9 +232,13 @@ if ($TEMP['#loggedin'] === true && (Specific::Admin() === true || Specific::Acad
 								}
 								$html .= Specific::Maket("enroll/includes/enroll-list");
 							} else {
-								if(empty($html) && !empty($keyword)){
-								    $TEMP['keyword'] = $keyword;
-								   	$html .= Specific::Maket('not-found/result-for');
+								if(empty($html)){
+									if(!empty($keyword)){
+									    $TEMP['keyword'] = $keyword;
+									   	$html .= Specific::Maket('not-found/result-for');
+									} else {
+								        $html .= Specific::Maket('not-found/enroll');
+									}
 								}
 							}
 						}
@@ -246,10 +261,10 @@ if ($TEMP['#loggedin'] === true && (Specific::Admin() === true || Specific::Acad
 
 				if(!empty($programs)){
 					foreach ($programs as $program) {
-
-						$enroll = $dba->query('SELECT * FROM enrolled WHERE user_id = '.$id.' AND type = "program" AND program_id = '.$program['id'])->fetchArray();
 						
+						$enroll = $dba->query('SELECT * FROM enrolled WHERE user_id = '.$id.' AND type = "program" AND program_id = '.$program['id'])->fetchArray();	
 						if($status == 'registered'){
+							$TEMP['#enrolled'] = true;
 							$TEMP['!name'] = $program['name'];
 							$TEMP['!color'] = 'green';
 							$TEMP['!typet'] = 'program';
@@ -287,9 +302,13 @@ if ($TEMP['#loggedin'] === true && (Specific::Admin() === true || Specific::Acad
 							    $html .= Specific::Maket("enroll/includes/enroll-list");
 							} else {
 								if(empty($html)){
-									$TEMP['keyword'] = $keyword;
-									$html .= Specific::Maket('not-found/result-for');
-								}	
+									if(!empty($keyword)){
+									    $TEMP['keyword'] = $keyword;
+									   	$html .= Specific::Maket('not-found/result-for');
+									} else {
+								        $html .= Specific::Maket('not-found/enroll');
+									}
+								}
 							}
 						}
 					}
@@ -307,7 +326,6 @@ if ($TEMP['#loggedin'] === true && (Specific::Admin() === true || Specific::Acad
 		}
 		$deliver['html'] = $html;
 	} else if($one == 'cancel-enroll'){
-		$deliver['status'] = 400;
 	    $id = Specific::Filter($_POST['id']);
 	    if (isset($id) && is_numeric($id)) {
 	    	$final = $dba->query('SELECT final FROM periods WHERE (SELECT period_id FROM enrolled WHERE id = '.$id.') = id')->fetchArray();
@@ -318,7 +336,6 @@ if ($TEMP['#loggedin'] === true && (Specific::Admin() === true || Specific::Acad
 		    }
 	    }
 	} else if($one == 'register-ecnroll'){
-		$deliver['status'] = 400;
 	    $course_id = Specific::Filter($_POST['course_id']);
 	    $user_id = Specific::Filter($_POST['user_id']);
 	    $plan_id = Specific::Filter($_POST['plan_id']);
@@ -435,7 +452,6 @@ if ($TEMP['#loggedin'] === true && (Specific::Admin() === true || Specific::Acad
 		    }
 	    }
 	} else if($one == 'register-epnroll'){
-		$deliver['status'] = 400;
 	    $id = Specific::Filter($_POST['id']);
 	    $user_id = Specific::Filter($_POST['user_id']);
 	    if (isset($id) && is_numeric($id)) {
@@ -444,13 +460,10 @@ if ($TEMP['#loggedin'] === true && (Specific::Admin() === true || Specific::Acad
 	    	if($enrolled_programs == 0){
 		        if($dba->query('INSERT INTO enrolled (user_id, period_id, program_id, type, status, `time`) VALUES ('.$user_id.', '.$period.', '.$id.', "program", "registered",'.time().')')->returnStatus()){
 		        	$deliver['status'] = 200;
-		        } else {
-		        	$deliver['status'] = 400;
 		        }
 		    }
 	    }
 	} else if($one == 'get-citems'){
-	    $deliver['status'] = 400;
 	    $id = Specific::Filter($_POST['id']);
 	    $period_id = Specific::Filter($_POST['period_id']);
 	    $type = Specific::Filter($_POST['type']);
@@ -475,7 +488,6 @@ if ($TEMP['#loggedin'] === true && (Specific::Admin() === true || Specific::Acad
 	        }
 	    }
 	} else if($one == 'get-settings'){
-		$deliver['status'] = 400;
 		$id = Specific::Filter($_POST['id']);
 		$note_id = Specific::Filter($_POST['note_id']);
 
@@ -496,7 +508,6 @@ if ($TEMP['#loggedin'] === true && (Specific::Admin() === true || Specific::Acad
 			}
 		}
 	} else if($one == 'request-qualifications'){
-		$deliver['status'] = 400;
 		$id = Specific::Filter($_POST['id']);
 		$note_id = Specific::Filter($_POST['note_id']);
 		$period_id = Specific::Filter($_POST['period_id']);

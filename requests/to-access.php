@@ -9,7 +9,6 @@ if ($TEMP['#loggedin'] === true && !in_array($one, array('verify-change-email', 
 }
 
 if($one == 'login'){
-	$deliver['status'] = 400;
 	$error = '';
 	$emptys = array();
 	$dni = Specific::Filter($_POST['dni']);
@@ -145,7 +144,6 @@ if($one == 'login'){
 		);
 	}
 } else if($one == 'resend-email'){
-	$deliver['status'] = 400;
 	$ukey = Specific::Filter($_POST['ukey']);
 	$token = Specific::Filter($_POST['tokenu']);
 	if(!empty($ukey) && !empty($token)){
@@ -197,7 +195,6 @@ if($one == 'login'){
 		);
 	}
 } else if($one == 'verify-code'){
-	$deliver['status'] = 400;
 	$ukey = Specific::Filter($_POST['ukey']);
 	$token = Specific::Filter($_POST['tokenu']);
 	if($TEMP['#settings']['authentication'] == 'on' && !empty($ukey)){
@@ -229,7 +226,6 @@ if($one == 'login'){
 		}
 	}
 } else if($one == 'forgot-password'){
-	$deliver['status'] = 400;
 	$error = '';
 	$email = Specific::Filter($_POST['email']);
    
@@ -288,7 +284,6 @@ if($one == 'login'){
 		);
     }
 } else if($one == 'reset-password'){
-	$deliver['status'] = 400;
 	$errors = array();
 	$emptys = array();
 	$token = Specific::Filter($_POST['tokenu']);
@@ -334,7 +329,6 @@ if($one == 'login'){
 		}
 	}
 } else if($one == 'register'){
-	$deliver['status'] = 400;
 	$dates 			= array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
 	$errors      	= array();
 	$emptys     	= array();
@@ -518,7 +512,6 @@ if($one == 'login'){
 		);
     }
 } else if ($one == 'verify-email'){
-	$deliver['status'] = 400;
 	$ukey = Specific::Filter($_POST['ukey']);
 	$token = Specific::Filter($_POST['tokenu']);
 	if(!empty($token)){
@@ -550,7 +543,6 @@ if($one == 'login'){
 		);
 	}
 } else if($one == 'verify-change-email'){
-	$deliver['status'] = 400;
 	$ukey = Specific::Filter($_POST['ukey']);
 	$token = Specific::Filter($_POST['tokenu']);
 	if (!empty($ukey)) {
@@ -634,7 +626,6 @@ if($one == 'login'){
 		);
 	}
 } else if($one == 'bubbles'){
-	$deliver['status'] = 400;
 	$bubbles = Specific::Filter($_POST['bubbles']);
 	if(!empty($bubbles)){
 		$bubbles = Specific::Bubbles(array('rands' => explode(',', $bubbles)));
@@ -645,7 +636,6 @@ if($one == 'login'){
 		);
 	}
 } else if($one == 'deactivate-account'){
-	$deliver['status'] = 400;
 	$user_id = Specific::Filter($_POST['user_id']);
 	$token = Specific::Filter($_POST['tokenu']);
 	$ukey = Specific::Filter($_POST['ukey']);
