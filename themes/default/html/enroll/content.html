@@ -185,7 +185,7 @@ var GA = D.querySelectorAll('.show_cmodal'),
 		    } else {
 		        loadAlert(e.error, 1), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
 	        }
-		}, "POST", "&course_id=" + course_id + "&user_id={#user_id}<?php echo(count($TEMP['#programs']) > 1 && $TEMP['#type'] == 'course') ? '&program_id=" + D.querySelector("#program_id").value' : '&program_id={#program}"';?>);
+		}, "POST", "&course_id=" + course_id + "&user_id={#user_id}<?php echo(count($TEMP['#programs']) > 1 && $TEMP['#type'] == 'course') ? '&program_id=" + D.querySelector("#program_id").value' : '&program_id={#program_id}"';?>);
 		<?php } ?>
 	},
 	GT = function(){
@@ -202,7 +202,7 @@ var GA = D.querySelectorAll('.show_cmodal'),
 			} else {
 				 removeClass(GQ, 'spinner-is-loading'), GP.innerHTML = e.html
 			}
-		}, "POST", "&keyword=" + GU.value + "&status=" + GW.value + "&id={#user_id}&typet={#type}<?php echo($TEMP['#type'] == 'course') ? '&working_day=" + GD.value + "' : ''; echo(count($TEMP['#programs']) > 1 && $TEMP['#type'] == 'course') ? '&program_id=" + D.querySelector("#program_id").value' : '&program_id={#program}"';?>)
+		}, "POST", "&keyword=" + GU.value + "&status=" + GW.value + "&id={#user_id}&typet={#type}<?php echo($TEMP['#type'] == 'course') ? '&working_day=" + GD.value + "' : ''; echo(count($TEMP['#programs']) > 1 && $TEMP['#type'] == 'course') ? '&program_id=" + D.querySelector("#program_id").value' : '&program_id={#program_id}"';?>)
 	},
     GH = function(){
         GE.style.display = "block", D.body.style.overflow = "hidden", GG.setAttribute('data-id', this.getAttribute('data-id'));
@@ -233,7 +233,7 @@ addEvent(GD, 'change', GT), <?php if(count($TEMP['#programs']) > 1){ ?>addEvent(
 	    } else {
 	        loadAlert(e.error, 1), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
         }
-	}, "POST", "&id=" + self.getAttribute('data-id'));
+	}, "POST", "&user_id={#user_id}&typet={#type}&id=" + self.getAttribute('data-id'));
 })<?php if($TEMP['!status'] != 'cancelled' || $TEMP['#admin'] == true || $TEMP['#academic'] == true){ ?>, addEvent(GI, "click", function(){
     var self = this; 
     self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');

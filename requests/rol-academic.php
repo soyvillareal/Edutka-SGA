@@ -480,7 +480,7 @@ if ($TEMP['#loggedin'] === true && (Specific::Admin() === true || Specific::Acad
         $expires = Specific::Filter($_POST['expires']);
         $status = Specific::Filter($_POST['status']);
         if(isset($id) && is_numeric($id)){
-            if(empty($expires)){
+            if(empty($expires) && $status == 'authorized'){
                 $emptys[] = 'expires';
             }
             if(empty($status)){
@@ -488,7 +488,7 @@ if ($TEMP['#loggedin'] === true && (Specific::Admin() === true || Specific::Acad
             }
             if(empty($emptys)){
                 $expire = explode('-', $expires);
-                if(!checkdate($expire[1], $expire[2], $expire[0])){
+                if(!checkdate($expire[1], $expire[2], $expire[0]) && $status == 'authorized'){
                     $errors[] = 'expires';
                 }
                 if(!in_array($status, $statusa)){
@@ -498,7 +498,7 @@ if ($TEMP['#loggedin'] === true && (Specific::Admin() === true || Specific::Acad
                     $expires = strtotime($expires);
                     $period = $dba->query('SELECT *, COUNT(*) AS count FROM periods WHERE status = "enabled" AND start < '.time().' AND final > '.time())->fetchArray();
                     if($period['count'] > 0){
-                        if($expires > $period['start'] && $expires < $period['final']){
+                        if(($expires > $period['start'] && $expires < $period['final']) || $status == 'denied'){
                             if($dba->query('UPDATE authorization SET user_id = ?, period_id = ?, expires = ?, status = ? WHERE id = '.$id, $TEMP['#user']['id'], $period['id'], $expires, $status)->returnStatus()){
                                 $deliver['status'] = 200;
                                 $authorization = $dba->query('SELECT * FROM authorization WHERE id = '.$id)->fetchArray();

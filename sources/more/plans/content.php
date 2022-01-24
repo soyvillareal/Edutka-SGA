@@ -1,6 +1,6 @@
 <?php
 if ($TEMP['#loggedin'] === false) {
-    header("Location: ".Specific::Url());
+    header("Location: ".Specific::ReturnUrl());
     exit();
 }
 

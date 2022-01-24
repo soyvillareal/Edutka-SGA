@@ -17,6 +17,10 @@ if (isset($_GET['one'])) {
 }
 $now_url = (!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] != 'on' ? 'http://' : 'https://') . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 $TEMP['#now_url']  = urlencode($now_url);
+$TEMP['#return_url'] =  Specific::Url();
+if(!empty($_GET['return'])){
+    $TEMP['#return_url'] =  urlencode($_GET['return']);
+}
 if($TEMP['#loggedin'] === true){
     if ($TEMP['#user']['status'] != 'active') {
         if (isset($_COOKIE['session_id'])) {

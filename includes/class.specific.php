@@ -138,6 +138,36 @@ class Specific {
 	    }
 	}
 
+	public static function UploadPDF($data = array()){
+	    global $TEMP;
+
+	    if (!file_exists('uploads/rules/' . $data['id'])) {
+	        mkdir('uploads/rules/' . $data['id'], 0777, true);
+	    }
+	    $filepath = 'uploads/rules/' . $data['id'];
+
+	    if (empty($data)) {
+	        return false;
+	    }
+	    if (isset($data['file']) && !empty($data['file'])) {
+	        $data['file'] = $data['file'];
+	    }
+	    $ext = pathinfo($data['name'], PATHINFO_EXTENSION);
+	    if ($ext != 'pdf' || $data['type'] != 'application/pdf') {
+	        return array(
+	            'error' => $TEMP['#word']['file_not_supported']
+	        );
+	    }
+	    $file = $filepath . '/' . md5(sha1(time()) . '_' . date('d') . '_' . self::RandomKey());
+	    $filename = "$file.$ext";
+	    if (move_uploaded_file($data['file'], $filename)) {
+	        return $filename;
+	    } else {
+	    	return 'NADA mi pana :(';
+	    }
+	}
+
+
 	public static function Settings() {
 	    global $dba;
 	    $data  = array();
@@ -210,10 +240,7 @@ class Specific {
 
 	    $user['provinces']  = $TEMP['#provinces'][$user['province']];
 	    $user['municipalities']  = $TEMP['#municipalities'][$user['municipality']];
-
-
 	    $user['program'] = $dba->query('SELECT max(program_id) FROM enrolled e WHERE type = "program" AND user_id = '.$user['id'])->fetchArray();
-
 
 	    $gender = $TEMP['#word']['male'];
 	    if($user['gender'] == 2){
@@ -306,6 +333,15 @@ class Specific {
 	public static function Url($params = '') {
 	    global $site_url;
 	    return $site_url . '/' . $params;
+	}
+
+	public static function ReturnUrl() {
+		$params = "";
+		if(!empty($_SERVER["REQUEST_URI"])){
+			$url = (!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] != 'on' ? 'http://' : 'https://') . $_SERVER['HTTP_HOST'] . $_SERVER["REQUEST_URI"];
+			$params = "login?return=".urlencode($url);
+		}
+		return self::Url($params);
 	}
 
 	public static function ValidateDates($id, $pos, $validate = 0){

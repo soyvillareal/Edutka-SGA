@@ -1,9 +1,8 @@
 <?php
 if ($TEMP['#loggedin'] === false) {
-	header("Location: ".Specific::Url());
+	header("Location: ".Specific::ReturnUrl());
 	exit();
 }
-
 
 $TEMP['#user_id'] = $TEMP['#user']['id'];
 if(isset($_GET['user']) && (Specific::Admin() == true || Specific::Academic() == true || Specific::Teacher() == true)){
@@ -18,18 +17,18 @@ $TEMP['#type'] = Specific::Filter($_GET['type']);
 $TEMP['#course_id'] = Specific::Filter($_GET['course_id']);
 $TEMP['#keyword_notes'] = Specific::Filter($_GET['keyword']);
 if(empty($_GET['type'])){
-	$TEMP['#type'] = 'user';
+	$TEMP['#type'] = 'student';
 }
 $TEMP['#role'] = 'teacher';
 if(Specific::Student() == true){
 	$TEMP['#role'] = 'student';
 }
 
-if($TEMP['#type'] == 'user'){
-	$user_data = Specific::Data($TEMP['#user_id']);
+if($TEMP['#type'] == 'student'){
+	$user = Specific::Data($TEMP['#user_id']);
 	$TEMP['#program_id'] = Specific::Filter($_GET['program']);
 	if(empty($_GET['program'])){
-		$TEMP['#program_id'] = $user_data['program'];
+		$TEMP['#program_id'] = $user['program'];
 	}
 	$TEMP['#period_id'] = Specific::Filter($_GET['period']);
 	$TEMP['#programs'] = $dba->query('SELECT * FROM programs p WHERE (SELECT program_id FROM enrolled WHERE user_id = '.$TEMP['#user_id'].' AND program_id = p.id AND type = "program") = id')->fetchAll();
@@ -93,7 +92,7 @@ if($TEMP['#type'] == 'user'){
 				$params .= "&user={$TEMP['#user_id']}";
 			}
 		}
-		$params .= "&type={$TEMP['#type']}";
+		$params .= (!empty($params) ? "&" : "?")."type={$TEMP['#type']}";
 		$TEMP['#courses'] = $dba->query('SELECT * FROM courses c WHERE id IN ((SELECT course_id FROM teacher WHERE user_id = '.$TEMP['#user_id'].' AND period_id IN ((SELECT period_id FROM enrolled)) AND course_id = c.id))')->fetchAll();
 		if(!empty($TEMP['#course_id'])){
 			$TEMP['#program_id'] =  Specific::Filter($_GET['program']);
@@ -133,6 +132,29 @@ if($TEMP['#type'] == 'user'){
 		}
 	}
 }
+
+$screen = Specific::Filter($_GET['screen']);
+if(empty($screen)){
+	$TEMP['#screen'] = "twoforone";
+	$TEMP['#twoforone_content'] = '';
+	$TEMP['#twoforone_item'] = 'display-flex w-100 ';
+} else {	
+	if($screen == 'twoforone'){
+		$TEMP['#screen'] = "oneforone";
+		if(count($TEMP['#notes']) > 1){
+			$TEMP['#twoforone_content'] = 'twoforone-content ';
+			$TEMP['#twoforone_item'] = 'twoforone-item ';
+		}
+	} else {
+		$TEMP['#screen'] = "twoforone";
+		$TEMP['#twoforone_content'] = '';
+		$TEMP['#twoforone_item'] = 'display-flex w-100 ';
+	}
+}
+
+
+
+$params .= "&screen=$screen";
 
 $TEMP['#url_params'] = str_replace('?', '&', "&one=notes$params");
 $TEMP['#load_url'] = Specific::Url("notes$params");

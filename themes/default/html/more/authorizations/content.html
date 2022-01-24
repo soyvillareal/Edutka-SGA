@@ -205,7 +205,7 @@ var GC = D.querySelectorAll('.area_validate'),
 
 addEvent(GB, 'click', function(){
     var self = this;
-    if(GJ.value == '' || GU.value == ''){
+    if((GJ.value == '' && GU.value == 'authorized') || GU.value == ''){
         for (var j = 0, i = GC.length; j < i; j++){
             var el = GC[j],
                 GZ = el.parentNode,

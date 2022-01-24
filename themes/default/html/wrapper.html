@@ -212,6 +212,12 @@
                 DS = 0; 
               }, 300)) : (handler(this), clearTimeout(DE), (DS = 0));
           })
+        }, autoClick = function(el){
+            if(D.createEvent) {
+                var evt = D.createEvent("MouseEvents");
+                evt.initEvent("click", true, false);
+                el.dispatchEvent(evt);
+            }
         },
         hasClass = (e, t) => {
           return "classList" in D.documentElement ? void 0 !== e.classList && e.classList.contains(t) : new RegExp("\\b" + t + "\\b").test(e.className);

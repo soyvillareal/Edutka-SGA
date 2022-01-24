@@ -86,7 +86,7 @@ var LI = D.querySelectorAll('.input_key'),
 		Req("{$url->{req/to-access/login}}", function(e){
 			console.log(e);
 			if(e.status == 200){
-				window.location.reload();
+				window.location.href = e.return;
 			} else if(e.status == 401) {
 				if(e.html != undefined) {
 					removeClass(LB, 'spinner-is-loading'), LB.removeAttribute('disabled'), LE.innerHTML = e.html;
@@ -132,10 +132,11 @@ var LI = D.querySelectorAll('.input_key'),
 					LE.innerHTML = e.error;
 				}
 			}
-		}, "POST", "&dni=" + LU.value + "&password=" + LP.value + "&to={$to}"<?php echo $TEMP['#settings']['recaptcha'] == 'on' ? ' + "&recaptcha=" + D.querySelector("#g-recaptcha .g-recaptcha-response").value' : ''?>)
+		}, "POST", "&dni=" + LU.value + "&password=" + LP.value + "&to={$to}&return={#return_url}"<?php echo $TEMP['#settings']['recaptcha'] == 'on' ? ' + "&recaptcha=" + D.querySelector("#g-recaptcha .g-recaptcha-response").value' : ''?>)
 	},
 	LX = !1,
 	LO = "{$bubbles}".split(',');
+
 LU.focus(), timeDelay(function(){
 	if(LO.length > 0){
 		Req("{$url->{req/to-access/bubbles}}", function(e){

@@ -25,8 +25,6 @@
                         <option value="enabled">{$word->enabled}</option>
                         <option value="disabled">{$word->disabled}</option>
                     </select>
-                    <label class="color-black">{$word->link}:</label>
-                    <input id="link" type="text" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue background-grely color-black" placeholder="{$word->optional}" />
                 </div>
             </div>
             <div class="display-flex flex-end">
@@ -50,7 +48,6 @@
                 <p>
                     <b>1.</b> {$word->the_field_create_edit_regulation_accepts}<br>
                     <b>2.</b> {$word->this_field_captures_all_text_referring}
-
                     <h3 class="font-lowly font-bold">{$word->parameters}:</h3>
                     <ol>
                         <li>
@@ -161,18 +158,56 @@
    </div>
 </div>
 <div class="background-pointer"></div>
+<div class="cont-alert" id="alert-dfile">
+   <h2 class="color-red">{$word->delete} {$word->file}</h2>
+   <p>{$word->this_action_cannot_undone_continue}</p>
+   <div class="padding-t25">
+      <button class="btn-noway background-grely border-radius-4 padding-10 color-black hover-button font-uppercase" id="cancel-dfalert">{$word->cancel}</button>
+      <button class="btn-noway background-blue border-radius-4 padding-10 color-black hover-opacity font-uppercase" id="delete-frule">
+        <span class="color-white">{$word->delete}</span>
+        <div class="content-spinner-circle">
+            <div class="spinner-circle"></div>
+        </div>
+    </button>
+   </div>
+</div>
+<div class="background-pointer"></div>
+<div class="cont-alert" id="alert-rule">
+   <h2 class="color-red">{$word->change} {$word->file}</h2>
+   <p>{$word->previous_regulation_will_deleted}</p>
+   <div class="padding-t25">
+        <button class="btn-noway background-grely border-radius-4 padding-10 color-black hover-button font-uppercase" id="cancel-ralert">{$word->cancel}</button>
+        <button class="btn-noway background-blue border-radius-4 padding-10 color-black hover-opacity font-uppercase" id="upload-rule">
+            <span class="color-white">{$word->change}</span>
+            <div class="content-spinner-circle">
+                <div class="spinner-circle"></div>
+            </div>
+        </button>
+   </div>
+</div>
+<div class="background-pointer"></div>
 <script type="text/javascript">
 var GC = D.querySelectorAll('.edit_rule'),
     GY = D.querySelectorAll('.delete_rule'),
     GS = D.querySelectorAll('.close_edit'),
+    GJ = D.querySelectorAll('.upload_file'),
+    GX = D.querySelectorAll('.file_rule'),
+    GM = D.querySelectorAll('.file_name'),
+    GB = D.querySelectorAll('.clear_file'),
     GI = D.querySelector('#alert-steps'),
     GA = D.querySelector('#alert-delete'),
+
+    GQ = D.querySelector('#alert-rule'),
+    GZ = D.querySelector('#upload-rule'),
+
+    GP = D.querySelector('#alert-dfile'),
+    GU = D.querySelector('#delete-frule'),
+
     GH = D.querySelector('#delete-rule'),
     GV = GI.querySelector('.content-modal-body'),
     GN = D.querySelector('#content-new-rules'),
     GT = D.querySelector('#new-rulet'),
     GR = D.querySelector('#new-rules'),
-    GL = D.querySelector('#link'),
     GK = D.querySelector('#status'),
     GE = function(){
         var self = this,
@@ -180,22 +215,41 @@ var GC = D.querySelectorAll('.edit_rule'),
             content = self.parentNode.parentNode,
             rulet = content.querySelector('.rulet'),
             ruleh = content.querySelector('.ruleh'),
-            link = content.querySelector('.link'),
+            upload_file = content.querySelector('.upload_file'),
+            clear_file = content.querySelector('.clear_file'),
             status = content.querySelector('.status'),
             close = content.querySelector('.close_edit');
         if(button.innerText == '{$word->edit}'){
-            statu = status.value, links = link.value, rules = rulet.value, button.innerText = "{$word->save}", status.removeAttribute('disabled'), removeClass(status, 'cursor-disabled'), link.removeAttribute('readonly'), addClass(ruleh, 'hidden'), removeClass(rulet, 'hidden'), removeClass(close, 'hidden');
+            statu = status.value, rules = rulet.value, button.innerText = "{$word->save}", status.removeAttribute('disabled'), removeClass(status, 'cursor-disabled'), addClass(ruleh, 'hidden'), removeClass(upload_file, 'cursor-disabled'), upload_file.removeAttribute('disabled'), removeClass(clear_file, 'cursor-disabled'), clear_file.removeAttribute('disabled'), removeClass(rulet, 'hidden'), removeClass(close, 'hidden');
         } else {
             self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
             Req('{$url->{req/rol-admin/this-rules}}', function(e){
                 console.log(e);
                 if(e.status == 200){
-                    button.innerText = "{$word->edit}", status.setAttribute('disabled', true), addClass(status, 'cursor-disabled'), link.setAttribute('readonly', true), removeClass(ruleh, 'hidden'), addClass(rulet, 'hidden'), addClass(close, 'hidden'), loadAlert("{$word->regulation_updated_successfully}"), preloadPage('&one=more&page=rules');
+                    button.innerText = "{$word->edit}", status.setAttribute('disabled', true), addClass(status, 'cursor-disabled'), removeClass(ruleh, 'hidden'), addClass(rulet, 'hidden'), addClass(upload_file, 'cursor-disabled'), upload_file.setAttribute('disabled', true), addClass(clear_file, 'cursor-disabled'), clear_file.setAttribute('disabled', true), addClass(close, 'hidden'), loadAlert("{$word->regulation_updated_successfully}"), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading'), ruleh.innerHTML = '<div class="overflow-auto w-100">' + e.html + '</div>';
                 } else {
                     loadAlert(e.error, 1), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
                 }
             }, "POST", "&type=edit&id=" + self.getAttribute('data-id') + "&rules=" + rulet.value + "&status=" + status.value)
         }
+    },
+    GG = function(self){
+        var rule_id = self.getAttribute('data-id'),
+            el = D.querySelector('#file-rule-' + rule_id),
+            GL = el.parentNode;
+        self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
+        Req("{$url->{req/rol-admin/upload-rule}}?token={#token_session}&id=" + rule_id, function(e){
+            console.log(e);
+            if (e.status == 200) {
+                GQ.style.display = "none", D.body.style.overflow = "", el.value = "", GL.querySelector('.file_name').setAttribute('placeholder', e.file), removeClass(GL.querySelector('.clear_file'), 'hidden'), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
+            } else {  
+                self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading'), loadAlert(e.error, 1);
+            }
+        }, "POST", D.querySelector('#file-rule-' + rule_id), "file-rule", function(){}, function(){}, function() {
+            self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading'), loadAlert('{$word->there_error_uploading_file}', 1);
+        }, function() {
+            self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading'), loadAlert('{$word->the_operation_canceled_connection_interrupted}', 1);
+        })
     },
     GD = function(){
         GA.style.display = "block", D.body.style.overflow = "hidden", GH.setAttribute('data-id', this.getAttribute('data-id'));
@@ -206,14 +260,31 @@ var GC = D.querySelectorAll('.edit_rule'),
             button = content.parentNode.querySelector('.edit_rule span'),
             rulet = content.querySelector('.rulet'),
             ruleh = content.querySelector('.ruleh'),
-            link = content.querySelector('.link'),
+            upload_file = content.querySelector('.upload_file'),
+            clear_file = content.querySelector('.clear_file'),
             status = content.querySelector('.status');
-        status.value = statu, link.value = links, rulet.value = rules, button.innerText = "{$word->edit}", status.setAttribute('disabled', true), addClass(status, 'cursor-disabled'), link.setAttribute('readonly', true), removeClass(ruleh, 'hidden'), addClass(rulet, 'hidden'), addClass(self, 'hidden')
+        status.value = statu, rulet.value = rules, button.innerText = "{$word->edit}", status.setAttribute('disabled', true), addClass(status, 'cursor-disabled'), removeClass(ruleh, 'hidden'), addClass(upload_file, 'cursor-disabled'), upload_file.setAttribute('disabled', true), addClass(clear_file, 'cursor-disabled'), clear_file.setAttribute('disabled', true), addClass(rulet, 'hidden'), addClass(self, 'hidden')
     },
     rules,
-    links,
     statu;
-addEvent(GR, 'click', function(){
+
+addEvent(GU, 'click', function(){
+    var self = this,
+        rule_id = self.getAttribute('data-id'),
+        el = D.querySelector('#file-rule-' + rule_id),
+        GL = el.parentNode; 
+    console.log(GL);
+    self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
+    Req('{$url->{req/rol-admin/delete-frule}}', function(e){
+        if(e.status == 200){
+            loadAlert("{$word->file_deleted_successfully}"), GL.querySelector('.file_name').setAttribute('placeholder', "{$word->optional}"), addClass(GL.querySelector('.clear_file'), 'hidden'), GP.style.display = "", D.body.style.overflow = "", self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
+        } else {
+            loadAlert(e.error, 1), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
+        }
+    }, "POST", "&id=" + rule_id);
+}), addEvent(GZ, 'click', function(){
+    GG(this);
+}), addEvent(GR, 'click', function(){
     if(hasClass(GN, 'h-0')){
         GR.innerText = "{$word->save}", removeClass(GN, 'h-0'), addClass(GN, 'h-640px')
     } else {
@@ -225,14 +296,14 @@ addEvent(GR, 'click', function(){
             } else {
                 loadAlert(e.error, 1), GR.removeAttribute('disabled'), removeClass(GR, 'spinner-is-loading');
             }
-        }, "POST", "&type=add&rules=" + GT.value + "&link=" + GL.value + "&status=" + GK.value)
+        }, "POST", "&type=add&rules=" + GT.value + "&status=" + GK.value)
     }
 }), addEvent(GH, 'click', function(){
     var self = this; 
     self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
     Req('{$url->{req/rol-admin/delete-rule}}', function(e){
         if(e.status == 200){
-            loadAlert("{$word->regulation_removed_successfully}", 1), preloadPage('&one=more&page=rules');
+            loadAlert("{$word->regulation_removed_successfully}"), preloadPage('&one=more&page=rules');
         } else {
             loadAlert(e.error, 1), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
         }
@@ -243,6 +314,31 @@ addEvent(GR, 'click', function(){
     GI.style.display = "block", D.body.style.overflow = "hidden", scrollTo(0, GV);
 }), addEvent(D.querySelector('#close-alert'), 'click', function(){
     GI.style.display = "", D.body.style.overflow = "";
+}), addEvent(D.querySelector('#cancel-ralert'), 'click', function(){
+    GQ.style.display = "", D.body.style.overflow = "";
+}), addEvent(D.querySelector('#cancel-dfalert'), 'click', function(){
+    GP.style.display = "", D.body.style.overflow = "";
+});
+
+for(var j = 0, i = GM.length; j < i; j++) doubleClick(GM[j], function(e){
+    window.open(e.getAttribute('data-link'), '_blank');
+});
+for(var j = 0, i = GJ.length; j < i; j++) addEvent(GJ[j], 'click', function(){
+    autoClick(D.querySelector('#file-rule-' + this.getAttribute('data-id')));
+});
+for(var j = 0, i = GX.length; j < i; j++) addEvent(GX[j], 'change', function() {
+    var self = this.parentNode,
+        GL = self.parentNode;
+        el = GL.querySelector('.upload_file');
+
+    if(GL.querySelector('.file_name').getAttribute('placeholder') == '{$word->optional}'){
+        GG(el);
+    } else {
+        GZ.setAttribute('data-id', el.getAttribute('data-id')), GQ.style.display = "block", D.body.style.overflow = "hidden";
+    }
+});
+for(var j = 0, i = GB.length; j < i; j++) addEvent(GB[j], 'click', function(){
+    GP.style.display = "block", D.body.style.overflow = "hidden", GU.setAttribute('data-id', this.getAttribute('data-id'));
 });
 for(var j = 0, i = GC.length; j < i; j++) addEvent(GC[j], "click", GE);
 for(var j = 0, i = GY.length; j < i; j++) addEvent(GY[j], "click", GD);

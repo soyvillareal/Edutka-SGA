@@ -1,7 +1,7 @@
 <div class="settings-panel" id="settings-boom">
     <div class="max-w-900 border-top-left-radius border-top-right-radius background-white padding-25">
         <div class="w-100 padding-b15 border-all border-blue">
-            <h3 class="font-medium font-bold text-center">Foto de perfil</h3>
+            <h3 class="font-medium font-bold text-center">{$word->profile_picture}</h3>
             <div class="display-flex w-30 margin-auto">
                 <div class="content-avatar position-relative">
                     <img class="pointer-events-none border-radius-med" src="{$me->avatar}">
@@ -250,12 +250,6 @@ var GL = D.querySelectorAll('.area_validate'),
         } else {
             GB.setAttribute('disabled', true), GX = !1;
         }
-    }, autoClick = function(el){
-        if(D.createEvent) {
-            var evt = D.createEvent("MouseEvents");
-            evt.initEvent("click", true, false);
-            el.dispatchEvent(evt);
-        }
     }, readURL = function(img, input) {
         if (input.files && input.files[0]) {
             var reader = new FileReader();
@@ -315,9 +309,9 @@ var GL = D.querySelectorAll('.area_validate'),
             self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading'), loadAlert(e.error, 1);
         }
     }, "POST", GC, "avatar", function(){}, function(){}, function() {
-        loadAlert('{$word->there_error_uploading_file}', 1);
+        self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading'), loadAlert('{$word->there_error_uploading_file}', 1);
     }, function() {
-        loadAlert('{$word->the_operation_canceled_connection_interrupted}', 1);
+        self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading'), loadAlert('{$word->the_operation_canceled_connection_interrupted}', 1);
     })
 }), addEvent(GB, "click", function(){
     if(GM.value == '' || Gq.value == '' || GU.value == '' || GF.value == '' || GG.value == '' || GD.value == '' || GJ.value == '' || GR.value == '' || !GX){

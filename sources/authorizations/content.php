@@ -1,5 +1,9 @@
 <?php 
-if ($TEMP['#loggedin'] === false || Specific::Teacher() == false) {
+if ($TEMP['#loggedin'] === false) {
+	header("Location: ".Specific::ReturnUrl());
+	exit();
+}
+if (Specific::Teacher() == false) {
 	header("Location: " . Specific::Url('404'));
     exit();
 }
@@ -7,7 +11,7 @@ if ($TEMP['#loggedin'] === false || Specific::Teacher() == false) {
 
 $TEMP['#arrcou'] = $dba->query('SELECT course_id FROM teacher t WHERE user_id = '.$TEMP['#user']['id'].' AND (SELECT id FROM periods WHERE final > '.time().' AND id = t.period_id) = period_id')->fetchAll(false);
 
-$TEMP['#courses'] = $dba->query('SELECT * FROM courses c WHERE (SELECT course_id FROM teacher WHERE user_id = '.$TEMP['#user']['id'].' AND course_id = c.id) = id')->fetchAll();
+$TEMP['#courses'] = $dba->query('SELECT * FROM courses WHERE id IN ((SELECT course_id FROM teacher WHERE user_id = '.$TEMP['#user']['id'].'))')->fetchAll();
 
 $authorizations = $dba->query('SELECT * FROM authorization a WHERE (SELECT id FROM teacher WHERE user_id = '.$TEMP['#user']['id'].' AND id = a.teacher_id) = teacher_id LIMIT ? OFFSET ?', 10, 1)->fetchAll();
 $TEMP['#total_pages'] = $dba->totalPages;

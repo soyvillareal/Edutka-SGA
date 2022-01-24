@@ -1,6 +1,6 @@
 <?php
 if ($TEMP['#loggedin'] === false) {
-	header("Location: ".Specific::Url());
+	header("Location: ".Specific::ReturnUrl());
 	exit();
 }
 
@@ -20,6 +20,7 @@ if(isset($_GET['user']) && (Specific::Admin() == true || Specific::Academic() ==
 
 $TEMP['#type'] = !empty($_GET['type']) ? Specific::Filter($_GET['type']) : 'program';
 $TEMP['#keyword_enroll'] = Specific::Filter($_GET['keyword']);
+$TEMP['#enrolled'] = false;
 $params = "";
 $sqls = '';
 
@@ -30,26 +31,22 @@ if(isset($_GET['user'])){
 	$params .= "&user={$TEMP['#user_id']}";
 }
 
-if(!empty($TEMP['#type'])){
-	if($TEMP['#type'] == 'course'){
-		$TEMP['#program_id'] = Specific::Filter($_GET['program_id']);
-		if(isset($_GET['program_id'])){
-			$params .= (!empty($params) ? "&" : "?")."program_id={$TEMP['#program_id']}";
-			$sqls .= " AND program_id = '{$TEMP['#program_id']}'";
-		}
-	}
-	$sqls .= " AND type = '{$TEMP['#type']}'";
-	$params .= (!empty($params) ? "&" : "?")."type={$TEMP['#type']}";
+$TEMP['#program_id'] = Specific::Filter($_GET['program_id']);
+if(empty($TEMP['#program_id'])){
+	$TEMP['#program_id'] = $user['program'];
 }
 
+if($TEMP['#type'] == 'course'){
+	if(!empty($TEMP['#program_id'])){
+		$params .= (!empty($params) ? "&" : "?")."program_id={$TEMP['#program_id']}";
+		$sqls .= " AND program_id = '{$TEMP['#program_id']}'";
+	}
+}
+$sqls .= " AND type = '{$TEMP['#type']}'";
+$params .= (!empty($params) ? "&" : "?")."type={$TEMP['#type']}";
 
-$TEMP['#url_params'] = str_replace('?', '&', "&one=enroll$params");
-$TEMP['#load_url'] = Specific::Url("enroll$params");
-
-$enrolled = $dba->query('SELECT * FROM enrolled WHERE user_id = '.$TEMP['#user_id'].$sqls)->fetchAll();
 $programs = $dba->query('SELECT program_id FROM enrolled WHERE user_id = '.$TEMP['#user_id'].' AND type = "program"')->fetchAll(false);
 
-$TEMP['#program'] = isset($user) ? $user["program"] : $TEMP["#user"]["program"];
 $TEMP['#programs'] = 0;
 if(!empty($programs)){
 	$TEMP['#programs'] = $dba->query('SELECT * FROM programs WHERE id IN ('.implode(',', $programs).')')->fetchAll();
@@ -58,17 +55,24 @@ if(!empty($programs)){
 $courses = $dba->query('SELECT COUNT(*) FROM enrolled WHERE user_id = '.$TEMP['#user_id'].' AND type = "course"')->fetchArray();
 
 $programs = count($programs);
-$TEMP['#enrolled'] = false;
 
 $TEMP['programs'] = $programs.($programs > 1 || $programs == 0 ? " {$TEMP['#word']['programs']}" : " {$TEMP['#word']['program']}");
 $TEMP['courses'] = $courses.($courses > 1 || $courses == 0 ? " {$TEMP['#word']['courses']}" : " {$TEMP['#word']['course']}");
+
+
+$TEMP['#url_params'] = str_replace('?', '&', "&one=enroll$params");
+$TEMP['#load_url'] = Specific::Url("enroll$params");
+
+$enrolled = $dba->query('SELECT * FROM enrolled WHERE user_id = '.$TEMP['#user_id'].$sqls)->fetchAll();
 
 if(!empty($enrolled)){
 	$TEMP['#enrolled'] = true;
 	foreach ($enrolled as $enroll) {
 		if($enroll['type'] == 'course'){
+			$estatus = $dba->query('SELECT status FROM enrolled e WHERE user_id = '.$TEMP['#user_id'].' AND type = "program" AND program_id = '.$enroll['program_id'])->fetchArray();
 			$course = $dba->query('SELECT name FROM courses WHERE id = '.$enroll['course_id'])->fetchArray();
 			$periodc = $dba->query('SELECT name, final FROM periods WHERE id = '.$enroll['period_id'])->fetchArray();
+			$plan_id = $dba->query('SELECT id FROM plan WHERE program_id = '.$enroll['program_id'])->fetchArray();
 
 			$teachers = $dba->query('SELECT names FROM users u WHERE (SELECT user_id FROM teacher WHERE user_id = u.id AND course_id = '.$enroll['course_id'].' AND period_id = '.$enroll['period_id'].') = id')->fetchAll(false);
 			if(!empty($teachers)){
@@ -87,6 +91,7 @@ if(!empty($enrolled)){
 		
 			$TEMP['!name'] = "$course ({$periodc['name']})";
 			$TEMP['!color'] = 'purple';
+			$TEMP['!plan_id'] = $plan_id;
 		} else {
 			$program = $dba->query('SELECT * FROM programs WHERE id = '.$enroll['program_id'])->fetchArray();
 			$TEMP['!name'] = $program['name'];
@@ -110,8 +115,13 @@ if(!empty($enrolled)){
 			}
 		} else {
 			$TEMP['!class_event'] = 'cursor-disabled" disabled';
-			if(time() < $periodc['final'] || Specific::Academic() == true || Specific::Admin() == true){
+			if(time() < $periodc['final'] || Specific::Academic() == true || Specific::Admin() == true || $TEMP['#type'] == 'program'){
 				$TEMP['!class_event'] = 'show_cmodal"';
+			}
+		}
+		if($TEMP['#type'] == 'course'){	
+			if($estatus == 'cancelled'){
+				$TEMP['!class_event'] = 'cursor-disabled" disabled';
 			}
 		}
 		$TEMP['!status'] = $enroll['status'];

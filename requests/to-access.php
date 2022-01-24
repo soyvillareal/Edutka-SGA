@@ -87,7 +87,10 @@ if($one == 'login'){
 		            $_SESSION['session_id'] = $session_id;
 		            setcookie("session_id", $session_id, time() + 315360000, "/");
 		            $dba->query('UPDATE users SET ip = "'.Specific::GetClientIp().'" WHERE id = '.$to_access['id']);
-		            $deliver['status'] = 200;
+		            $deliver = array(
+		            	'status' => 200,
+		            	'return' => $_POST['return']
+		            );
 	            }
 	        }
       	} else {

@@ -1,7 +1,7 @@
 <?php
 if(!empty($_GET['article']) && isset($_GET['article'])){
 	$article = Specific::Filter($_GET['article']);
-	$rule = $dba->query('SELECT rules, link FROM rule WHERE status = "enabled"')->fetchArray();
+	$rule = $dba->query('SELECT rules, file FROM rule WHERE status = "enabled"')->fetchArray();
 	$rules = htmlspecialchars_decode($rule['rules']);
 	$articles = array();
 	if(preg_match_all('/\=\=\=(.+?)\=\=\=/i', $rules, $art)){
@@ -13,7 +13,7 @@ if(!empty($_GET['article']) && isset($_GET['article'])){
 		}
 	}	
 	$article = $articles[$article];
-	$TEMP['#link']  = $rule['link'];
+	$TEMP['#link']  = Specific::GetFile($rule['file']);
 	if(!empty($article)){
 		$TEMP['title'] = $TEMP['#word']['cited_article'];
 		$TEMP['rules'] = $article;
@@ -22,9 +22,9 @@ if(!empty($_GET['article']) && isset($_GET['article'])){
 		$TEMP['rules'] = Specific::GetComposeRule($rule['rules'], true);
 	}
 } else {
-	$rule = $dba->query('SELECT rules, link FROM rule WHERE status = "enabled"')->fetchArray();
+	$rule = $dba->query('SELECT rules, file FROM rule WHERE status = "enabled"')->fetchArray();
 	$TEMP['title'] = $TEMP['#word']['important_articles'];
-	$TEMP['#link']  = $rule['link'];
+	$TEMP['#link']  = Specific::GetFile($rule['file']);
 	$TEMP['rules'] = Specific::GetComposeRule($rule['rules'], true);
 }
 

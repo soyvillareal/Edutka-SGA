@@ -771,7 +771,6 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
         $date_approved = Specific::Filter($_POST['date_approved']);
         $duration = Specific::Filter($_POST['duration']);
         $credits = Specific::Filter($_POST['credits']);
-        $courses = Specific::Filter($_POST['courses']);
         $note_mode = Specific::Filter($_POST['note_mode']);
         $program_id = Specific::Filter($_POST['program_id']);
         $status = Specific::Filter($_POST['status']);
@@ -792,9 +791,6 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
         if(empty($credits)){
             $emptys[] = 'credits';
         }
-        if(empty($courses)){
-            $emptys[] = 'courses';
-        }
         if(empty($note_mode)){
             $emptys[] = 'note_mode';
         }
@@ -808,18 +804,6 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
         if(empty($emptys)){
             $approved = explode('-', $date_approved);
             $date_approved = strtotime($date_approved);
-            $coutrues = array();
-            $couarr = explode(',', $courses);
-            foreach ($couarr as $course_id) {
-                if($dba->query('SELECT COUNT(*) FROM courses WHERE id = '.$course_id)->fetchArray() > 0){
-                    $coutrues[] = true;
-                } else {
-                    $coutrues[] = false;
-                }
-            }
-            if(in_array(false, $coutrues)){
-                $errors[] = 'courses';
-            }
             if(!checkdate($approved[1], $approved[2], $approved[0])){
                 $errors[] = 'date_approved';
             }
@@ -844,45 +828,12 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
             if (empty($errors)) {
                 if(!empty($type)){
                     if($type == 'add'){
-                        $plan_id = $dba->query('INSERT INTO plan (program_id, name, resolution, date_approved, duration, credits, note_mode, status, `time`) VALUES ('.$program_id.', "'.$name.'", '.$resolution.', '.$date_approved.', '.$duration.', '.$credits.', "'.$note_mode.'", "'.$status.'", '.time().')')->insertId();
-                        if($dba->query('UPDATE courses SET plan_id = ? WHERE id IN ('.$courses.')', $plan_id)->returnStatus()){
+                        if($dba->query('INSERT INTO plan (program_id, name, resolution, date_approved, duration, credits, note_mode, status, `time`) VALUES ('.$program_id.', "'.$name.'", '.$resolution.', '.$date_approved.', '.$duration.', '.$credits.', "'.$note_mode.'", "'.$status.'", '.time().')')->returnStatus()){
                             $deliver['status'] = 200;
                         }
                     } else if(isset($id) && is_numeric($id)){
-                        $nextrues = array();
-                        $nowcou = $dba->query('SELECT id FROM courses WHERE plan_id = '.$id)->fetchAll(false);
-                        foreach ($nowcou as $course_id) {
-                            if(in_array($course_id, array_diff($nowcou, $couarr)) && $dba->query('SELECT COUNT(*) FROM teacher WHERE course_id = '.$course_id)->fetchArray() > 0){
-                                $nextrues[] = false;
-                            }
-                        }
-                        if(!in_array(false, $nextrues)){
-                            if($dba->query('UPDATE plan SET program_id = ?, name = ?, resolution = ?, date_approved = ?, duration = ?, credits = ?, note_mode = ?, status = ? WHERE id = '.$id, $program_id, $name, $resolution, $date_approved, $duration, $credits, $note_mode, $status)->returnStatus()){
-                                $deleted = array_diff($nowcou, $couarr);
-                                $addf = array_diff($couarr, $nowcou);
-                                $adds = explode(',', implode(',', $addf));
-                                if(count($addf) > 0 || count($deleted) > 0){
-                                    if(count($addf) > 0){
-                                        if($dba->query('UPDATE courses SET plan_id = ? WHERE id IN ('.implode(',', $addf).')', $id)->returnStatus()){
-                                            $deliver['status'] = 200;
-                                        }
-                                    }
-                                    if(count($deleted) > 0){
-                                        if($dba->query('UPDATE courses SET plan_id = 0 WHERE id IN ('.implode(',', $deleted).')')->returnStatus()){
-                                            $deliver['status'] = 200;
-                                        }
-                                    }
-                                } else {
-                                    $deliver['status'] = 200;
-                                }
-
-
-                            }
-                        } else {
-                            $deliver = array(
-                                'status' => 400,
-                                'error' => $TEMP['#word']['one_deleted_courses_already_assignments']
-                            );
+                        if($dba->query('UPDATE plan SET program_id = ?, name = ?, resolution = ?, date_approved = ?, duration = ?, credits = ?, note_mode = ?, status = ? WHERE id = '.$id, $program_id, $name, $resolution, $date_approved, $duration, $credits, $note_mode, $status)->returnStatus()){
+                            $deliver['status'] = 200;
                         }
                     }
                 }
@@ -981,7 +932,6 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
     } else if($one == 'this-rules'){
     	$id = Specific::Filter($_POST['id']);
     	$rules = Specific::Filter($_POST['rules']);
-    	$link = Specific::Filter($_POST['link']);
     	$status = Specific::Filter($_POST['status']);
     	$type = Specific::Filter($_POST['type']);
     	if(!empty($rules) && !empty($status)){
@@ -1007,32 +957,28 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
             }
             if(!isset($max_error)){
                 if(!isset($uniq_error)){
-                    if (empty($link) || !filter_var($link, FILTER_VALIDATE_URL) === false) {
-                        if($type == 'add'){
-                            $rule_id = $dba->query('INSERT INTO rule (user_id, rules, link, status, modified, `time`) VALUES ('.$TEMP['#user']['id'].', "'.$rules.'", "'.$link.'", "'.$status.'" , 0, '.time().')')->insertId();
-                            if($rule_id){
-                                $rule = $dba->query('SELECT id, COUNT(*) AS count FROM rule WHERE status = "enabled" AND id <> '.$rule_id)->fetchArray();
+                    if($type == 'add'){
+                        $rule_id = $dba->query('INSERT INTO rule (user_id, rules, status, modified, `time`) VALUES ('.$TEMP['#user']['id'].', "'.$rules.'", "'.$status.'" , 0, '.time().')')->insertId();
+                        if($rule_id){
+                            $rule = $dba->query('SELECT id, COUNT(*) AS count FROM rule WHERE status = "enabled" AND id <> '.$rule_id)->fetchArray();
+                            if($rule['count'] > 0 && $status == 'enabled'){
+                                $dba->query('UPDATE rule SET status = "disabled" WHERE id = '.$rule['id']);
+                            }
+                            $deliver['status'] = 200;
+                        }
+                    } else {
+                        if(isset($id) && is_numeric($id)){
+                            if($dba->query('UPDATE rule SET rules = ?, status = ? WHERE id = '.$id, $rules, $status)->returnStatus()){
+                                $rule = $dba->query('SELECT id, COUNT(*) AS count FROM rule WHERE status = "enabled" AND id <> '.$id)->fetchArray();
                                 if($rule['count'] > 0 && $status == 'enabled'){
                                     $dba->query('UPDATE rule SET status = "disabled" WHERE id = '.$rule['id']);
                                 }
-                                $deliver['status'] = 200;
-                            }
-                        } else {
-                            if(isset($id) && is_numeric($id)){
-                                if($dba->query('UPDATE rule SET rules = ?, link = ?, status = ? WHERE id = '.$id, $rules, $link, $status)->returnStatus()){
-                                    $rule = $dba->query('SELECT id, COUNT(*) AS count FROM rule WHERE status = "enabled" AND id <> '.$id)->fetchArray();
-                                    if($rule['count'] > 0 && $status == 'enabled'){
-                                        $dba->query('UPDATE rule SET status = "disabled" WHERE id = '.$rule['id']);
-                                    }
-                                    $deliver['status'] = 200;
-                                }
+                                $deliver = array(
+                                    'status' => 200,
+                                    'html' => Specific::GetComposeRule($rules, true)
+                                );
                             }
                         }
-                    } else {
-                        $deliver = array(
-                            'status' => 400,
-                            'error' => $TEMP['#word']['please_enter_valid_link']
-                        );
                     }
                 } else {
                     $deliver = array(
@@ -1052,6 +998,45 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
     			'error' => $TEMP['#word']['please_complete_information_before_sending']
     		);
     	}
+    } else if($one == 'upload-rule'){
+        if(!empty($_FILES['file-rule'])){
+            if(!empty($_FILES['file-rule']['tmp_name'])){
+                $rule_id = Specific::Filter($_GET['id']);
+                if(!empty($rule_id) && is_numeric($rule_id)){
+                    $file_info = array(
+                        'id' => $rule_id,
+                        'file' => $_FILES['file-rule']['tmp_name'],
+                        'size' => $_FILES['file-rule']['size'],
+                        'name' => $_FILES['file-rule']['name'],
+                        'type' => $_FILES['file-rule']['type']
+                    );
+                    $file_data = Specific::UploadPDF($file_info);
+                    if (!empty($file_data)) {
+                        $file = $dba->query('SELECT file FROM rule WHERE id = '.$rule_id)->fetchArray();
+                        if(!empty($file)){
+                            unlink($file);
+                        }
+                        if ($dba->query('UPDATE rule SET file = ? WHERE id = '.$rule_id, $file_data)->returnStatus()) {
+                            $deliver = array(
+                                'status' => 200,
+                                'file' => $file_data
+                            );
+                        }
+                    }
+                }
+            }
+        }
+    } else if($one == 'delete-frule'){
+        $id = Specific::Filter($_POST['id']);
+        if (isset($id) && is_numeric($id)) {
+            $file = $dba->query('SELECT file FROM rule WHERE id = '.$id)->fetchArray();
+            if($dba->query('UPDATE rule SET file = ? WHERE id = '.$id, NULL)->returnStatus()){
+                if(!empty($file)){
+                    unlink($file);
+                }
+                $deliver['status'] = 200;
+            };
+        }
     } else if($one == 'delete-rule'){
         $id = Specific::Filter($_POST['id']);
         if (isset($id) && is_numeric($id)) {

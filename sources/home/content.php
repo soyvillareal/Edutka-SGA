@@ -1,4 +1,9 @@
 <?php
+if ($TEMP['#loggedin'] === false) {
+	header("Location: ".Specific::ReturnUrl());
+	exit();
+}
+
 $TEMP['#program'] = $TEMP['#user']['program'];
 
 $TEMP['#page']         = 'home';

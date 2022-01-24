@@ -1,6 +1,6 @@
 <?php
 if ($TEMP['#loggedin'] === false) {
-	header("Location: ".Specific::Url());
+	header("Location: ".Specific::ReturnUrl());
 	exit();
 }
 
@@ -21,7 +21,8 @@ if(!empty($rules)){
 		$TEMP['!user'] = $dba->query('SELECT names FROM users WHERE id = '.$rule['user_id'])->fetchArray();
 		$TEMP['!rulest'] = Specific::GetComposeRule($rule['rules']);
 		$TEMP['!rulesh'] = Specific::GetComposeRule($rule['rules'], true);
-		$TEMP['!link'] = $rule['link'];
+		$TEMP['!file'] = $rule['file'];
+		$TEMP['!link'] = Specific::GetFile($rule['file']);
 		$TEMP['!status'] = $rule['status'];
 		$TEMP['!modify'] = Specific::DateFormat($rule['modified']);
 		$TEMP['!time'] = Specific::DateFormat($rule['time']);

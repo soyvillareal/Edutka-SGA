@@ -228,7 +228,7 @@ if ($TEMP['#loggedin'] === true && (Specific::Admin() === true || Specific::Acad
                 $users = $dba->query('SELECT user_id FROM enrolled WHERE type = "course" AND course_id IN ('.implode(',', $my_courses).')')->fetchAll(false);
                 $users = $dba->query('SELECT * FROM users u WHERE id != '.$TEMP['#user']['id'].' AND role = "student" AND (names LIKE "%'.$keyword.'%" OR surnames LIKE "%'.$keyword.'%") AND id IN ('.implode(',', $users).') LIMIT 10')->fetchAll();
             } else if($type == 'teachers' && (Specific::Academic() == true || Specific::Admin() == true)){
-                $users = $dba->query('SELECT * FROM users WHERE id IN (SELECT user_id FROM teacher WHERE course_id IN ((SELECT course_id FROM enrolled)))')->fetchAll();
+                $users = $dba->query('SELECT * FROM users WHERE id IN (SELECT user_id FROM teacher WHERE course_id IN ((SELECT course_id FROM enrolled))) AND role = "teacher" AND (names LIKE "%'.$keyword.'%" OR surnames LIKE "%'.$keyword.'%") LIMIT 10')->fetchAll();
             } else {
                 $users = $dba->query('SELECT * FROM users WHERE id != '.$TEMP['#user']['id'].' AND role = "student" AND (names LIKE "%'.$keyword.'%" OR surnames LIKE "%'.$keyword.'%") LIMIT 10')->fetchAll();
             }
@@ -623,9 +623,9 @@ if ($TEMP['#loggedin'] === true && (Specific::Admin() === true || Specific::Acad
             $courses = $dba->query('SELECT course_id FROM teacher t WHERE user_id = '.$TEMP['#user']['id'].' AND (SELECT id FROM periods WHERE final > '.time().' AND id = t.period_id) = period_id')->fetchAll(false);
             $teacher_id = $dba->query('SELECT id FROM teacher WHERE user_id = '.$TEMP['#user']['id'].' AND course_id = '.$course_id)->fetchArray();
             $authorization = $dba->query('SELECT status, COUNT(*) AS count FROM authorization WHERE teacher_id = '.$teacher_id.' AND course_id = '.$course_id.' AND court = "'.$court.'" AND status = "pending"')->fetchArray();
-            
+
             if(($type == 'add' && $authorization['count'] == 0) || ($type == 'edit' && $authorization['status'] == 'pending')){
-                if(!in_array($course_id, $dba->query('SELECT id FROM courses c WHERE (SELECT course_id FROM teacher WHERE user_id = '.$TEMP['#user']['id'].' AND course_id = c.id) = id')->fetchAll(false))){
+                if(!in_array($course_id, $dba->query('SELECT id FROM courses WHERE id IN ((SELECT course_id FROM teacher WHERE user_id = '.$TEMP['#user']['id'].'))')->fetchAll(false))){
                     $errors[] = 'course_id';
                 }
                 if($note_mode == '30-30-40' && !in_array($court, $courts)){
@@ -668,10 +668,6 @@ if ($TEMP['#loggedin'] === true && (Specific::Admin() === true || Specific::Acad
                             );
                         }
                     } else {
-                        $deliver = array(
-                            'status' => 400,
-                            'errors' => $errors
-                        );
                     }
                 }
             } else {

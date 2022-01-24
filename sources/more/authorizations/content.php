@@ -1,7 +1,7 @@
 <?php 
 if ($TEMP['#loggedin'] === false) {
-    header("Location: ".Specific::Url());
-    exit();
+	header("Location: ".Specific::ReturnUrl());
+	exit();
 }
 
 if (Specific::Admin() == false && Specific::Academic() == false) {
