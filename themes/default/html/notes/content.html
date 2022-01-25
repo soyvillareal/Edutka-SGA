@@ -1,8 +1,17 @@
 <div class="display-flex">
 	<div class="content-notes margin-auto">
 		<div class="margin-t10 margin-t50 padding-b50">
-			<?php if($TEMP['#admin'] == true || $TEMP['#academic'] == true || $TEMP['#teacher'] == true) { ?>
-			<div class="background-white border-radius-12 padding-25 margin-b10">
+			<div class="position-relative background-white border-radius-12 padding-25 margin-b10">
+				<?php if(!empty($TEMP['#notes'])){ ?>
+                <div class="display-block-desk position-absolute pos-top pos-right margin-t10 margin-r10">
+                    <a href="{$url->{notes?screen={#screen}&period={#period_id}}}<?php echo($TEMP["#type"] == "course" && ($TEMP["#academic"] === true || $TEMP["#admin"] === true)) ? "&keyword={#keyword_notes}&user={#user_id}" : ""; echo($TEMP["#type"] == "student") ? "&keyword={#keyword_notes}&program={#program_id}" : "&type={#type}&course_id={#course_id}"; echo(($TEMP['#admin'] == true || $TEMP['#academic'] == true || $TEMP['#teacher'] == true) && $TEMP["#type"] == "student") ? "&user={#user_id}": "" ;?>" target="_self" class="<?php echo($TEMP['#screen'] == 'oneforone') ? 'color-blud' : 'color-grey';?>">
+                    	<svg transform="rotate(-90)" x="0" y="-15" class="dv-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+			                <path fill="currentColor" d="M 8.143 16.431 L 8.143 18.477 C 8.143 18.762 8.05 19.003 7.862 19.202 C 7.674 19.4 7.446 19.5 7.178 19.5 L 3.965 19.5 C 3.697 19.5 3.469 19.4 3.282 19.202 C 3.094 19.003 3 18.762 3 18.477 L 3 16.431 C 3 16.147 3.094 15.906 3.282 15.707 C 3.469 15.509 3.697 15.409 3.965 15.409 L 7.178 15.409 C 7.446 15.409 7.674 15.509 7.862 15.707 C 8.05 15.906 8.143 16.147 8.143 16.431 Z M 8.143 10.977 L 8.143 13.023 C 8.143 13.307 8.05 13.548 7.862 13.747 C 7.674 13.946 7.446 14.045 7.178 14.045 L 3.965 14.045 C 3.697 14.045 3.469 13.946 3.282 13.747 C 3.094 13.548 3 13.307 3 13.023 L 3 10.977 C 3 10.693 3.094 10.452 3.282 10.252 C 3.469 10.054 3.697 9.955 3.965 9.955 L 7.178 9.955 C 7.446 9.955 7.674 10.054 7.862 10.252 C 8.05 10.452 8.143 10.693 8.143 10.977 Z M 21 16.431 L 21 18.477 C 21 18.762 20.906 19.003 20.718 19.202 C 20.531 19.4 20.303 19.5 20.035 19.5 L 10.393 19.5 C 10.125 19.5 9.897 19.4 9.71 19.202 C 9.522 19.003 9.428 18.762 9.428 18.477 L 9.428 16.431 C 9.428 16.147 9.522 15.906 9.71 15.707 C 9.897 15.509 10.125 15.409 10.393 15.409 L 20.035 15.409 C 20.303 15.409 20.531 15.509 20.718 15.707 C 20.906 15.906 21 16.147 21 16.431 Z M 8.143 5.523 L 8.143 7.569 C 8.143 7.852 8.05 8.094 7.862 8.293 C 7.674 8.491 7.446 8.591 7.178 8.591 L 3.965 8.591 C 3.697 8.591 3.469 8.491 3.282 8.293 C 3.094 8.094 3 7.852 3 7.569 L 3 5.523 C 3 5.238 3.094 4.997 3.282 4.798 C 3.469 4.6 3.697 4.5 3.965 4.5 L 7.178 4.5 C 7.446 4.5 7.674 4.6 7.862 4.798 C 8.05 4.997 8.143 5.238 8.143 5.523 Z M 21 10.977 L 21 13.023 C 21 13.307 20.906 13.548 20.718 13.747 C 20.531 13.946 20.303 14.045 20.035 14.045 L 10.393 14.045 C 10.125 14.045 9.897 13.946 9.71 13.747 C 9.522 13.548 9.428 13.307 9.428 13.023 L 9.428 10.977 C 9.428 10.693 9.522 10.452 9.71 10.252 C 9.897 10.054 10.125 9.955 10.393 9.955 L 20.035 9.955 C 20.303 9.955 20.531 10.054 20.718 10.252 C 20.906 10.452 21 10.693 21 10.977 Z M 21 5.523 L 21 7.569 C 21 7.852 20.906 8.094 20.718 8.293 C 20.531 8.491 20.303 8.591 20.035 8.591 L 10.393 8.591 C 10.125 8.591 9.897 8.491 9.71 8.293 C 9.522 8.094 9.428 7.852 9.428 7.569 L 9.428 5.523 C 9.428 5.238 9.522 4.997 9.71 4.798 C 9.897 4.6 10.125 4.5 10.393 4.5 L 20.035 4.5 C 20.303 4.5 20.531 4.6 20.718 4.798 C 20.906 4.997 21 5.238 21 5.523 Z"></path>
+			            </svg>
+                    </a>
+                </div>
+                <?php } ?>
+				<?php if($TEMP['#admin'] == true || $TEMP['#academic'] == true || $TEMP['#teacher'] == true) { ?>
 				<label class="color-black">{$word->type}</label>
 			    <div class="content-types position-relative margin-b10">
 			    	<select id="type" class="cont-input mw-w-200 h-50 margin-left-auto border-radius-12 animated-easy border-focus-blue caret-down background-grely color-black">
@@ -35,8 +44,8 @@
 			        </select>
 			    </div>
 			    <?php } ?>
+				<?php } ?>
 			</div>
-			<?php } ?>
 			<?php if(count($TEMP['#programs']) > 1 && $TEMP['#type'] == 'student'){ ?>
 			<div class="text-center background-white border-radius-12 padding-25 margin-b10">
 				<div class="max-w-900 border-top-left-radius border-top-right-radius">
@@ -58,8 +67,8 @@
 			    </div>
 			</div>
 			<?php } ?>
-			<?php if($TEMP['#teacher'] == false){ ?>
-			<div class="position-relative text-center background-white border-radius-12 padding-25 margin-b10">
+			<?php if($TEMP['#teacher'] == false && $TEMP['#type'] == 'student'){ ?>
+			<div class="text-center background-white border-radius-12 padding-25 margin-b10">
 				<div class="max-w-900 border-top-left-radius border-top-right-radius">
 					<div class="font-medium color-black">{$word->global_average}</div>
 					<div class="font-supraly font-bold<?php echo($TEMP['#semesbad'] == true) ? ' color-red' : ''; echo($TEMP['average'] < $TEMP['#nmcs']) ? ' color-red' : ' color-green';?>">
@@ -76,13 +85,6 @@
                     <div class="font-medium font-bold color-red">{$word->you_missed_more_subjects}</div>
                     <?php } ?>
 				</div>
-                <div class="display-block-desk position-absolute pos-top pos-right margin-t10 margin-r10">
-                    <a href="{$url->{notes?screen={#screen}&period={#period_id}}}<?php echo($TEMP["#type"] == "course" && ($TEMP["#academic"] === true || $TEMP["#admin"] === true)) ? "&keyword={#keyword_notes}&user={#user_id}" : ""; echo($TEMP["#type"] == "student") ? "&keyword={#keyword_notes}&program={#program_id}" : "&type={#type}&course_id={#course_id}"; echo(($TEMP['#admin'] == true || $TEMP['#academic'] == true || $TEMP['#teacher'] == true) && $TEMP["#type"] == "student") ? "&user={#user_id}": "" ;?>" target="_self" class="<?php echo($TEMP['#screen'] == 'oneforone') ? 'color-blud' : 'color-grey';?>">
-                    	<svg transform="rotate(-90)" x="0" y="-15" class="dv-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-			                <path fill="currentColor" d="M 8.143 16.431 L 8.143 18.477 C 8.143 18.762 8.05 19.003 7.862 19.202 C 7.674 19.4 7.446 19.5 7.178 19.5 L 3.965 19.5 C 3.697 19.5 3.469 19.4 3.282 19.202 C 3.094 19.003 3 18.762 3 18.477 L 3 16.431 C 3 16.147 3.094 15.906 3.282 15.707 C 3.469 15.509 3.697 15.409 3.965 15.409 L 7.178 15.409 C 7.446 15.409 7.674 15.509 7.862 15.707 C 8.05 15.906 8.143 16.147 8.143 16.431 Z M 8.143 10.977 L 8.143 13.023 C 8.143 13.307 8.05 13.548 7.862 13.747 C 7.674 13.946 7.446 14.045 7.178 14.045 L 3.965 14.045 C 3.697 14.045 3.469 13.946 3.282 13.747 C 3.094 13.548 3 13.307 3 13.023 L 3 10.977 C 3 10.693 3.094 10.452 3.282 10.252 C 3.469 10.054 3.697 9.955 3.965 9.955 L 7.178 9.955 C 7.446 9.955 7.674 10.054 7.862 10.252 C 8.05 10.452 8.143 10.693 8.143 10.977 Z M 21 16.431 L 21 18.477 C 21 18.762 20.906 19.003 20.718 19.202 C 20.531 19.4 20.303 19.5 20.035 19.5 L 10.393 19.5 C 10.125 19.5 9.897 19.4 9.71 19.202 C 9.522 19.003 9.428 18.762 9.428 18.477 L 9.428 16.431 C 9.428 16.147 9.522 15.906 9.71 15.707 C 9.897 15.509 10.125 15.409 10.393 15.409 L 20.035 15.409 C 20.303 15.409 20.531 15.509 20.718 15.707 C 20.906 15.906 21 16.147 21 16.431 Z M 8.143 5.523 L 8.143 7.569 C 8.143 7.852 8.05 8.094 7.862 8.293 C 7.674 8.491 7.446 8.591 7.178 8.591 L 3.965 8.591 C 3.697 8.591 3.469 8.491 3.282 8.293 C 3.094 8.094 3 7.852 3 7.569 L 3 5.523 C 3 5.238 3.094 4.997 3.282 4.798 C 3.469 4.6 3.697 4.5 3.965 4.5 L 7.178 4.5 C 7.446 4.5 7.674 4.6 7.862 4.798 C 8.05 4.997 8.143 5.238 8.143 5.523 Z M 21 10.977 L 21 13.023 C 21 13.307 20.906 13.548 20.718 13.747 C 20.531 13.946 20.303 14.045 20.035 14.045 L 10.393 14.045 C 10.125 14.045 9.897 13.946 9.71 13.747 C 9.522 13.548 9.428 13.307 9.428 13.023 L 9.428 10.977 C 9.428 10.693 9.522 10.452 9.71 10.252 C 9.897 10.054 10.125 9.955 10.393 9.955 L 20.035 9.955 C 20.303 9.955 20.531 10.054 20.718 10.252 C 20.906 10.452 21 10.693 21 10.977 Z M 21 5.523 L 21 7.569 C 21 7.852 20.906 8.094 20.718 8.293 C 20.531 8.491 20.303 8.591 20.035 8.591 L 10.393 8.591 C 10.125 8.591 9.897 8.491 9.71 8.293 C 9.522 8.094 9.428 7.852 9.428 7.569 L 9.428 5.523 C 9.428 5.238 9.522 4.997 9.71 4.798 C 9.897 4.6 10.125 4.5 10.393 4.5 L 20.035 4.5 C 20.303 4.5 20.531 4.6 20.718 4.798 C 20.906 4.997 21 5.238 21 5.523 Z"></path>
-			            </svg>
-                    </a>
-                </div>
 			</div>
 			<?php } ?>
 			<?php if(count($TEMP['#periods']) > 1){ ?>
@@ -152,7 +154,7 @@
 <div class="background-pointer"></div>
 <div class="cont-alert" id="alert-qualifications">
    	<h2 class="no-margin color-red">{$word->important}</h2>
-   	<p id="text-qualification" class="margin-t15">Toda su informacion será enviada y luego nos pondremos en contacto con usted mendiante esta misma.</p>
+   	<p id="text-qualification" class="margin-t15">{$word->all_information_will_sent_then_will_contact}</p>
    	<div class="padding-t25">
       	<button id="cancel-qalert" class="btn-noway background-red border-radius-4 padding-10 color-white hover-button font-uppercase">{$word->cancel}</button>
         <button id="request-qualification" class="btn-noway background-blue border-radius-4 padding-10 color-black hover-opacity font-uppercase">
@@ -162,7 +164,7 @@
             </div>
         </button>
         <a id="link-qualification" class="position-relative background-blue border-radius-4 padding-lr20 padding-10 color-black hover-opacity font-uppercase hidden" href="{$url->{settings}}" target="_blank">
-            <span class="color-white">Ir</span>
+            <span class="color-white">{$word->go}</span>
             <div class="content-spinner-circle">
                 <div class="spinner-circle"></div>
             </div>
@@ -263,15 +265,15 @@ var NW = D.querySelectorAll('.number'),
 
 <?php if($TEMP['#type'] == 'course' && (!empty($TEMP['#keyword_notes']) || $TEMP['#teacher'] === true)){ ?>
 addEvent(Nw, 'change', function(){
-    preloadPage('&one=notes<?php echo($TEMP["#academic"] === true || $TEMP["#admin"] === true) ? "&keyword={#keyword_notes}&user={#user_id}" : "";?>&type={#type}&course_id=' + this.value);
+    preloadPage('&one=notes&screen={#url_screen}<?php echo($TEMP["#academic"] === true || $TEMP["#admin"] === true) ? "&keyword={#keyword_notes}&user={#user_id}" : "";?>&type={#type}&course_id=' + this.value);
 })
 <?php } ?>
 
 <?php if(count($TEMP['#programs']) > 1 && $TEMP['#type'] == 'student'){ ?>
 addEvent(D.querySelector('#programs'), 'change', function(){
-    preloadPage('&one=notes&keyword={#keyword_notes}<?php echo($TEMP["#admin"] == true || $TEMP["#academic"] == true || $TEMP["#teacher"] == true) ? "&user={#user_id}" : "" ;?>&program='+this.value);
+    preloadPage('&one=notes&screen={#url_screen}&keyword={#keyword_notes}<?php echo($TEMP["#admin"] == true || $TEMP["#academic"] == true || $TEMP["#teacher"] == true) ? "&user={#user_id}" : "" ;?>&program='+this.value);
 }), <?php } if(count($TEMP['#periods']) > 1){ ?>addEvent(NP, 'change', function(){
-    preloadPage('&one=notes<?php echo($TEMP["#type"] == "course" && ($TEMP["#academic"] === true || $TEMP["#admin"] === true)) ? "&keyword={#keyword_notes}&user={#user_id}": ""; echo($TEMP["#type"] == "student") ? "&keyword={#keyword_notes}&program={#program_id}" : "&type={#type}&course_id={#course_id}"; echo(($TEMP['#admin'] == true || $TEMP['#academic'] == true || $TEMP['#teacher'] == true) && $TEMP["#type"] == "student") ? "&user={#user_id}" : "" ;?>&period='+this.value);
+    preloadPage('&one=notes&screen={#url_screen}<?php echo($TEMP["#type"] == "course" && ($TEMP["#academic"] === true || $TEMP["#admin"] === true)) ? "&keyword={#keyword_notes}&user={#user_id}": ""; echo($TEMP["#type"] == "student") ? "&keyword={#keyword_notes}&program={#program_id}" : "&type={#type}&course_id={#course_id}"; echo(($TEMP['#admin'] == true || $TEMP['#academic'] == true || $TEMP['#teacher'] == true) && $TEMP["#type"] == "student") ? "&user={#user_id}" : "" ;?>&period='+this.value);
 })
 <?php } ?>
 addEvent(D.querySelector('#close-qpalert'), 'click', function(){
@@ -283,7 +285,7 @@ addEvent(D.querySelector('#close-qpalert'), 'click', function(){
 });
 <?php if($TEMP['#admin'] == true || $TEMP['#academic'] == true || $TEMP['#teacher'] == true) { ?>
 addEvent(Nq, 'change', function(){
-    preloadPage('&one=notes&type=' + this.value);
+    preloadPage('&one=notes&screen={#url_screen}&type=' + this.value);
 })
 <?php if(!empty($TEMP['#notes'])){ ?>
 addEvent(NT, 'click', function(){
@@ -359,7 +361,7 @@ addEvent(NT, 'click', function(){
 		    removeClass(SQ, 'spinner-is-loading'), addClass(SD, 'hidden'), SD.innerHTML = "";
 		   	return false;
 	    }
-	}, "POST", "&typet=<?php echo($TEMP['#type'] == 'student') ? 'notes' : 'teachers';?>&keyword=" + SV);
+	}, "POST", "&typet=<?php echo($TEMP['#type'] == 'student') ? 'notes' : 'teachers';?>&screen={#url_screen}&keyword=" + SV);
 }), <?php } else{ ?>
 
 

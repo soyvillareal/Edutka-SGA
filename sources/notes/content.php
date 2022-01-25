@@ -133,13 +133,14 @@ if($TEMP['#type'] == 'student'){
 	}
 }
 
-$screen = Specific::Filter($_GET['screen']);
-if(empty($screen)){
+$TEMP['#url_screen'] = Specific::Filter($_GET['screen']);
+if(empty($TEMP['#url_screen'])){
+	$TEMP['#url_screen'] = 'oneforone';
 	$TEMP['#screen'] = "twoforone";
 	$TEMP['#twoforone_content'] = '';
 	$TEMP['#twoforone_item'] = 'display-flex w-100 ';
 } else {	
-	if($screen == 'twoforone'){
+	if($TEMP['#url_screen'] == 'twoforone'){
 		$TEMP['#screen'] = "oneforone";
 		if(count($TEMP['#notes']) > 1){
 			$TEMP['#twoforone_content'] = 'twoforone-content ';
@@ -152,9 +153,7 @@ if(empty($screen)){
 	}
 }
 
-
-
-$params .= "&screen=$screen";
+$params .= (!empty($params) ? "&" : "?")."screen={$TEMP['#url_screen']}";
 
 $TEMP['#url_params'] = str_replace('?', '&', "&one=notes$params");
 $TEMP['#load_url'] = Specific::Url("notes$params");

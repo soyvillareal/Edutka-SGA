@@ -226,6 +226,7 @@ var GC = D.querySelectorAll('.edit_rule'),
             Req('{$url->{req/rol-admin/this-rules}}', function(e){
                 console.log(e);
                 if(e.status == 200){
+                    if(e.change == 'true') D.querySelector('#file-rule-' + e.rule_id).parentNode.parentNode.querySelector('.status').value = 'disabled';
                     button.innerText = "{$word->edit}", status.setAttribute('disabled', true), addClass(status, 'cursor-disabled'), removeClass(ruleh, 'hidden'), addClass(rulet, 'hidden'), addClass(upload_file, 'cursor-disabled'), upload_file.setAttribute('disabled', true), addClass(clear_file, 'cursor-disabled'), clear_file.setAttribute('disabled', true), addClass(close, 'hidden'), loadAlert("{$word->regulation_updated_successfully}"), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading'), ruleh.innerHTML = '<div class="overflow-auto w-100">' + e.html + '</div>';
                 } else {
                     loadAlert(e.error, 1), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');

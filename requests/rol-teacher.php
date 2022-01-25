@@ -223,6 +223,7 @@ if ($TEMP['#loggedin'] === true && (Specific::Admin() === true || Specific::Acad
             $html = '';
             $keyword = Specific::Filter($_POST['keyword']);
             $type = Specific::Filter($_POST['typet']);
+            $screen = Specific::Filter($_POST['screen']);
             if($type == 'notes' && Specific::Teacher() == true){
                 $my_courses = $dba->query('SELECT course_id FROM teacher WHERE user_id = '.$TEMP['#user']['id'])->fetchAll(false);
                 $users = $dba->query('SELECT user_id FROM enrolled WHERE type = "course" AND course_id IN ('.implode(',', $my_courses).')')->fetchAll(false);
@@ -236,9 +237,9 @@ if ($TEMP['#loggedin'] === true && (Specific::Admin() === true || Specific::Acad
             if (!empty($users)) {
                 foreach ($users as $user) {
                     $full_name = "{$user['names']} {$user['surnames']}";
-                    $url = "$type?keyword={$full_name}&user={$user['id']}";
+                    $url = "$type?keyword={$full_name}&user={$user['id']}&screen={$screen}";
                     if($type == 'teachers'){
-                        $url = "notes?type=course&keyword={$full_name}&user={$user['id']}";
+                        $url = "notes?type=course&keyword={$full_name}&user={$user['id']}&screen={$screen}";
                     }
                     $html .= "<a class='display-flex border-left border-right border-bottom border-grey padding-10 background-hover' href='".Specific::Url("$url")."' target='_self'><div class='margin-right-auto color-black'>".$full_name.'</div></a>';
                 }

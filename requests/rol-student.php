@@ -370,111 +370,118 @@ if ($TEMP['#loggedin'] === true && (Specific::Admin() === true || Specific::Acad
 	    	if(empty($period_id)){
 				$period_id = $dba->query('SELECT id FROM periods WHERE status = "enabled" AND start < '.time().' AND final > '.time())->fetchArray();
 			}
-	    	$enrolled_courses = $dba->query('SELECT COUNT(*) FROM enrolled WHERE type = "course" AND user_id = '.$user_id.' AND course_id = '.$course_id.' AND period_id = '.$period_id)->fetchArray();
-	    	$estatus = $dba->query('SELECT status FROM enrolled e WHERE user_id = '.$user_id.' AND type = "program" AND (SELECT program_id FROM plan WHERE id = '.$plan_id.' AND program_id = e.program_id) = program_id')->fetchArray();
-	    	if($enrolled_courses == 0 && $estatus == 'registered'){
-		    	if(Specific::Admin() == true || Specific::Academic() == true || !empty($code)){
-		    		$course = $dba->query('SELECT * FROM courses WHERE id = "'.$course_id.'"')->fetchArray();
-				    if(($course['quota']-1) > 0){
-				        if(Specific::Admin() == true || Specific::Academic() == true || $course['code'] === $code){
-				        	$prektrues = array();
-				        	$plan = $dba->query('SELECT note_mode, program_id, COUNT(*) AS count FROM plan WHERE id = '.$plan_id)->fetchArray();
-				        	if(!empty($course['preknowledge'])){
-				        		$preknowledges = explode(',', $course['preknowledge']);
-					        	foreach ($preknowledges as $prek) {
-					        		$teacher_id = $dba->query('SELECT id FROM teacher t WHERE course_id = '.$prek.' AND (SELECT period_id FROM enrolled WHERE type = "course" AND user_id = '.$user_id.' AND course_id = '.$prek.' AND period_id = t.period_id) = period_id')->fetchArray();
-					        		if(!empty($teacher_id)){
-						        		$parameters = $dba->query('SELECT parameters FROM parameter WHERE teacher_id = '.$teacher_id)->fetchArray();
-						        		$courset = $dba->query('SELECT type FROM courses WHERE id = '.$prek)->fetchArray();
-						        		$notes = $dba->query('SELECT notes FROM notes WHERE user_id = '.$user_id.' AND course_id = '.$prek)->fetchArray();
-						        		$notes = json_decode($notes, true);
+			if(!empty($period_id)){
+		    	$enrolled_courses = $dba->query('SELECT COUNT(*) FROM enrolled WHERE type = "course" AND user_id = '.$user_id.' AND course_id = '.$course_id.' AND period_id = '.$period_id)->fetchArray();
+		    	$estatus = $dba->query('SELECT status FROM enrolled e WHERE user_id = '.$user_id.' AND type = "program" AND (SELECT program_id FROM plan WHERE id = '.$plan_id.' AND program_id = e.program_id) = program_id')->fetchArray();
+		    	if($enrolled_courses == 0 && $estatus == 'registered'){
+			    	if(Specific::Admin() == true || Specific::Academic() == true || !empty($code)){
+			    		$course = $dba->query('SELECT * FROM courses WHERE id = "'.$course_id.'"')->fetchArray();
+					    if(($course['quota']-1) > 0){
+					        if(Specific::Admin() == true || Specific::Academic() == true || $course['code'] === $code){
+					        	$prektrues = array();
+					        	$plan = $dba->query('SELECT note_mode, program_id, COUNT(*) AS count FROM plan WHERE id = '.$plan_id)->fetchArray();
+					        	if(!empty($course['preknowledge'])){
+					        		$preknowledges = explode(',', $course['preknowledge']);
+						        	foreach ($preknowledges as $prek) {
+						        		$teacher_id = $dba->query('SELECT id FROM teacher t WHERE course_id = '.$prek.' AND (SELECT period_id FROM enrolled WHERE type = "course" AND user_id = '.$user_id.' AND course_id = '.$prek.' AND period_id = t.period_id) = period_id')->fetchArray();
+						        		if(!empty($teacher_id)){
+							        		$parameters = $dba->query('SELECT parameters FROM parameter WHERE teacher_id = '.$teacher_id)->fetchArray();
+							        		$courset = $dba->query('SELECT type FROM courses WHERE id = '.$prek)->fetchArray();
+							        		$notes = $dba->query('SELECT notes FROM notes WHERE user_id = '.$user_id.' AND course_id = '.$prek)->fetchArray();
+							        		$notes = json_decode($notes, true);
 
-						        		if($plan['note_mode'] == '30-30-40'){
-										    for ($i=0; $i < 3; $i++) { 
+							        		if($plan['note_mode'] == '30-30-40'){
+											    for ($i=0; $i < 3; $i++) { 
+											    	$anotes = array();
+												    $rnotes = json_decode($notes[$i], true);
+											        $parameters = json_decode($parameters, true)[$i];
+											        foreach ($parameters as $key => $param) {
+											        	$anotes[] = (($rnotes[$key]/100)*$param['percent']);
+											        }
+											        $notes[$i] = array_sum($anotes);
+											    }
+											    $average = round((($notes[0]*0.3)+($notes[1]*0.3)+($notes[2]*0.4)), 2);
+										    } else {
 										    	$anotes = array();
-											    $rnotes = json_decode($notes[$i], true);
-										        $parameters = json_decode($parameters, true)[$i];
-										        foreach ($parameters as $key => $param) {
-										        	$anotes[] = (($rnotes[$key]/100)*$param['percent']);
-										        }
-										        $notes[$i] = array_sum($anotes);
+											    $parameters = json_decode($parameters, true);
+											    foreach ($parameters as $key => $param) {
+											      	$anotes[] = (($notes[$key]/100)*$param['percent']);
+											    }
+											    $notes = array_sum($anotes);
+										    	$average = round($notes, 2);
 										    }
-										    $average = round((($notes[0]*0.3)+($notes[1]*0.3)+($notes[2]*0.4)), 2);
-									    } else {
-									    	$anotes = array();
-										    $parameters = json_decode($parameters, true);
-										    foreach ($parameters as $key => $param) {
-										      	$anotes[] = (($notes[$key]/100)*$param['percent']);
-										    }
-										    $notes = array_sum($anotes);
-									    	$average = round($notes, 2);
-									    }
 
-									    $prektrues[] = ($courset == 'practice' && $average >= 3.5) || ($courset == 'theoretical' && $average >= 3.0) ? true : false;
-									}
-					        	}
-				        	}
-				        	if(!in_array(false, $prektrues) || empty($prektrues)){
-					        	if($plan['count'] > 0){
-					        		if($dba->query('SELECT COUNT(*) FROM courses c WHERE id = '.$course_id.' AND (SELECT course_id FROM curriculum WHERE plan_id = '.$plan_id.' AND course_id = c.id) = id')->fetchArray() > 0){
-					        			if(!empty($period_id)){
-					        				if($dba->query('INSERT INTO enrolled (period_id, user_id, course_id, program_id, type, status, `time`) VALUES ('.$period_id.', '.$user_id.', '.$course_id.', '.$plan['program_id'].', "course", "registered",'.time().')')->returnStatus() && $dba->query('INSERT INTO notes (user_id, course_id, period_id, program_id, notes, `time`) VALUES ('.$user_id.','.$course_id.', '.$period_id.', '.$plan['program_id'].', "'.json_encode(array(0.0, 0.0, 0.0)).'",'.time().')')->returnStatus()){
-								        		$deliver['status'] = 200;
-								        		$teachers = $dba->query('SELECT user_id FROM teacher WHERE course_id = '.$course_id)->fetchAll(false);
-								        		foreach ($teachers as $teacher) {
-								        			Specific::SendNotification(array(
-									                    'from_id' => $user_id,
-									                    'to_id' => $teacher,
-									                    'course_id' => $course_id,
-									                    'type' => "'enroll'",
-									                    'time' => time()
-									                ));
-								        		}
-								        	}
-					        			} else {
-					        				$deliver = array(
-					        					'status' => 400,
-					        					'error' => $TEMP['#word']['there_no_active_period_moment']
-					        				);
-					        			}
+										    $prektrues[] = ($courset == 'practice' && $average >= 3.5) || ($courset == 'theoretical' && $average >= 3.0) ? true : false;
+										}
 						        	}
-					        	}	
-				        	} else {
-				        		$deliver = array(
-				        			'status' => 400,
-				        			'error' => $TEMP['#word']['you_must_first_approve_prequalifications']
-				        		);
-				        	}
-				        } else {
-				        	$deliver = array(
-				        		'status' => 400,
-				        		'error' => $TEMP['#word']['wrong_code']
-				        	);
-				        }
-				    } else {
-				    	$deliver = array(
-				        	'status' => 400,
-				        	'error' => $TEMP['#word']['there_no_seats_available_this_course']
+					        	}
+					        	if(!in_array(false, $prektrues) || empty($prektrues)){
+						        	if($plan['count'] > 0){
+						        		if($dba->query('SELECT COUNT(*) FROM courses c WHERE id = '.$course_id.' AND (SELECT course_id FROM curriculum WHERE plan_id = '.$plan_id.' AND course_id = c.id) = id')->fetchArray() > 0){
+						        			if(!empty($period_id)){
+						        				if($dba->query('INSERT INTO enrolled (period_id, user_id, course_id, program_id, type, status, `time`) VALUES ('.$period_id.', '.$user_id.', '.$course_id.', '.$plan['program_id'].', "course", "registered",'.time().')')->returnStatus() && $dba->query('INSERT INTO notes (user_id, course_id, period_id, program_id, notes, `time`) VALUES ('.$user_id.','.$course_id.', '.$period_id.', '.$plan['program_id'].', "'.json_encode(array(0.0, 0.0, 0.0)).'",'.time().')')->returnStatus()){
+									        		$deliver['status'] = 200;
+									        		$teachers = $dba->query('SELECT user_id FROM teacher WHERE course_id = '.$course_id)->fetchAll(false);
+									        		foreach ($teachers as $teacher) {
+									        			Specific::SendNotification(array(
+										                    'from_id' => $user_id,
+										                    'to_id' => $teacher,
+										                    'course_id' => $course_id,
+										                    'type' => "'enroll'",
+										                    'time' => time()
+										                ));
+									        		}
+									        	}
+						        			} else {
+						        				$deliver = array(
+						        					'status' => 400,
+						        					'error' => $TEMP['#word']['there_no_active_period_moment']
+						        				);
+						        			}
+							        	}
+						        	}	
+					        	} else {
+					        		$deliver = array(
+					        			'status' => 400,
+					        			'error' => $TEMP['#word']['you_must_first_approve_prequalifications']
+					        		);
+					        	}
+					        } else {
+					        	$deliver = array(
+					        		'status' => 400,
+					        		'error' => $TEMP['#word']['wrong_code']
+					        	);
+					        }
+					    } else {
+					    	$deliver = array(
+					        	'status' => 400,
+					        	'error' => $TEMP['#word']['there_no_seats_available_this_course']
+					       	);
+					    }
+			    	} else {
+			    		$deliver = array(
+				       		'status' => 400,
+				       		'error' => $TEMP['#word']['please_enter_code_this_course']
 				       	);
-				    }
-		    	} else {
-		    		$deliver = array(
-			       		'status' => 400,
-			       		'error' => $TEMP['#word']['please_enter_code_this_course']
-			       	);
-		    	}
-		    } else {
-		    	$enrolled_courses = $dba->query('SELECT * FROM enrolled WHERE user_id = '.$user_id.' AND course_id = '.$course_id)->fetchArray();
-		    	if(!empty($enrolled_courses) && $enrolled_courses['status'] == 'cancelled'){
-		    		$query = '';
-		    		if(Specific::Admin() == true || Specific::Academic() == true){
-		    			$query = ', period_id = '.$period_id;
-		    		}
-		    		if($dba->query('UPDATE enrolled SET status = "registered"'.$query.' WHERE id = '.$enrolled_courses['id'])->returnStatus()){
-		    			$deliver['status'] = 200;
-		    		}
-		    	}
-		    }
+			    	}
+			    } else {
+			    	$enrolled_courses = $dba->query('SELECT * FROM enrolled WHERE user_id = '.$user_id.' AND course_id = '.$course_id)->fetchArray();
+			    	if(!empty($enrolled_courses) && $enrolled_courses['status'] == 'cancelled'){
+			    		$query = '';
+			    		if(Specific::Admin() == true || Specific::Academic() == true){
+			    			$query = ', period_id = '.$period_id;
+			    		}
+			    		if($dba->query('UPDATE enrolled SET status = "registered"'.$query.' WHERE id = '.$enrolled_courses['id'])->returnStatus()){
+			    			$deliver['status'] = 200;
+			    		}
+			    	}
+			    }
+			} else {
+				$deliver = array(
+				    'status' => 400,
+				    'error' => $TEMP['#word']['there_no_active_period_moment']
+				);
+			}
 	    }
 	} else if($one == 'register-epnroll'){
 	    $id = Specific::Filter($_POST['id']);

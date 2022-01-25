@@ -689,7 +689,7 @@ if ($TEMP['#loggedin'] === true && (Specific::Admin() === true || Specific::Acad
             $html = '';
             $query = '';
             if(!empty($keyword)){
-                $query .= " a WHERE id LIKE '%$keyword%' OR (SELECT id FROM users WHERE (dni LIKE '%$keyword%' OR names LIKE '%$keyword%' OR surnames LIKE '%$keyword%') AND id = a.user_id) = user_id";
+                $query .= " q WHERE id LIKE '%$keyword%' OR (SELECT id FROM notes WHERE (user_id IN ((SELECT id FROM users WHERE (dni LIKE '%$keyword%' OR names LIKE '%$keyword%' OR surnames LIKE '%$keyword%'))) OR course_id IN ((SELECT id FROM courses WHERE (name LIKE '%$keyword%')))) AND id = q.note_id) = note_id";
             }
             $qualifications = $dba->query('SELECT * FROM qualification'.$query.' LIMIT ? OFFSET ?', 10, 1)->fetchAll();
             $deliver['total_pages'] = $dba->totalPages;
@@ -721,7 +721,7 @@ if ($TEMP['#loggedin'] === true && (Specific::Admin() === true || Specific::Acad
             $query = '';
             $keyword = Specific::Filter($_POST['keyword']);
             if(!empty($keyword)){
-                $query .= " a WHERE id LIKE '%$keyword%' OR (SELECT id FROM users WHERE (dni LIKE '%$keyword%' OR names LIKE '%$keyword%' OR surnames LIKE '%$keyword%') AND id = a.user_id) = user_id";
+                $query .= " q WHERE id LIKE '%$keyword%' OR (SELECT id FROM notes WHERE (user_id IN ((SELECT id FROM users WHERE (dni LIKE '%$keyword%' OR names LIKE '%$keyword%' OR surnames LIKE '%$keyword%'))) OR course_id IN ((SELECT id FROM courses WHERE (name LIKE '%$keyword%')))) AND id = q.note_id) = note_id";
             }
             $qualifications = $dba->query('SELECT * FROM qualification'.$query.' LIMIT ? OFFSET ?', 10, $page)->fetchAll();
             if (!empty($qualifications)) {

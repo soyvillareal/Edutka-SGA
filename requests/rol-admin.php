@@ -538,63 +538,65 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
         if(empty($status)){
             $emptys[] = 'status';
         }
-            if(empty($emptys)){
-                if(($dba->query('SELECT COUNT(*) FROM enrolled WHERE period_id = '.$id)->fetchArray() > 0 || $dba->query('SELECT status FROM periods WHERE id = '.$id)->fetchArray() == $status) || $type == 'add'){
-                    $year = explode('-', $start)[0];
-                    $name = "$year-$period";
-                    $start = strtotime($start);
-                    $final = strtotime($final);
-                    if(!in_array($status, $statusa)){
-                        $errors[] = 'status';
-                    }
-                    if($start > $final){
-                        $errors[] = 'start';
-                    }
-                    $query = $type == 'edit' ? ' AND id <> '.$id : '';
-                    if($dba->query('SELECT COUNT(*) FROM periods WHERE name = "'.$name.'"'.$query)->fetchArray() == 0){
-                        if($dba->query('SELECT COUNT(*) FROM periods WHERE start < '.$start.' AND final > '.$final)->fetchArray() == 0){
-                            if (empty($errors)) {
-                                if(!empty($type)){
-                                    if($type == 'add'){
+        if(empty($emptys)){
+            if($dba->query('SELECT id FROM periods WHERE status = "enabled"')->fetchArray() == $id || $dba->query('SELECT COUNT(*) FROM periods WHERE status = "'.$status.'"')->fetchArray() == 0 || $type == 'add'){
+                $year = explode('-', $start)[0];
+                $name = "$year-$period";
+                $start = strtotime($start);
+                $final = strtotime($final);
+                if(!in_array($status, $statusa)){
+                    $errors[] = 'status';
+                }
+                if($start > $final){
+                    $errors[] = 'start';
+                }
+                $query = $type == 'edit' ? ' AND id <> '.$id : '';
+                if($dba->query('SELECT COUNT(*) FROM periods WHERE name = "'.$name.'"'.$query)->fetchArray() == 0){
+                    if($dba->query('SELECT COUNT(*) FROM periods WHERE start < '.$start.' AND final > '.$final)->fetchArray() == 0){
+                        if (empty($errors)) {
+                            if(!empty($type)){
+                                if($type == 'add'){
+                                    if($dba->query('UPDATE periods SET status = "disabled" WHERE status = "enabled"')->returnStatus()){
                                         if($dba->query('INSERT INTO periods (name, start, final, status, `time`) VALUES ("'.$name.'", '.$start.', '.$final.', "'.$status.'",'.time().')')->returnStatus()){
                                             $deliver['status'] = 200;
                                         }
-                                    } else if(isset($id) && is_numeric($id)){
-                                        if($dba->query('UPDATE periods SET name = ?, start = ?, final = ?, status = ? WHERE id = '.$id, $name, $start, $final, $status)->returnStatus()){
-                                            $deliver['status'] = 200;
-                                        }
+                                    }
+                                } else if(isset($id) && is_numeric($id)){
+                                    if($dba->query('UPDATE periods SET name = ?, start = ?, final = ?, status = ? WHERE id = '.$id, $name, $start, $final, $status)->returnStatus()){
+                                        $deliver['status'] = 200;
                                     }
                                 }
-                            } else {
-                                $deliver = array(
-                                    'status' => 400,
-                                    'errors' => $errors
-                                );
                             }
                         } else {
                             $deliver = array(
                                 'status' => 400,
-                                'error' => $TEMP['#word']['there_already_period_these_dates']
+                                'errors' => $errors
                             );
                         }
                     } else {
                         $deliver = array(
                             'status' => 400,
-                            'error' => $TEMP['#word']['this_period_already_exists']
+                            'error' => $TEMP['#word']['there_already_period_these_dates']
                         );
-                    }  
+                    }
                 } else {
                     $deliver = array(
                         'status' => 400,
-                        'error' => $TEMP['#word']['period_has_already_been_assigned']
+                        'error' => $TEMP['#word']['this_period_already_exists']
                     );
                 }
             } else {
                 $deliver = array(
                     'status' => 400,
-                    'emptys' => $emptys
+                    'error' => $TEMP['#word']['there_already_active_period']
                 );
             }
+        } else {
+            $deliver = array(
+                'status' => 400,
+                'emptys' => $emptys
+            );
+        }
     } else if($one == 'this-dates'){
         $emptys = array();
         $errors = array();
@@ -666,54 +668,13 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
     } else if($one == 'get-ditems'){
         $id = Specific::Filter($_POST['id']);
         if(!empty($id) && is_numeric($id)){
-            $items = $dba->query('SELECT dates FROM periods WHERE id = '.$id)->fetchArray();
-            $items = json_decode($items, true);
-            if(empty($items)){
-                $items = ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""];
-            }
+            $period = $dba->query('SELECT name, final, dates FROM periods WHERE id = '.$id)->fetchArray();
+            $dates = Specific::ComposeDates($period['dates']);
 
-            $dates = array();
-            $dates[0] = $items[0];
-            $dates[1] = array($items[1], $items[2]);
-            $dates[2] = array($items[3], $items[4]);
-            $dates[3] = $items[5];
-            $dates[4] = $items[6];
-            $dates[5] = $items[7];
-            $dates[6] = array($items[8], $items[9]);
-            $dates[7] = $items[10];
-            $dates[8] = array($items[11], $items[12]);
-            $dates[9] = $items[13];
-            $dates[10] = $items[14];
-            $dates[11] = $items[15];
-            $dates[12] = $items[16];
-            $dates[13] = $items[17];
-
-            foreach ($dates as $key => $value) {
-                if (is_array($value)){
-                    foreach ($value as $k => $val) {
-                        if(empty($val)) {
-                            $dates[$key][$k] = $TEMP['#word']['pending'];
-                        } else {
-                            $val = strtotime($val);
-                            $dates[$key][$k] = Specific::DateFormat($val, true);
-                        }
-                    }
-                } else {
-                    if(empty($value)) {
-                        $dates[$key] = $TEMP['#word']['pending'];
-                    } else {
-                        $value = strtotime($value);
-                        $dates[$key] = Specific::DateFormat($value, true);
-                    }
-                }
-            }
-
-            $period = $dba->query('SELECT name, final FROM periods WHERE id = '.$id)->fetchArray();
-
-            if (!empty($items)) {
+            if (!empty($period['dates'])) {
                 $deliver = array(
                     'status' => 200,
-                    'items' => $items,
+                    'items' => json_decode($period['dates'], true),
                     'dates' => $dates,
                     'name' => $period['name'],
                     'final' => date('Y-m-d', $period['final'])
@@ -958,25 +919,31 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
             if(!isset($max_error)){
                 if(!isset($uniq_error)){
                     if($type == 'add'){
+                        $deliver['change'] = 'false';
                         $rule_id = $dba->query('INSERT INTO rule (user_id, rules, status, modified, `time`) VALUES ('.$TEMP['#user']['id'].', "'.$rules.'", "'.$status.'" , 0, '.time().')')->insertId();
                         if($rule_id){
                             $rule = $dba->query('SELECT id, COUNT(*) AS count FROM rule WHERE status = "enabled" AND id <> '.$rule_id)->fetchArray();
                             if($rule['count'] > 0 && $status == 'enabled'){
-                                $dba->query('UPDATE rule SET status = "disabled" WHERE id = '.$rule['id']);
+                                if($dba->query('UPDATE rule SET status = "disabled" WHERE id = '.$rule['id'])->returnStatus()){
+                                    $deliver['change'] = 'true';
+                                    $deliver['rule_id'] = $rule['id'];
+                                }
                             }
                             $deliver['status'] = 200;
                         }
                     } else {
                         if(isset($id) && is_numeric($id)){
+                            $deliver['change'] = 'false';
                             if($dba->query('UPDATE rule SET rules = ?, status = ? WHERE id = '.$id, $rules, $status)->returnStatus()){
                                 $rule = $dba->query('SELECT id, COUNT(*) AS count FROM rule WHERE status = "enabled" AND id <> '.$id)->fetchArray();
                                 if($rule['count'] > 0 && $status == 'enabled'){
-                                    $dba->query('UPDATE rule SET status = "disabled" WHERE id = '.$rule['id']);
+                                    if($dba->query('UPDATE rule SET status = "disabled" WHERE id = '.$rule['id'])->returnStatus()){
+                                        $deliver['change'] = 'true';
+                                        $deliver['rule_id'] = $rule['id'];
+                                    }
                                 }
-                                $deliver = array(
-                                    'status' => 200,
-                                    'html' => Specific::GetComposeRule($rules, true)
-                                );
+                                $deliver['status'] = 200;
+                                $deliver['html'] = Specific::GetComposeRule($rules, true);
                             }
                         }
                     }

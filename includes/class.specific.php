@@ -366,6 +366,49 @@ class Specific {
         return $rdate;
 	}
 
+	public static function ComposeDates($date = array()) {
+		global $TEMP;
+		
+		$date = json_decode($date, true);
+		$dates = array();
+        $dates[0] = $date[0];
+        $dates[1] = array($date[1], $date[2]);
+        $dates[2] = array($date[3], $date[4]);
+        $dates[3] = $date[5];
+        $dates[4] = $date[6];
+        $dates[5] = $date[7];
+        $dates[6] = array($date[8], $date[9]);
+        $dates[7] = $date[10];
+        $dates[8] = array($date[11], $date[12]);
+        $dates[9] = $date[13];
+        $dates[10] = $date[14];
+        $dates[11] = $date[15];
+        $dates[12] = $date[16];
+        $dates[13] = $date[17];
+
+        foreach ($dates as $key => $value) {
+            if (is_array($value)){
+                foreach ($value as $k => $val) {
+                    if(empty($val)) {
+                        $dates[$key][$k] = $TEMP['#word']['undefined'];
+                    } else {
+                        $val = strtotime($val);
+                        $dates[$key][$k] = self::DateFormat($val, true);
+                    }
+                }
+            } else {
+                if(empty($value)) {
+                    $dates[$key] = $TEMP['#word']['undefined'];
+                } else {
+                    $value = strtotime($value);
+                    $dates[$key] = self::DateFormat($value, true);
+                }
+            }
+        }
+
+        return $dates;
+	}
+
 	public static function GetSessions($value = array()){
 	    $data = array();
 	    $data['ip'] = 'Unknown';
