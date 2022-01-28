@@ -774,51 +774,5 @@ class Specific {
 	    }
 	    return $input;
 	}
-
-	public static function Sitemap($background = false){
-		global $dba, $TEMP;
-		$dbaLimit = 45000;
-		$videos = $dba->query('SELECT COUNT(*) FROM videos WHERE privacy = 0 AND approved = 1 AND deleted = 0')->fetchArray();
-		if(empty($videos)){
-			return false;
-		}
-		$time = time();
-		if($background == true){
-			self::PostCreate(array(
-				'status' => 200,
-                'message' => $TEMP['#word']['sitemap_being_generated_may_take_few_minutes'],
-                'time' => self::DateFormat($time)
-			));
-		}
-		$limit = ceil($videos / $dbaLimit);
-		$sitemap_x = '<?xml version="1.0" encoding="UTF-8"?>
-		                <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
-		$sitemap_index = '<?xml version="1.0" encoding="UTF-8"?>
-		                    <sitemapindex  xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" >';
-		for ($i=1; $i <= $limit; $i++) {            
-		  $sitemap_index .= "\n<sitemap>
-		                          <loc>" . self::Url("sitemaps/sitemap-$i.xml") . "</loc>
-		                          <lastmod>" . date('c') . "</lastmod>
-		                        </sitemap>";
-		  $paginate = $dba->query('SELECT * FROM videos WHERE privacy = 0 AND approved = 1 AND deleted = 0 ORDER BY id ASC LIMIT ? OFFSET ?', $dbaLimit, $i)->fetchAll();
-		  foreach ($paginate as $value) {
-		    $video = self::Video($value);
-		    $sitemap_x .= '<url>
-		                    <loc>' . $video['url'] . '</loc>
-		                    <lastmod>' . date('c', $video['time']). '</lastmod>
-		                    <changefreq>monthly</changefreq>
-		                    <priority>0.8</priority>
-		                  </url>' . "\n";
-		  }
-		  $sitemap_x .= "\n</urlset>";
-		  file_put_contents("sitemaps/sitemap-$i.xml", $sitemap_x);
-		  $sitemap_x = '<?xml version="1.0" encoding="UTF-8"?>
-		                  <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'; 
-		}
-		$sitemap_index .= '</sitemapindex>';
-		$file_final = file_put_contents('sitemap-index.xml', $sitemap_index);
-		$dba->query('UPDATE settings SET value = "'.$time.'" WHERE name = "last_sitemap"');
-		return true;
-	}
 }
 ?>
