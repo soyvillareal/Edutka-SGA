@@ -240,7 +240,7 @@ class Specific {
 
 	    $user['provinces']  = $TEMP['#provinces'][$user['province']];
 	    $user['municipalities']  = $TEMP['#municipalities'][$user['municipality']];
-	    $user['program'] = $dba->query('SELECT max(program_id) FROM enrolled e WHERE type = "program" AND user_id = '.$user['id'])->fetchArray();
+	    $user['program'] = $dba->query('SELECT max(program_id) FROM enrolled WHERE type = "program" AND user_id = '.$user['id'])->fetchArray();
 
 	    $gender = $TEMP['#word']['male'];
 	    if($user['gender'] == 2){

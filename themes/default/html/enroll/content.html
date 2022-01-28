@@ -42,6 +42,7 @@
 			            <option value="without_registering">{$word->without_registering}</option>
 			            <?php if($TEMP['#type'] == 'course'){ ?>
 			            <option value="reprobate">{$word->reprobate}</option>
+			            <option value="cancelled">{$word->cancelled}</option>
 			            <?php } ?>
 			        </select>
 			    </div>
@@ -270,10 +271,9 @@ addEvent(GD, 'change', GT), <?php if(count($TEMP['#programs']) > 1){ ?>addEvent(
 	addClass(SQ, 'spinner-is-loading'), keyword = SV;
 	Req('{$url->{req/rol-teacher/search-users}}', function(e) {
 	    if (e.status == 200) {
-	   		removeClass(SQ, 'spinner-is-loading'), SD.innerHTML = e.html, loadPage(SD.querySelectorAll('a[target="_self"]'));
+	   		removeClass(SQ, 'spinner-is-loading'), removeClass(SD, 'border-left'), removeClass(SD, 'border-right'), removeClass(SD, 'border-bottom'), removeClass(SD, 'border-grey'), removeClass(SD, 'padding-10'), removeClass(SD, 'border-bottom-left-radius'), removeClass(SD, 'border-bottom-right-radius'), SD.innerHTML = e.html, loadPage(SD.querySelectorAll('a[target="_self"]'));
 	    } else {
-		    removeClass(SQ, 'spinner-is-loading'), addClass(SD, 'hidden'), SD.innerHTML = "";
-		   	return false;
+		    removeClass(SQ, 'spinner-is-loading'), addClass(SD, 'border-left'), addClass(SD, 'border-right'), addClass(SD, 'border-bottom'), addClass(SD, 'border-grey'), addClass(SD, 'padding-10'), addClass(SD, 'border-bottom-left-radius'), addClass(SD, 'border-bottom-right-radius'), SD.innerHTML = e.html;
 	    }
 	}, "POST", "&typet=enroll&keyword=" + SV);
 })<?php } ?>;

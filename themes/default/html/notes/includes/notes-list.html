@@ -15,7 +15,7 @@
                      <div class="cont-cell-header padding-lr20 color-secondary">
                         {$word->court}
                      </div>
-                     <div class="cont-cell-header padding-lr20 color-secondary">
+                     <div class="cont-cell-header padding-lr20 color-secondary position-relative">
                         {$word->note}
                         <?php if($TEMP['#student'] === false && empty($TEMP['!parameters'])){ ?>
                         <button class="show_npopalert btn-noway position-absolute color-red" data-type="params">
@@ -45,12 +45,12 @@
                      <div class="cont-cell-header padding-lr20 color-black">
                         <?php if($TEMP['!first'] == 0){ ?>
                         <?php if($TEMP['#student'] == false){ ?>
-                        <button class="upload_note btn-noway<?php echo(!empty($TEMP['!parameters'])) ? ' color-blue ' : ' color-red ';?>underline-hover<?php echo(empty($TEMP['!parameters']) || ((!in_array('first', $TEMP['!authorization']) && $TEMP['#student'] == false) && $TEMP['#admin'] == false && $TEMP['#academic'] == false)) ? ' cursor-disabled" disabled' : '"';?><?php echo($TEMP['#note_mode'] == '30-30-40') ? ' data-pos="0"' : '';?> data-id="{!id}">{$word->upload_note}</button> 
+                        <button class="upload_note btn-noway<?php echo(!empty($TEMP['!parameters'])) ? ' color-blue ' : ' color-red ';?>underline-hover<?php echo($TEMP['!nstatus'] == 'cancelled' || empty($TEMP['!parameters']) || ((!in_array('first', $TEMP['!authorization']) && $TEMP['#student'] == false) && $TEMP['#admin'] == false && $TEMP['#academic'] == false)) ? ' cursor-disabled" disabled' : '"';?><?php echo($TEMP['#note_mode'] == '30-30-40') ? ' data-pos="0"' : '';?> data-id="{!id}">{$word->upload_note}</button> 
                         <?php } else { ?>
                         {!first}
                         <?php } ?>
                         <?php } else { ?>
-                        <button class="<?php echo($TEMP['#student'] == true) ? 'see_params ' : 'upload_note ';?>btn-noway color-blue underline-hover<?php echo((!in_array('first', $TEMP['!authorization']) && $TEMP['#student'] == false) && $TEMP['#admin'] == false && $TEMP['#academic'] == false) ? ' cursor-disabled" disabled' : '"';?><?php echo($TEMP['#note_mode'] == '30-30-40') ? ' data-pos="0"' : '';?> data-id="{!id}">{!first}</button>
+                        <button class="<?php echo($TEMP['#student'] == true) ? 'see_params ' : 'upload_note ';?>btn-noway color-blue underline-hover<?php echo($TEMP['!nstatus'] == 'cancelled' || (!in_array('first', $TEMP['!authorization']) && $TEMP['#student'] == false) && $TEMP['#admin'] == false && $TEMP['#academic'] == false) ? ' cursor-disabled" disabled' : '"';?><?php echo($TEMP['#note_mode'] == '30-30-40') ? ' data-pos="0"' : '';?> data-id="{!id}">{!first}</button>
                         <?php } ?>
                      </div>
                      <div class="cont-cell-header padding-lr20 color-black">
@@ -65,12 +65,12 @@
                      <div class="cont-cell-header padding-lr20 color-black">
                         <?php if($TEMP['!second'] == 0){ ?>
                         <?php if($TEMP['#student'] == false){ ?>
-                        <button class="upload_note btn-noway<?php echo(!empty($TEMP['!parameters'])) ? ' color-blue ' : ' color-red ';?>underline-hover<?php echo(empty($TEMP['!parameters']) || ((!in_array('second', $TEMP['!authorization']) && $TEMP['#student'] == false) && $TEMP['#admin'] == false && $TEMP['#academic'] == false)) ? ' cursor-disabled" disabled' : '"';?> data-pos="1" data-id="{!id}">{$word->upload_note}</button>
+                        <button class="upload_note btn-noway<?php echo(!empty($TEMP['!parameters'])) ? ' color-blue ' : ' color-red ';?>underline-hover<?php echo($TEMP['!nstatus'] == 'cancelled' || empty($TEMP['!parameters']) || ((!in_array('second', $TEMP['!authorization']) && $TEMP['#student'] == false) && $TEMP['#admin'] == false && $TEMP['#academic'] == false)) ? ' cursor-disabled" disabled' : '"';?> data-pos="1" data-id="{!id}">{$word->upload_note}</button>
                         <?php } else { ?>
                         {!second}
                         <?php } ?>
                         <?php } else { ?>
-                        <button class="<?php echo($TEMP['#student'] == true) ? 'see_params ' : 'upload_note ';?>btn-noway color-blue underline-hover<?php echo(!in_array('second', $TEMP['!authorization']) && $TEMP['#student'] == false) ? ' cursor-disabled" disabled' : '"';?> data-pos="1" data-id="{!id}">{!second}</button>
+                        <button class="<?php echo($TEMP['#student'] == true) ? 'see_params ' : 'upload_note ';?>btn-noway color-blue underline-hover<?php echo($TEMP['!nstatus'] == 'cancelled' || !in_array('second', $TEMP['!authorization']) && $TEMP['#student'] == false) ? ' cursor-disabled" disabled' : '"';?> data-pos="1" data-id="{!id}">{!second}</button>
                         <?php } ?>
                      </div>
                      <div class="cont-cell-header padding-lr20 color-black">
@@ -81,10 +81,10 @@
                      <div class="cont-cell-header padding-lr20 color-black">
                         {$word->third}
                      </div>
-                     <div class="cont-cell-header padding-lr20 color-black">
+                     <div class="cont-cell-header padding-lr20 color-black position-relative">
                         <?php if($TEMP['!third'] == 0){ ?>
                         <?php if($TEMP['#student'] == false){ ?>
-                        <button class="upload_note btn-noway<?php echo(!empty($TEMP['!parameters'])) ? ' color-blue ' : ' color-red ';?>underline-hover<?php echo($TEMP['!last_eval'] == false || empty($TEMP['!parameters']) || ((!in_array('third', $TEMP['!authorization']) && $TEMP['#student'] == false) && $TEMP['#admin'] == false && $TEMP['#academic'] == false)) ? ' cursor-disabled" disabled' : '"';?> data-pos="2" data-id="{!id}">{$word->upload_note}</button>
+                        <button class="upload_note btn-noway<?php echo(!empty($TEMP['!parameters'])) ? ' color-blue ' : ' color-red ';?>underline-hover<?php echo($TEMP['!nstatus'] == 'cancelled' || $TEMP['!last_eval'] == false || empty($TEMP['!parameters']) || ((!in_array('third', $TEMP['!authorization']) && $TEMP['#student'] == false) && $TEMP['#admin'] == false && $TEMP['#academic'] == false)) ? ' cursor-disabled" disabled' : '"';?> data-pos="2" data-id="{!id}">{$word->upload_note}</button>
                         <?php if($TEMP['!last_eval'] == false){ ?>
                         <a class="position-absolute" href="{$url->{rules}}?article=42" target="_blank">
                            <svg class="dv-xs" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -96,7 +96,7 @@
                         {!third}
                         <?php } ?>
                         <?php } else { ?>
-                        <button class="<?php echo($TEMP['#student'] == true) ? 'see_params ' : 'upload_note ';?>btn-noway color-blue underline-hover<?php echo(!in_array('third', $TEMP['!authorization']) && $TEMP['#student'] == false) ? ' cursor-disabled" disabled' : '"';?> data-pos="2" data-id="{!id}">{!third}</button>
+                        <button class="<?php echo($TEMP['#student'] == true) ? 'see_params ' : 'upload_note ';?>btn-noway color-blue underline-hover<?php echo($TEMP['!nstatus'] == 'cancelled' || !in_array('third', $TEMP['!authorization']) && $TEMP['#student'] == false) ? ' cursor-disabled" disabled' : '"';?> data-pos="2" data-id="{!id}">{!third}</button>
                         <?php } ?>
                      </div>
                      <div class="cont-cell-header padding-lr20 color-black">
@@ -107,11 +107,11 @@
                </div>
             </div>
 
-            <?php if($TEMP['!qcstatus'] == 'activated' && $TEMP['!fah'] == true && $TEMP['!can_qua'] == true){ ?>
+            <?php if($TEMP['!qcstatus'] == 'activated' && $TEMP['!fah'] == true && $TEMP['!can_qua'] == true && $TEMP['!approved'] == false){ ?>
             <div class="scroll-table-header border-all margin-t15 border-blue border-radius-12">
                <div class="display-inline-flex">
                   <div class="cont-table-header display-flex padding-t15 padding-b15 border-bottom border-blue">
-                     <div class="cont-cell-header padding-lr20 color-secondary">
+                     <div class="cont-cell-header padding-lr20 color-secondary position-relative">
                         {$word->qualification}
                         <a class="position-absolute" href="{$url->{rules}}?article=48" target="_blank">
                            <svg class="dv-xs" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -119,7 +119,7 @@
                            </svg>
                         </a>
                      </div>
-                     <div class="cont-cell-header padding-lr20 color-secondary">
+                     <div class="cont-cell-header padding-lr20 color-secondary position-relative">
                         {$word->note}
                         <?php if($TEMP['!qexists'] == false){ ?>
                         <button class="show_qpopalert btn-noway position-absolute color-black">
@@ -141,7 +141,7 @@
                      </div>
                      <div class="cont-cell-header padding-lr20 color-black">
                         <?php if($TEMP['#student'] == false){ ?>
-                        <div class="qualification">
+                        <div class="qualification position-relative">
                            <button class="upload_qualification btn-noway underline-hover<?php echo(($TEMP['!flrnh'] == true || $TEMP['!period_final'] == true) && $TEMP['#teacher'] == true) ? ' color-red cursor-disabled" disabled' : ' color-blue"';?>>{!qualification_text}</button>
                            <?php if($TEMP['!flrnh'] == true || $TEMP['!period_final'] == true){ ?>
                            <a class="position-absolute" href="{$url->{academic-calendar}}" target="_blank">
@@ -215,7 +215,7 @@
             </div>
             <?php } ?>
 
-            <div class="scroll-table-header margin-t15 border-all <?php echo($TEMP['!approved'] == true || $TEMP['!period_final'] == false) ? 'border-blue ' : 'border-red ';?>border-radius-12">
+            <div id="scroll-{!id}" class="scroll-table-header margin-t15 border-all <?php echo($TEMP['!approved'] == true || $TEMP['!period_final'] == false) ? 'border-blue ' : 'border-red ';?><?php echo($TEMP['#student'] === false && !empty($TEMP['!observation'])) ? 'border-top-left-radius border-top-right-radius' : 'border-radius-12';?>">
                <div class="display-inline-flex">
                   <div class="cont-table-header display-flex padding-t15 padding-b15 border-bottom <?php echo($TEMP['!approved'] == true || $TEMP['!period_final'] == false) ? 'border-blue' : 'border-red';?>">
                      <div class="cont-cell-header padding-lr20 color-secondary">
@@ -224,17 +224,24 @@
                      <div class="cont-cell-header padding-lr20 color-secondary">
                         {$word->average}
                      </div>
-                     <div class="cont-cell-header padding-lr20 color-secondary">
-                        {$word->status}
+                     <div class="cont-cell-header padding-lr20 color-secondary position-relative">
+                        {$word->status}    
+                        <?php if($TEMP['#admin'] == true || $TEMP['#academic'] == true || $TEMP['#teacher'] == true) { ?>
+                        <button class="show_observation btn-noway hover-button position-absolute pos-bottom pos-right margin-r15<?php echo(empty($TEMP['!observation'])) ? ' rotate-180' : '';?>" data-type="<?php echo(empty($TEMP['!observation'])) ? 'show' : 'hide';?>" data-id="{!id}">
+                           <svg class="dv-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                              <path fill="currentColor" d="M 17.859 14.384 L 16.623 15.564 C 16.529 15.655 16.417 15.7 16.288 15.7 C 16.159 15.7 16.047 15.655 15.953 15.564 L 12 11.768 L 8.047 15.564 C 7.953 15.655 7.841 15.7 7.712 15.7 C 7.583 15.7 7.471 15.655 7.377 15.564 L 6.141 14.384 C 6.047 14.294 6 14.185 6 14.059 C 6 13.933 6.047 13.824 6.141 13.734 L 11.665 8.436 C 11.759 8.345 11.871 8.3 12 8.3 C 12.129 8.3 12.241 8.345 12.335 8.436 L 17.859 13.734 C 17.953 13.824 18 13.933 18 14.059 C 18 14.185 17.953 14.294 17.859 14.384 Z"/>
+                           </svg>
+                        </button>
+                        <?php } ?>
                      </div>
                   </div>
                </div>
-               <div id="container-pages"  class="display-inline-block">
+               <div id="container-pages" class="display-inline-block">
                   <div class="content-row-table dv-vertical-center padding-t15 padding-b15">
                      <div class="cont-cell-header padding-lr20 color-black">
                         {!period}
                      </div>
-                     <div class="cont-cell-header padding-lr20 color-black">
+                     <div class="average cont-cell-header padding-lr20 color-black position-relative">
                         {!average}
                         <?php if($TEMP['#note_mode'] == '30-30-40' && $TEMP['!qexists'] == false && ($TEMP['!evalfinal'] == true || $TEMP['!approved'] == false)){ ?>
                         <a class="position-absolute" href="{$url->{rules}}?article={!article}" target="_blank">
@@ -245,11 +252,40 @@
                         <?php } ?>
                      </div>
                      <div class="cont-cell-header padding-lr20 color-white">
-                        <div class="<?php echo($TEMP['!approved'] == true || $TEMP['!period_final'] == false) ? 'background-green ' : 'background-red ';?> padding-5 text-center border-radius-4">{!status}</div>
+                        <div class="status <?php echo($TEMP['!approved'] == true || $TEMP['!period_final'] == false) ? ' background-green ' : ' background-red ';?> padding-5 text-center border-radius-4">{!status}</div>
                      </div>
                   </div>
                </div>
             </div>
+            <?php if($TEMP['#admin'] == true || $TEMP['#academic'] == true || $TEMP['#teacher'] == true) { ?>
+            <div id="observation-{!id}" class="observation animated-easy overflow-hidden position-relative<?php echo(empty($TEMP['!observation'])) ? ' h-0 "' : '" style="height: auto;"';?>>
+               <b class="position-absolute margin-l10 margin-t5 color-grey">{$word->observation}:</b>
+               <textarea class="cont-input observation-input border-bottom-left-radius border-bottom-right-radius animated-easy background-grely color-black" rows="5" cols="20" readonly="true" style="max-height: 100px;">{!observation}</textarea>
+               <div class="observation-buttons position-absolute pos-bottom pos-right margin-r10 hidden">
+                  <button class="upload_observation btn-noway hover-button color-green" data-id="{!id}">
+                     <span class="color-green">
+                        <svg class="dv-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                           <path fill="currentColor" d="M 3.2 13.055 L 8.825 18.7 L 20.8 6.585 L 19.53 5.3 L 8.825 16.131 L 4.47 11.724 Z"></path>
+                        </svg>
+                     </span>
+                     <div class="content-spinner-circle">
+                        <div class="spinner-circle"></div>
+                     </div>
+                  </button>
+                  <button class="clear_observation btn-noway hover-button color-red margin-r5" data-id="{!id}">
+                     <svg class="dv-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path fill="currentColor" d="M 12 13.17 L 5.17 20 L 4 18.832 L 10.83 12 L 4 5.17 L 5.17 4 L 12 10.83 L 18.832 4 L 20 5.17 L 13.17 12 L 20 18.832 L 18.832 20 Z"></path>
+                     </svg>
+                  </button>
+               </div>
+            </div>
+            <?php } else { ?>
+               <?php if(!empty($TEMP['!observation'])){ ?>
+               <div class="margin-t15">
+                  <b>{$word->observation}: </b>{!observation}
+               </div>
+               <?php } ?>
+            <?php } ?>
          </div>
       </div>
    </div>

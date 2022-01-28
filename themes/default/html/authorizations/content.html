@@ -49,7 +49,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div id="container-pages" class="display-inline-block">
+                                <div id="container-pages" class="display-grid w-100">
                                     {$authorizations}
                                 </div>
                             </div>
@@ -132,7 +132,7 @@
                         </div>
                         <div class="flex-grow">
                             <select id="court" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue area_changed caret-down area_validate background-grely color-black">
-                                <option value selected>{$word->select_a_cut}</option>
+                                <option value selected disabled>{$word->select_a_cut}</option>
                                 <option value="first">{$word->first_cut}</option>
                                 <option value="second">{$word->second_cut}</option>
                                 <option value="third">{$word->third_cut}</option>

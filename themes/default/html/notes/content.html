@@ -70,18 +70,21 @@
 			<?php if($TEMP['#teacher'] == false && $TEMP['#type'] == 'student'){ ?>
 			<div class="text-center background-white border-radius-12 padding-25 margin-b10">
 				<div class="max-w-900 border-top-left-radius border-top-right-radius">
-					<div class="font-medium color-black">{$word->global_average}</div>
-					<div class="font-supraly font-bold<?php echo($TEMP['#semesbad'] == true) ? ' color-red' : ''; echo($TEMP['average'] < $TEMP['#nmcs']) ? ' color-red' : ' color-green';?>">
-						{$average}
-	                    <?php if($TEMP['#semesbad'] == true){ ?>
-	                    <a class="position-absolute" href="{$url->{rules}}?article=64" target="_blank">
-	                        <svg class="dv-xs" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-	                            <path d="M13,17h-2v-6h2V17z M13,7h-2v2h2V7z M12,3c-4.96,0-9,4.04-9,9s4.04,9,9,9c4.96,0,9-4.04,9-9S16.96,3,12,3 M12,2 c5.52,0,10,4.48,10,10s-4.48,10-10,10C6.48,22,2,17.52,2,12S6.48,2,12,2L12,2z"></path>
-	                        </svg>
-	                    </a>
-	                    <?php } ?>
-                    </div>
-                    <?php if($TEMP['#semesbad'] == true){ ?>
+					<div id="text-average" class="font-medium color-black">{$word->global_average}</div>
+					<button id="average" class="btn-noway font-supraly font-bold" data-type="total">
+                        <span class="<?php echo($TEMP['#semesbad'] == true || $TEMP['average'] < $TEMP['#nmcs']) ? 'color-red' : 'color-green';?>">{$average}</span>
+                        <div class="content-spinner-circle">
+                            <div class="spinner-circle"></div>
+                        </div>
+                    </button>
+	                <?php if($TEMP['#semesbad'] == true && $TEMP['#student'] === true){ ?>
+	                <a class="position-absolute" href="{$url->{rules}}?article=64" target="_blank">
+	                    <svg class="dv-xs" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+	                        <path d="M13,17h-2v-6h2V17z M13,7h-2v2h2V7z M12,3c-4.96,0-9,4.04-9,9s4.04,9,9,9c4.96,0,9-4.04,9-9S16.96,3,12,3 M12,2 c5.52,0,10,4.48,10,10s-4.48,10-10,10C6.48,22,2,17.52,2,12S6.48,2,12,2L12,2z"></path>
+	                    </svg>
+	                </a>
+	                <?php } ?>
+                    <?php if($TEMP['#semesbad'] == true && $TEMP['#student'] === true){ ?>
                     <div class="font-medium font-bold color-red">{$word->you_missed_more_subjects}</div>
                     <?php } ?>
 				</div>
@@ -198,6 +201,10 @@ var NW = D.querySelectorAll('.number'),
 	NM = D.querySelectorAll('.upload_qualification'),
 	NF = D.querySelectorAll('.upload_qnote'),
 	NJ = D.querySelectorAll('.clear_note'),
+	Nh = D.querySelectorAll('.upload_observation'),
+	Nj = D.querySelectorAll('.clear_observation'),
+	Ni = D.querySelectorAll('.observation-input'),
+	Nx = D.querySelectorAll('.show_observation'),
 	NU = D.querySelectorAll('.upload_note'),
     NZ = D.querySelectorAll('.see_params'),
 	NS = D.querySelectorAll('.show_npopalert'),
@@ -214,6 +221,8 @@ var NW = D.querySelectorAll('.number'),
 	NC = D.querySelector('#text-qualification'),
 	Nq = D.querySelector('#type'),
 	Nw = D.querySelector('#courses'),
+    Nk = D.querySelector('#average'),
+    Nz = D.querySelector('#text-average'),
     NA = function(){
         var self = this,
             note_id = self.getAttribute('data-id'),
@@ -226,6 +235,30 @@ var NW = D.querySelectorAll('.number'),
                     var el = e.items['parameters'][j],
                         element = D.createElement('div');
                     element.className = 'group-validate display-block position-relative w-100 padding-25 border-all border-blue margin-b20', element.id = "parameter_"+j, element.innerHTML = '<h3 class="text-center" id="text-parameter">'+el['name']+'</h3><div class="display-flex"><div class="margin-auto margin-b15 margin-t15 padding-r10"><input id="param_note_'+j+'" type="text" class="cont-input h-50 border-radius-12 animated-easy border-focus-blue background-grely color-black"<?php echo($TEMP["#student"] == true) ? ' readonly="true" ' : ' ';?>placeholder="{$word->note}" '+(e.items['notes'][j] != 0 && e.items['notes'][j] != undefined ? 'value="'+e.items['notes'][j]+'"' : '')+'/></div><div class="position-relative margin-auto margin-b15 margin-t15 percent-gadget percent-gadget-disabled"><input type="text" readonly="true" class="cont-input mw-w-100 h-50 border-radius-12 animated-easy border-focus-blue margin-left-auto background-grely color-black text-center" placeholder="{$word->percentage}" value="'+el['percent']+'"/></div></div><div class="text-error color-red text-center font-low margin-t5"></div>', NK.appendChild(element);
+                    var input = element.querySelector('#param_note_'+j);
+                    addEvent(input, 'input', function(){
+                    	var self = this,
+                    		num = self.value.split(''),
+                    		doc = [];
+                    	if(num.length > 1 && num[1] != '.'){
+                    		var num2 = parseFloat(num[0]+'.'+num[1]);
+                    		if(num2 > 5) {
+                    			self.value = 5;
+                    		} else {
+                    			self.value = num2;
+                    		}
+                    	} else if(num.length > 2){
+                    		for(var i = 0; i < self.value.length; i++) if(self.value[i] === ".") doc.push(i);
+                    		if(doc.length > 1) self.value = 0;
+                    	} else if(num[0] > 5){
+                    		self.value = 5;
+                    	}
+                    }), addEvent(input, 'input', function(){
+					    this.value = this.value.replace(/[^0-9.]/gi, '');
+					}), timeDelay(function(){
+						input.value == "" && input.focus();
+					}, 100);
+
                 }
                 NN.style.display = "block", D.body.style.overflow = "hidden"<?php if($TEMP['#student'] == false){ ?><?php echo($TEMP['#note_mode'] == '30-30-40') ? ", NT.setAttribute('data-pos', pos)" : "";?>, NT.setAttribute('data-id', note_id), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');<?php } ?>
             } else {
@@ -251,9 +284,9 @@ var NW = D.querySelectorAll('.number'),
 	    	console.log(e);
 	        if(e.status == 200){
 	        	if(e.cell == null){
-	        		NC.innerText = 'Primero tiene que llenar la informacion de contacto necesaria.', removeClass(NX, 'hidden'), addClass(NB, 'hidden');
+	        		NC.innerText = '{$word->first_have_fill_information}', removeClass(NX, 'hidden'), addClass(NB, 'hidden');
 	        	} else {
-	        		NC.innerText = 'Toda su informacion será enviada y luego nos pondremos en contacto con usted mendiante esta misma.', addClass(NX, 'hidden'), removeClass(NB, 'hidden');
+	        		NC.innerText = "{$word->all_information_will_sent_then_will_contact}", addClass(NX, 'hidden'), removeClass(NB, 'hidden');
 	        	}
 	            NO.style.display = "block", D.body.style.overflow = "hidden", NB.setAttribute('data-id', note_id), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
 	        } else {
@@ -267,6 +300,35 @@ var NW = D.querySelectorAll('.number'),
 addEvent(Nw, 'change', function(){
     preloadPage('&one=notes&screen={#url_screen}<?php echo($TEMP["#academic"] === true || $TEMP["#admin"] === true) ? "&keyword={#keyword_notes}&user={#user_id}" : "";?>&type={#type}&course_id=' + this.value);
 })
+<?php } ?>
+
+<?php if($TEMP['#teacher'] == false && $TEMP['#type'] == 'student'){ ?>
+doubleClick(Nk, function(e){
+    var type = e.getAttribute('data-type'),
+    	Ng = Nk.querySelector('span');
+    Nk.setAttribute('disabled', true), addClass(Nk, 'spinner-is-loading');
+    Req('{$url->{req/rol-student/reload-average}}', function(e){
+    	console.log(e);
+        if(e.status == 200){
+        	if(type == 'total'){
+            	Nz.innerText = "{$word->total_average}", Nk.setAttribute('data-type', 'semester'), removeClass(Ng, 'color-red'), removeClass(Ng, 'color-green');;
+        	} else {
+        		if(e.semesbad != 'none'){
+        			if(e.semesbad == 'true'){
+        				addClass(Ng, 'color-red'), removeClass(Ng, 'color-green');
+        			} else {
+        				addClass(Ng, 'color-green'), removeClass(Ng, 'color-red');
+        			}
+        		}
+        		Nz.innerText = "{$word->global_average}", Nk.setAttribute('data-type', 'total');
+        	}
+        	Ng.innerText = e.average, Nk.removeAttribute('disabled'), removeClass(Nk, 'spinner-is-loading');
+        } else {
+            loadAlert(e.error, 1), Nk.removeAttribute('disabled'), removeClass(Nk, 'spinner-is-loading');
+        }
+    }, "POST", "&id={#user_id}&period_id={#period_id}&program_id={#program_id}&typet=" + type)
+});
+
 <?php } ?>
 
 <?php if(count($TEMP['#programs']) > 1 && $TEMP['#type'] == 'student'){ ?>
@@ -292,7 +354,9 @@ addEvent(NT, 'click', function(){
     var self = this,
         GO = [],
         sum = 0,
-        GC = NK.children;
+        GC = NK.children,
+        note_id = self.getAttribute('data-id'),
+        pos = self.getAttribute("data-pos");
     for (var j = 0, i = GC.length; j < i; j++){
         var el = D.querySelector('#param_note_'+j),
             GZ = D.querySelector('#parameter_'+j);
@@ -312,7 +376,54 @@ addEvent(NT, 'click', function(){
     Req('{$url->{req/rol-teacher/this-notes}}', function(e){
     	console.log(e);
         if(e.status == 200){
-            NN.style.display = "", loadAlert("{$word->note_updated_successfully}"), preloadPage('{#url_params}');
+        	var GV = D.querySelector('#scroll-' + note_id),
+        		GQ = GV.querySelector('.cont-table-header'),
+        		GJ = GV.querySelector('.status'),
+        		GM = GV.querySelector('.average');
+            NN.style.display = "", D.body.style.overflow = "", NK.innerHTML = "", loadAlert("{$word->note_updated_successfully}"), NT.removeAttribute('disabled'), removeClass(NT, 'spinner-is-loading'), Nk && (Nk.innerText = e.average);
+            if(Nk){
+	            if(e.semesbad == 'true'){
+	            	addClass(Nk, 'color-red'), removeClass(Nk, 'color-green');
+	            } else {
+	            	removeClass(Nk, 'color-red'), addClass(Nk, 'color-green');
+	            }
+	        }
+            if(e.background == 'true'){
+	        	removeClass(GJ, 'background-red'), removeClass(GV, 'border-red'), removeClass(GQ, 'border-red'), addClass(GJ, 'background-green'), addClass(GV, 'border-blue'), addClass(GQ, 'border-blue');
+	        } else {
+            	addClass(GJ, 'background-red'), addClass(GV, 'border-red'), addClass(GQ, 'border-red'), removeClass(GJ, 'background-green'), removeClass(GV, 'border-blue'), removeClass(GQ, 'border-blue');
+	        }
+            <?php if($TEMP['#note_mode'] == '30-30-40'){ ?>
+            var GP = D.querySelector('.upload_note[data-pos="2"][data-id="' + note_id + '"]'),
+           		el = GP.parentNode,
+            	GX = el.querySelector('a');
+            if(e.last_eval == 'true'){
+            	GP.removeAttribute('disabled'), removeClass(GP, 'cursor-disabled'), GX && addClass(GX, 'hidden');
+            	if(e.third > 0){
+            		GP.innerText = e.third;
+            	}
+            } else {
+            	var element = D.createElement('a');
+            	addClass(element, 'position-absolute'), element.href = "{$url->{rules?article=42}}", element. setAttribute('target', '_blank'), element.innerHTML = '<svg class="dv-xs" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M13,17h-2v-6h2V17z M13,7h-2v2h2V7z M12,3c-4.96,0-9,4.04-9,9s4.04,9,9,9c4.96,0,9-4.04,9-9S16.96,3,12,3 M12,2 c5.52,0,10,4.48,10,10s-4.48,10-10,10C6.48,22,2,17.52,2,12S6.48,2,12,2L12,2z"></path></svg>';
+            	GP.setAttribute('disabled', true), addClass(GP, 'cursor-disabled'), (GX ? removeClass(GX, 'hidden') : el.appendChild(element)), GP.innerText = "{$word->upload_note}";
+            }
+            if(e.evalfinal == 'false'){
+            	if(e.last_eval == 'false'){
+            		GM.innerHTML = 0+'<a class="position-absolute" href="{$url->{rules?article=43}}" target="_blank"><svg class="dv-xs" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M13,17h-2v-6h2V17z M13,7h-2v2h2V7z M12,3c-4.96,0-9,4.04-9,9s4.04,9,9,9c4.96,0,9-4.04,9-9S16.96,3,12,3 M12,2 c5.52,0,10,4.48,10,10s-4.48,10-10,10C6.48,22,2,17.52,2,12S6.48,2,12,2L12,2z"></path></svg></a>';
+            	} else {
+            		if(e.approved == 'false'){
+            			GM.innerHTML = e.ave+'<a class="position-absolute" href="{$url->{rules?article=43}}" target="_blank"><svg class="dv-xs" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M13,17h-2v-6h2V17z M13,7h-2v2h2V7z M12,3c-4.96,0-9,4.04-9,9s4.04,9,9,9c4.96,0,9-4.04,9-9S16.96,3,12,3 M12,2 c5.52,0,10,4.48,10,10s-4.48,10-10,10C6.48,22,2,17.52,2,12S6.48,2,12,2L12,2z"></path></svg></a>';
+            		} else {
+            			GM.innerHTML = e.ave
+            		}
+            	}
+            } else {
+            	GM.innerText = e.ave
+            }
+            D.querySelector('.upload_note[data-pos="' + pos + '"][data-id="' + note_id + '"]').innerText = e.note
+            <?php } else { ?>
+            D.querySelector('.upload_note[data-id="' + note_id + '"]').innerText = e.note
+            <?php } ?>
         } else {
             if (e.errors != undefined) {
                 for (var j = 0, i = e.errors.length; j < i; j++){
@@ -339,7 +450,7 @@ addEvent(NT, 'click', function(){
             }
             NT.removeAttribute('disabled'), removeClass(NT, 'spinner-is-loading');
         }
-    }, "POST", "&id=" + self.getAttribute('data-id') + "&params=" + JSON.stringify(GO)<?php echo($TEMP['#note_mode'] == '30-30-40') ? ' + "&pos=" + self.getAttribute("data-pos")' : '';?>)
+    }, "POST", "&id=" + note_id + "&params=" + JSON.stringify(GO)<?php echo($TEMP['#note_mode'] == '30-30-40') ? ' + "&pos=" + pos' : '';?>)
 }), <?php } ?><?php if($TEMP['#type'] == 'student' || $TEMP['#academic'] === true || $TEMP['#admin'] === true){ ?>addEvent(D.querySelector('#search-users'), "keyup", function(e){
 	let self = this,
 		SV = self.value,
@@ -356,9 +467,9 @@ addEvent(NT, 'click', function(){
 	Req('{$url->{req/rol-teacher/search-users}}', function(e) {
 		console.log(e);
 	    if (e.status == 200) {
-	   		removeClass(SQ, 'spinner-is-loading'), SD.innerHTML = e.html, loadPage(SD.querySelectorAll('a[target="_self"]'));
+	   		removeClass(SQ, 'spinner-is-loading'), removeClass(SD, 'border-left'), removeClass(SD, 'border-right'), removeClass(SD, 'border-bottom'), removeClass(SD, 'border-grey'), removeClass(SD, 'padding-10'), removeClass(SD, 'border-bottom-left-radius'), removeClass(SD, 'border-bottom-right-radius'), SD.innerHTML = e.html, loadPage(SD.querySelectorAll('a[target="_self"]'));
 	    } else {
-		    removeClass(SQ, 'spinner-is-loading'), addClass(SD, 'hidden'), SD.innerHTML = "";
+		    removeClass(SQ, 'spinner-is-loading'), addClass(SD, 'border-left'), addClass(SD, 'border-right'), addClass(SD, 'border-bottom'), addClass(SD, 'border-grey'), addClass(SD, 'padding-10'), addClass(SD, 'border-bottom-left-radius'), addClass(SD, 'border-bottom-right-radius'), SD.innerHTML = e.html;
 		   	return false;
 	    }
 	}, "POST", "&typet=<?php echo($TEMP['#type'] == 'student') ? 'notes' : 'teachers';?>&screen={#url_screen}&keyword=" + SV);
@@ -377,7 +488,7 @@ addEvent(NB, 'click', function(){
     Req('{$url->{req/rol-student/request-qualifications}}', function(e){
     	console.log(e);
         if(e.status == 200){
-            NO.style.display = "", loadAlert("¡Solicitud enviada con exito!"), preloadPage('{#url_params}');
+            NO.style.display = "", loadAlert("{$word->request_sent_successfully}"), preloadPage('{#url_params}');
         } else {
             loadAlert(e.error, 1), NB.removeAttribute('disabled'), removeClass(NB, 'spinner-is-loading');
         }
@@ -413,11 +524,11 @@ for(var j = 0, i = NF.length; j < i; j++) addEvent(NF[j], 'click', function(){
         }
     }, "POST", "&note_id=" + self.getAttribute('data-id') + "&period_id={#period_id}&note=" + NV.value)
 });
-for(var j = 0, i = NM.length; j < i; j++) doubleClick(NM[j], function(self){
-	var el = self.parentNode,
+for(var j = 0, i = NM.length; j < i; j++) doubleClick(NM[j], function(e){
+	var el = e.parentNode,
 		NL = el.querySelector('.qualification_note'),
 		Nl = el.querySelector('a[target="_blank"]');
-	removeClass(NL, 'hidden'), addClass(self, 'hidden'), addClass(Nl, 'hidden');
+	removeClass(NL, 'hidden'), addClass(e, 'hidden'), addClass(Nl, 'hidden');
 });
 for(var j = 0, i = NJ.length; j < i; j++) addEvent(NJ[j], 'click', function(){
 	var self = this.parentNode,
@@ -426,4 +537,62 @@ for(var j = 0, i = NJ.length; j < i; j++) addEvent(NJ[j], 'click', function(){
 		Nl = el.querySelector('a[target="_blank"]');
 	addClass(self, 'hidden'), removeClass(NL, 'hidden'), removeClass(Nl, 'hidden');
 });
+<?php if($TEMP['#admin'] == true || $TEMP['#academic'] == true || $TEMP['#teacher'] == true) { ?>
+for(var j = 0, i = Ni.length; j < i; j++) doubleClick(Ni[j], function(e){
+	var el = e.parentNode,
+		NL = el.querySelector('textarea'),
+		Nl = el.querySelector('b');
+	removeClass(el.querySelector('.observation-buttons'), 'hidden'), NL.style.maxHeight = "", removeClass(Nl, 'color-grey'), addClass(NL, 'border-focus-blue'), NL.removeAttribute('readonly');
+});
+for(var j = 0, i = Nx.length; j < i; j++) addEvent(Nx[j], 'click', function(){
+	var self = this,
+		type = self.getAttribute('data-type'),
+		note_id = self.getAttribute('data-id'),
+		el = D.querySelector('#observation-' + note_id),
+		Nf = D.querySelector('#scroll-' + note_id),
+		NL = el.querySelector('textarea');
+	if(type == 'show'){
+		self.setAttribute('data-type', 'hide'), removeClass(self, 'rotate-180'), removeClass(el, 'h-0'), removeClass(Nf, 'border-radius-12'), addClass(Nf, 'border-top-left-radius'), addClass(Nf, 'border-top-right-radius'), timeDelay(function(){
+			el.style.height = "auto", NL.style.maxHeight = "";
+		}, 500)
+	} else {
+		self.setAttribute('data-type', 'show'), addClass(self, 'rotate-180'), addClass(el.querySelector('.observation-buttons'), 'hidden'), el.style.height = "", NL.style.maxHeight = "100px", addClass(el.querySelector('b'), 'color-grey'), removeClass(NL, 'border-focus-blue'), NL.setAttribute('readonly', true), timeDelay(function(){
+			addClass(el, 'h-0'), timeDelay(function(){
+				addClass(Nf, 'border-radius-12'), removeClass(Nf, 'border-top-left-radius'), removeClass(Nf, 'border-top-right-radius')
+			}, 300);
+		}, 100)
+	}
+});
+for(var j = 0, i = Nh.length; j < i; j++) addEvent(Nh[j], 'click', function(){
+	var self = this,
+		note_id = self.getAttribute('data-id'),
+		el = D.querySelector('#observation-' + note_id),
+		Nf = D.querySelector('#scroll-' + note_id),
+		Nb = D.querySelector('.show_observation[data-id="' + note_id + '"]'),
+		NL = el.querySelector('textarea');
+
+	self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
+    Req('{$url->{req/rol-teacher/upload-observation}}', function(e){
+        if(e.status == 200){
+        	if(NL.value == ''){
+        		Nb.setAttribute('data-type', 'show'), addClass(Nb, 'rotate-180'), el.style.height = "", timeDelay(function(){
+					addClass(el, 'h-0'), timeDelay(function(){
+						addClass(Nf, 'border-radius-12'), removeClass(Nf, 'border-top-left-radius'), removeClass(Nf, 'border-top-right-radius')
+					}, 300);
+				}, 100)
+        	}
+
+        	addClass(el.querySelector('.observation-buttons'), 'hidden'), NL.style.maxHeight = "100px", addClass(el.querySelector('b'), 'color-grey'), removeClass(NL, 'border-focus-blue'), NL.setAttribute('readonly', true), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
+        } else {
+            loadAlert(e.error, 1), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
+        }
+    }, "POST", "&id=" + note_id + "&observation=" + NL.value)
+});
+for(var j = 0, i = Nj.length; j < i; j++) addEvent(Nj[j], 'click', function(){
+	var self = this,
+		el = D.querySelector('#observation-' + self.getAttribute('data-id')),
+		NL = el.querySelector('textarea');
+	el.style.height = "", NL.innerText = "", NL.style.maxHeight = "100px";
+});
+<?php } ?>
 </script>

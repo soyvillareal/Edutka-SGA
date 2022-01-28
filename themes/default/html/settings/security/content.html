@@ -11,24 +11,26 @@
 <?php } ?>
 <div class="container-data-table background-white border-radius-12 padding-25">
     <div class="scroll-table-header">
-        <div class="contsub-table-header display-flex padding-t15 padding-b15 border-bottom border-top border-grey" id="container-table-header">
-            <div class="cont-cell-header padding-lr20 color-black">
-                {$word->browser}
-            </div>
-            <div class="cont-cell-header padding-lr20 color-black">
-                {$word->operating_system}
-            </div>
-            <div class="cont-cell-header padding-lr20 color-black">
-                {$word->ip_address}
-            </div>
-            <div class="cont-cell-header padding-lr20 color-black">
-                {$word->date}
-            </div>
-            <div class="cont-cell-header text-center padding-lr20 color-black">
-                {$word->log_out}
+        <div class="display-inline-flex">
+            <div class="contsub-table-header w-100 dv-vertical-center padding-t15 padding-b15 border-bottom border-top border-grey" id="container-table-header" id="container-table-header">
+                <div class="cont-cell-header padding-lr20 color-black">
+                    {$word->browser}
+                </div>
+                <div class="cont-cell-header padding-lr20 color-black">
+                    {$word->operating_system}
+                </div>
+                <div class="cont-cell-header padding-lr20 color-black">
+                    {$word->ip_address}
+                </div>
+                <div class="cont-cell-header padding-lr20 color-black">
+                    {$word->date}
+                </div>
+                <div class="cont-cell-header text-center padding-lr20 color-black">
+                    {$word->log_out}
+                </div>
             </div>
         </div>
-        <div id="container-pages">
+        <div id="container-pages" class="display-grid w-100">
             {$sessions}
         </div>
     </div>

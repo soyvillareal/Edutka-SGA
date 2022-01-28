@@ -72,12 +72,22 @@
           }
           var CS = D.querySelectorAll('.home_'),
               CH = D.querySelectorAll('.settings_'),
-              CV = D.querySelectorAll('.about-us_');
+              GQ = D.querySelectorAll('.academic-calendar_'),
+              CV = D.querySelectorAll('.about-us_'),
+              GH = D.querySelector('.terms-of-use_'),
+              GK = D.querySelector('.privacy-policy_'),
+              GJ = D.querySelector('.cookies-policy_');
           Req("{$url->{req/global-data-load}}?token={#token_session}"+url, function(e) {
+            console.log(e);
             if (e.status == 200) {
               for (var J = 0, I = CS.length; J < I; J++) CS && ((e.page == 'home') ? addClass(CS[J], 'active') : removeClass(CS[J], 'active'));
-              for (var J = 0, I = CH.length; J < I; J++) CH && ((e.page == 'settings') ? addClass(CH[J], 'active') : removeClass(CH[J], 'active'));
+              for (var J = 0, I = CH.length; J < I; J++) CH && ((['general', 'security', 'change-password'].indexOf(e.page) != -1) ? addClass(CH[J], 'active') : removeClass(CH[J], 'active'));
               for (var J = 0, I = CV.length; J < I; J++) CV && ((e.page == 'about-us') ? addClass(CV[J], 'active') : removeClass(CV[J], 'active'));
+              for (var J = 0, I = GQ.length; J < I; J++) GQ && ((e.page == 'academic-calendar') ? addClass(GQ[J], 'active') : removeClass(GQ[J], 'active'));
+
+              GH && ((e.page == 'terms-of-use') ? addClass(GH, 'active') : removeClass(GH, 'active'));
+              GK && ((e.page == 'privacy-policy') ? addClass(GK, 'active') : removeClass(GK, 'active'));
+              GJ && ((e.page == 'cookies-policy') ? addClass(GJ, 'active') : removeClass(GJ, 'active'));
 
               window.history.pushState({state:'new'},'', e.url);
               var CX = D.querySelector('#global_content'),
@@ -328,8 +338,8 @@
         <?php if($TEMP['#loggedin'] === true){ ?>
         <li class="notifications margin-b10">
           <button id="get-notifications" class="btn-noway dv-lang dv-vertical-center<?php echo($TEMP['#notifications'] > 0) ? ' color-red ' : ' color-grey ';?>hover-button" data-toggle="dropdown">
-            <svg class="pointer-events-none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path fill="currentColor" d="M 12.154 19.589 C 12.154 19.488 12.103 19.438 12 19.438 C 11.622 19.438 11.296 19.303 11.024 19.034 C 10.752 18.766 10.615 18.445 10.615 18.071 C 10.615 17.97 10.564 17.92 10.462 17.92 C 10.359 17.92 10.308 17.97 10.308 18.071 C 10.308 18.533 10.473 18.927 10.803 19.253 C 11.133 19.578 11.532 19.741 12 19.741 C 12.103 19.741 12.154 19.69 12.154 19.589 Z M 20 16.857 C 20 17.186 19.878 17.471 19.635 17.711 C 19.391 17.951 19.103 18.071 18.769 18.071 L 14.462 18.071 C 14.462 18.742 14.221 19.314 13.74 19.789 C 13.26 20.263 12.679 20.5 12 20.5 C 11.321 20.5 10.74 20.263 10.26 19.789 C 9.779 19.314 9.538 18.742 9.538 18.071 L 5.231 18.071 C 4.897 18.071 4.609 17.951 4.365 17.711 C 4.122 17.471 4 17.186 4 16.857 C 4.321 16.592 4.612 16.313 4.875 16.022 C 5.138 15.731 5.41 15.354 5.692 14.889 C 5.974 14.424 6.213 13.923 6.409 13.385 C 6.604 12.847 6.764 12.196 6.889 11.431 C 7.014 10.666 7.077 9.843 7.077 8.964 C 7.077 8.003 7.452 7.11 8.202 6.284 C 8.952 5.459 9.936 4.958 11.154 4.781 C 11.103 4.661 11.077 4.537 11.077 4.411 C 11.077 4.158 11.167 3.943 11.346 3.766 C 11.526 3.589 11.744 3.5 12 3.5 C 12.256 3.5 12.474 3.589 12.654 3.766 C 12.833 3.943 12.923 4.158 12.923 4.411 C 12.923 4.537 12.897 4.661 12.846 4.781 C 14.064 4.958 15.048 5.459 15.798 6.284 C 16.548 7.11 16.923 8.003 16.923 8.964 C 16.923 9.843 16.986 10.666 17.111 11.431 C 17.236 12.196 17.396 12.847 17.591 13.385 C 17.787 13.923 18.026 14.424 18.308 14.889 C 18.59 15.354 18.862 15.731 19.125 16.022 C 19.388 16.313 19.679 16.592 20 16.857 Z"></path>
+            <svg class="pointer-events-none dv-icon margin-auto" viewBox="0 0 525.153 525.153" xmlns="http://www.w3.org/2000/svg">
+              <path fill="currentColor" d="M139.165,51.421l-35.776-35.864C43.413,61.202,3.742,132.185,0,212.402h50.174 C53.916,145.992,88.051,87.766,139.165,51.421z M474.979,212.402h50.174c-3.742-80.217-43.413-151.2-103.586-196.845 l-35.863,35.864C437.102,87.766,471.237,145.992,474.979,212.402z M425.592,224.984c0-77-53.391-141.463-125.424-158.487V49.408 c0-20.787-16.761-37.614-37.592-37.614s-37.592,16.827-37.592,37.614v17.089C152.951,83.521,99.56,148.005,99.56,224.984v137.918 l-50.152,50.108v25.076h426.336v-25.076l-50.152-50.108C425.592,362.902,425.592,224.984,425.592,224.984z M262.576,513.358 c3.523,0,6.761-0.219,10.065-1.007c16.236-3.238,29.824-14.529,36.06-29.627c2.516-5.952,4.048-12.494,4.048-19.54H212.402 C212.402,490.777,234.984,513.358,262.576,513.358z"></path>
             </svg>
             <div id="new-notifications" class="position-absolute pos-left pos-right font-down font-bold color-white pointer-events-none">
               {#notifications}
@@ -393,6 +403,9 @@
       <li class="settings_<?php echo($TEMP['#page'] == 'settings') ? ' active' : ''?>">
         <a class="animated-easy color-black padding-15 w-100" href="{$url->{settings}}" target="_self">{$word->settings}</a>
       </li>
+      <li class="academic-calendar_<?php echo($TEMP['#page'] == 'academic-calendar') ? ' active' : ''?>">
+        <a class="animated-easy color-black padding-15 w-100" href="{$url->{academic-calendar}}" target="_self">{$word->academic_calendar}</a>
+      </li>
       <?php } ?>
       <li class="about-us_<?php echo($TEMP['#page'] == 'about-us') ? ' active' : ''?>">
         <a class="animated-easy color-black padding-15 w-100" href="{$url->{pages/about-us}}" target="_self">{$word->about_us}</a>
@@ -453,7 +466,7 @@
           <li class="settings_<?php echo($TEMP['#page'] == 'settings') ? ' active' : ''?>">
             <a class="font-lowly color-black animated-easy" href="{$url->{settings}}" target="_self">{$word->settings}</a>
           </li>
-          <li class="settings_<?php echo($TEMP['#page'] == 'academic-calendar') ? ' active' : ''?>">
+          <li class="academic-calendar_<?php echo($TEMP['#page'] == 'academic-calendar') ? ' active' : ''?>">
             <a class="font-lowly color-black animated-easy" href="{$url->{academic-calendar}}" target="_self">{$word->academic_calendar}</a>
           </li>
           <?php } ?>
@@ -472,13 +485,13 @@
       <div class="cont-list">
         <h5 class="cont-footer-title ellipsis-horizontal margin-b15 padding-5 nopadding-right nopadding-left nopadding-top color-black">{$word->legal}</h5>
         <ul class="contsub-list">
-          <li>
+          <li class="terms-of-use_<?php echo($TEMP['#page'] == 'terms-of-use') ? ' active' : ''?>">
             <a class="font-lowly color-black animated-easy" href="{$url->{pages/terms-of-use}}" target="_self">{$word->terms_of_use}</a>
           </li>
-          <li>
+          <li class="privacy-policy_<?php echo($TEMP['#page'] == 'privacy-policy') ? ' active' : ''?>">
             <a class="font-lowly color-black animated-easy" href="{$url->{pages/privacy-policy}}" target="_self">{$word->privacy_policy}</a>
           </li>
-          <li>
+          <li class="cookies-policy_<?php echo($TEMP['#page'] == 'cookies-policy') ? ' active' : ''?>">
             <a class="font-lowly color-black animated-easy" href="{$url->{pages/cookies-policy}}" target="_self">{$word->cookies_policy}</a>
           </li>
         </ul>
@@ -540,7 +553,7 @@ var HA = D.querySelector('#get-notifications'),
           }, 500);
         }     
       } else if(e.status == 304 && type == 'click'){
-        HE.querySelector('ul').innerHTML = '<li class="display-flex h-100 text-center"><div class="padding-15 margin-auto"><svg class="color-grey w-20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M 12.154 19.589 C 12.154 19.488 12.103 19.438 12 19.438 C 11.622 19.438 11.296 19.303 11.024 19.034 C 10.752 18.766 10.615 18.445 10.615 18.071 C 10.615 17.97 10.564 17.92 10.462 17.92 C 10.359 17.92 10.308 17.97 10.308 18.071 C 10.308 18.533 10.473 18.927 10.803 19.253 C 11.133 19.578 11.532 19.741 12 19.741 C 12.103 19.741 12.154 19.69 12.154 19.589 Z M 20 16.857 C 20 17.186 19.878 17.471 19.635 17.711 C 19.391 17.951 19.103 18.071 18.769 18.071 L 14.462 18.071 C 14.462 18.742 14.221 19.314 13.74 19.789 C 13.26 20.263 12.679 20.5 12 20.5 C 11.321 20.5 10.74 20.263 10.26 19.789 C 9.779 19.314 9.538 18.742 9.538 18.071 L 5.231 18.071 C 4.897 18.071 4.609 17.951 4.365 17.711 C 4.122 17.471 4 17.186 4 16.857 C 4.321 16.592 4.612 16.313 4.875 16.022 C 5.138 15.731 5.41 15.354 5.692 14.889 C 5.974 14.424 6.213 13.923 6.409 13.385 C 6.604 12.847 6.764 12.196 6.889 11.431 C 7.014 10.666 7.077 9.843 7.077 8.964 C 7.077 8.003 7.452 7.11 8.202 6.284 C 8.952 5.459 9.936 4.958 11.154 4.781 C 11.103 4.661 11.077 4.537 11.077 4.411 C 11.077 4.158 11.167 3.943 11.346 3.766 C 11.526 3.589 11.744 3.5 12 3.5 C 12.256 3.5 12.474 3.589 12.654 3.766 C 12.833 3.943 12.923 4.158 12.923 4.411 C 12.923 4.537 12.897 4.661 12.846 4.781 C 14.064 4.958 15.048 5.459 15.798 6.284 C 16.548 7.11 16.923 8.003 16.923 8.964 C 16.923 9.843 16.986 10.666 17.111 11.431 C 17.236 12.196 17.396 12.847 17.591 13.385 C 17.787 13.923 18.026 14.424 18.308 14.889 C 18.59 15.354 18.862 15.731 19.125 16.022 C 19.388 16.313 19.679 16.592 20 16.857 Z"></path></svg><div class="padding-left-right-12"><div class="font-high font-bold color-grey">{$word->here_save_notify}</div><div class="font-medium color-grey"><?php echo($TEMP["#student"] == true) ? '{$word->no_notifications_one}' : '{$word->no_notifications_two}';?></div></div></div></li>';
+        HE.querySelector('ul').innerHTML = '<li class="display-flex h-100 text-center"><div class="padding-15 margin-auto"><svg class="color-grey w-20" viewBox="0 0 525.153 525.153" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M139.165,51.421l-35.776-35.864C43.413,61.202,3.742,132.185,0,212.402h50.174 C53.916,145.992,88.051,87.766,139.165,51.421z M474.979,212.402h50.174c-3.742-80.217-43.413-151.2-103.586-196.845 l-35.863,35.864C437.102,87.766,471.237,145.992,474.979,212.402z M425.592,224.984c0-77-53.391-141.463-125.424-158.487V49.408 c0-20.787-16.761-37.614-37.592-37.614s-37.592,16.827-37.592,37.614v17.089C152.951,83.521,99.56,148.005,99.56,224.984v137.918 l-50.152,50.108v25.076h426.336v-25.076l-50.152-50.108C425.592,362.902,425.592,224.984,425.592,224.984z M262.576,513.358 c3.523,0,6.761-0.219,10.065-1.007c16.236-3.238,29.824-14.529,36.06-29.627c2.516-5.952,4.048-12.494,4.048-19.54H212.402 C212.402,490.777,234.984,513.358,262.576,513.358z"></path></svg><div class="padding-left-right-12"><div class="font-high font-bold color-grey">{$word->here_save_notify}</div><div class="font-medium color-grey"><?php echo($TEMP["#student"] == true) ? '{$word->no_notifications_one}' : '{$word->no_notifications_two}';?></div></div></div></li>';
         setTimeout(function(){
           addClass(HI, 'hidden'), removeClass(HL, 'hidden'), removeClass(HO, 'hidden'), addClass(HO, 'no-notify')
         }, 500);

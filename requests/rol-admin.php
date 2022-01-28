@@ -29,18 +29,22 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
             } else {
                 if(!empty($course_id) && $course_id != 'null'){
                     $plan_id = $dba->query('SELECT plan_id FROM curriculum WHERE course_id = '.$course_id)->fetchArray();
-                    $plcourses = $dba->query('SELECT course_id FROM curriculum c WHERE plan_id = '.$plan_id)->fetchAll(false);
-                    $pkcourses = $dba->query('SELECT preknowledge FROM courses WHERE id = '.$course_id)->fetchArray();
-                    if(!empty($pkcourses)){
-                        $deleted = array_diff(explode(',', $pkcourses), $courses);
-                        if(!empty($deleted)){
-                            $query .= " AND (id NOT IN (".$pkcourses.") OR id IN (".implode(',', $deleted)."))";
-                        } else {
-                            $query .= " AND id NOT IN (".$pkcourses.")";
+                    if($plan_id){
+                        $plcourses = $dba->query('SELECT course_id FROM curriculum c WHERE plan_id = '.$plan_id)->fetchAll(false);
+                        $pkcourses = $dba->query('SELECT preknowledge FROM courses WHERE id = '.$course_id)->fetchArray();
+                        if(!empty($pkcourses)){
+                            $deleted = array_diff(explode(',', $pkcourses), $courses);
+                            if(!empty($deleted)){
+                                $query .= " AND (id NOT IN (".$pkcourses.") OR id IN (".implode(',', $deleted)."))";
+                            } else {
+                                $query .= " AND id NOT IN (".$pkcourses.")";
+                            }
                         }
-                    }
-                    if(!empty($plcourses)){
-                        $query .= " AND id IN (".implode(',', $plcourses).")";
+                        if(!empty($plcourses)){
+                            $query .= " AND id IN (".implode(',', $plcourses).")";
+                        }
+                    } else {
+                        $query .= " AND id = 0";
                     }
                 } else {
                     $TEMP['#programs'] = $dba->query('SELECT id FROM programs')->fetchAll(false);
@@ -69,7 +73,7 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
             $deliver['status'] = 200;
         } else {
             $TEMP['keyword'] = $keyword;
-            $html .= Specific::Maket('not-found/result-for');
+            $html .= Specific::Maket('not-found/aj-result-for');
         }
         $deliver['html'] = $html;
     } else if($one == 'this-courses'){
@@ -109,7 +113,6 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
         if(empty($schedule)){
             $emptys[] = 'schedule';
         }
-
         if(empty($emptys)){
             if(!empty($preknowledge)){
                 $preknowledges = explode(',', $preknowledge);
@@ -144,7 +147,7 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
                         if($dba->query('SELECT COUNT(*) FROM courses WHERE code = "'.$code.'"')->fetchArray() > 0){
                             $code = Specific::RandomKey(5, 7);
                         }
-                        if($dba->query('INSERT INTO courses (code, name, preknowledge, qualification, credits, quota, type, schedule, `time`) VALUES ("'.$code.'", "'.$name.'", "'.$preknowledge.'", '.$qualification.', '.$credit.', '.$quota.', "'.$typec.'", "'.$schedule.'",'.time().')')->returnStatus()){
+                        if($dba->query('INSERT INTO courses (code, name, preknowledge, qualification, credits, quota, type, schedule, `time`) VALUES (?, ?, ?, ?, ?, ?, ?, ?,'.time().')', $code, $name, $preknowledge, $qualification, $credit, $quota, $typec, $schedule)->returnStatus()){
                             $deliver['status'] = 200;
                         }
                     } else if(isset($id) && is_numeric($id)){
@@ -469,6 +472,47 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
                 );
             }
         }
+    } else if($one == 'get-ditems'){
+        $id = Specific::Filter($_POST['id']);
+        if(!empty($id) && is_numeric($id)){
+            $period = $dba->query('SELECT name, final, dates FROM periods WHERE id = '.$id)->fetchArray();
+            $dates = Specific::ComposeDates($period['dates']);
+            if (!empty($period['dates'])) {
+                $deliver = array(
+                    'status' => 200,
+                    'items' => json_decode($period['dates'], true),
+                    'dates' => $dates,
+                    'name' => $period['name'],
+                    'final' => date('Y-m-d', $period['final'])
+                );
+            }
+        }
+    } else if($one == 'table-periods'){
+        $page = Specific::Filter($_POST['page_id']);
+        if(!empty($page) && is_numeric($page) && isset($page) && $page > 0){
+            $html = "";
+            $query = '';
+            $keyword = Specific::Filter($_POST['keyword']);
+            if(!empty($keyword)){
+                $query .= " WHERE id LIKE '%$keyword%' OR name LIKE '%$keyword%'";
+            }
+            $periods = $dba->query('SELECT * FROM periods'.$query.' ORDER BY start ASC LIMIT ? OFFSET ?', 10, $page)->fetchAll();
+            if (!empty($periods)) {
+                foreach ($periods as $period) {
+                    $TEMP['!id'] = $period['id'];
+                    $TEMP['!name'] = $period['name'];
+                    $TEMP['!start'] = Specific::DateFormat($period['start']);
+                    $TEMP['!final'] = Specific::DateFormat($period['final']);
+                    $TEMP['!status'] = $TEMP['#word'][$period['status']];
+                    $TEMP['!time'] = Specific::DateFormat($period['time']);
+                    $html .= Specific::Maket('periods/includes/periods-list');
+                }
+                Specific::DestroyMaket();
+                $deliver['status'] = 200;
+            }
+            $deliver['status'] = 200;
+            $deliver['html'] = $html;
+        }
     } else if($one == 'search-periods') {
         $keyword = Specific::Filter($_POST['keyword']);
         $html = '';
@@ -476,7 +520,7 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
         if(!empty($keyword)){
             $query .= " WHERE id LIKE '%$keyword%' OR name LIKE '%$keyword%'";
         }
-        $periods = $dba->query('SELECT * FROM periods'.$query.' LIMIT ? OFFSET ?', 10, 1)->fetchAll();
+        $periods = $dba->query('SELECT * FROM periods'.$query.' ORDER BY start ASC LIMIT ? OFFSET ?', 10, 1)->fetchAll();
         $deliver['total_pages'] = $dba->totalPages;
         if (!empty($periods)) {
             foreach ($periods as $period) {
@@ -539,7 +583,6 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
             $emptys[] = 'status';
         }
         if(empty($emptys)){
-            if($dba->query('SELECT id FROM periods WHERE status = "enabled"')->fetchArray() == $id || $dba->query('SELECT COUNT(*) FROM periods WHERE status = "'.$status.'"')->fetchArray() == 0 || $type == 'add'){
                 $year = explode('-', $start)[0];
                 $name = "$year-$period";
                 $start = strtotime($start);
@@ -556,14 +599,32 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
                         if (empty($errors)) {
                             if(!empty($type)){
                                 if($type == 'add'){
-                                    if($dba->query('UPDATE periods SET status = "disabled" WHERE status = "enabled"')->returnStatus()){
-                                        if($dba->query('INSERT INTO periods (name, start, final, status, `time`) VALUES ("'.$name.'", '.$start.', '.$final.', "'.$status.'",'.time().')')->returnStatus()){
-                                            $deliver['status'] = 200;
-                                        }
+                                    if($status == 'enabled'){
+                                        $dba->query('UPDATE periods SET status = "disabled" WHERE status = "enabled"');
                                     }
-                                } else if(isset($id) && is_numeric($id)){
-                                    if($dba->query('UPDATE periods SET name = ?, start = ?, final = ?, status = ? WHERE id = '.$id, $name, $start, $final, $status)->returnStatus()){
+                                    $courses = $dba->query('SELECT id FROM courses')->fetchAll(false);
+                                    $code = Specific::RandomKey(5, 7);
+                                    if($dba->query('SELECT COUNT(*) FROM courses WHERE code = "'.$code.'"')->fetchArray() > 0){
+                                        $code = Specific::RandomKey(5, 7);
+                                    }
+                                    foreach ($courses as $course_id) {
+                                        $dba->query('UPDATE courses SET code = "'.$code.'" WHERE id = '.$course_id);
+                                    }
+                                    if($dba->query('INSERT INTO periods (name, start, final, status, `time`) VALUES ("'.$name.'", '.$start.', '.$final.', "'.$status.'",'.time().')')->returnStatus()){
                                         $deliver['status'] = 200;
+                                    }
+                                } else {
+                                    if(isset($id) && is_numeric($id)){
+                                        if($status == 'disabled' || $dba->query('SELECT id FROM periods WHERE status = "enabled"')->fetchArray() == $id || ($status == 'enabled' && $dba->query('SELECT COUNT(*) FROM periods WHERE status = "enabled"')->fetchArray() == 0)){
+                                            if($dba->query('UPDATE periods SET name = ?, start = ?, final = ?, status = ? WHERE id = '.$id, $name, $start, $final, $status)->returnStatus()){
+                                                $deliver['status'] = 200;
+                                            }
+                                        } else {
+                                            $deliver = array(
+                                                'status' => 400,
+                                                'error' => $TEMP['#word']['there_already_active_period']
+                                            );
+                                        }
                                     }
                                 }
                             }
@@ -585,12 +646,7 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
                         'error' => $TEMP['#word']['this_period_already_exists']
                     );
                 }
-            } else {
-                $deliver = array(
-                    'status' => 400,
-                    'error' => $TEMP['#word']['there_already_active_period']
-                );
-            }
+            
         } else {
             $deliver = array(
                 'status' => 400,
@@ -664,48 +720,6 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
                     }
                 }
             }
-        }
-    } else if($one == 'get-ditems'){
-        $id = Specific::Filter($_POST['id']);
-        if(!empty($id) && is_numeric($id)){
-            $period = $dba->query('SELECT name, final, dates FROM periods WHERE id = '.$id)->fetchArray();
-            $dates = Specific::ComposeDates($period['dates']);
-
-            if (!empty($period['dates'])) {
-                $deliver = array(
-                    'status' => 200,
-                    'items' => json_decode($period['dates'], true),
-                    'dates' => $dates,
-                    'name' => $period['name'],
-                    'final' => date('Y-m-d', $period['final'])
-                );
-            }
-        }
-    } else if($one == 'table-periods'){
-        $page = Specific::Filter($_POST['page_id']);
-        if(!empty($page) && is_numeric($page) && isset($page) && $page > 0){
-            $html = "";
-            $query = '';
-            $keyword = Specific::Filter($_POST['keyword']);
-            if(!empty($keyword)){
-                $query .= " WHERE id LIKE '%$keyword%' OR name LIKE '%$keyword%'";
-            }
-            $periods = $dba->query('SELECT * FROM periods'.$query.' LIMIT ? OFFSET ?', 10, $page)->fetchAll();
-            if (!empty($periods)) {
-                foreach ($periods as $period) {
-                    $TEMP['!id'] = $period['id'];
-                    $TEMP['!name'] = $period['name'];
-                    $TEMP['!start'] = Specific::DateFormat($period['start']);
-                    $TEMP['!final'] = Specific::DateFormat($period['final']);
-                    $TEMP['!status'] = $TEMP['#word'][$period['status']];
-                    $TEMP['!time'] = Specific::DateFormat($period['time']);
-                    $html .= Specific::Maket('periods/includes/periods-list');
-                }
-                Specific::DestroyMaket();
-                $deliver['status'] = 200;
-            }
-            $deliver['status'] = 200;
-            $deliver['html'] = $html;
         }
     } else if($one == 'get-plitems'){
         $id = Specific::Filter($_POST['id']);
@@ -986,7 +1000,8 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
                         if ($dba->query('UPDATE rule SET file = ? WHERE id = '.$rule_id, $file_data)->returnStatus()) {
                             $deliver = array(
                                 'status' => 200,
-                                'file' => $file_data
+                                'file' => $file_data,
+                                'url' => Specific::Url($file_data)
                             );
                         }
                     }

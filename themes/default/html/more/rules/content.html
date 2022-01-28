@@ -237,12 +237,13 @@ var GC = D.querySelectorAll('.edit_rule'),
     GG = function(self){
         var rule_id = self.getAttribute('data-id'),
             el = D.querySelector('#file-rule-' + rule_id),
-            GL = el.parentNode;
+            GL = el.parentNode,
+            GO = GL.querySelector('.file_name');
         self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
         Req("{$url->{req/rol-admin/upload-rule}}?token={#token_session}&id=" + rule_id, function(e){
             console.log(e);
             if (e.status == 200) {
-                GQ.style.display = "none", D.body.style.overflow = "", el.value = "", GL.querySelector('.file_name').setAttribute('placeholder', e.file), removeClass(GL.querySelector('.clear_file'), 'hidden'), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
+                GQ.style.display = "none", D.body.style.overflow = "", el.value = "", GO.setAttribute('placeholder', e.file), GO.setAttribute('data-link', e.url), removeClass(GL.querySelector('.clear_file'), 'hidden'), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
             } else {  
                 self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading'), loadAlert(e.error, 1);
             }
@@ -273,12 +274,13 @@ addEvent(GU, 'click', function(){
     var self = this,
         rule_id = self.getAttribute('data-id'),
         el = D.querySelector('#file-rule-' + rule_id),
-        GL = el.parentNode; 
+        GL = el.parentNode,
+        GO = GL.querySelector('.file_name'); 
     console.log(GL);
     self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
     Req('{$url->{req/rol-admin/delete-frule}}', function(e){
         if(e.status == 200){
-            loadAlert("{$word->file_deleted_successfully}"), GL.querySelector('.file_name').setAttribute('placeholder', "{$word->optional}"), addClass(GL.querySelector('.clear_file'), 'hidden'), GP.style.display = "", D.body.style.overflow = "", self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
+            loadAlert("{$word->file_deleted_successfully}"), GO.setAttribute('placeholder', "{$word->optional}"), GO.removeAttribute('data-link'), addClass(GL.querySelector('.clear_file'), 'hidden'), GP.style.display = "", D.body.style.overflow = "", self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
         } else {
             loadAlert(e.error, 1), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
         }
@@ -322,7 +324,8 @@ addEvent(GU, 'click', function(){
 });
 
 for(var j = 0, i = GM.length; j < i; j++) doubleClick(GM[j], function(e){
-    window.open(e.getAttribute('data-link'), '_blank');
+    var link = e.getAttribute('data-link');
+    if(link != null) window.open(link, '_blank');
 });
 for(var j = 0, i = GJ.length; j < i; j++) addEvent(GJ[j], 'click', function(){
     autoClick(D.querySelector('#file-rule-' + this.getAttribute('data-id')));

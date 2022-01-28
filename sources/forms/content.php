@@ -9,7 +9,6 @@ if (Specific::Admin() == false && Specific::Academic() == false) {
     exit();
 }
 
-$TEMP['#periods'] = $dba->query('SELECT * FROM periods')->fetchAll();
 $forms = $dba->query('SELECT * FROM forms LIMIT ? OFFSET ?', 10, 1)->fetchAll();
 $TEMP['#total_pages'] = $dba->totalPages;
 

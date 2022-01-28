@@ -1,5 +1,6 @@
 <?php
 require_once('./includes/autoload.php');
+
 $page = 'login/content.php';
 if($TEMP['#loggedin'] === true){
     $page = 'home/content.php';

@@ -144,111 +144,117 @@ if ($TEMP['#loggedin'] === true && (Specific::Admin() === true || Specific::Acad
         }
     } else if($one == 'this-assings'){
         $teatrues = array(true);
-        $types = array('add', 'edit');
 
         $type = Specific::Filter($_POST['type']);
         $id = Specific::Filter($_POST['id']);
         $teachers = Specific::Filter($_POST['teacher']);
         $period_id = Specific::Filter($_POST['period_id']);
 
-        if(!empty($type) && in_array($type, $types)){
-            if(!empty($teachers)){
-                $teachers = explode(',', $teachers);
+        if(!empty($type) && in_array($type, array('add', 'edit'))){
+            if(!empty($period_id) && is_numeric($period_id)){
                 if(!empty($teachers)){
-                    foreach ($teachers as $teacher) {
-                        if($dba->query('SELECT COUNT(*) FROM users WHERE id = '.$teacher)->fetchArray() > 0){
-                            $teatrues[] = true;
-                        } else {
-                            $teatrues[] = false;
-                        }
-                    }
-                }
-                if (!in_array(false, $teatrues)) {
-                    $period_id = !empty($period_id) ? $period_id : $dba->query('SELECT id FROM periods WHERE status = "enabled" AND start < '.time().' AND final > '.time())->fetchArray();
-                    $instrues = array();
-                    if($type == 'add'){
-                        for ($i=0; $i < count($teachers); $i++) {
-                            if($dba->query('SELECT COUNT(*) FROM teacher WHERE user_id = '.$teachers[$i].' AND course_id = '.$id.' AND period_id = '.$period_id)->fetchArray() == 0){
-                                if($dba->query('INSERT INTO teacher (user_id, course_id, period_id, `time`) VALUES ('.$teachers[$i].', '.$id.', '.$period_id.', '.time().')')->returnStatus()){
-                                    $instrues[] = true;
-                                }
-                            } else {  
-                                $instrues[] = false;
+                    $teachers = explode(',', $teachers);
+                    if(!empty($teachers)){
+                        foreach ($teachers as $teacher) {
+                            if($dba->query('SELECT COUNT(*) FROM users WHERE id = '.$teacher)->fetchArray() > 0){
+                                $teatrues[] = true;
+                            } else {
+                                $teatrues[] = false;
                             }
                         }
-                        if(!in_array(false, $instrues)){
-                            $deliver['status'] = 200;
+                    }
+                    if (!in_array(false, $teatrues)) {
+                        $period_id = !empty($period_id) ? $period_id : $dba->query('SELECT id FROM periods WHERE status = "enabled" AND start < '.time().' AND final > '.time())->fetchArray();
+                        $instrues = array();
+                        if($type == 'add'){
+                            for ($i=0; $i < count($teachers); $i++) {
+                                if($dba->query('SELECT COUNT(*) FROM teacher WHERE user_id = '.$teachers[$i].' AND course_id = '.$id.' AND period_id = '.$period_id)->fetchArray() == 0){
+                                    if($dba->query('INSERT INTO teacher (user_id, course_id, period_id, `time`) VALUES ('.$teachers[$i].', '.$id.', '.$period_id.', '.time().')')->returnStatus()){
+                                        $instrues[] = true;
+                                    }
+                                } else {  
+                                    $instrues[] = false;
+                                }
+                            }
+                            if(!in_array(false, $instrues)){
+                                $deliver['status'] = 200;
+                            } else {
+                                $deliver = array(
+                                    'status' => 400,
+                                    'error' => $TEMP['#word']['teacher_already_assigned']
+                                );
+                            }
                         } else {
-                            $deliver = array(
-                                'status' => 400,
-                                'error' => $TEMP['#word']['teacher_already_assigned']
-                            );
-                        }
-                    } else {
-                        $teachers_all = $dba->query('SELECT user_id FROM teacher WHERE course_id = '.$id.' AND period_id = '.$period_id)->fetchAll(false);
-                        $deleted = array_diff($teachers_all, $teachers);
-                        $addf = array_diff($teachers, $teachers_all);
-                        $adds = explode(',', implode(',', $addf));
-                        if(count($addf) > 0 || count($deleted) > 0){
-                            if(count($addf) > 0){
-                                for ($i=0; $i < count($adds); $i++) {
-                                    if($dba->query('SELECT COUNT(*) FROM teacher WHERE user_id = '.$adds[$i].' AND course_id = '.$id.' AND period_id = '.$period_id)->fetchArray() == 0){
-                                        $teacher_id = $dba->query('INSERT INTO teacher (user_id, course_id, period_id, `time`) VALUES ('.$adds[$i].', '.$id.', '.$period_id.', '.time().')')->insertId();
-                                        if($teacher_id){
-                                            if(count($deleted) > 0){
-                                                if($dba->query('SELECT COUNT(*) FROM parameter p WHERE (SELECT id FROM teacher WHERE user_id IN ('.implode(',', $deleted).') AND course_id = '.$id.' AND period_id = '.$period_id.' AND id = p.teacher_id) = teacher_id')->fetchArray() > 0){
-                                                    
-                                                    if($dba->query('UPDATE parameter SET teacher_id = '.$teacher_id.' WHERE (SELECT id FROM teacher WHERE user_id IN ('.implode(',', $deleted).') AND course_id = '.$id.' AND period_id = '.$period_id.') = teacher_id')->returnStatus()){
+                            $teachers_all = $dba->query('SELECT user_id FROM teacher WHERE course_id = '.$id.' AND period_id = '.$period_id)->fetchAll(false);
+                            $deleted = array_diff($teachers_all, $teachers);
+                            $addf = array_diff($teachers, $teachers_all);
+                            $adds = explode(',', implode(',', $addf));
+                            if(count($addf) > 0 || count($deleted) > 0){
+                                if(count($addf) > 0){
+                                    for ($i=0; $i < count($adds); $i++) {
+                                        if($dba->query('SELECT COUNT(*) FROM teacher WHERE user_id = '.$adds[$i].' AND course_id = '.$id.' AND period_id = '.$period_id)->fetchArray() == 0){
+                                            $teacher_id = $dba->query('INSERT INTO teacher (user_id, course_id, period_id, `time`) VALUES ('.$adds[$i].', '.$id.', '.$period_id.', '.time().')')->insertId();
+                                            if($teacher_id){
+                                                if(count($deleted) > 0){
+                                                    if($dba->query('SELECT COUNT(*) FROM parameter p WHERE (SELECT id FROM teacher WHERE user_id IN ('.implode(',', $deleted).') AND course_id = '.$id.' AND period_id = '.$period_id.' AND id = p.teacher_id) = teacher_id')->fetchArray() > 0){
+                                                        
+                                                        if($dba->query('UPDATE parameter SET teacher_id = '.$teacher_id.' WHERE (SELECT id FROM teacher WHERE user_id IN ('.implode(',', $deleted).') AND course_id = '.$id.' AND period_id = '.$period_id.') = teacher_id')->returnStatus()){
+                                                            $instrues[] = true;
+                                                        }
+                                                    } else {
                                                         $instrues[] = true;
                                                     }
                                                 } else {
                                                     $instrues[] = true;
                                                 }
-                                            } else {
-                                                $instrues[] = true;
+                                            }
+                                        } else {  
+                                            $instrues[] = false;
+                                        }
+                                    }
+                                    if(!in_array(false, $instrues)){
+                                        $deliver['status'] = 200;
+                                    } else {
+                                        $deliver = array(
+                                            'status' => 302,
+                                            'error' => $TEMP['#word']['teacher_already_assigned']
+                                        );
+                                    }
+                                }
+                                if(count($deleted) > 0){
+                                    if($dba->query('SELECT COUNT(*) FROM parameter p WHERE (SELECT id FROM teacher WHERE user_id IN ('.implode(',', $deleted).') AND course_id = '.$id.' AND period_id = '.$period_id.' AND id = p.teacher_id) = teacher_id')->fetchArray() > 0){
+                                        $parameter_id = $dba->query('SELECT id FROM parameter p WHERE (SELECT id FROM teacher WHERE user_id IN ('.implode(',', $deleted).') AND course_id = '.$id.' AND period_id = '.$period_id.' AND id = p.teacher_id) = teacher_id')->fetchArray();
+                                        $add_id = $dba->query('SELECT id FROM teacher WHERE user_id = '.$teachers[0].' AND course_id = '.$id.' AND period_id = '.$period_id)->fetchArray();
+
+                                        if($dba->query('UPDATE parameter SET teacher_id = '.$add_id.' WHERE id = '.$parameter_id)->returnStatus()){
+                                            if($dba->query('DELETE FROM teacher WHERE user_id IN ('.implode(',', $deleted).') AND course_id = '.$id.' AND period_id = '.$period_id)->returnStatus()){
+                                                $deliver['status'] = 200;
                                             }
                                         }
-                                    } else {  
-                                        $instrues[] = false;
+                                    } else if($dba->query('DELETE FROM teacher WHERE user_id IN ('.implode(',', $deleted).') AND course_id = '.$id.' AND period_id = '.$period_id)->returnStatus()){
+                                        $deliver['status'] = 200;
                                     }
                                 }
-                                if(!in_array(false, $instrues)){
-                                    $deliver['status'] = 200;
-                                } else {
-                                    $deliver = array(
-                                        'status' => 302,
-                                        'error' => $TEMP['#word']['teacher_already_assigned']
-                                    );
-                                }
+                            } else {
+                                $deliver['status'] = 200;
                             }
-                            if(count($deleted) > 0){
-                                if($dba->query('SELECT COUNT(*) FROM parameter p WHERE (SELECT id FROM teacher WHERE user_id IN ('.implode(',', $deleted).') AND course_id = '.$id.' AND period_id = '.$period_id.' AND id = p.teacher_id) = teacher_id')->fetchArray() > 0){
-                                    $parameter_id = $dba->query('SELECT id FROM parameter p WHERE (SELECT id FROM teacher WHERE user_id IN ('.implode(',', $deleted).') AND course_id = '.$id.' AND period_id = '.$period_id.' AND id = p.teacher_id) = teacher_id')->fetchArray();
-                                    $add_id = $dba->query('SELECT id FROM teacher WHERE user_id = '.$teachers[0].' AND course_id = '.$id.' AND period_id = '.$period_id)->fetchArray();
-
-                                    if($dba->query('UPDATE parameter SET teacher_id = '.$add_id.' WHERE id = '.$parameter_id)->returnStatus()){
-                                        if($dba->query('DELETE FROM teacher WHERE user_id IN ('.implode(',', $deleted).') AND course_id = '.$id.' AND period_id = '.$period_id)->returnStatus()){
-                                            $deliver['status'] = 200;
-                                        }
-                                    }
-                                } else if($dba->query('DELETE FROM teacher WHERE user_id IN ('.implode(',', $deleted).') AND course_id = '.$id.' AND period_id = '.$period_id)->returnStatus()){
-                                    $deliver['status'] = 200;
-                                }
-                            }
-                        } else {
-                            $deliver['status'] = 200;
                         }
+                    } else {
+                        $deliver = array(
+                            'status' => 400,
+                            'errors' => $TEMP['#word']['please_enter_valid_value']
+                        );
                     }
                 } else {
                     $deliver = array(
                         'status' => 400,
-                        'errors' => $TEMP['#word']['please_enter_valid_value']
+                        'errors' => $TEMP['#word']['this_field_is_empty']
                     );
                 }
             } else {
                 $deliver = array(
                     'status' => 400,
-                    'errors' => $TEMP['#word']['this_field_is_empty']
+                    'error' => $TEMP['#word']['please_select_academic_period']
                 );
             }
         }
@@ -305,7 +311,7 @@ if ($TEMP['#loggedin'] === true && (Specific::Admin() === true || Specific::Acad
             $deliver['status'] = 200;
         } else {
             $TEMP['keyword'] = $keyword;
-            $html .= Specific::Maket('not-found/result-for');
+            $html .= Specific::Maket('not-found/aj-result-for');
         }
         $deliver['html'] = $html;
     } else if($one == 'check-enroll'){

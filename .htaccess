@@ -1,6 +1,5 @@
 RewriteEngine On
 
-
 RewriteBase /cenauc
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
@@ -14,12 +13,14 @@ RewriteRule ^register/([^/.]+)?$ index.php?one=register&form-key=$1 [NC,QSA]
 RewriteRule ^pages/([^\/]+)(\/|)$ index.php?one=pages&two=$1 [QSA]
 
 
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^req/([^/.]+)/?$ requests.php?request-name=$1 [L,QSA]
 RewriteRule ^req/([^/.]+)/([^/.]+)/?$ requests.php?request-name=$1&one=$2 [L,QSA]
 
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^([^\/]+)(\/|)$  index.php?one=$1 [QSA]
+RewriteRule ^([^\/]+)(\/|)$ index.php?one=$1 [QSA]
 
 
 <IfModule mod_deflate.c>

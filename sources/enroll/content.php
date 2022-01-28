@@ -34,6 +34,9 @@ if(isset($_GET['user'])){
 $TEMP['#program_id'] = Specific::Filter($_GET['program_id']);
 if(empty($TEMP['#program_id'])){
 	$TEMP['#program_id'] = $user['program'];
+	if(empty($TEMP['#program_id'])){
+		$TEMP['#program_id'] = $TEMP['#user']['program'];
+	}
 }
 
 if($TEMP['#type'] == 'course'){

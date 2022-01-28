@@ -37,10 +37,12 @@ if ($TEMP['#loggedin'] === true && (Specific::Admin() === true || Specific::Acad
 
                 if(Specific::Teacher() == true){
                     if(is_numeric($period_id)){
+                        $note_mode = $dba->query('SELECT note_mode FROM plan WHERE (SELECT plan_id FROM curriculum WHERE course_id = '.$course['id'].') = id')->fetchArray();
                         $parameters = $dba->query('SELECT parameters FROM parameter p WHERE (SELECT id FROM teacher WHERE course_id = '.$course['id'].' AND period_id = '.$period_id.' AND id = p.teacher_id) = teacher_id')->fetchArray();
                         $parameters = json_decode($parameters);
                         $teachers = $dba->query('SELECT names FROM users u WHERE (SELECT user_id FROM teacher WHERE user_id = u.id AND course_id = '.$course['id'].' AND period_id = '.$period_id.') = id')->fetchAll(false);
-                        $enrolled = $dba->query('SELECT COUNT(*) FROM enrolled WHERE course_id = '.$course['id'])->fetchArray();
+                        $enrolled = $dba->query('SELECT COUNT(*) FROM enrolled WHERE type = "course" AND status = "registered" AND course_id = '.$course['id'].' AND period_id = '.$period_id)->fetchArray();
+
                         if(count($teachers) == 2){
                             $teachers = "{$teachers[0]} {$TEMP['#word']['and']} {$teachers[1]}";
                         } else if(count($teachers) > 2){
@@ -86,8 +88,6 @@ if ($TEMP['#loggedin'] === true && (Specific::Admin() === true || Specific::Acad
                         $TEMP['!program'] = $programs[0];
                     }
                 }
-
-                $note_mode = $dba->query('SELECT note_mode FROM plan WHERE (SELECT plan_id FROM curriculum WHERE course_id = '.$course['id'].') = id')->fetchArray();
 
                 $TEMP['!id'] = $course['id'];
                 $TEMP['!code'] = $course['code'];
@@ -149,10 +149,12 @@ if ($TEMP['#loggedin'] === true && (Specific::Admin() === true || Specific::Acad
                     $assignments = array_unique($assignments);
                     if(Specific::Teacher() == true){
                         if(is_numeric($period_id)){
+                            $note_mode = $dba->query('SELECT note_mode FROM plan WHERE (SELECT plan_id FROM curriculum WHERE course_id = '.$course['id'].') = id')->fetchArray();
                             $parameters = $dba->query('SELECT parameters FROM parameter p WHERE (SELECT id FROM teacher WHERE course_id = '.$course['id'].' AND period_id = '.$period_id.' AND id = p.teacher_id) = teacher_id')->fetchArray();
                             $parameters = json_decode($parameters);
                             $teachers = $dba->query('SELECT names FROM users u WHERE (SELECT user_id FROM teacher WHERE user_id = u.id AND course_id = '.$course['id'].' AND period_id = '.$period_id.') = id')->fetchAll(false);
-                            $enrolled = $dba->query('SELECT COUNT(*) FROM enrolled WHERE course_id = '.$course['id'])->fetchArray();
+                            $enrolled = $dba->query('SELECT COUNT(*) FROM enrolled WHERE type = "course" AND status = "registered" AND course_id = '.$course['id'].' AND period_id = '.$period_id)->fetchArray();
+                            
                             if(count($teachers) == 2){
                                 $teachers = "{$teachers[0]} {$TEMP['#word']['and']} {$teachers[1]}";
                             } else if(count($teachers) > 2){
@@ -198,8 +200,6 @@ if ($TEMP['#loggedin'] === true && (Specific::Admin() === true || Specific::Acad
                         }
                     }
 
-                    $note_mode = $dba->query('SELECT note_mode FROM plan WHERE (SELECT plan_id FROM curriculum WHERE course_id = '.$course['id'].') = id')->fetchArray();
-
                     $TEMP['!id'] = $course['id'];
                     $TEMP['!code'] = $course['code'];
                     $TEMP['!name'] = $course['name'];
@@ -233,22 +233,23 @@ if ($TEMP['#loggedin'] === true && (Specific::Admin() === true || Specific::Acad
             } else {
                 $users = $dba->query('SELECT * FROM users WHERE id != '.$TEMP['#user']['id'].' AND role = "student" AND (names LIKE "%'.$keyword.'%" OR surnames LIKE "%'.$keyword.'%") LIMIT 10')->fetchAll();
             }
-            
-            if (!empty($users)) {
-                foreach ($users as $user) {
-                    $full_name = "{$user['names']} {$user['surnames']}";
-                    $url = "$type?keyword={$full_name}&user={$user['id']}&screen={$screen}";
-                    if($type == 'teachers'){
-                        $url = "notes?type=course&keyword={$full_name}&user={$user['id']}&screen={$screen}";
-                    }
-                    $html .= "<a class='display-flex border-left border-right border-bottom border-grey padding-10 background-hover' href='".Specific::Url("$url")."' target='_self'><div class='margin-right-auto color-black'>".$full_name.'</div></a>';
-                }
-                $deliver = array(
-                    'status' => 200,
-                    'html' => $html
-                );
-            }
         }
+            
+        if (!empty($users)) {
+            foreach ($users as $user) {
+                $full_name = "{$user['names']} {$user['surnames']}";
+                $url = "$type?keyword={$full_name}&user={$user['id']}&screen={$screen}";
+                if($type == 'teachers'){
+                    $url = "notes?type=course&keyword={$full_name}&user={$user['id']}&screen={$screen}";
+                }
+                $html .= "<a class='display-flex border-left border-right border-bottom border-grey padding-10 background-hover' href='".Specific::Url("$url")."' target='_self'><div class='margin-right-auto color-black'>".$full_name.'</div></a>';
+            }
+            $deliver['status'] = 200;
+        } else {
+            $TEMP['keyword'] = $keyword;
+            $html .= Specific::Maket('not-found/aj-result-for');
+        }
+        $deliver['html'] = $html;
     } else if($one == 'get-citems'){
         $id = Specific::Filter($_POST['id']);
         $period_id = Specific::Filter($_POST['period_id']);
@@ -424,49 +425,190 @@ if ($TEMP['#loggedin'] === true && (Specific::Admin() === true || Specific::Acad
             if(empty($emptys)){
                 $note = $dba->query('SELECT * FROM notes WHERE id = '.$id)->fetchArray();
                 $period = $dba->query('SELECT * FROM periods p WHERE (SELECT period_id FROM enrolled WHERE user_id = '.$note['user_id'].' AND course_id = '.$note['course_id'].' AND type = "course" AND period_id = p.id) = id')->fetchArray();
-                if(time() < $period['final'] || Specific::Admin() == true || Specific::Academic() == true){
-                    $court = array('first', 'second', 'third')[$pos];
-                    $TEMP['!authorization'] = $dba->query('SELECT court FROM authorization WHERE status = "authorized" AND period_id = '.$period['id'].' AND course_id = '.$note['course_id'])->fetchAll(false);
-                    if(in_array($court, $TEMP['!authorization']) || Specific::Admin() == true || Specific::Academic() == true){
-                        if (empty($errors)) {
-                            $note_mode = $dba->query('SELECT note_mode FROM plan p WHERE (SELECT plan_id FROM curriculum WHERE course_id = '.$note['course_id'].' AND plan_id = p.id) = id')->fetchArray();
-                            $notes = $params;
-                            if(isset($pos)){
-                                $notes = $note['notes'];
-                                $notes = json_decode($notes, true);
-                                $notes[$pos] = $params;
-                            }
-                            if(((($notes[0][0]*0.3)+($notes[1][0]*0.3)) >= $TEMP['#nnevf']) || $note_mode == '100' || in_array($pos, array(0, 1))){
-                                if($dba->query('UPDATE notes SET notes = ? WHERE id = '.$id, json_encode($notes))->returnStatus()){
-                                    $deliver['status'] = 200;
-                                    if(Specific::Teacher() == true){
-                                        Specific::SendNotification(array(
-                                            'from_id' => $TEMP['#user']['id'],
-                                            'to_id' => $note['user_id'],
-                                            'course_id' => $note['user_id'],
-                                            'type' => "'note'",
-                                            'time' => time()
-                                        ));
+                $status = $dba->query('SELECT status FROM enrolled WHERE type = "course" AND user_id = '.$note['user_id'].' AND course_id = '.$note['course_id'].' AND period_id = '.$note['period_id'].' AND program_id = '.$note['program_id'])->fetchArray();
+                if($status != 'cancelled'){
+                    if(time() < $period['final'] || Specific::Admin() == true || Specific::Academic() == true){
+                        $court = array('first', 'second', 'third')[$pos];
+                        $TEMP['!authorization'] = $dba->query('SELECT court FROM authorization WHERE status = "authorized" AND period_id = '.$period['id'].' AND course_id = '.$note['course_id'])->fetchAll(false);
+                        if(in_array($court, $TEMP['!authorization']) || Specific::Admin() == true || Specific::Academic() == true){
+                            if (empty($errors)) {
+                                $note_mode = $dba->query('SELECT note_mode FROM plan p WHERE (SELECT plan_id FROM curriculum WHERE course_id = '.$note['course_id'].' AND plan_id = p.id) = id')->fetchArray();
+                                $notes = $noq = $params;
+                                if(isset($pos)){
+                                    $notes = $note['notes'];
+                                    $notes = json_decode($notes, true);
+                                    $notes[$pos] = $params;
+                                    $noq = $notes[$pos];
+                                }
+                                $noqtrues = array();
+                                for ($i=0; $i < count($noq); $i++) {
+                                    $noqtrues[] = true;
+                                    if((substr_count($noq[$i], '.') == 0 && !is_numeric($noq[$i])) || (substr_count($noq[$i], '.') == 1 && strlen($noq[$i]) == 2) || substr_count($noq[$i], '.') > 1 || ctype_alpha($noq[$i]) == true || ctype_space($noq[$id]) == true){
+                                        $noqtrues[] = false;
                                     }
                                 }
+                                if(!in_array(false, $noqtrues)){
+                                    if(((($notes[0][0]*0.3)+($notes[1][0]*0.3)) >= $TEMP['#nnevf']) || $note_mode == '100' || in_array($pos, array(0, 1))){
+                                        if($dba->query('UPDATE notes SET notes = ? WHERE id = '.$id, json_encode($notes))->returnStatus()){
+                                            $background = 'false';
+                                            $approved = 'false';
+                                            $notesa = $dba->query('SELECT * FROM notes WHERE user_id = '.$note['user_id'].' AND period_id = '.$note['period_id'].' AND program_id = '.$note['program_id'])->fetchAll();
+
+                                            foreach ($notesa as $notea) {
+                                                $params = $dba->query('SELECT parameters FROM parameter p WHERE (SELECT id FROM teacher WHERE course_id = '.$notea['course_id'].' AND period_id = '.$notea['period_id'].' AND id = p.teacher_id) = teacher_id')->fetchArray();
+                                                $notes = json_decode($notea['notes'], true);
+                                                
+                                                $type = $dba->query('SELECT type FROM courses WHERE id = '.$notea['course_id'])->fetchArray();
+
+                                                if($notea['id'] == $id){
+                                                    $final = $dba->query('SELECT final FROM periods WHERE id = '.$notea['period_id'])->fetchArray();
+                                                }
+                                                
+
+                                                $qualification = $dba->query('SELECT note FROM qualification WHERE note_id = '.$notea['id'])->fetchArray();
+
+                                                if($note_mode == '30-30-40'){
+                                                    for ($i=0; $i < 3; $i++) { 
+                                                        $anotes = array();
+                                                        $parameters = json_decode($params, true)[$i];
+                                                        foreach ($parameters as $key => $param) {
+                                                            $anotes[] = (($notes[$i][$key]/100)*$param['percent']);
+                                                        }
+                                                        $notes[$i] = array_sum($anotes);
+                                                    }
+
+                                                    if($notea['id'] == $id){
+                                                        $last_eval = 'false';
+                                                        if((($notes[0]*0.3)+($notes[1]*0.3)) >= $TEMP['#nnevf']){
+                                                            $last_eval = 'true';
+                                                        } else {
+                                                            if($notes[2] > 0){
+                                                                $third = 0;
+                                                            }
+                                                        }
+                                                        $third = $notes[2];
+                                                    }
+
+                                                    $evalfinal = 'false';
+                                                    if($qualification == NULL){
+                                                        $abe = round((($notes[0]*0.3)+($notes[1]*0.3)+($notes[2]*0.4)), 2);
+                                                        if($abe >= 0 && $notes[2] < $TEMP['#nmtc']){
+                                                            $ab = $average[] = round($notes[2], 2);
+                                                            if($notea['id'] == $id){
+                                                                $evalfinal = 'true';
+                                                                $ave = round($notes[2], 2);
+                                                            }
+                                                        } else {
+                                                            $ab = $average[] = $abe;
+                                                            if($notea['id'] == $id){
+                                                                $ave = $abe;
+                                                            }
+                                                        }
+                                                    } else {
+                                                        $ab = $average[] = $qualification;
+                                                        if($notea['id'] == $id){
+                                                            $ave = $qualification;
+                                                        }
+                                                    }
+                                                    if($notea['id'] == $id){
+                                                        $not = round($notes[$pos], 2);
+                                                    }
+                                                } else {
+                                                    $anotes = array();
+                                                    $parameters = json_decode($params, true);
+                                                    foreach ($parameters as $key => $param) {
+                                                        $anotes[] = (($notes[$key]/100)*$param['percent']);
+                                                    }
+                                                    $notes = array_sum($anotes);
+
+                                                    if($qualification == NULL){
+                                                        $ab = $average[] = round($notes, 2);
+                                                        if($notea['id'] == $id){
+                                                            $ave = round($notes, 2);
+                                                        }
+                                                    } else {
+                                                        $ab = $average[] = $qualification;
+                                                        if($notea['id'] == $id){
+                                                            $ave = $qualification;
+                                                        }
+                                                    }
+                                                    if($notea['id'] == $id){
+                                                        $not = round($notes, 2);
+                                                    }
+                                                }
+
+                                                if(!($type == 'practice' && $ab >= $TEMP['#nmcnt']) || ($type == 'theoretical' && $ab >= $TEMP['#nmct'])){
+                                                    $avekey[] = $ab;
+                                                }
+
+                                                if($notea['id'] == $id){
+                                                    if(($type == 'practice' && $ave >= $TEMP['#nmcnt']) || ($type == 'theoretical' && $ave >= $TEMP['#nmct'])){
+                                                        $approved = 'true';
+                                                    }
+                                                    if($approved == true || time() < $final){
+                                                        $background = 'true';
+                                                    }
+                                                }
+                                            }
+
+                                            $average = round(array_sum($average)/count($average), 2);
+
+                                            $semesbad = 'false';
+                                            if($average < $TEMP['#nmcs']){
+                                                $semesbad = 'true';
+                                            }
+
+                                            if(Specific::ValidateDates($note['period_id'], 17, 2) == true && count($avekey) >= $TEMP['#cers']){
+                                                $semesbad = 'true';
+                                            }
+
+                                            $deliver = array(
+                                                'status' => 200,
+                                                'note' => $not,
+                                                'average' => $average,
+                                                'semesbad' => $semesbad,
+                                                'ave' => $ave,
+                                                'approved' => $approved,
+                                                'background' => $background,
+                                                'last_eval' => $last_eval,
+                                                'third' => $third,
+                                                'evalfinal' => $evalfinal
+                                            );
+                                            if(Specific::Teacher() == true){
+                                                Specific::SendNotification(array(
+                                                    'from_id' => $TEMP['#user']['id'],
+                                                    'to_id' => $note['user_id'],
+                                                    'course_id' => $note['user_id'],
+                                                    'type' => "'note'",
+                                                    'time' => time()
+                                                ));
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    $deliver = array(
+                                        'status' => 400,
+                                        'error' => $TEMP['#word']['please_enter_valid_value']
+                                    );
+                                }
+                            } else {
+                                $deliver = array(
+                                    'status' => 400,
+                                    'errors' => $errors
+                                );
                             }
                         } else {
                             $deliver = array(
                                 'status' => 400,
-                                'errors' => $errors
+                                'error' => $TEMP['#word']['you_authorized_upload_grades_course']
                             );
                         }
                     } else {
                         $deliver = array(
                             'status' => 400,
-                            'error' => $TEMP['#word']['you_authorized_upload_grades_course']
+                            'error' => $TEMP['#word']['deadline_uploading_notes_already_passed']
                         );
                     }
-                } else {
-                    $deliver = array(
-                        'status' => 400,
-                        'error' => $TEMP['#word']['deadline_uploading_notes_already_passed']
-                    );
                 }
             } else {
                 $deliver = array(
@@ -696,13 +838,25 @@ if ($TEMP['#loggedin'] === true && (Specific::Admin() === true || Specific::Acad
         }
     } else if($one == 'get-aitems'){
         $id = Specific::Filter($_POST['id']);
-        if(isset($id) && is_numeric($id)){
+        if(!empty($id) && is_numeric($id)){
             $items = $dba->query('SELECT course_id, description, court, status FROM authorization WHERE id = '.$id)->fetchArray();
             if (!empty($items)) {
                 $deliver = array(
                     'status' => 200,
                     'items' => $items
                 );
+            }
+        }
+    } else if($one == 'upload-observation'){
+        $note_id = Specific::Filter($_POST['id']);
+        $observation = Specific::Filter($_POST['observation']);
+
+        if(!empty($note_id) && is_numeric($note_id)){
+            if(empty($observation)){
+                $observation = NULL;
+            }
+            if($dba->query('UPDATE notes SET observation = ? WHERE id = '.$note_id, $observation)->returnStatus()){
+                $deliver['status'] = 200;
             }
         }
     }

@@ -30,7 +30,7 @@ if(Specific::Teacher() == true || Specific::Admin() == true){
 		$periods = $dba->query('SELECT period_id FROM teacher WHERE user_id = '.$TEMP['#user_id'])->fetchAll(false);
 		$periods = array_unique($periods);
 		if(!empty($periods)){
-			$TEMP['#periods'] = $dba->query('SELECT * FROM periods WHERE id IN ('.implode(',', $periods).')')->fetchAll();
+			$TEMP['#periods'] = $dba->query('SELECT * FROM periods WHERE id IN ('.implode(',', $periods).') ORDER BY start ASC')->fetchAll();
 		}
 	}
 
@@ -58,10 +58,12 @@ if(!empty($courses)){
 		$assignments = array_unique($assignments);
 		if(Specific::Teacher() == true){
 			if(is_numeric($TEMP['#period_id'])){
+	    		$note_mode = $dba->query('SELECT note_mode FROM plan WHERE (SELECT plan_id FROM curriculum WHERE course_id = '.$course['id'].') = id')->fetchArray();
 				$parameters = $dba->query('SELECT parameters FROM parameter p WHERE (SELECT id FROM teacher WHERE course_id = '.$course['id'].' AND period_id = '.$TEMP['#period_id'].' AND id = p.teacher_id) = teacher_id')->fetchArray();
 				$parameters = json_decode($parameters);
 				$teachers = $dba->query('SELECT names FROM users u WHERE (SELECT user_id FROM teacher WHERE user_id = u.id AND course_id = '.$course['id'].' AND period_id = '.$TEMP['#period_id'].') = id')->fetchAll(false);
-				$enrolled = $dba->query('SELECT COUNT(*) FROM enrolled WHERE course_id = '.$course['id'])->fetchArray();
+				$enrolled = $dba->query('SELECT COUNT(*) FROM enrolled WHERE type = "course" AND status = "registered" AND course_id = '.$course['id'].' AND period_id = '.$TEMP['#period_id'])->fetchArray();
+
 				if(count($teachers) == 2){
 					$teachers = "{$teachers[0]} {$TEMP['#word']['and']} {$teachers[1]}";
 				} else if(count($teachers) > 2){
@@ -107,8 +109,6 @@ if(!empty($courses)){
 	            $TEMP['!program'] = $programs[0];
 	        }
 	    }
-
-	    $note_mode = $dba->query('SELECT note_mode FROM plan WHERE (SELECT plan_id FROM curriculum WHERE course_id = '.$course['id'].') = id')->fetchArray();
 
 		$TEMP['!id'] = $course['id'];
         $TEMP['!code'] = $course['code'];
