@@ -252,7 +252,6 @@ var GI = D.querySelectorAll('.input_key'),
 		}
 		removeClass(GE, 'color-green'), removeClass(GE, 'border-green'), addClass(GB, 'spinner-is-loading'), GB.setAttribute('disabled', true);
 		Req("{$url->{req/to-access/register}}", function(e){
-			console.log(e);
 			if(e.status == 200){
 				if(e.url == undefined){
 					addClass(GE, 'color-green'), addClass(GE, 'border-green'), removeClass(GB, 'spinner-is-loading'), GB.removeAttribute('disabled'), GE.innerText = "{$word->successfully_joined_desc}";
@@ -371,7 +370,7 @@ for (var j = 0, i = GV.length; j < i; j++) addEvent(GV[j], 'click', function(){
 		el.setAttribute('type', 'password');
 	}
 });
-for (var j = 0, i = GI.length; j < i; j++) addEvent(GI[j], 'keyup', function(e){
+for (var j = 0, i = GI.length; j < i; j++) addEvent(GI[j], 'input', function(e){
 	if(e.which != 13 || e.keyCode != 13){
 		var self = this,
 			GA = self.id,

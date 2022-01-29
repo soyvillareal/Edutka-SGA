@@ -206,7 +206,6 @@ var GW = D.querySelectorAll('.show_vmodal'),
             qua_id = self.getAttribute('data-id');
         self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
         Req('{$url->{req/rol-academic/get-qitems}}', function(e){
-            console.log(e);
             if(e.status == 200){
                 for (var key in e.items) {
                     var el = D.querySelector('#'+key),
@@ -242,7 +241,6 @@ addEvent(GB, 'click', function(){
 
     GB.setAttribute('disabled', true), addClass(GB, 'spinner-is-loading');
     Req('{$url->{req/rol-academic/this-qualifications}}', function(e){
-        console.log(e);
         if(e.status == 200){
             GI.style.display = "", loadAlert("{$word->enable_upgraded_successfully}"), preloadPage('&one=more&page=qualifications');
         } else {
@@ -276,13 +274,12 @@ addEvent(GB, 'click', function(){
     }, "POST", "&id=" + self.getAttribute('data-id') + "&note=" + GJ.value + "&status=" + GU.value)
 }), addEvent(D.querySelector('#close-alert'), 'click', function(){
     GI.style.display = "", D.body.style.overflow = "";
-}), addEvent(GA, 'keyup', function(){
+}), addEvent(GA, 'input', function(){
     var self = this,
         GY = self.parentNode,
         TZ = D.querySelector('#table-footer');
     addClass(GY, 'spinner-is-loading');
     Req('{$url->{req/rol-academic/search-qualifications}}', function(e){
-        console.log(e);
         if(e.status == 200){
             <?php echo($TEMP['#total_pages'] > 1) ? "TT = e.total_pages, TA = 1, TO.setAttribute('disabled', true), TR.setAttribute('disabled', true), TE.removeAttribute('disabled'), TS.removeAttribute('disabled'), D.querySelector('#total-pages').innerText = TT, TN.innerText = TA, TZ && (TT <= 1 ? TZ.style.display = 'none' : TZ.removeAttribute('style')), " : ""?>removeClass(GY, 'spinner-is-loading'), D.querySelector('#container-pages').innerHTML = e.html, loadPage(D.querySelectorAll('a[target="_self"]')), GW = D.querySelectorAll('.show_vmodal');
             for(var j = 0, i = GW.length; j < i; j++) addEvent(GW[j], "click", GD);

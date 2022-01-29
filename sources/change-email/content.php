@@ -13,7 +13,7 @@ if ($TEMP['#loggedin'] === false){
     exit();
 }
 
-$page = $dba->query('SELECT COUNT(*) FROM users WHERE ukey = "'.$ukey.'" AND token = "'.$token.'"')->fetchArray() == 0 || (strlen($TEMP['#descode']) != 6 && !empty($TEMP['#descode'])) ? 'invalid-auth' : 'authentication';
+$page = $dba->query('SELECT COUNT(*) FROM user WHERE ukey = "'.$ukey.'" AND token = "'.$token.'"')->fetchArray() == 0 || (strlen($TEMP['#descode']) != 6 && !empty($TEMP['#descode'])) ? 'invalid-auth' : 'authentication';
 
 $TEMP['#bubbles'] = Specific::Bubbles();
 

@@ -6,7 +6,7 @@ if ($TEMP['#loggedin'] === true || empty($ukey) || empty($tokenu)) {
 	exit();
 }
 
-$TEMP['#user'] = $dba->query('SELECT * FROM users WHERE ukey = "'.$ukey.'" AND token = "'.$tokenu.'"')->fetchArray();
+$TEMP['#user'] = $dba->query('SELECT * FROM user WHERE ukey = "'.$ukey.'" AND token = "'.$tokenu.'"')->fetchArray();
 
 $page = empty($TEMP['#user']) ? 'invalid-auth' : 'not-me';
 

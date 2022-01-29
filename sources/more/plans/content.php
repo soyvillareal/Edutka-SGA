@@ -16,7 +16,7 @@ if(!empty($plans)){
     foreach ($plans as $plan) {
         $TEMP['!id'] = $plan['id'];
         $TEMP['!name'] = $plan['name'];
-        $TEMP['!program'] = $dba->query('SELECT name FROM programs WHERE id = '.$plan['program_id'])->fetchArray();
+        $TEMP['!program'] = $dba->query('SELECT name FROM program WHERE id = '.$plan['program_id'])->fetchArray();
         $TEMP['!resolution'] = $plan['resolution'];
         $TEMP['!date_approved'] = Specific::DateFormat($plan['date_approved']);
         $TEMP['!duration'] = $plan['duration'];

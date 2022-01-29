@@ -359,7 +359,6 @@ var GE = D.querySelectorAll('.show_emodal'),
         self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading'), GK.value = "", GX = [];
         for(var j = 0, i = gz.length; j < i; j++) gz[j].remove();
         Req('{$url->{req/rol-admin/get-plitems}}', function(e){
-            console.log(e);
             if(e.status == 200){
                 for (var key in e.items) D.querySelector('#'+key).value = e.items[key];
                 GI.style.display = "block", D.body.style.overflow = "hidden", GB.setAttribute('data-id', plan_id), GB.setAttribute('data-type', 'edit'), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
@@ -380,7 +379,6 @@ var GE = D.querySelectorAll('.show_emodal'),
             self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
 
             Req('{$url->{req/rol-admin/get-citems}}', function(e){
-                console.log(e);
                 if(e.status == 200){
                     GX = [], GK.value = "", ga.value = "";
                     var gf = ZO.querySelectorAll('.tipsit-choice');
@@ -439,7 +437,6 @@ addEvent(gdd, 'click', GDD), addEvent(D.querySelector('#cancel-adalert'), 'click
 
     gyy.setAttribute('disabled', true), addClass(gyy, 'spinner-is-loading');
     Req('{$url->{req/rol-admin/delete-curriculum}}', function(e){
-        console.log(e);
         if(e.status == 200){
             gcc.style.display = "", loadAlert("{$word->curriculum_mesh_successfully_removed}"), preloadPage('&one=more&page=plans');
         } else {
@@ -465,7 +462,6 @@ addEvent(gdd, 'click', GDD), addEvent(D.querySelector('#cancel-adalert'), 'click
     }
     gd.setAttribute('disabled', true), addClass(gd, 'spinner-is-loading');
     Req('{$url->{req/rol-admin/this-curriculum}}', function(e){
-        console.log(e);
         if(e.status == 200){
             gc.style.display = "", preloadPage('&one=more&page=plans'), loadAlert("{$word->curriculum_updated_successfully}");
         } else if(e.status == 302){
@@ -493,7 +489,7 @@ addEvent(gdd, 'click', GDD), addEvent(D.querySelector('#cancel-adalert'), 'click
 
 addEvent(ga, "keydown", function(e){
     keyTag(e.which, this, ZO, GX, GK)
-}), addEvent(ga, "keyup", function(e){
+}), addEvent(ga, "input", function(e){
     let self = this,
         SV = self.value,
         SQ = self.parentNode;
@@ -506,7 +502,6 @@ addEvent(ga, "keydown", function(e){
     }
     addClass(SQ, 'spinner-is-loading');
     Req('{$url->{req/rol-admin/search-course}}', function(e) {
-        console.log(e);
         if(e.html != ''){
             removeClass(SQ, 'spinner-is-loading'), gl.innerHTML = e.html;
             if (e.status == 200) {
@@ -561,7 +556,6 @@ addEvent(ga, "keydown", function(e){
     }
     GB.setAttribute('disabled', true), addClass(GB, 'spinner-is-loading');
     Req('{$url->{req/rol-admin/this-plans}}', function(e){
-        console.log(e);
         if(e.status == 200){
             GI.style.display = "", loadAlert((type == 'add' ? "{$word->study_plan_added_successfully}" : "{$word->study_plan_updated_successfully}")), preloadPage('&one=more&page=plans');
         } else {
@@ -599,14 +593,13 @@ addEvent(ga, "keydown", function(e){
     var self = this; 
     self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
     Req('{$url->{req/rol-admin/delete-plan}}', function(e){
-        console.log(e);
         if(e.status == 200){
             GT.style.display = "", loadAlert("{$word->study_plan_removed_successfully}"), preloadPage('&one=more&page=plans');
         } else {
             self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading'), loadAlert(e.error, 1);
         }
     }, "POST", "&id=" + self.getAttribute('data-id'));
-}), addEvent(GA, 'keyup', function(){
+}), addEvent(GA, 'input', function(){
     var self = this,
         TQ = self.parentNode,
         TZ = D.querySelector('#table-footer');
@@ -631,7 +624,7 @@ for(var j = 0, i = go.length; j < i; j++) addEvent(go[j], "click", gk);
 for(var j = 0, i = GE.length; j < i; j++) addEvent(GE[j], "click", GS);
 for(var j = 0, i = GW.length; j < i; j++) addEvent(GW[j], "click", GD);
 for (var j = 0, i = GR.length; j < i; j++) addEvent(GR[j], 'change', bDisabled);
-for (var j = 0, i = GC.length; j < i; j++) addEvent(GC[j], 'keyup', bDisabled);
+for (var j = 0, i = GC.length; j < i; j++) addEvent(GC[j], 'input', bDisabled);
 for (var j = 0, i = GL.length; j < i; j++) addEvent(GL[j], "click", function(){
     var self = this,
         type = self.getAttribute('data-type');

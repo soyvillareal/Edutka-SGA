@@ -53,7 +53,6 @@ var FM = D.querySelector('#email'),
 		FE.innerText = "";
 		removeClass(FE, 'color-green'), removeClass(FE, 'border-green'), addClass(FB, 'spinner-is-loading'), FB.setAttribute('disabled', true);
 		Req("{$url->{req/to-access/forgot-password}}", function(e){
-			console.log(e);
 			if(e.status == 200){
 				addClass(FE, 'color-green'), addClass(FE, 'border-green'), removeClass(FB, 'spinner-is-loading'), FB.removeAttribute('disabled'), FE.innerText = "{$word->email_sent}";
 			} else if(e.status == 400){
@@ -92,7 +91,7 @@ FM.focus(), timeDelay(function(){
 	if((e.which == 13 || e.keyCode == 13) && FX){
 		FF();
 	}
-}), addEvent(FB, 'click', FF), addEvent(FM, 'keyup', function(e){
+}), addEvent(FB, 'click', FF), addEvent(FM, 'input', function(e){
 	if(e.which != 13 || e.keyCode != 13){
 		var self = this;
 		removeClass(self, 'border-red'), removeClass(self, 'boxshadow-red'), D.querySelector('.text-error').innerText = "";

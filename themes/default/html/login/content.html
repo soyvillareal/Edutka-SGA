@@ -84,7 +84,6 @@ var LI = D.querySelectorAll('.input_key'),
 		}
 		removeClass(LE, 'color-green'), removeClass(LE, 'border-green'), addClass(LB, 'spinner-is-loading'), LB.setAttribute('disabled', true);
 		Req("{$url->{req/to-access/login}}", function(e){
-			console.log(e);
 			if(e.status == 200){
 				window.location.href = e.return;
 			} else if(e.status == 401) {
@@ -171,7 +170,7 @@ LU.focus(), timeDelay(function(){
 	}
 	
 }), addEvent(LB, 'click', LF);
-for (var j = 0, i = LI.length; j < i; j++) addEvent(LI[j], 'keyup', function(e){
+for (var j = 0, i = LI.length; j < i; j++) addEvent(LI[j], 'input', function(e){
 	if(e.which != 13 || e.keyCode != 13){
 		var self = this;
 		self.parentNode.querySelector('.text-error').innerText = "", removeClass(self, 'border-red'), removeClass(self, 'boxshadow-red');

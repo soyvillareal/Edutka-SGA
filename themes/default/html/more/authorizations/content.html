@@ -234,7 +234,6 @@ addEvent(GB, 'click', function(){
 
     GB.setAttribute('disabled', true), addClass(GB, 'spinner-is-loading');
     Req('{$url->{req/rol-academic/this-authorizations}}', function(e){
-        console.log(e);
         if(e.status == 200){
             GI.style.display = "", loadAlert("{$word->you_have_authorized_teacher_successfully}"), preloadPage('&one=more&page=authorizations');
         } else {
@@ -268,7 +267,7 @@ addEvent(GB, 'click', function(){
     }, "POST", "&id=" + self.getAttribute('data-id') + "&expires=" + GJ.value + "&status=" + GU.value)
 }), addEvent(D.querySelector('#close-alert'), 'click', function(){
     GI.style.display = "", D.body.style.overflow = "";
-}), addEvent(GA, 'keyup', function(){
+}), addEvent(GA, 'input', function(){
     var self = this,
         GY = self.parentNode,
         TZ = D.querySelector('#table-footer');

@@ -9,9 +9,9 @@ if (Specific::Teacher() == false) {
 }
 
 
-$TEMP['#arrcou'] = $dba->query('SELECT course_id FROM teacher t WHERE user_id = '.$TEMP['#user']['id'].' AND (SELECT id FROM periods WHERE final > '.time().' AND id = t.period_id) = period_id')->fetchAll(false);
+$TEMP['#arrcou'] = $dba->query('SELECT course_id FROM teacher t WHERE user_id = '.$TEMP['#user']['id'].' AND (SELECT id FROM period WHERE final > '.time().' AND id = t.period_id) = period_id')->fetchAll(false);
 
-$TEMP['#courses'] = $dba->query('SELECT * FROM courses WHERE id IN ((SELECT course_id FROM teacher WHERE user_id = '.$TEMP['#user']['id'].'))')->fetchAll();
+$TEMP['#courses'] = $dba->query('SELECT * FROM course WHERE id IN ((SELECT course_id FROM teacher WHERE user_id = '.$TEMP['#user']['id'].'))')->fetchAll();
 
 $authorizations = $dba->query('SELECT * FROM authorization a WHERE (SELECT id FROM teacher WHERE user_id = '.$TEMP['#user']['id'].' AND id = a.teacher_id) = teacher_id LIMIT ? OFFSET ?', 10, 1)->fetchAll();
 $TEMP['#total_pages'] = $dba->totalPages;
@@ -19,9 +19,9 @@ $TEMP['#total_pages'] = $dba->totalPages;
 if(!empty($authorizations)){
 	foreach ($authorizations as $auth) {
 		$TEMP['!id'] = $auth['id'];
-		$TEMP['!academic'] = $auth['status'] == 'pending' ? $TEMP['#word']['pending'] : $dba->query('SELECT names FROM users WHERE id = '.$auth['user_id'])->fetchArray();
-		$TEMP['!teacher'] = $dba->query('SELECT names FROM users u WHERE (SELECT user_id FROM teacher WHERE id = '.$auth['teacher_id'].' AND user_id = u.id) = id')->fetchArray();
-		$TEMP['!course'] = $dba->query('SELECT name FROM courses WHERE id = '.$auth['course_id'])->fetchArray();
+		$TEMP['!academic'] = $auth['status'] == 'pending' ? $TEMP['#word']['pending'] : $dba->query('SELECT names FROM user WHERE id = '.$auth['user_id'])->fetchArray();
+		$TEMP['!teacher'] = $dba->query('SELECT names FROM user u WHERE (SELECT user_id FROM teacher WHERE id = '.$auth['teacher_id'].' AND user_id = u.id) = id')->fetchArray();
+		$TEMP['!course'] = $dba->query('SELECT name FROM course WHERE id = '.$auth['course_id'])->fetchArray();
 		$TEMP['!court'] = $TEMP['#word'][$auth['court']];
 		$TEMP['!expires'] = $auth['expires'] == 0 ? $TEMP['#word']['pending'] : Specific::DateFormat($auth['expires']);
 		$TEMP['!status'] = $TEMP['#word'][$auth['status']];

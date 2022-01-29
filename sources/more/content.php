@@ -9,7 +9,7 @@ if (Specific::Admin() == false && Specific::Academic() == false) {
     exit();
 }
 
-$users = $dba->query('SELECT * FROM users LIMIT ? OFFSET ?', 10, 1)->fetchAll();
+$users = $dba->query('SELECT * FROM user LIMIT ? OFFSET ?', 10, 1)->fetchAll();
 $TEMP['#total_pages'] = $dba->totalPages;
 
 if(!empty($users)){

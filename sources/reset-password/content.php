@@ -5,7 +5,7 @@ if ($TEMP['#loggedin'] === true || empty($_GET['tokenu'])) {
 }
 
 $tokenu = Specific::Filter($_GET['tokenu']);
-$page = $dba->query('SELECT COUNT(*) FROM users WHERE token = "'.$tokenu.'"')->fetchArray() == 0 ? 'invalid-auth' : 'reset-password';
+$page = $dba->query('SELECT COUNT(*) FROM user WHERE token = "'.$tokenu.'"')->fetchArray() == 0 ? 'invalid-auth' : 'reset-password';
 
 $TEMP['#bubbles'] = Specific::Bubbles();
 

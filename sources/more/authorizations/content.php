@@ -14,11 +14,11 @@ $TEMP['#total_pages'] = $dba->totalPages;
 
 if(!empty($authorizations)){
 	foreach ($authorizations as $auth) {
-		$period = $dba->query('SELECT name FROM periods WHERE id = '.$auth['period_id'])->fetchArray();
+		$period = $dba->query('SELECT name FROM period WHERE id = '.$auth['period_id'])->fetchArray();
 		$TEMP['!id'] = $auth['id'];
-		$TEMP['!academic'] = $auth['status'] == 'pending' ? $TEMP['#word']['pending'] : $dba->query('SELECT names FROM users WHERE id = '.$auth['user_id'])->fetchArray();
-		$TEMP['!teacher'] = $dba->query('SELECT names FROM users u WHERE (SELECT user_id FROM teacher WHERE id = '.$auth['teacher_id'].' AND user_id = u.id) = id')->fetchArray();
-		$TEMP['!course'] = $dba->query('SELECT name FROM courses WHERE id = '.$auth['course_id'])->fetchArray();
+		$TEMP['!academic'] = $auth['status'] == 'pending' ? $TEMP['#word']['pending'] : $dba->query('SELECT names FROM user WHERE id = '.$auth['user_id'])->fetchArray();
+		$TEMP['!teacher'] = $dba->query('SELECT names FROM user u WHERE (SELECT user_id FROM teacher WHERE id = '.$auth['teacher_id'].' AND user_id = u.id) = id')->fetchArray();
+		$TEMP['!course'] = $dba->query('SELECT name FROM course WHERE id = '.$auth['course_id'])->fetchArray();
 		$TEMP['!court'] = $TEMP['#word'][$auth['court']];
 		$TEMP['!period'] = is_array($period) ? $TEMP['#word']['pending'] : $period;
 		$TEMP['!status'] = $TEMP['#word'][$auth['status']];

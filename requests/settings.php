@@ -60,7 +60,7 @@ if ($TEMP['#loggedin'] === true) {
                 }
             }
             if ($email != $TEMP['#user']['email']) {
-                if ($dba->query('SELECT COUNT(*) FROM users WHERE email = "'.$email.'"')->fetchArray() > 0) {
+                if ($dba->query('SELECT COUNT(*) FROM user WHERE email = "'.$email.'"')->fetchArray() > 0) {
                     $errors[] = array('error' => $TEMP['#word']['email_exists'], 'el' => 'settings-email');
                 }
             }
@@ -87,7 +87,7 @@ if ($TEMP['#loggedin'] === true) {
                     if ($TEMP['#settings']['validate_email'] == 'on' && !empty($email) && $TEMP['#user']['email'] != $email) {
                         $code = rand(111111, 999999);
                         $token = md5($code);
-                        $dba->query('UPDATE users SET token = "'.$token.'" WHERE id = '.$TEMP['#user']['id']);
+                        $dba->query('UPDATE user SET token = "'.$token.'" WHERE id = '.$TEMP['#user']['id']);
 
                         $TEMP['token'] = $token;
                         $TEMP['code'] = $code;
@@ -117,7 +117,7 @@ if ($TEMP['#loggedin'] === true) {
                     }
                 }
                     
-                $update = $dba->query('UPDATE users SET cellphone = '.$cellphone.', phone = '.$phone.', gender = '.$gen.', age_changed = '.$age_changed.', date_birthday = '.$date_birthday->getTimestamp().', province = "'.Specific::Filter($_POST['province']).'", municipality = '.Specific::Filter($_POST['municipality']).', about = "'.Specific::Filter($_POST['about']).'"'.$update_data.' WHERE id = '.$TEMP['#user']['id'])->returnStatus();
+                $update = $dba->query('UPDATE user SET cellphone = '.$cellphone.', phone = '.$phone.', gender = '.$gen.', age_changed = '.$age_changed.', date_birthday = '.$date_birthday->getTimestamp().', province = "'.Specific::Filter($_POST['province']).'", municipality = '.Specific::Filter($_POST['municipality']).', about = "'.Specific::Filter($_POST['about']).'"'.$update_data.' WHERE id = '.$TEMP['#user']['id'])->returnStatus();
                 if ($update == true){
                     $deliver['status'] = 200;
                     $deliver['redirect_verify'] = $redirect_verify;
@@ -157,7 +157,7 @@ if ($TEMP['#loggedin'] === true) {
                 $errors[] = array('error' => $TEMP['#word']['new_password_dont_match'], 'el' => 're-password');
             }
             if (!isset($errors)) {
-                if ($dba->query('UPDATE users SET password = "'.sha1($_POST['password']).'" WHERE id = '.$TEMP['#user']['id'])->returnStatus()) {
+                if ($dba->query('UPDATE user SET password = "'.sha1($_POST['password']).'" WHERE id = '.$TEMP['#user']['id'])->returnStatus()) {
                     $deliver['status'] = 200;
                 }
             } else {
@@ -174,7 +174,7 @@ if ($TEMP['#loggedin'] === true) {
         }
     } else if ($one == 'authentication') {
         if(in_array($_POST['authentication'], array(0, 1))){
-            if($dba->query('UPDATE users SET authentication = '.Specific::Filter($_POST['authentication']).' WHERE id = '.$TEMP['#user']['id'])->returnStatus()){
+            if($dba->query('UPDATE user SET authentication = '.Specific::Filter($_POST['authentication']).' WHERE id = '.$TEMP['#user']['id'])->returnStatus()){
                 $deliver['status'] = 200;
             }
         }
@@ -194,7 +194,7 @@ if ($TEMP['#loggedin'] === true) {
                     if(!empty($TEMP['#user']['ex_avatar']) && $TEMP['#user']['avatar'] != 'images/default-avatar.jpg' && $TEMP['#user']['avatar'] != 'images/default-favatar.jpg'){
                         unlink($TEMP['#user']['ex_avatar']);
                     }
-                    if ($dba->query('UPDATE users SET avatar = ? WHERE id = '.$TEMP['#user']['id'], $file_data)->returnStatus()) {
+                    if ($dba->query('UPDATE user SET avatar = ? WHERE id = '.$TEMP['#user']['id'], $file_data)->returnStatus()) {
                         $deliver['status'] = 200;
                     }
                 }
@@ -203,11 +203,11 @@ if ($TEMP['#loggedin'] === true) {
     } else if ($one == 'delete-session'){
         $id = Specific::Filter($_POST['id']);
         if (!empty($id)) {
-            $sessions = $dba->query('SELECT * FROM sessions WHERE id = '.$id)->fetchArray();
+            $sessions = $dba->query('SELECT * FROM session WHERE id = '.$id)->fetchArray();
             if (!empty($sessions)) {
                 $deliver['reload'] = false;
                 if (($sessions['user_id'] == $TEMP['#user']['id']) || Specific::Admin()) {
-                    if ($dba->query('DELETE FROM sessions WHERE id = '.$id)->returnStatus()) {
+                    if ($dba->query('DELETE FROM session WHERE id = '.$id)->returnStatus()) {
                         $deliver['status'] = 200;
                         if ((!empty($_SESSION['session_id']) && $_SESSION['session_id'] == $sessions['session_id']) || (!empty($_COOKIE['session_id']) && $_COOKIE['session_id'] == $sessions['session_id'])) {
                             setcookie('session_id', null, -1, '/');
@@ -222,7 +222,7 @@ if ($TEMP['#loggedin'] === true) {
         $page = Specific::Filter($_POST['page_id']);
         if(!empty($page) && is_numeric($page) && isset($page) && $page > 0){
             $html = "";
-            $user_sessions = $dba->query('SELECT * FROM sessions WHERE user_id = '.$TEMP['#user']['id'].' ORDER BY id DESC LIMIT ? OFFSET ?', 10, $page)->fetchAll();
+            $user_sessions = $dba->query('SELECT * FROM session WHERE user_id = '.$TEMP['#user']['id'].' ORDER BY id DESC LIMIT ? OFFSET ?', 10, $page)->fetchAll();
             if (!empty($user_sessions)) {
                 foreach ($user_sessions as $value) {
                     $session = Specific::GetSessions($value);
@@ -243,7 +243,7 @@ if ($TEMP['#loggedin'] === true) {
         if(!empty($user_id) && Specific::IsOwner($user_id)){
             $code = rand(111111, 999999);
             $token = md5($code);
-            if($dba->query('UPDATE users SET change_email = ?, token = ? WHERE id = '.$user_id, NULL, $token)->returnStatus()){
+            if($dba->query('UPDATE user SET change_email = ?, token = ? WHERE id = '.$user_id, NULL, $token)->returnStatus()){
                 $deliver['status'] = 200;
             }
         }

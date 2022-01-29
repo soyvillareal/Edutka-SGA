@@ -7,7 +7,7 @@ if ((empty($TEMP['#form_key']) && Specific::Admin() == false && Specific::Academ
 
 $TEMP['#load_url']    = Specific::Url('register');
 if(!empty($TEMP['#form_key'])){
-	$form = $dba->query('SELECT * FROM forms WHERE form_key = "'.$TEMP['#form_key'].'"')->fetchArray();
+	$form = $dba->query('SELECT * FROM form WHERE form_key = "'.$TEMP['#form_key'].'"')->fetchArray();
 	$TEMP['#load_url']    = Specific::Url('register/'.$TEMP['#form_key']);
 }
 

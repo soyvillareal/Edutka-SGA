@@ -29,7 +29,7 @@ if($TEMP['#loggedin'] === true){
         }
         session_destroy();
     }
-    $live_notify = $dba->query('SELECT COUNT(*) FROM notifications WHERE seen = 0 AND to_id = '.$TEMP['#user']['id'])->fetchArray();
+    $live_notify = $dba->query('SELECT COUNT(*) FROM notification WHERE seen = 0 AND to_id = '.$TEMP['#user']['id'])->fetchArray();
     if(!empty($live_notify)){
         $TEMP['#notifications'] = $live_notify > 9 ? '9+' : $live_notify;
     }
@@ -40,7 +40,7 @@ if (file_exists("./sources/$page")) {
     require_once("./sources/404/content.php");
 }
 $TEMP['footer_list'] = '';
-$pages = $dba->query('SELECT * FROM pages')->fetchAll();
+$pages = $dba->query('SELECT * FROM page')->fetchAll();
 foreach ($pages as $key => $value) {
     if($value['active'] == 1){
         $TEMP['footer_list'] .= '<li class="item-footer"><a class="color-tertiary" href="'.Specific::Url("pages/{$value['type']}").'" target="_self">'.$TEMP['#word'][str_replace('-', '_', $value['type'])].'</a></li>';

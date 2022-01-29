@@ -78,7 +78,6 @@
               GK = D.querySelector('.privacy-policy_'),
               GJ = D.querySelector('.cookies-policy_');
           Req("{$url->{req/global-data-load}}?token={#token_session}"+url, function(e) {
-            console.log(e);
             if (e.status == 200) {
               for (var J = 0, I = CS.length; J < I; J++) CS && ((e.page == 'home') ? addClass(CS[J], 'active') : removeClass(CS[J], 'active'));
               for (var J = 0, I = CH.length; J < I; J++) CH && ((['general', 'security', 'change-password'].indexOf(e.page) != -1) ? addClass(CH[J], 'active') : removeClass(CH[J], 'active'));
@@ -542,7 +541,6 @@ var HA = D.querySelector('#get-notifications'),
       removeClass(HI, 'hidden'), addClass(HL, 'hidden'), addClass(HO, 'hidden');
     }
     Req("{$url->{req/get-notifications}}", function(e){
-      console.log(e);
       if (e.status == 200) {
         if (e.new) {
           HN.innerHTML = e.new, addClass(HA, 'color-red'), removeClass(HA, 'color-grey');

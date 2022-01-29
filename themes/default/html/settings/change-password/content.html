@@ -150,7 +150,7 @@ for (var j = 0, i = PV.length; j < i; j++) addEvent(PV[j], 'click', function(){
         el.setAttribute('type', 'password');
     }
 });
-for (var j = 0, i = PI.length; j < i; j++) addEvent(PI[j], 'keyup', function(e){
+for (var j = 0, i = PI.length; j < i; j++) addEvent(PI[j], 'input', function(e){
     if(e.which != 13 || e.keyCode != 13){
         var self = this,
             GA = self.id,

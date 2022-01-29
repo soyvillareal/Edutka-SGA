@@ -9,7 +9,7 @@ if (Specific::Admin() == false && Specific::Academic() == false) {
     exit();
 }
 
-$forms = $dba->query('SELECT * FROM forms LIMIT ? OFFSET ?', 10, 1)->fetchAll();
+$forms = $dba->query('SELECT * FROM form LIMIT ? OFFSET ?', 10, 1)->fetchAll();
 $TEMP['#total_pages'] = $dba->totalPages;
 
 if(!empty($forms)){

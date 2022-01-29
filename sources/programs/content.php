@@ -9,7 +9,7 @@ if (Specific::Admin() == false) {
     exit();
 }
 
-$programs = $dba->query('SELECT * FROM programs LIMIT ? OFFSET ?', 10, 1)->fetchAll();
+$programs = $dba->query('SELECT * FROM program LIMIT ? OFFSET ?', 10, 1)->fetchAll();
 $TEMP['#total_pages'] = $dba->totalPages;
 
 if(!empty($programs)){

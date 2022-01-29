@@ -194,7 +194,6 @@ var GP = D.querySelectorAll('.area_validate'),
             auth_id = self.getAttribute('data-id');
         self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
         Req('{$url->{req/rol-teacher/get-aitems}}', function(e){
-            console.log(e);
             if(e.status == 200){
                 for (var key in e.items) {
                     if(key != 'status') {
@@ -228,9 +227,9 @@ addEvent(GC, 'change', function(){
     Req('{$url->{req/rol-teacher/cut-select}}', function(e){
         if(e.status == 200){
             if(e.note_mode == '30-30-40'){
-                removeClass(GK, 'hidden'), GO = D.querySelector('#court'), console.log(GO.value);
+                removeClass(GK, 'hidden'), GO = D.querySelector('#court');
             } else {
-                addClass(GK, 'hidden'), GO = D.querySelector('#court-unique'), console.log(GO.value);
+                addClass(GK, 'hidden'), GO = D.querySelector('#court-unique');
             }
             self.removeAttribute('disabled'), removeClass(GK, 'spinner-is-loading');
         } else {
@@ -269,7 +268,6 @@ addEvent(GC, 'change', function(){
     }
     GB.setAttribute('disabled', true), addClass(GB, 'spinner-is-loading');
     Req('{$url->{req/rol-teacher/this-authorizations}}', function(e){
-        console.log(e);
         if(e.status == 200){
             GI.style.display = "", loadAlert("{$word->you_have_authorized_teacher_successfully}"), preloadPage('&one=authorizations');
         } else {
@@ -306,7 +304,7 @@ addEvent(GC, 'change', function(){
     for(var j = 0, i = GP.length; j < i; j++) GP[j].value = (GP[j].nodeName != 'SELECT') ? '' : GP[j].children[0] && GP[j].children[0].getAttribute('value');
 }), addEvent(D.querySelector('#cancel-alert'), 'click', function(){
     GI.style.display = "", D.body.style.overflow = "";
-}), addEvent(GA, 'keyup', function(){
+}), addEvent(GA, 'input', function(){
     var self = this,
         GQ = self.parentNode,
         TZ = D.querySelector('#table-footer');
@@ -323,7 +321,7 @@ addEvent(GC, 'change', function(){
 
 for(var j = 0, i = GW.length; j < i; j++) addEvent(GW[j], "click", GD);
 for(var j = 0, i = GJ.length; j < i; j++) addEvent(GJ[j], "change", bDisabled);
-for(var j = 0, i = GP.length; j < i; j++) addEvent(GP[j], "keyup", bDisabled);
+for(var j = 0, i = GP.length; j < i; j++) addEvent(GP[j], "input", bDisabled);
 for (var j = 0, i = GL.length; j < i; j++) addEvent(GL[j], "click", function(){
     var self = this,
         type = self.getAttribute('data-type');

@@ -427,7 +427,7 @@ for(var j = 0, i = GQ.length; j < i; j++) addEvent(GQ[j], 'change', bDisabled);
 for(var j = 0, i = GN.length; j < i; j++) addEvent(GN[j], 'input', function(){
     this.value = this.value.replace(/[^0-9]/gi, '');
 });
-for (var j = 0, i = GK.length; j < i; j++) addEvent(GK[j], 'keyup', function(e){
+for (var j = 0, i = GK.length; j < i; j++) addEvent(GK[j], 'input', function(e){
     if(e.which != 13 || e.keyCode != 13){
         var self = this,
             GA = self.id,

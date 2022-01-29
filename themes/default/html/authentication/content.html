@@ -104,7 +104,6 @@ var TI = D.querySelectorAll('.input_key'),
 		}
 		addClass(TB, 'spinner-is-loading'), TB.setAttribute('disabled', true);
 		Req("{$url->{req/to-access/verify-{$type}}}", function(e){
-			console.log(e);
 			if(e.status == 200){
 				timeDelay(function(){
 					if(e.url == 'settings'){
@@ -178,7 +177,7 @@ for(var j = 0, i = TN.length; j < i; j++) addEvent(TN[j], 'paste', function(e){
 		TO.value = TD.slice(0,1), TT.value = TD.slice(1,2), TQ.value = TD.slice(2,3), TU.value = TD.slice(3,4), TV.value = TD.slice(4,5), TS.value = TD.slice(5,6), TW(TI[TI.length-1], 1), TF();
 	}
 });
-for (var j = 0, i = TI.length; j < i; j++) addEvent(TI[j], 'keyup', function(e){
+for (var j = 0, i = TI.length; j < i; j++) addEvent(TI[j], 'input', function(e){
 	var TK = e.which || e.keyCode,
 		ctrlKey = e.ctrlKey || e.metaKey;
 	if(TK != 13 && TK != 8 && TK != 37 && TK != 39){

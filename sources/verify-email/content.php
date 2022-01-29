@@ -7,7 +7,7 @@ if ($TEMP['#loggedin'] == true || empty($tokenu) || empty($ukey)) {
 	exit();
 }
 
-$user = $dba->query('SELECT * FROM users WHERE ukey = "'.$ukey.'" AND token = "'.$tokenu.'"')->fetchArray();
+$user = $dba->query('SELECT * FROM user WHERE ukey = "'.$ukey.'" AND token = "'.$tokenu.'"')->fetchArray();
 $page = empty($user) || $user['status'] == 'active' || (strlen($TEMP['#descode']) != 6 && !empty($TEMP['#descode'])) ? 'invalid-auth' : 'authentication';
 
 $TEMP['#bubbles'] = Specific::Bubbles();

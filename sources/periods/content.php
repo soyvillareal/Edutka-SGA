@@ -9,7 +9,7 @@ if (Specific::Admin() == false) {
     exit();
 }
 
-$periods = $dba->query('SELECT * FROM periods ORDER BY start ASC LIMIT ? OFFSET ?', 10, 1)->fetchAll();
+$periods = $dba->query('SELECT * FROM period ORDER BY start ASC LIMIT ? OFFSET ?', 10, 1)->fetchAll();
 $TEMP['#total_pages'] = $dba->totalPages;
 
 if(!empty($periods)){

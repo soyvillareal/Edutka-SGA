@@ -649,6 +649,7 @@ var GE = D.querySelectorAll('.show_emodal'),
     GU = D.querySelector('#start'),
     GF = D.querySelector('#final'),
     GG = D.querySelector('#status'),
+    Gw = D.querySelector('#screen'),
     TE = D.querySelector('#navigation-after'),
     TO = D.querySelector('#navigation-before'),
     TR = D.querySelector('#navigation-first'),
@@ -666,7 +667,6 @@ var GE = D.querySelectorAll('.show_emodal'),
             period_id = self.getAttribute('data-id');
         self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
         Req('{$url->{req/rol-admin/get-peitems}}', function(e){
-            console.log(e);
             if(e.status == 200){
                 for (var key in e.items) {
                     if(key == 'start'){
@@ -691,7 +691,6 @@ var GE = D.querySelectorAll('.show_emodal'),
             GZ = el.querySelector('.date_left'),
             GH = el.querySelector('.date_right'),
             gh = el.querySelector('.dbclick_date');
-            console.log(gh);
         gh.innerText = '{$word->undefined}', gr = GH.querySelector('input'), removeClass(gr, 'border-red'), removeClass(gr, 'boxshadow-red'), GH.querySelector('input').value = '', removeClass(gh, 'hidden'), addClass(GH, 'hidden'), GZ && (gl = GZ.querySelector('input'), el.querySelector('.clear_date').style.marginTop = '', el.querySelector('.text-error').innerText = '', removeClass(gl, 'border-red'), removeClass(gl, 'boxshadow-red'), gl.value = '', removeClass(el.querySelector('.date_title'), 'hidden'), addClass(GZ, 'hidden'));
     },
     GD = function(){
@@ -702,9 +701,8 @@ var GE = D.querySelectorAll('.show_emodal'),
             period_id = self.getAttribute('data-id');
         self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
         Req('{$url->{req/rol-admin/get-ditems}}', function(e){
-            console.log(e);
             if(e.status == 200){
-                D.querySelector('#text-pname').innerText = e.name;
+                Gw.value = Gw.children[0].value, D.querySelector('#text-pname').innerText = e.name;
                 for (var key in e.items) {
                     gu[key].value = e.items[key];
                 }
@@ -733,7 +731,7 @@ var GE = D.querySelectorAll('.show_emodal'),
     TA = 1,
     TT = {#total_pages};
 
-addEvent(D.querySelector('#screen'), 'change', function(){
+addEvent(Gw, 'change', function(){
     var self = this,
         el = D.querySelectorAll('.items-date');
     for (var j = 0, i = el.length; j < i; j++) addClass(el[j], 'hidden');
@@ -742,10 +740,10 @@ addEvent(D.querySelector('#screen'), 'change', function(){
     GU.max = this.value;
 }), addEvent(GU, 'change', function(){
     GO.value = this.value.split('-')[0];
-}), addEvent(GU, 'keyup', function(){
+}), addEvent(GU, 'input', function(){
     GO.value = this.value.split('-')[0];
 }), addEvent(D.querySelector('#show-pmodal'), 'click', function(){
-    Gq.innerText = '{$word->add_new_academic_term}', GI.style.display = "block", D.body.style.overflow = "hidden", GB.setAttribute('data-type', 'add'), GB.removeAttribute('data-id'), scrollTo(0, GV);
+    GO.value = "", Gq.innerText = '{$word->add_new_academic_term}', GI.style.display = "block", D.body.style.overflow = "hidden", GB.setAttribute('data-type', 'add'), GB.removeAttribute('data-id'), scrollTo(0, GV);
     for(var j = 0, i = GC.length; j < i; j++) GC[j].value = (GC[j].nodeName != 'SELECT') ? '' : GC[j].children[0].getAttribute('value');
 }), addEvent(D.querySelector('#cancel-alert'), 'click', function(){
     GI.style.display = "", D.body.style.overflow = "";
@@ -804,7 +802,6 @@ addEvent(D.querySelector('#screen'), 'change', function(){
     for (var j = 0, i = gu.length; j < i; j++) gv.push(gu[j].value);
     GB.setAttribute('disabled', true), addClass(GB, 'spinner-is-loading');
     Req('{$url->{req/rol-admin/this-dates}}', function(e){
-        console.log(e);
         if(e.status == 200){
             GK.style.display = "", loadAlert("{$word->period_updated_successfully}"), preloadPage('&one=periods');
         } else {
@@ -823,7 +820,6 @@ addEvent(D.querySelector('#screen'), 'change', function(){
                     var el = D.querySelector('[data-pos="'+e.emptys[j]+'"]'),
                         GZ = el.querySelector('.date_left input'),
                         GH = el.querySelector('.date_right input');
-                    console.log(el), console.log(GZ);
                     el.querySelector('.text-error').innerText = '*{$word->please_make_sure_fill_all_fields_first}', el.querySelector('.clear_date').style.marginTop = '-13px', addClass(GZ, 'border-red'), addClass(GZ, 'boxshadow-red'), addClass(GH, 'border-red'), addClass(GH, 'boxshadow-red'), timeDelay(function(){
                         addClass(GI, 'efect-boom'), timeDelay(function(){
                             removeClass(GI, 'efect-boom')
@@ -875,7 +871,6 @@ addEvent(D.querySelector('#screen'), 'change', function(){
     }
     GB.setAttribute('disabled', true), addClass(GB, 'spinner-is-loading');
     Req('{$url->{req/rol-admin/this-periods}}', function(e){
-        console.log(e);
         if(e.status == 200){
             GI.style.display = "", loadAlert((type == 'add' ? "{$word->period_added_successfully}" : "{$word->period_updated_successfully}")), preloadPage('&one=periods');
         } else {
@@ -917,13 +912,12 @@ addEvent(D.querySelector('#screen'), 'change', function(){
             self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading'), loadAlert(e.error, 1);
         }
     }, "POST", "&id=" + self.getAttribute('data-id'));
-}), addEvent(GA, 'keyup', function(){
+}), addEvent(GA, 'input', function(){
     var self = this,
         TQ = self.parentNode,
         TZ = D.querySelector('#table-footer');
     addClass(TQ, 'spinner-is-loading');
     Req('{$url->{req/rol-admin/search-periods}}', function(e){
-        console.log(e);
         if(e.status == 200){
             <?php echo($TEMP['#total_pages'] > 1) ? "TT = e.total_pages, TA = 1, TO.setAttribute('disabled', true), TR.setAttribute('disabled', true), TE.removeAttribute('disabled'), TS.removeAttribute('disabled'), D.querySelector('#total-pages').innerText = TT, TN.innerText = TA, TZ && (TT <= 1 ? TZ.style.display = 'none' : TZ.removeAttribute('style')), " : ""?>removeClass(TQ, 'spinner-is-loading'), D.querySelector('#container-pages').innerHTML = e.html, loadPage(D.querySelectorAll('a[target="_self"]')), GE = D.querySelectorAll('.show_emodal'), GW = D.querySelectorAll('.show_dmodal'), GX = D.querySelectorAll('.show_vmodal'), GY = D.querySelectorAll('.dbclick_date');
             for(var j = 0, i = GE.length; j < i; j++) addEvent(GE[j], "click", GS);
@@ -943,7 +937,7 @@ for(var j = 0, i = GX.length; j < i; j++) addEvent(GX[j], "click", GN);
 for(var j = 0, i = gd.length; j < i; j++) addEvent(gd[j], "click", gj);
 for(var j = 0, i = GY.length; j < i; j++) doubleClick(GY[j], GJ);
 for (var j = 0, i = GR.length; j < i; j++) addEvent(GR[j], 'change', bDisabled);
-for (var j = 0, i = GC.length; j < i; j++) addEvent(GC[j], 'keyup', bDisabled);
+for (var j = 0, i = GC.length; j < i; j++) addEvent(GC[j], 'input', bDisabled);
 for (var j = 0, i = GL.length; j < i; j++) addEvent(GL[j], "click", function(){
     var self = this,
         type = self.getAttribute('data-type');

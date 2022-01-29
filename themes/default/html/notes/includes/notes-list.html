@@ -259,8 +259,9 @@
             </div>
             <?php if($TEMP['#admin'] == true || $TEMP['#academic'] == true || $TEMP['#teacher'] == true) { ?>
             <div id="observation-{!id}" class="observation animated-easy overflow-hidden position-relative<?php echo(empty($TEMP['!observation'])) ? ' h-0 "' : '" style="height: auto;"';?>>
-               <b class="position-absolute margin-l10 margin-t5 color-grey">{$word->observation}:</b>
-               <textarea class="cont-input observation-input border-bottom-left-radius border-bottom-right-radius animated-easy background-grely color-black" rows="5" cols="20" readonly="true" style="max-height: 100px;">{!observation}</textarea>
+               <b class="background-grely position-absolute margin-l10 margin-t5 color-grey">{$word->observation}:</b>
+               <textarea class="cont-input observation-input border-bottom-left-radius border-bottom-right-radius animated-easy background-grely color-black" rows="5" cols="20" maxlength="500" readonly="true" style="max-height: 100px;">{!observation}</textarea>
+               <div class="observation_limit position-absolute pos-right pos-top margin-r15 margin-t5 {!limit_color} font-low font-bold" data-limit="{!observation_limit}">{!observation_limit}</div>
                <div class="observation-buttons position-absolute pos-bottom pos-right margin-r10 hidden">
                   <button class="upload_observation btn-noway hover-button color-green" data-id="{!id}">
                      <span class="color-green">

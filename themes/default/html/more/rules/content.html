@@ -224,7 +224,6 @@ var GC = D.querySelectorAll('.edit_rule'),
         } else {
             self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
             Req('{$url->{req/rol-admin/this-rules}}', function(e){
-                console.log(e);
                 if(e.status == 200){
                     if(e.change == 'true') D.querySelector('#file-rule-' + e.rule_id).parentNode.parentNode.querySelector('.status').value = 'disabled';
                     button.innerText = "{$word->edit}", status.setAttribute('disabled', true), addClass(status, 'cursor-disabled'), removeClass(ruleh, 'hidden'), addClass(rulet, 'hidden'), addClass(upload_file, 'cursor-disabled'), upload_file.setAttribute('disabled', true), addClass(clear_file, 'cursor-disabled'), clear_file.setAttribute('disabled', true), addClass(close, 'hidden'), loadAlert("{$word->regulation_updated_successfully}"), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading'), ruleh.innerHTML = '<div class="overflow-auto w-100">' + e.html + '</div>';
@@ -241,7 +240,6 @@ var GC = D.querySelectorAll('.edit_rule'),
             GO = GL.querySelector('.file_name');
         self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
         Req("{$url->{req/rol-admin/upload-rule}}?token={#token_session}&id=" + rule_id, function(e){
-            console.log(e);
             if (e.status == 200) {
                 GQ.style.display = "none", D.body.style.overflow = "", el.value = "", GO.setAttribute('placeholder', e.file), GO.setAttribute('data-link', e.url), removeClass(GL.querySelector('.clear_file'), 'hidden'), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
             } else {  
@@ -275,8 +273,7 @@ addEvent(GU, 'click', function(){
         rule_id = self.getAttribute('data-id'),
         el = D.querySelector('#file-rule-' + rule_id),
         GL = el.parentNode,
-        GO = GL.querySelector('.file_name'); 
-    console.log(GL);
+        GO = GL.querySelector('.file_name');
     self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
     Req('{$url->{req/rol-admin/delete-frule}}', function(e){
         if(e.status == 200){
@@ -293,7 +290,6 @@ addEvent(GU, 'click', function(){
     } else {
         GR.setAttribute('disabled', true), addClass(GR, 'spinner-is-loading');
         Req('{$url->{req/rol-admin/this-rules}}', function(e){
-            console.log(e);
             if(e.status == 200){
                 GR.innerText = "{$word->add}", removeClass(GN, 'h-640px'), addClass(GN, 'h-0'), loadAlert("{$word->regulation_updated_successfully}"), preloadPage('&one=more&page=rules');
             } else {

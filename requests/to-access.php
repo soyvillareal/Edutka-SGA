@@ -21,9 +21,9 @@ if($one == 'login'){
 		$emptys[] = 'password';
 	}
 	if(empty($emptys)){
-		if($dba->query('SELECT COUNT(*) FROM users WHERE dni = "'.$dni.'"')->fetchArray() == 0){
+		if($dba->query('SELECT COUNT(*) FROM user WHERE dni = "'.$dni.'"')->fetchArray() == 0){
 	        $error = array('error' => $TEMP['#word']['invalid_dni'], 'el' => 'dni');
-	    } else if ($dba->query('SELECT COUNT(*) FROM users WHERE dni = "'.$dni.'" AND password = "'.sha1($password).'"')->fetchArray() == 0){
+	    } else if ($dba->query('SELECT COUNT(*) FROM user WHERE dni = "'.$dni.'" AND password = "'.sha1($password).'"')->fetchArray() == 0){
 	       	$error = array('error' => $TEMP['#word']['invalid_password'], 'el' => 'password');
 	    } else if ($TEMP['#settings']['recaptcha'] == 'on') {
             if (!isset($_POST['recaptcha']) || empty($_POST['recaptcha']) || ($recaptcha["success"] == false && $recaptcha["score"] < 0.5)) {
@@ -31,7 +31,7 @@ if($one == 'login'){
             }
         } 
 
-	    $to_access = $dba->query('SELECT * FROM users WHERE dni = "'.$dni.'" AND password = "'.sha1($password).'"')->fetchArray();
+	    $to_access = $dba->query('SELECT * FROM user WHERE dni = "'.$dni.'" AND password = "'.sha1($password).'"')->fetchArray();
 	    if (empty($error)) {
 	        if ($to_access['status'] == 'pending') {
 	           	$deliver = array(
@@ -46,10 +46,10 @@ if($one == 'login'){
 	           		'html' => $TEMP['#word']['account_was_deactivated_owner_email_related'] . ' ' . $TEMP['#word']['if_you_need_more_help'] . ' <a class="color-blue" href="'.Specific::Url('contact').'" target="_self">' . $TEMP['#word']['contact_our_helpdesk'] . '</a>'
 	            );
 	        } else {
-	            if ($to_access['authentication'] == 1 && $to_access['ip'] != 'XD') {
+	            if ($to_access['authentication'] == 1 && $to_access['ip'] != Specific::GetClientIp()) {
 	                $code = rand(111111, 999999);
 	                $token = md5($code);
-	                $dba->query('UPDATE users SET token = "'.$token.'" WHERE dni = "'.$dni.'"');
+	                $dba->query('UPDATE user SET token = "'.$token.'" WHERE dni = "'.$dni.'"');
 
 	                $ukey = $to_access['ukey'];
 	                $name = $to_access['names'];
@@ -82,11 +82,11 @@ if($one == 'login'){
 	            } else {
 	                $session_id = sha1(Specific::RandomKey()) . md5(time());
 		            $session_details = json_encode(Specific::BrowserDetails()['details']);
-		            $insert = $dba->query("INSERT INTO sessions (user_id, session_id, details, time) VALUES ({$to_access['id']},'$session_id','$session_details',".time().')')->insertId();
+		            $insert = $dba->query("INSERT INTO session (user_id, session_id, details, time) VALUES ({$to_access['id']},'$session_id','$session_details',".time().')')->insertId();
 
 		            $_SESSION['session_id'] = $session_id;
 		            setcookie("session_id", $session_id, time() + 315360000, "/");
-		            $dba->query('UPDATE users SET ip = "'.Specific::GetClientIp().'" WHERE id = '.$to_access['id']);
+		            $dba->query('UPDATE user SET ip = "'.Specific::GetClientIp().'" WHERE id = '.$to_access['id']);
 		            $deliver = array(
 		            	'status' => 200,
 		            	'return' => $_POST['return']
@@ -108,11 +108,11 @@ if($one == 'login'){
 } else if($one == 'resend-token'){
 	$ukey = Specific::Filter($_POST['ukey']);
 	$token = Specific::Filter($_POST['tokenu']);
-	$user = $dba->query('SELECT * FROM users WHERE ukey = "'.$ukey.'" AND token = "'.$token.'"')->fetchArray();
+	$user = $dba->query('SELECT * FROM user WHERE ukey = "'.$ukey.'" AND token = "'.$token.'"')->fetchArray();
 	if (!empty($user)) {
 	    $code = rand(111111, 999999);
 	    $token = md5($code);
-	    $dba->query('UPDATE users SET token = "'.$token.'" WHERE ukey = "'.$ukey.'"');
+	    $dba->query('UPDATE user SET token = "'.$token.'" WHERE ukey = "'.$ukey.'"');
 		
 		$TEMP['ukey'] = $ukey;
 		$TEMP['token'] =  $token;
@@ -150,11 +150,11 @@ if($one == 'login'){
 	$ukey = Specific::Filter($_POST['ukey']);
 	$token = Specific::Filter($_POST['tokenu']);
 	if(!empty($ukey) && !empty($token)){
-		$user = $dba->query('SELECT * FROM users WHERE ukey = "'.$ukey.'" AND token = "'.$token.'"')->fetchArray();
+		$user = $dba->query('SELECT * FROM user WHERE ukey = "'.$ukey.'" AND token = "'.$token.'"')->fetchArray();
 		if(!empty($user)) {
 			$code = rand(111111,999999);
 			$token = sha1($code);
-			$dba->query('UPDATE users SET token = "'.$token.'" WHERE ukey = "'.$ukey.'"');
+			$dba->query('UPDATE user SET token = "'.$token.'" WHERE ukey = "'.$ukey.'"');
 
 			$TEMP['ukey'] = $ukey;
 			$TEMP['token'] = $token;
@@ -202,14 +202,14 @@ if($one == 'login'){
 	$token = Specific::Filter($_POST['tokenu']);
 	if($TEMP['#settings']['authentication'] == 'on' && !empty($ukey)){
 		if(!empty($token)){
-			$user = $dba->query('SELECT * FROM users WHERE ukey = "'.$ukey.'" AND token = "'.md5($token).'"')->fetchArray();
+			$user = $dba->query('SELECT * FROM user WHERE ukey = "'.$ukey.'" AND token = "'.md5($token).'"')->fetchArray();
 			if (!empty($user)) {
 			    $token = md5(rand(111111, 999999));
 				$session_id = sha1(Specific::RandomKey()).md5(time());
-			    if($dba->query('INSERT INTO sessions (user_id, session_id, time) VALUES ('.$user['id'].',"'.$session_id.'",'.time().')')->returnStatus()){
+			    if($dba->query('INSERT INTO session (user_id, session_id, time) VALUES ('.$user['id'].',"'.$session_id.'",'.time().')')->returnStatus()){
 			    	$_SESSION['session_id'] = $session_id;
 				    setcookie("session_id", $session_id, time() + 315360000, "/");
-				    $dba->query('UPDATE users SET ip = "'.Specific::GetClientIp().'", token = "'.$token.'" WHERE id = '.$user['id']);
+				    $dba->query('UPDATE user SET ip = "'.Specific::GetClientIp().'", token = "'.$token.'" WHERE id = '.$user['id']);
 				    $deliver = array(
 					    'status' => 200,
 					    'url' => !empty($_POST['to']) ? $_POST['to'] : Specific::Url()
@@ -239,7 +239,7 @@ if($one == 'login'){
     }
 
 	if (empty($error)) {
-	    $user = $dba->query('SELECT * FROM users WHERE email = "'.$email.'"')->fetchArray();
+	    $user = $dba->query('SELECT * FROM user WHERE email = "'.$email.'"')->fetchArray();
 		if(!empty($user)){
 	    	if ($user['status'] == 'deactivated') {
 		        $deliver = array(
@@ -250,7 +250,7 @@ if($one == 'login'){
 	           	$user = Specific::Data($user['id']);
 	           	$code = time() + rand(111111,999999);
 	           	$token = sha1($code);
-	           	$dba->query('UPDATE users SET token = "'.$token.'" WHERE id = '.$user['id']);
+	           	$dba->query('UPDATE user SET token = "'.$token.'" WHERE id = '.$user['id']);
 
 	           	$TEMP['token'] = $token;
 				$TEMP['name'] = $user['names'];
@@ -293,7 +293,7 @@ if($one == 'login'){
 	$password = Specific::Filter($_POST['password']);
 	$re_password = Specific::Filter($_POST['re-password']);
 	if(!empty($token)){
-		$user_id = $dba->query('SELECT id FROM users WHERE token = "'.$token.'"')->fetchArray();
+		$user_id = $dba->query('SELECT id FROM user WHERE token = "'.$token.'"')->fetchArray();
 		if(empty($password)){
 			$emptys[] = 'password';
 		}
@@ -311,7 +311,7 @@ if($one == 'login'){
 
 			    if (empty($errors)) {
 			       	$token = sha1(time() + rand(111111,999999));
-			       	if ($dba->query('UPDATE users SET password = "'.sha1($password).'", token = "'.$token.'" WHERE id = '.$user_id)->returnStatus()) {
+			       	if ($dba->query('UPDATE user SET password = "'.sha1($password).'", token = "'.$token.'" WHERE id = '.$user_id)->returnStatus()) {
 				        $deliver = array(
 						    'status' => 200,
 							'url' => '&one=login'
@@ -378,16 +378,16 @@ if($one == 'login'){
 		$emptys[] = 'year';
 	}
 
-	$access = $dba->query('SELECT access FROM forms WHERE form_key = "'.$form_key.'"')->fetchArray();
+	$access = $dba->query('SELECT access FROM form WHERE form_key = "'.$form_key.'"')->fetchArray();
 	$access = explode(',', $access);
 	if(empty($emptys)){
-        if ($dba->query('SELECT COUNT(*) FROM users WHERE dni = "'.$dni.'"')->fetchArray() > 0) {
+        if ($dba->query('SELECT COUNT(*) FROM user WHERE dni = "'.$dni.'"')->fetchArray() > 0) {
             $errors[] = array('error' => $TEMP['#word']['document_already_exists'], 'el' => 'dni');
         }
         if (!preg_match('/^[0-9]/', $dni)) {
             $errors[] = array('error' => $TEMP['#word']['invalid_document_characters'], 'el' => 'dni');
         }
-        if ($dba->query('SELECT COUNT(*) FROM users WHERE email = "'.$email.'"')->fetchArray() > 0) {
+        if ($dba->query('SELECT COUNT(*) FROM user WHERE email = "'.$email.'"')->fetchArray() > 0) {
             $errors[] = array('error' => $TEMP['#word']['email_exists'], 'el' => 'email');
         }
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -453,7 +453,7 @@ if($one == 'login'){
 	                    $insert_array['language'] = "'{$_SESSION['language']}'";
 	                }
 	            }
-	            $user_id = $dba->query('INSERT INTO users ('.implode(',', array_keys($insert_array)).') VALUES ('.implode(',', array_values($insert_array)).')')->insertId();
+	            $user_id = $dba->query('INSERT INTO user ('.implode(',', array_keys($insert_array)).') VALUES ('.implode(',', array_values($insert_array)).')')->insertId();
 
 	            if($user_id) {
 		            if ($TEMP['#settings']['validate_email'] == 'on') {
@@ -486,7 +486,7 @@ if($one == 'login'){
 		            } else {
 		                $session_id = sha1(Specific::RandomKey()) . md5(time());
 				        $session_details = json_encode(Specific::BrowserDetails()['details']);
-				        if($dba->query('INSERT INTO sessions (user_id, session_id, details, time) VALUES (?, ?, ?, ?)', $user_id, $session_id, $session_details, time())->insertId()){
+				        if($dba->query('INSERT INTO session (user_id, session_id, details, time) VALUES (?, ?, ?, ?)', $user_id, $session_id, $session_details, time())->insertId()){
 				        	$_SESSION['session_id'] = $session_id;
 			                setcookie("session_id", $session_id, time() + 315360000, "/");
 			                $deliver = array(
@@ -519,11 +519,11 @@ if($one == 'login'){
 	$token = Specific::Filter($_POST['tokenu']);
 	if(!empty($token)){
 		if(!empty($ukey)){
-			$user = $dba->query('SELECT * FROM users WHERE ukey = "'.$ukey.'" AND token = "'.sha1($token).'"')->fetchArray();
+			$user = $dba->query('SELECT * FROM user WHERE ukey = "'.$ukey.'" AND token = "'.sha1($token).'"')->fetchArray();
 			if(!empty($user)){
-				if ($dba->query('UPDATE users SET status = "active", token = "'.sha1(rand(111111,999999)).'" WHERE id = '.$user['id'])->returnStatus()) {
+				if ($dba->query('UPDATE user SET status = "active", token = "'.sha1(rand(111111,999999)).'" WHERE id = '.$user['id'])->returnStatus()) {
 					$session_id = sha1(Specific::RandomKey()).md5(time());
-				    if($dba->query('INSERT INTO sessions (user_id, session_id, time) VALUES ('.$user['id'].',"'.$session_id.'",'.time().')')->returnStatus()){
+				    if($dba->query('INSERT INTO session (user_id, session_id, time) VALUES ('.$user['id'].',"'.$session_id.'",'.time().')')->returnStatus()){
 				    	$_SESSION['session_id'] = $session_id;
 					    setcookie("session_id", $session_id, time() + 315360000, "/");
 					    $deliver = array(
@@ -550,12 +550,12 @@ if($one == 'login'){
 	$token = Specific::Filter($_POST['tokenu']);
 	if (!empty($ukey)) {
 		if(!empty($token)){
-			$user = $dba->query('SELECT * FROM users WHERE ukey = "'.$ukey.'" AND token = "'.md5($token).'"')->fetchArray();
+			$user = $dba->query('SELECT * FROM user WHERE ukey = "'.$ukey.'" AND token = "'.md5($token).'"')->fetchArray();
 			if(!empty($user)){
 				if(Specific::IsOwner($user['id'])){
 					$code = rand(111111, 999999);
 				    $token = md5($code);
-				    if($dba->query('UPDATE users SET token = ?, email = ?, change_email = ? WHERE id = '.$user['id'], $token, $user['change_email'], NULL)->returnStatus()){
+				    if($dba->query('UPDATE user SET token = ?, email = ?, change_email = ? WHERE id = '.$user['id'], $token, $user['change_email'], NULL)->returnStatus()){
 				    	$deliver = array(
 						    'status' => 200,
 						    'url' => 'settings'
@@ -579,11 +579,11 @@ if($one == 'login'){
 	$ukey = Specific::Filter($_POST['ukey']);
 	$token = Specific::Filter($_POST['tokenu']);
 	if(!empty($ukey) && !empty($token)){
-		$user = $dba->query('SELECT * FROM users WHERE ukey = "'.$ukey.'" AND token = "'.$token.'"')->fetchArray();
+		$user = $dba->query('SELECT * FROM user WHERE ukey = "'.$ukey.'" AND token = "'.$token.'"')->fetchArray();
 		if (!empty($user)) {
 		    $code = rand(111111, 999999);
 		    $token = md5($code);
-		    $dba->query('UPDATE users SET token = "'.$token.'" WHERE ukey = "'.$ukey.'"');
+		    $dba->query('UPDATE user SET token = "'.$token.'" WHERE ukey = "'.$ukey.'"');
 
 		    $TEMP['ukey'] = $ukey;
 			$TEMP['token'] = $token;
@@ -643,7 +643,7 @@ if($one == 'login'){
 	$token = Specific::Filter($_POST['tokenu']);
 	$ukey = Specific::Filter($_POST['ukey']);
 	if(!empty($user_id) && !empty($token) && !empty($ukey)){
-		if($dba->query('UPDATE users SET status = "deactivated" WHERE id = '.$user_id.' AND token = "'.$token.'" AND ukey = "'.$ukey.'"')->returnStatus()){
+		if($dba->query('UPDATE user SET status = "deactivated" WHERE id = '.$user_id.' AND token = "'.$token.'" AND ukey = "'.$ukey.'"')->returnStatus()){
 			$deliver['status'] = 200;
 		}
 	}

@@ -52,7 +52,7 @@ $programs = $dba->query('SELECT program_id FROM enrolled WHERE user_id = '.$TEMP
 
 $TEMP['#programs'] = 0;
 if(!empty($programs)){
-	$TEMP['#programs'] = $dba->query('SELECT * FROM programs WHERE id IN ('.implode(',', $programs).')')->fetchAll();
+	$TEMP['#programs'] = $dba->query('SELECT * FROM program WHERE id IN ('.implode(',', $programs).')')->fetchAll();
 }
 
 $courses = $dba->query('SELECT COUNT(*) FROM enrolled WHERE user_id = '.$TEMP['#user_id'].' AND type = "course"')->fetchArray();
@@ -73,11 +73,11 @@ if(!empty($enrolled)){
 	foreach ($enrolled as $enroll) {
 		if($enroll['type'] == 'course'){
 			$estatus = $dba->query('SELECT status FROM enrolled e WHERE user_id = '.$TEMP['#user_id'].' AND type = "program" AND program_id = '.$enroll['program_id'])->fetchArray();
-			$course = $dba->query('SELECT name FROM courses WHERE id = '.$enroll['course_id'])->fetchArray();
-			$periodc = $dba->query('SELECT name, final FROM periods WHERE id = '.$enroll['period_id'])->fetchArray();
+			$course = $dba->query('SELECT name FROM course WHERE id = '.$enroll['course_id'])->fetchArray();
+			$periodc = $dba->query('SELECT name, final FROM period WHERE id = '.$enroll['period_id'])->fetchArray();
 			$plan_id = $dba->query('SELECT id FROM plan WHERE program_id = '.$enroll['program_id'])->fetchArray();
 
-			$teachers = $dba->query('SELECT names FROM users u WHERE (SELECT user_id FROM teacher WHERE user_id = u.id AND course_id = '.$enroll['course_id'].' AND period_id = '.$enroll['period_id'].') = id')->fetchAll(false);
+			$teachers = $dba->query('SELECT names FROM user u WHERE (SELECT user_id FROM teacher WHERE user_id = u.id AND course_id = '.$enroll['course_id'].' AND period_id = '.$enroll['period_id'].') = id')->fetchAll(false);
 			if(!empty($teachers)){
 				if(count($teachers) == 2){
 					$TEMP['!teacher'] = "{$teachers[0]} {$TEMP['#word']['and']} {$teachers[1]}";
@@ -96,7 +96,7 @@ if(!empty($enrolled)){
 			$TEMP['!color'] = 'purple';
 			$TEMP['!plan_id'] = $plan_id;
 		} else {
-			$program = $dba->query('SELECT * FROM programs WHERE id = '.$enroll['program_id'])->fetchArray();
+			$program = $dba->query('SELECT * FROM program WHERE id = '.$enroll['program_id'])->fetchArray();
 			$TEMP['!name'] = $program['name'];
 			$TEMP['!color'] = 'green';
 		}
@@ -138,7 +138,7 @@ if(!empty($enrolled)){
 	$TEMP['enrolled'] .= Specific::Maket("not-found/enroll");
 }
 
-$TEMP['#period_all'] = $dba->query('SELECT * FROM periods')->fetchAll();
+$TEMP['#period_all'] = $dba->query('SELECT * FROM period')->fetchAll();
 
 $TEMP['#page']        = 'enroll';
 $TEMP['#title']       = $TEMP['#word']['enroll'] . ' - ' . $TEMP['#settings']['title'];

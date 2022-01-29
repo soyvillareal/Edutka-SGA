@@ -286,7 +286,7 @@ addEvent(D.querySelector('#cancel-alert'), 'click', function(){
             GB.removeAttribute('disabled'), removeClass(GB, 'spinner-is-loading');
         }
     }, "POST", "&id=" + self.getAttribute('data-id') + "&dni=" + GM.value + "&names=" + GU.value + "&surnames=" + GF.value<?php echo($TEMP['#admin'] === true) ? ' + "&role=" + GG.value + "&status=" + GP.value' : '';?>)
-}), addEvent(GA, 'keyup', function(){
+}), addEvent(GA, 'input', function(){
     var self = this,
         GY = self.parentNode,
         TZ = D.querySelector('#table-footer');
@@ -304,7 +304,7 @@ addEvent(D.querySelector('#cancel-alert'), 'click', function(){
 });
 for(var j = 0, i = GE.length; j < i; j++) addEvent(GE[j], "click", GS);
 for (var j = 0, i = GR.length; j < i; j++) addEvent(GR[j], 'change', bDisabled);
-for (var j = 0, i = GC.length; j < i; j++) addEvent(GC[j], 'keyup', bDisabled);
+for (var j = 0, i = GC.length; j < i; j++) addEvent(GC[j], 'input', bDisabled);
 for (var j = 0, i = GL.length; j < i; j++) addEvent(GL[j], "click", function(){
     var self = this,
         type = self.getAttribute('data-type');

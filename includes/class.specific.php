@@ -7,7 +7,7 @@ class Specific {
 	public static function GetPages() {
 	    global $dba;
 	    $data  = array();
-	    $pages = $dba->query('SELECT * FROM pages')->fetchAll();
+	    $pages = $dba->query('SELECT * FROM page')->fetchAll();
 	    foreach ($pages as $value) {
 	        $data['page'][$value['type']] = array('html' => htmlspecialchars_decode($value['text']),
 	    										  'decor' => self::GetFile($value['decor'], 2),
@@ -171,7 +171,7 @@ class Specific {
 	public static function Settings() {
 	    global $dba;
 	    $data  = array();
-	    $settings = $dba->query('SELECT * FROM settings')->fetchAll();
+	    $settings = $dba->query('SELECT * FROM setting')->fetchAll();
 	    foreach ($settings as $value) {
 	        $data[$value['name']] = $value['value'];
 	    }
@@ -181,7 +181,7 @@ class Specific {
 	public static function Bubbles($data = array()){
 	    global $dba;
 	    $data = array();
-	    $users = $dba->query("SELECT MAX(id) FROM users")->fetchArray();
+	    $users = $dba->query("SELECT MAX(id) FROM user")->fetchArray();
 	    if(!empty($users)){
 	    	$count = 10;
 		    $data = array();
@@ -205,13 +205,13 @@ class Specific {
 	    global $TEMP, $dba;
 
 	    if($type == 1){
-	        $user = $dba->query('SELECT * FROM users WHERE id = "'.$user_id.'"')->fetchArray();
+	        $user = $dba->query('SELECT * FROM user WHERE id = "'.$user_id.'"')->fetchArray();
 	    } else if($type == 2){
-	        $user = $dba->query('SELECT * FROM users WHERE user_id = "'.$user_id.'"')->fetchArray();
+	        $user = $dba->query('SELECT * FROM user WHERE user_id = "'.$user_id.'"')->fetchArray();
 	    } else if($type == 3){
 	        $session_id = !empty($_SESSION['session_id']) ? $_SESSION['session_id'] : $_COOKIE['session_id'];
-	        $user_id = $dba->query('SELECT user_id FROM sessions WHERE session_id = "'.$session_id.'"')->fetchArray();
-	        $user = $dba->query('SELECT * FROM users WHERE id = '.$user_id)->fetchArray();
+	        $user_id = $dba->query('SELECT user_id FROM session WHERE session_id = "'.$session_id.'"')->fetchArray();
+	        $user = $dba->query('SELECT * FROM user WHERE id = '.$user_id)->fetchArray();
 	    }
 	    
 	    if (empty($user)) {
@@ -300,15 +300,15 @@ class Specific {
 
 	public static function SendNotification($data = array()){
 	    global $TEMP, $dba;
-	    if (empty($data) || !is_array($data) || $TEMP['#user']['id'] == $data['to_id'] || $dba->query('SELECT COUNT(*) FROM notifications WHERE from_id = '.$data['from_id'].' AND to_id = '.$data['to_id'].' AND course_id = '.$data['course_id'].' AND type = '.$data['type'])->fetchArray() > 0) {
+	    if (empty($data) || !is_array($data) || $TEMP['#user']['id'] == $data['to_id'] || $dba->query('SELECT COUNT(*) FROM notification WHERE from_id = '.$data['from_id'].' AND to_id = '.$data['to_id'].' AND course_id = '.$data['course_id'].' AND type = '.$data['type'])->fetchArray() > 0) {
 	        return false;
 	    }
 
 	    $to_user = self::Data($data['to_id']);
-	    $from_user = $dba->query('SELECT names FROM users WHERE id = '.$data['from_id'])->fetchArray();
+	    $from_user = $dba->query('SELECT names FROM user WHERE id = '.$data['from_id'])->fetchArray();
 	    $type = str_replace("'", "", $data['type']);
 	    $course_id = str_replace("'", "", $data['course_id']);
-	    $course = $dba->query('SELECT name FROM courses WHERE id = '.$course_id)->fetchArray();
+	    $course = $dba->query('SELECT name FROM course WHERE id = '.$course_id)->fetchArray();
 	    $notifycon = $TEMP['#notifycon'][$type];
 
 		$TEMP['name'] = $to_user['names'];
@@ -327,7 +327,7 @@ class Specific {
 	        'is_html' => true
 	    ));
 
-	    return $dba->query('INSERT INTO notifications ('.implode(',', array_keys($data)).') VALUES ('.implode(',', array_values($data)).')')->returnStatus();
+	    return $dba->query('INSERT INTO notification ('.implode(',', array_keys($data)).') VALUES ('.implode(',', array_values($data)).')')->returnStatus();
 	}
 
 	public static function Url($params = '') {
@@ -348,7 +348,7 @@ class Specific {
 		global $dba;
 
 		$rdate = false;
-		$dates = $dba->query('SELECT dates FROM periods WHERE id = '.$id)->fetchArray();
+		$dates = $dba->query('SELECT dates FROM period WHERE id = '.$id)->fetchArray();
 		if(!empty($dates)){
         	$data = json_decode($dates, true)[$pos];
         	if($validate == 0){
@@ -368,6 +368,10 @@ class Specific {
 
 	public static function ComposeDates($date = array()) {
 		global $TEMP;
+		
+		if(empty($date)){
+			$date = ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""];
+		}
 		
 		$date = json_decode($date, true);
 		$dates = array();
@@ -486,10 +490,10 @@ class Specific {
 	        $query = " WHERE word LIKE '%$keyword%' OR `$language` LIKE '%$keyword%'";
 	    }
 	    if($paginate == true){
-	        $data['sql'] = $dba->query('SELECT * FROM words'.$query.' LIMIT ? OFFSET ?', $TEMP['#settings']['data_load_limit'], $page)->fetchAll();
+	        $data['sql'] = $dba->query('SELECT * FROM word'.$query.' LIMIT ? OFFSET ?', $TEMP['#settings']['data_load_limit'], $page)->fetchAll();
 	        $data['total_pages'] = $dba->totalPages;
 	    } else {
-	        $sql = $dba->query('SELECT word,'.$language.' FROM words')->fetchAll();
+	        $sql = $dba->query('SELECT word,'.$language.' FROM word')->fetchAll();
 	    }
 	    if($type == 0){
 	        foreach ($sql as $value) {
@@ -502,7 +506,7 @@ class Specific {
 	public static function Languages($query = 'type') {
 	    global $dba;
 	    $data = array();
-	    $langs = $dba->query("DESCRIBE words")->fetchAll();
+	    $langs = $dba->query("DESCRIBE word")->fetchAll();
 	    foreach ($langs as $lang) {
 	        $data[] = $lang['Field'];
 	    }
@@ -522,7 +526,7 @@ class Specific {
 		    if (in_array($lang, $TEMP['#languages'])) {
 		        $language = $_SESSION['language'] = $lang;
 		        if ($TEMP['#loggedin'] == true) {
-		            $dba->query('UPDATE users SET language = "'.$lang.'" WHERE id = '.$TEMP['#user']['id']);
+		            $dba->query('UPDATE user SET language = "'.$lang.'" WHERE id = '.$TEMP['#user']['id']);
 		        }
 		    }
 		}
@@ -750,11 +754,11 @@ class Specific {
 	public static function Logged() {
 		global $dba;
 	    if (isset($_SESSION['session_id']) && !empty($_SESSION['session_id'])) {
-	        if ($dba->query('SELECT COUNT(*) FROM sessions WHERE session_id = "'.self::Filter($_SESSION['session_id']).'"')->fetchArray() > 0) {
+	        if ($dba->query('SELECT COUNT(*) FROM session WHERE session_id = "'.self::Filter($_SESSION['session_id']).'"')->fetchArray() > 0) {
 	            return true;
 	        }
 	    } else if (isset($_COOKIE['session_id']) && !empty($_COOKIE['session_id'])) {
-	        if ($dba->query('SELECT COUNT(*) FROM sessions WHERE session_id = "'.self::Filter($_COOKIE['session_id']).'"')->fetchArray() > 0) {
+	        if ($dba->query('SELECT COUNT(*) FROM session WHERE session_id = "'.self::Filter($_COOKIE['session_id']).'"')->fetchArray() > 0) {
 	            return true;
 	        }
 	    }

@@ -70,7 +70,7 @@
 			<?php if($TEMP['#teacher'] == false && $TEMP['#type'] == 'student'){ ?>
 			<div class="text-center background-white border-radius-12 padding-25 margin-b10">
 				<div class="max-w-900 border-top-left-radius border-top-right-radius">
-					<div id="text-average" class="font-medium color-black">{$word->global_average}</div>
+					<div id="text-average" class="font-medium color-black">{$word->semester_average}</div>
 					<button id="average" class="btn-noway font-supraly font-bold" data-type="total">
                         <span class="<?php echo($TEMP['#semesbad'] == true || $TEMP['average'] < $TEMP['#nmcs']) ? 'color-red' : 'color-green';?>">{$average}</span>
                         <div class="content-spinner-circle">
@@ -229,7 +229,6 @@ var NW = D.querySelectorAll('.number'),
             pos = self.getAttribute('data-pos');
         <?php if($TEMP['#student'] == false){ ?>self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');<?php } ?>
         Req('{$url->{req/rol-{#role}/get-citems}}', function(e){
-            console.log(e);
             if(e.status == 200){
                 for(var j = 0, i = e.items['parameters'].length; j < i; j++){
                     var el = e.items['parameters'][j],
@@ -281,7 +280,6 @@ var NW = D.querySelectorAll('.number'),
     		note_id = self.getAttribute('data-id');
     	self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
 	    Req('{$url->{req/rol-student/get-settings}}', function(e){
-	    	console.log(e);
 	        if(e.status == 200){
 	        	if(e.cell == null){
 	        		NC.innerText = '{$word->first_have_fill_information}', removeClass(NX, 'hidden'), addClass(NB, 'hidden');
@@ -308,7 +306,6 @@ doubleClick(Nk, function(e){
     	Ng = Nk.querySelector('span');
     Nk.setAttribute('disabled', true), addClass(Nk, 'spinner-is-loading');
     Req('{$url->{req/rol-student/reload-average}}', function(e){
-    	console.log(e);
         if(e.status == 200){
         	if(type == 'total'){
             	Nz.innerText = "{$word->total_average}", Nk.setAttribute('data-type', 'semester'), removeClass(Ng, 'color-red'), removeClass(Ng, 'color-green');;
@@ -320,7 +317,7 @@ doubleClick(Nk, function(e){
         				addClass(Ng, 'color-green'), removeClass(Ng, 'color-red');
         			}
         		}
-        		Nz.innerText = "{$word->global_average}", Nk.setAttribute('data-type', 'total');
+        		Nz.innerText = "{$word->semester_average}", Nk.setAttribute('data-type', 'total');
         	}
         	Ng.innerText = e.average, Nk.removeAttribute('disabled'), removeClass(Nk, 'spinner-is-loading');
         } else {
@@ -374,7 +371,6 @@ addEvent(NT, 'click', function(){
     }
     NT.setAttribute('disabled', true), addClass(NT, 'spinner-is-loading');
     Req('{$url->{req/rol-teacher/this-notes}}', function(e){
-    	console.log(e);
         if(e.status == 200){
         	var GV = D.querySelector('#scroll-' + note_id),
         		GQ = GV.querySelector('.cont-table-header'),
@@ -451,7 +447,7 @@ addEvent(NT, 'click', function(){
             NT.removeAttribute('disabled'), removeClass(NT, 'spinner-is-loading');
         }
     }, "POST", "&id=" + note_id + "&params=" + JSON.stringify(GO)<?php echo($TEMP['#note_mode'] == '30-30-40') ? ' + "&pos=" + pos' : '';?>)
-}), <?php } ?><?php if($TEMP['#type'] == 'student' || $TEMP['#academic'] === true || $TEMP['#admin'] === true){ ?>addEvent(D.querySelector('#search-users'), "keyup", function(e){
+}), <?php } ?><?php if($TEMP['#type'] == 'student' || $TEMP['#academic'] === true || $TEMP['#admin'] === true){ ?>addEvent(D.querySelector('#search-users'), "input", function(e){
 	let self = this,
 		SV = self.value,
 		SQ = self.parentNode,
@@ -465,7 +461,6 @@ addEvent(NT, 'click', function(){
 	}
 	addClass(SQ, 'spinner-is-loading'), keyword = SV;
 	Req('{$url->{req/rol-teacher/search-users}}', function(e) {
-		console.log(e);
 	    if (e.status == 200) {
 	   		removeClass(SQ, 'spinner-is-loading'), removeClass(SD, 'border-left'), removeClass(SD, 'border-right'), removeClass(SD, 'border-bottom'), removeClass(SD, 'border-grey'), removeClass(SD, 'padding-10'), removeClass(SD, 'border-bottom-left-radius'), removeClass(SD, 'border-bottom-right-radius'), SD.innerHTML = e.html, loadPage(SD.querySelectorAll('a[target="_self"]'));
 	    } else {
@@ -486,7 +481,6 @@ addEvent(NB, 'click', function(){
     var self = this;
     NB.setAttribute('disabled', true), addClass(NB, 'spinner-is-loading');
     Req('{$url->{req/rol-student/request-qualifications}}', function(e){
-    	console.log(e);
         if(e.status == 200){
             NO.style.display = "", loadAlert("{$word->request_sent_successfully}"), preloadPage('{#url_params}');
         } else {
@@ -511,7 +505,6 @@ for(var j = 0, i = NF.length; j < i; j++) addEvent(NF[j], 'click', function(){
 
 	self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
     Req('{$url->{req/rol-teacher/this-qualification}}', function(e){
-    	console.log(e);
         if(e.status == 200){
             NL.innerText = e.note, addClass(NE, 'hidden'), removeClass(NL, 'hidden'), removeClass(NV, 'border-red'), removeClass(NV, 'boxshadow-red'), loadAlert("{$word->note_updated_successfully}"), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
         } else {
@@ -593,6 +586,21 @@ for(var j = 0, i = Nj.length; j < i; j++) addEvent(Nj[j], 'click', function(){
 		el = D.querySelector('#observation-' + self.getAttribute('data-id')),
 		NL = el.querySelector('textarea');
 	el.style.height = "", NL.innerText = "", NL.style.maxHeight = "100px";
+});
+for(var j = 0, i = Ni.length; j < i; j++) addEvent(Ni[j], 'input', function(){
+	var self = this,
+		el = self.parentNode,
+		Nl = el.querySelector('.observation_limit'),
+		maxLength = 500,
+		strLength = maxLength-self.value.length;
+    Nl.innerText = strLength;
+	if(strLength <= 200){
+        addClass(Nl, 'color-red'), removeClass(Nl, 'color-orange'), removeClass(Nl, 'color-green');
+    } else if(strLength <= 350){
+        addClass(Nl, 'color-orange'), removeClass(Nl, 'color-green');
+    } else {
+    	addClass(Nl, 'color-green'), addClass(Nl, 'color-red'), removeClass(Nl, 'color-orange');
+    }
 });
 <?php } ?>
 </script>

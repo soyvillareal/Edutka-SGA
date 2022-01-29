@@ -31,7 +31,7 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
                     $plan_id = $dba->query('SELECT plan_id FROM curriculum WHERE course_id = '.$course_id)->fetchArray();
                     if($plan_id){
                         $plcourses = $dba->query('SELECT course_id FROM curriculum c WHERE plan_id = '.$plan_id)->fetchAll(false);
-                        $pkcourses = $dba->query('SELECT preknowledge FROM courses WHERE id = '.$course_id)->fetchArray();
+                        $pkcourses = $dba->query('SELECT preknowledge FROM course WHERE id = '.$course_id)->fetchArray();
                         if(!empty($pkcourses)){
                             $deleted = array_diff(explode(',', $pkcourses), $courses);
                             if(!empty($deleted)){
@@ -47,7 +47,7 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
                         $query .= " AND id = 0";
                     }
                 } else {
-                    $TEMP['#programs'] = $dba->query('SELECT id FROM programs')->fetchAll(false);
+                    $TEMP['#programs'] = $dba->query('SELECT id FROM program')->fetchAll(false);
                     if(in_array($program_id, $TEMP['#programs'])){
                         $plan_id = $dba->query('SELECT id FROM plan WHERE program_id = '.$program_id)->fetchArray();
                         if(!empty($plan_id)){
@@ -63,7 +63,7 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
                     }
                 }
             }
-            $courses = $dba->query('SELECT * FROM courses'.$query.' LIMIT 5')->fetchAll();
+            $courses = $dba->query('SELECT * FROM course'.$query.' LIMIT 5')->fetchAll();
         }
 
         if (!empty($courses)) {
@@ -118,7 +118,7 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
                 $preknowledges = explode(',', $preknowledge);
                 $prektrues = array();
                 foreach ($preknowledges as $prek) {
-                    if($dba->query('SELECT COUNT(*) FROM courses WHERE id = '.$prek)->fetchArray() > 0){
+                    if($dba->query('SELECT COUNT(*) FROM course WHERE id = '.$prek)->fetchArray() > 0){
                         $prektrues[] = true;
                     } else {
                         $prektrues[] = false;
@@ -144,14 +144,14 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
                 if(!empty($type)){
                     if($type == 'add'){
                         $code = Specific::RandomKey(5, 7);
-                        if($dba->query('SELECT COUNT(*) FROM courses WHERE code = "'.$code.'"')->fetchArray() > 0){
+                        if($dba->query('SELECT COUNT(*) FROM course WHERE code = "'.$code.'"')->fetchArray() > 0){
                             $code = Specific::RandomKey(5, 7);
                         }
-                        if($dba->query('INSERT INTO courses (code, name, preknowledge, qualification, credits, quota, type, schedule, `time`) VALUES (?, ?, ?, ?, ?, ?, ?, ?,'.time().')', $code, $name, $preknowledge, $qualification, $credit, $quota, $typec, $schedule)->returnStatus()){
+                        if($dba->query('INSERT INTO course (code, name, preknowledge, qualification, credits, quota, type, schedule, `time`) VALUES (?, ?, ?, ?, ?, ?, ?, ?,'.time().')', $code, $name, $preknowledge, $qualification, $credit, $quota, $typec, $schedule)->returnStatus()){
                             $deliver['status'] = 200;
                         }
                     } else if(isset($id) && is_numeric($id)){
-                        if($dba->query('UPDATE courses SET name = ?, preknowledge = ?, qualification = ?, credits = ?, quota = ?, type = ?, schedule = ? WHERE id = '.$id, $name, $preknowledge, $qualification, $credit, $quota, $typec, $schedule)->returnStatus()){
+                        if($dba->query('UPDATE course SET name = ?, preknowledge = ?, qualification = ?, credits = ?, quota = ?, type = ?, schedule = ? WHERE id = '.$id, $name, $preknowledge, $qualification, $credit, $quota, $typec, $schedule)->returnStatus()){
                             $deliver['status'] = 200;
                         }
                     }
@@ -173,7 +173,7 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
         if (isset($id) && is_numeric($id)) {
             $enrolled_exists = $dba->query('SELECT COUNT(*) FROM enrolled WHERE course_id = '.$id)->fetchArray();
             if($enrolled_exists == 0){
-                if($dba->query('DELETE FROM courses WHERE id = '.$id)->returnStatus()){
+                if($dba->query('DELETE FROM course WHERE id = '.$id)->returnStatus()){
                     $deliver['status'] = 200;
                 };
             } else {
@@ -186,7 +186,7 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
     } else if($one == 'get-pitems'){
         $id = Specific::Filter($_POST['id']);
         if(isset($id) && is_numeric($id)){
-            $items = $dba->query('SELECT name, faculty_id, title, snies, level, semesters, mode FROM programs WHERE id = '.$id)->fetchArray();
+            $items = $dba->query('SELECT name, faculty_id, title, snies, level, semesters, mode FROM program WHERE id = '.$id)->fetchArray();
             if (!empty($items)) {
                 $deliver = array(
                     'status' => 200,
@@ -246,11 +246,11 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
             if (empty($errors)) {
                 if(!empty($type)){
                     if($type == 'add'){
-                        if($dba->query('INSERT INTO programs (name, faculty_id, title, snies, level, semesters, mode, `time`) VALUES ("'.$name.'", '.$faculty_id.',"'.$title.'",'.$snies.',"'.$level.'",'.$semester.',"'.$mode.'",'.time().')')->returnStatus()){
+                        if($dba->query('INSERT INTO program (name, faculty_id, title, snies, level, semesters, mode, `time`) VALUES ("'.$name.'", '.$faculty_id.',"'.$title.'",'.$snies.',"'.$level.'",'.$semester.',"'.$mode.'",'.time().')')->returnStatus()){
                             $deliver['status'] = 200;
                         }
                     } else if(isset($id) && is_numeric($id)){
-                        if($dba->query('UPDATE programs SET name = ?, faculty_id = ?, title= ?, snies = ?, level = ?, semesters = ?, mode = ? WHERE id = '.$id, $name, $faculty_id, $title, $snies, $level, $semester, $mode)->returnStatus()){
+                        if($dba->query('UPDATE program SET name = ?, faculty_id = ?, title= ?, snies = ?, level = ?, semesters = ?, mode = ? WHERE id = '.$id, $name, $faculty_id, $title, $snies, $level, $semester, $mode)->returnStatus()){
                             $deliver['status'] = 200;
                         }
                     }
@@ -270,7 +270,7 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
     } else if($one == 'delete-program'){
         $id = Specific::Filter($_POST['id']);
         if (isset($id) && is_numeric($id)) {
-            if($dba->query('DELETE FROM programs WHERE id = '.$id)->returnStatus()){
+            if($dba->query('DELETE FROM program WHERE id = '.$id)->returnStatus()){
                 $deliver['status'] = 200;
             };
         }
@@ -281,7 +281,7 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
             if(!empty($keyword)){
                 $query .= " WHERE name LIKE '%$keyword%' OR title LIKE '%$keyword%' OR snies LIKE '%$keyword%'";
             }
-            $programs = $dba->query('SELECT * FROM programs'.$query.' LIMIT ? OFFSET ?', 10, 1)->fetchAll();
+            $programs = $dba->query('SELECT * FROM program'.$query.' LIMIT ? OFFSET ?', 10, 1)->fetchAll();
             $deliver['total_pages'] = $dba->totalPages;
             if (!empty($programs)) {
                 foreach ($programs as $program) {
@@ -315,7 +315,7 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
             if(!empty($keyword)){
                 $query .= " WHERE name LIKE '%$keyword%' OR title LIKE '%$keyword%' OR snies LIKE '%$keyword%'";
             }
-            $programs = $dba->query('SELECT * FROM programs'.$query.' LIMIT ? OFFSET ?', 10, $page)->fetchAll();
+            $programs = $dba->query('SELECT * FROM program'.$query.' LIMIT ? OFFSET ?', 10, $page)->fetchAll();
             if (!empty($programs)) {
                 foreach ($programs as $program) {
                     $TEMP['!id'] = $program['id'];
@@ -419,7 +419,7 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
     } else if($one == 'delete-faculty'){
         $id = Specific::Filter($_POST['id']);
         if (isset($id) && is_numeric($id)) {
-            $courses_exists = $dba->query('SELECT COUNT(*) FROM programs WHERE faculty_id = '.$id)->fetchArray();
+            $courses_exists = $dba->query('SELECT COUNT(*) FROM program WHERE faculty_id = '.$id)->fetchArray();
             if($courses_exists == 0){
                 if($dba->query('DELETE FROM faculty WHERE id = '.$id)->returnStatus()){
                     $deliver['status'] = 200;
@@ -458,7 +458,7 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
     } else if($one == 'get-peitems'){
         $id = Specific::Filter($_POST['id']);
         if(isset($id) && is_numeric($id)){
-            $items = $dba->query('SELECT name, start, final, status FROM periods WHERE id = '.$id)->fetchArray();
+            $items = $dba->query('SELECT name, start, final, status FROM period WHERE id = '.$id)->fetchArray();
             $name = explode('-', $items['name']);
             unset($items['name']);
             $items['year'] = $name[0];
@@ -475,9 +475,9 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
     } else if($one == 'get-ditems'){
         $id = Specific::Filter($_POST['id']);
         if(!empty($id) && is_numeric($id)){
-            $period = $dba->query('SELECT name, final, dates FROM periods WHERE id = '.$id)->fetchArray();
+            $period = $dba->query('SELECT name, final, dates FROM period WHERE id = '.$id)->fetchArray();
             $dates = Specific::ComposeDates($period['dates']);
-            if (!empty($period['dates'])) {
+            if (!empty($dates)) {
                 $deliver = array(
                     'status' => 200,
                     'items' => json_decode($period['dates'], true),
@@ -496,7 +496,7 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
             if(!empty($keyword)){
                 $query .= " WHERE id LIKE '%$keyword%' OR name LIKE '%$keyword%'";
             }
-            $periods = $dba->query('SELECT * FROM periods'.$query.' ORDER BY start ASC LIMIT ? OFFSET ?', 10, $page)->fetchAll();
+            $periods = $dba->query('SELECT * FROM period'.$query.' ORDER BY start ASC LIMIT ? OFFSET ?', 10, $page)->fetchAll();
             if (!empty($periods)) {
                 foreach ($periods as $period) {
                     $TEMP['!id'] = $period['id'];
@@ -520,7 +520,7 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
         if(!empty($keyword)){
             $query .= " WHERE id LIKE '%$keyword%' OR name LIKE '%$keyword%'";
         }
-        $periods = $dba->query('SELECT * FROM periods'.$query.' ORDER BY start ASC LIMIT ? OFFSET ?', 10, 1)->fetchAll();
+        $periods = $dba->query('SELECT * FROM period'.$query.' ORDER BY start ASC LIMIT ? OFFSET ?', 10, 1)->fetchAll();
         $deliver['total_pages'] = $dba->totalPages;
         if (!empty($periods)) {
             foreach ($periods as $period) {
@@ -548,7 +548,7 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
         if (isset($id) && is_numeric($id)) {
             $courses_exists = $dba->query('SELECT COUNT(*) FROM enrolled WHERE period_id = '.$id)->fetchArray();
             if($courses_exists == 0){
-                if($dba->query('DELETE FROM periods WHERE id = '.$id)->returnStatus()){
+                if($dba->query('DELETE FROM period WHERE id = '.$id)->returnStatus()){
                     $deliver['status'] = 200;
                 };
             } else {
@@ -594,29 +594,29 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
                     $errors[] = 'start';
                 }
                 $query = $type == 'edit' ? ' AND id <> '.$id : '';
-                if($dba->query('SELECT COUNT(*) FROM periods WHERE name = "'.$name.'"'.$query)->fetchArray() == 0){
-                    if($dba->query('SELECT COUNT(*) FROM periods WHERE start < '.$start.' AND final > '.$final)->fetchArray() == 0){
+                if($dba->query('SELECT COUNT(*) FROM period WHERE name = "'.$name.'"'.$query)->fetchArray() == 0){
+                    if($dba->query('SELECT COUNT(*) FROM period WHERE start < '.$start.' AND final > '.$final)->fetchArray() == 0){
                         if (empty($errors)) {
                             if(!empty($type)){
                                 if($type == 'add'){
                                     if($status == 'enabled'){
-                                        $dba->query('UPDATE periods SET status = "disabled" WHERE status = "enabled"');
+                                        $dba->query('UPDATE period SET status = "disabled" WHERE status = "enabled"');
                                     }
-                                    $courses = $dba->query('SELECT id FROM courses')->fetchAll(false);
+                                    $courses = $dba->query('SELECT id FROM course')->fetchAll(false);
                                     $code = Specific::RandomKey(5, 7);
-                                    if($dba->query('SELECT COUNT(*) FROM courses WHERE code = "'.$code.'"')->fetchArray() > 0){
+                                    if($dba->query('SELECT COUNT(*) FROM course WHERE code = "'.$code.'"')->fetchArray() > 0){
                                         $code = Specific::RandomKey(5, 7);
                                     }
                                     foreach ($courses as $course_id) {
-                                        $dba->query('UPDATE courses SET code = "'.$code.'" WHERE id = '.$course_id);
+                                        $dba->query('UPDATE course SET code = "'.$code.'" WHERE id = '.$course_id);
                                     }
-                                    if($dba->query('INSERT INTO periods (name, start, final, status, `time`) VALUES ("'.$name.'", '.$start.', '.$final.', "'.$status.'",'.time().')')->returnStatus()){
+                                    if($dba->query('INSERT INTO period (name, start, final, status, `time`) VALUES ("'.$name.'", '.$start.', '.$final.', "'.$status.'",'.time().')')->returnStatus()){
                                         $deliver['status'] = 200;
                                     }
                                 } else {
                                     if(isset($id) && is_numeric($id)){
-                                        if($status == 'disabled' || $dba->query('SELECT id FROM periods WHERE status = "enabled"')->fetchArray() == $id || ($status == 'enabled' && $dba->query('SELECT COUNT(*) FROM periods WHERE status = "enabled"')->fetchArray() == 0)){
-                                            if($dba->query('UPDATE periods SET name = ?, start = ?, final = ?, status = ? WHERE id = '.$id, $name, $start, $final, $status)->returnStatus()){
+                                        if($status == 'disabled' || $dba->query('SELECT id FROM period WHERE status = "enabled"')->fetchArray() == $id || ($status == 'enabled' && $dba->query('SELECT COUNT(*) FROM period WHERE status = "enabled"')->fetchArray() == 0)){
+                                            if($dba->query('UPDATE period SET name = ?, start = ?, final = ?, status = ? WHERE id = '.$id, $name, $start, $final, $status)->returnStatus()){
                                                 $deliver['status'] = 200;
                                             }
                                         } else {
@@ -664,7 +664,7 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
             $dates = html_entity_decode($dates);
             $dates = json_decode($dates);
             
-            if($dba->query('SELECT COUNT(*) FROM periods WHERE id = '.$id)->fetchArray() > 0){
+            if($dba->query('SELECT COUNT(*) FROM period WHERE id = '.$id)->fetchArray() > 0){
                 if(!empty($dates[1]) && empty($dates[2]) || empty($dates[1]) && !empty($dates[2])){
                     $emptys[] = 0;
                 }
@@ -682,7 +682,7 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
                     $aerror[$key] = true;
                     if(!empty($value)){
                         $value = strtotime($value);
-                        if($value > $dba->query('SELECT final FROM periods WHERE id = '.$id)->fetchArray()){
+                        if($value > $dba->query('SELECT final FROM period WHERE id = '.$id)->fetchArray()){
                             $aerror[$key] = false;
                         }
                     }
@@ -703,7 +703,7 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
                             $errors[] = 3;
                         }
                         if (empty($errors)) {
-                            if($dba->query('UPDATE periods SET dates = ? WHERE id = '.$id, json_encode($dates))->returnStatus()){
+                            if($dba->query('UPDATE period SET dates = ? WHERE id = '.$id, json_encode($dates))->returnStatus()){
                                 $deliver['status'] = 200;
                             }
                         } else {
@@ -734,7 +734,7 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
             }
         }
     } else if($one == 'this-plans'){
-        $programs = $dba->query('SELECT id FROM programs')->fetchAll(false);
+        $programs = $dba->query('SELECT id FROM program')->fetchAll(false);
         $modalities  = array('100', '30-30-40');
         $statusa  = array('enabled', 'disabled');
         $emptys = array();
@@ -851,7 +851,7 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
                 foreach ($plans as $plan) {
                     $TEMP['!id'] = $plan['id'];
                     $TEMP['!name'] = $plan['name'];
-                    $TEMP['!program'] = $dba->query('SELECT name FROM programs WHERE id = '.$plan['program_id'])->fetchArray();
+                    $TEMP['!program'] = $dba->query('SELECT name FROM program WHERE id = '.$plan['program_id'])->fetchArray();
                     $TEMP['!resolution'] = $plan['resolution'];
                     $TEMP['!date_approved'] = Specific::DateFormat($plan['date_approved']);
                     $TEMP['!duration'] = $plan['duration'];
@@ -887,7 +887,7 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
                 foreach ($plans as $plan) {
                     $TEMP['!id'] = $plan['id'];
                     $TEMP['!name'] = $plan['name'];
-                    $TEMP['!program'] = $dba->query('SELECT name FROM programs WHERE id = '.$plan['program_id'])->fetchArray();
+                    $TEMP['!program'] = $dba->query('SELECT name FROM program WHERE id = '.$plan['program_id'])->fetchArray();
                     $TEMP['!resolution'] = $plan['resolution'];
                     $TEMP['!date_approved'] = Specific::DateFormat($plan['date_approved']);
                     $TEMP['!duration'] = $plan['duration'];
@@ -1043,7 +1043,7 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
                 $courses = explode(',', $courses);
                 if(!empty($courses)){
                     foreach ($courses as $course) {
-                        if($dba->query('SELECT COUNT(*) FROM courses WHERE id = '.$course)->fetchArray() > 0){
+                        if($dba->query('SELECT COUNT(*) FROM course WHERE id = '.$course)->fetchArray() > 0){
                             $teatrues[] = true;
                         } else {
                             $teatrues[] = false;
@@ -1123,7 +1123,7 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
             $items = array();
             $courses = $dba->query('SELECT * FROM curriculum WHERE plan_id = '.$id)->fetchAll();
             foreach ($courses as $course) {
-                $name = $dba->query('SELECT name FROM courses WHERE id = '.$course['course_id'])->fetchArray();
+                $name = $dba->query('SELECT name FROM course WHERE id = '.$course['course_id'])->fetchArray();
                 $items['courses'][] = array('id' => $course['course_id'], 'name' => $name);   
             }
             if (!empty($items)) {

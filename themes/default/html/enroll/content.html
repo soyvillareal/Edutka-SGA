@@ -171,11 +171,9 @@ var GA = D.querySelectorAll('.show_cmodal'),
 		<?php } else { ?>
 		var course_id = self.getAttribute('data-id'),
 			rcourse = D.querySelector('#registered-course'),
-			urcourse = D.querySelector('#unregistered-course'); 
-		console.log(self);
+			urcourse = D.querySelector('#unregistered-course');
 	    self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
 		Req('{$url->{req/rol-academic/check-enroll}}', function(e){
-			console.log(e)
 	        if(e.status == 200){
 	        	if(e.cstatus == 'true'){
 	        		removeClass(rcourse, 'hidden'), addClass(urcourse, 'hidden'), GO.value = e.period;
@@ -194,7 +192,6 @@ var GA = D.querySelectorAll('.show_cmodal'),
 			GQ = self.parentNode;
 		addClass(GQ, 'spinner-is-loading');
 		Req('{$url->{req/rol-student/search-enrolled}}', function(e){
-			console.log(e);
 			if(e.status == 200){
 			    removeClass(GQ, 'spinner-is-loading'), GP.innerHTML = e.html, GA = D.querySelectorAll('.show_cmodal'), GB = D.querySelectorAll('.show_rcmodal'), GK = D.querySelectorAll('.show_rpmodal');
 				for(var j = 0, i = GB.length; j < i; j++) addEvent(GB[j], "click", GC);
@@ -224,11 +221,10 @@ addEvent(GD, 'change', GT), <?php if(count($TEMP['#programs']) > 1){ ?>addEvent(
     GN.style.display = "", D.body.style.overflow = "";
 })<?php if(!empty($TEMP['#keyword_enroll']) || $TEMP['#student'] == true) { ?>, addEvent(GW, 'change', GT), addEvent(GY, 'change', function(){
     preloadPage('&one=enroll<?php echo($TEMP["#admin"] == true || $TEMP["#academic"] == true) ? "&keyword={#keyword_enroll}&user={#user_id}" : ''?>&type=' + this.value);
-}), addEvent(GU, "keyup", GT)<?php } ?>, addEvent(GG, "click", function(){
+}), addEvent(GU, "input", GT)<?php } ?>, addEvent(GG, "click", function(){
     var self = this; 
     self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
 	Req('{$url->{req/rol-student/cancel-enroll}}', function(e){
-		console.log(e);
         if(e.status == 200){
 	        loadAlert("{$word->registration_canceled_successfully}", 1), preloadPage("{#url_params}");
 	    } else {
@@ -239,7 +235,6 @@ addEvent(GD, 'change', GT), <?php if(count($TEMP['#programs']) > 1){ ?>addEvent(
     var self = this; 
     self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
 	Req('{$url->{req/rol-student/register-ecnroll}}', function(e){
-		console.log(e)
         if(e.status == 200){
 	        loadAlert("{$word->you_have_successfully_enrolled}"), preloadPage("{#url_params}");
 	    } else {
@@ -256,7 +251,7 @@ addEvent(GD, 'change', GT), <?php if(count($TEMP['#programs']) > 1){ ?>addEvent(
 	        loadAlert(e.error, 1), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
         }
 	}, "POST", "&id=" + self.getAttribute('data-id') + "&user_id={#user_id}");
-})<?php } if($TEMP['#admin'] == true || $TEMP['#academic'] == true) { ?>, addEvent(D.querySelector('#search-users'), "keyup", function(e){
+})<?php } if($TEMP['#admin'] == true || $TEMP['#academic'] == true) { ?>, addEvent(D.querySelector('#search-users'), "input", function(e){
 	let self = this,
 		SV = self.value,
 		SQ = self.parentNode

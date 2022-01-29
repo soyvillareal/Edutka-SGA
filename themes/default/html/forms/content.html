@@ -212,7 +212,7 @@ var GE = D.querySelectorAll('.show_emodal'),
     GX = GP.value ? GP.value.split(',') : Array(),
     ga = D.querySelector('#tips-val'),
     bDisabled = function(){
-        if(GP.value != '' && GR.value != ''){
+        if(GP.value != '' && GN.value != '' && GR.value != ''){
             GB.removeAttribute('disabled');
         } else {
             GB.setAttribute('disabled', true);
@@ -243,7 +243,7 @@ var GE = D.querySelectorAll('.show_emodal'),
         removeClass(GF, 'border-red'), removeClass(GF, 'boxshadow-red'), GF.parentNode.querySelector('.text-error').innerText = '';
         if(zp == -1){
             FU.className = 'border-grey tipsit-choice', FU.innerHTML = '<span class="color-black tipsit-label">' + gi + '</span><span class="tipsit_close"></span>', GF.insertBefore(FU, D.querySelector('.tipsit-new')), GX.push(gi), GP.value = GX.join(), ga.value = "", addEvent(FU.querySelector('.tipsit_close'), "click", function(){
-                FU.remove(), GX.splice(GX.indexOf(FU.querySelector('.tipsit_close-label').innerText), 1), GP.value = GX;
+                FU.remove(), GX.splice(GX.indexOf(FU.querySelector('.tipsit_close').innerText), 1), GP.value = GX;
             });
         } else {
             var zy = D.querySelectorAll('.tipsit-choice');
@@ -358,13 +358,12 @@ addEvent(D.querySelector('.number'), 'input', function(){
             loadAlert(e.error, 1), self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading');
         }
     }, "POST", "&id=" + self.getAttribute('data-id'));
-}), addEvent(GA, 'keyup', function(){
+}), addEvent(GA, 'input', function(){
     var self = this,
         GY = self.parentNode,
         TZ = D.querySelector('#table-footer');
     addClass(GY, 'spinner-is-loading');
     Req('{$url->{req/rol-academic/search-forms}}', function(e){
-        console.log(e);
         if(e.status == 200){
             <?php echo($TEMP['#total_pages'] > 1) ? "TT = e.total_pages, TA = 1, TO.setAttribute('disabled', true), TR.setAttribute('disabled', true), TE.removeAttribute('disabled'), TS.removeAttribute('disabled'), D.querySelector('#total-pages').innerText = TT, TN.innerText = TA, TZ && (TT <= 1 ? TZ.style.display = 'none' : TZ.removeAttribute('style')), " : ""?>removeClass(GY, 'spinner-is-loading'), D.querySelector('#container-pages').innerHTML = e.html, loadPage(D.querySelectorAll('a[target="_self"]')), GE = D.querySelectorAll('.show_emodal'), GW = D.querySelectorAll('.show_dmodal');
             for(var j = 0, i = GE.length; j < i; j++) addEvent(GE[j], "click", GS);
@@ -375,7 +374,7 @@ addEvent(D.querySelector('.number'), 'input', function(){
     }, "POST", "&keyword=" + self.value)
 }), addEvent(GR, 'change', bDisabled);
 
-for(var j = 0, i = GC.length; j < i; j++) addEvent(GC[j], 'keyup', bDisabled);
+for(var j = 0, i = GC.length; j < i; j++) addEvent(GC[j], 'input', bDisabled);
 for(var j = 0, i = GE.length; j < i; j++) addEvent(GE[j], "click", GS);
 for(var j = 0, i = GW.length; j < i; j++) addEvent(GW[j], "click", GD);
 for (var j = 0, i = GL.length; j < i; j++) addEvent(GL[j], "click", function(){

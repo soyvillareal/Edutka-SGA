@@ -538,7 +538,6 @@ var GE = D.querySelectorAll('.show_emodal'),
             course_id = self.getAttribute('data-id');
         self.setAttribute('disabled', true), addClass(self, 'spinner-is-loading');
         Req('{$url->{req/rol-teacher/get-citems}}', function(e){
-            console.log(e);
             if(e.status == 200){
                 <?php if($TEMP['#admin'] == true){ ?>
                 for (var key in e.items) {
@@ -678,13 +677,12 @@ var GE = D.querySelectorAll('.show_emodal'),
     TT = {#total_pages};
 
 
-addEvent(GA, 'keyup', function(){
+addEvent(GA, 'input', function(){
     var self = this,
         TQ = self.parentNode,
         TZ = D.querySelector('#table-footer');
     addClass(TQ, 'spinner-is-loading');
     Req('{$url->{req/rol-teacher/search-courses}}', function(e){
-        console.log(e);
         if(e.status == 200){
             <?php echo($TEMP['#total_pages'] > 1) ? "TT = e.total_pages, TA = 1, TO.setAttribute('disabled', true), TR.setAttribute('disabled', true), TE.removeAttribute('disabled'), TS.removeAttribute('disabled'), D.querySelector('#total-pages').innerText = TT, TN.innerText = TA, TZ && (TT <= 1 ? TZ.style.display = 'none' : TZ.removeAttribute('style')), " : ""?>removeClass(TQ, 'spinner-is-loading'), D.querySelector('#container-pages').innerHTML = e.html, loadPage(D.querySelectorAll('a[target="_self"]'));
             GE = D.querySelectorAll('.show_emodal'), GW = D.querySelectorAll('.show_dmodal');
@@ -831,7 +829,6 @@ addEvent(GY, 'click', function(){
     }
     GB.setAttribute('disabled', true), addClass(GB, 'spinner-is-loading');
     Req('{$url->{req/rol-teacher/this-courses}}', function(e){
-        console.log(e);
         if(e.status == 200){
             GI.style.display = "", loadAlert("{$word->course_updated_successfully}"), preloadPage('&one=courses');
         } else {
@@ -885,7 +882,6 @@ addEvent(gxy, 'change', function(){
 
 <?php if($TEMP['#admin'] == true || $TEMP['#academic'] == true){ ?>
 addEvent(gtt, 'change', function(){
-    console.log('XD');
     <?php if($TEMP['#period_now']){ ?>
     if(this.value == <?php echo $TEMP['#period_now']['id'];?>){
         grr.innerText = "{$word->it_period_that_force}";
@@ -895,7 +891,7 @@ addEvent(gtt, 'change', function(){
     <?php } else { ?>
         grr.innerText = "{$word->this_period_not_valid_but_can_be_assigned}";
     <?php } ?>
-}), addEvent(ga, "keyup", function(e){
+}), addEvent(ga, "input", function(e){
     let SV = this.value,
         TQ = D.querySelector('#search-users');
     if (SV == '') {
@@ -924,7 +920,6 @@ addEvent(gtt, 'change', function(){
     var self = this;
     gyy.setAttribute('disabled', true), addClass(gyy, 'spinner-is-loading');
     Req('{$url->{req/rol-academic/delete-assing}}', function(e){
-        console.log(e);
         if(e.status == 200){
             gcc.style.display = "", loadAlert("{$word->assignment_successfully_removed}"), preloadPage('&one=courses');
         } else {
@@ -951,10 +946,8 @@ addEvent(gtt, 'change', function(){
             GH = hasClass(GZ, 'group-validate') ? GZ : GZ.parentNode;
         GH.querySelector('.text-error').innerText = "", removeClass(ZO, 'border-red'), removeClass(ZO, 'boxshadow-red');
     }
-    console.log("&type=" + type + "&id=" + self.getAttribute('data-id') + "&teacher=" + GP.value + "&period_id=" + gui.value);
     gd.setAttribute('disabled', true), addClass(gd, 'spinner-is-loading');
     Req('{$url->{req/rol-academic/this-assings}}', function(e){
-        console.log(e);
         if(e.status == 200){
             gc.style.display = "", preloadPage('&one=courses'), loadAlert(type == 'add' ? "{$word->assignment_created_successfully}" : "{$word->assignment_updated_successfully}");
         } else if(e.status == 302){
@@ -997,7 +990,7 @@ addEvent(gtt, 'change', function(){
 });
 
 <?php if($TEMP['#admin'] === true){ ?>
-addEvent(gw.querySelector('#tips-val-prek'), "keyup", function(e){
+addEvent(gw.querySelector('#tips-val-prek'), "input", function(e){
     let self = this,
         SV = self.value,
         SQ = self.parentNode;
@@ -1009,7 +1002,6 @@ addEvent(gw.querySelector('#tips-val-prek'), "keyup", function(e){
     }
     addClass(SQ, 'spinner-is-loading');
     Req('{$url->{req/rol-admin/search-course}}', function(e) {
-        console.log(e);
         if(e.html != ''){
             removeClass(SQ, 'spinner-is-loading'), gn.innerHTML = e.html;
             if (e.status == 200) {
@@ -1061,7 +1053,6 @@ addEvent(gw.querySelector('#tips-val-prek'), "keyup", function(e){
     }
     GB.setAttribute('disabled', true), addClass(GB, 'spinner-is-loading');
     Req('{$url->{req/rol-admin/this-courses}}', function(e){
-        console.log(e);
         if(e.status == 200){
             GI.style.display = "", loadAlert((type == 'add' ? "{$word->course_added_successfully}" : "{$word->course_updated_successfully}")), preloadPage('&one=courses');
         } else {
@@ -1110,7 +1101,7 @@ addEvent(gw.querySelector('#tips-val-prek'), "keyup", function(e){
 for(var j = 0, i = go.length; j < i; j++) addEvent(go[j], "click", gk);
 <?php } ?>
 for(var j = 0, i = GE.length; j < i; j++) addEvent(GE[j], "click", GS);
-for (var j = 0, i = GC.length; j < i; j++) addEvent(GC[j], 'keyup', bDisabled);
+for (var j = 0, i = GC.length; j < i; j++) addEvent(GC[j], 'input', bDisabled);
 <?php if($TEMP['#admin'] == true){ ?>
 for (var j = 0, i = GR.length; j < i; j++) addEvent(GR[j], 'change', bDisabled);
 for(var j = 0, i = GW.length; j < i; j++) addEvent(GW[j], "click", GD);
@@ -1173,7 +1164,6 @@ for (var j = 0, i = GL.length; j < i; j++) addEvent(GL[j], "click", function(){
         TE.setAttribute('disabled', true);
     }
     Req("{$url->{req/rol-teacher/table-courses}}", function(e){
-        console.log(e);
         if(e.status == 200){
             D.querySelector('#container-pages').innerHTML = e.html;
             GE = D.querySelectorAll('.show_emodal'), GW = D.querySelectorAll('.show_dmodal');

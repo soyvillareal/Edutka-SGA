@@ -8,11 +8,11 @@ if($type == 're-password'){
 	$re_password = Specific::Filter($_POST['password']);
 }
 if(!empty($input) && !empty($type)){
-	if ($dba->query('SELECT COUNT(*) FROM users WHERE dni = "'.$input.'"')->fetchArray() > 0 && $type == 'dni') {
+	if ($dba->query('SELECT COUNT(*) FROM user WHERE dni = "'.$input.'"')->fetchArray() > 0 && $type == 'dni') {
 	    $error = $TEMP['#word']['document_already_exists'];
 	} else if (!preg_match('/^[0-9]/', $input) && $type == 'dni') {
 	    $error = $TEMP['#word']['invalid_document_characters'];
-	} else if ($dba->query('SELECT COUNT(*) FROM users WHERE email = "'.$input.'"')->fetchArray() > 0 && ($type == 'email' || ($type == 'settings-email' && $TEMP['#user']['email'] != $input))) {
+	} else if ($dba->query('SELECT COUNT(*) FROM user WHERE email = "'.$input.'"')->fetchArray() > 0 && ($type == 'email' || ($type == 'settings-email' && $TEMP['#user']['email'] != $input))) {
 	    $error = $TEMP['#word']['email_exists'];
 	} else if (!filter_var($input, FILTER_VALIDATE_EMAIL) && ($type == 'email' || $type == 'settings-email')) {
 	    $error = $TEMP['#word']['email_invalid_characters'];

@@ -1,5 +1,5 @@
 <?php
-$period = $dba->query('SELECT * FROM periods WHERE status = "enabled"')->fetchArray();
+$period = $dba->query('SELECT * FROM period WHERE status = "enabled"')->fetchArray();
 
 $dates = Specific::ComposeDates($period['dates']);
 if(!empty($period)){
@@ -57,4 +57,4 @@ $TEMP['#title'] 	   = $TEMP['#settings']['title'] . ' - ' . $TEMP['#word']['acad
 $TEMP['#description']  = $TEMP['#settings']['description'];
 $TEMP['#keyword']      = $TEMP['#settings']['keyword'];
 $TEMP['#load_url'] 	   = Specific::Url('academic-calendar');
-$TEMP['#content'] = Specific::Maket("academic-calendar/content");
+$TEMP['#content'] 	   = Specific::Maket("academic-calendar/content");

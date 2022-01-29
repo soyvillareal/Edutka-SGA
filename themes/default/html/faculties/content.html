@@ -268,7 +268,7 @@ addEvent(D.querySelector('#show-pmodal'), 'click', function(){
             self.removeAttribute('disabled'), removeClass(self, 'spinner-is-loading'), loadAlert(e.error, 1);
         }
     }, "POST", "&id=" + self.getAttribute('data-id'));
-}), addEvent(GA, 'keyup', function(){
+}), addEvent(GA, 'input', function(){
     var self = this,
         GY = self.parentNode,
         TZ = D.querySelector('#table-footer');
@@ -284,7 +284,7 @@ addEvent(D.querySelector('#show-pmodal'), 'click', function(){
     }, "POST", "&keyword=" + self.value)
 }), addEvent(GX, 'change', bDisabled);
 
-for(var j = 0, i = GC.length; j < i; j++) addEvent(GC[j], 'keyup', bDisabled);
+for(var j = 0, i = GC.length; j < i; j++) addEvent(GC[j], 'input', bDisabled);
 for(var j = 0, i = GE.length; j < i; j++) addEvent(GE[j], "click", GS);
 for(var j = 0, i = GW.length; j < i; j++) addEvent(GW[j], "click", GD);
 for (var j = 0, i = GL.length; j < i; j++) addEvent(GL[j], "click", function(){

@@ -66,7 +66,7 @@ if(!empty($rules)){
     }
 }
 $TEMP['#plans'] = $dba->query('SELECT * FROM plan')->fetchAll();
-$TEMP['#programs'] = $dba->query('SELECT * FROM programs')->fetchAll();
+$TEMP['#programs'] = $dba->query('SELECT * FROM program')->fetchAll();
 $TEMP['#faculties'] = $dba->query('SELECT * FROM faculty')->fetchAll();
 $TEMP['#admin'] = Specific::Admin();
 $TEMP['#academic'] = Specific::Academic();

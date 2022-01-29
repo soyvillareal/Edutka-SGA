@@ -30,7 +30,7 @@ if(Specific::Teacher() == true || Specific::Admin() == true){
 		$periods = $dba->query('SELECT period_id FROM teacher WHERE user_id = '.$TEMP['#user_id'])->fetchAll(false);
 		$periods = array_unique($periods);
 		if(!empty($periods)){
-			$TEMP['#periods'] = $dba->query('SELECT * FROM periods WHERE id IN ('.implode(',', $periods).') ORDER BY start ASC')->fetchAll();
+			$TEMP['#periods'] = $dba->query('SELECT * FROM period WHERE id IN ('.implode(',', $periods).') ORDER BY start ASC')->fetchAll();
 		}
 	}
 
@@ -41,13 +41,13 @@ if(Specific::Teacher() == true || Specific::Admin() == true){
 		}
 		$teachers = $dba->query('SELECT course_id FROM teacher'.$query)->fetchAll(false);
 		if(!empty($teachers)){
-			$courses = $dba->query('SELECT * FROM courses WHERE id IN ('.implode(',', $teachers).') LIMIT ? OFFSET ?', 10, 1)->fetchAll();
+			$courses = $dba->query('SELECT * FROM course WHERE id IN ('.implode(',', $teachers).') LIMIT ? OFFSET ?', 10, 1)->fetchAll();
 		}
 	} else {
-		$courses = $dba->query('SELECT * FROM courses LIMIT ? OFFSET ?', 10, 1)->fetchAll();
+		$courses = $dba->query('SELECT * FROM course LIMIT ? OFFSET ?', 10, 1)->fetchAll();
 	}
 } else {
-	$courses = $dba->query('SELECT * FROM courses LIMIT ? OFFSET ?', 10, 1)->fetchAll();
+	$courses = $dba->query('SELECT * FROM course LIMIT ? OFFSET ?', 10, 1)->fetchAll();
 }
 $TEMP['#total_pages'] = $dba->totalPages;
 
@@ -61,7 +61,7 @@ if(!empty($courses)){
 	    		$note_mode = $dba->query('SELECT note_mode FROM plan WHERE (SELECT plan_id FROM curriculum WHERE course_id = '.$course['id'].') = id')->fetchArray();
 				$parameters = $dba->query('SELECT parameters FROM parameter p WHERE (SELECT id FROM teacher WHERE course_id = '.$course['id'].' AND period_id = '.$TEMP['#period_id'].' AND id = p.teacher_id) = teacher_id')->fetchArray();
 				$parameters = json_decode($parameters);
-				$teachers = $dba->query('SELECT names FROM users u WHERE (SELECT user_id FROM teacher WHERE user_id = u.id AND course_id = '.$course['id'].' AND period_id = '.$TEMP['#period_id'].') = id')->fetchAll(false);
+				$teachers = $dba->query('SELECT names FROM user u WHERE (SELECT user_id FROM teacher WHERE user_id = u.id AND course_id = '.$course['id'].' AND period_id = '.$TEMP['#period_id'].') = id')->fetchAll(false);
 				$enrolled = $dba->query('SELECT COUNT(*) FROM enrolled WHERE type = "course" AND status = "registered" AND course_id = '.$course['id'].' AND period_id = '.$TEMP['#period_id'])->fetchArray();
 
 				if(count($teachers) == 2){
@@ -97,7 +97,7 @@ if(!empty($courses)){
 
 		$plans = $dba->query('SELECT plan_id FROM curriculum WHERE course_id = '.$course['id'])->fetchAll(false);
 		if(!empty($plans)){
-	        $programs = $dba->query('SELECT name FROM programs p WHERE (SELECT program_id FROM plan WHERE id IN ('.implode(',', $plans).') AND program_id = p.id) = id')->fetchAll(false);
+	        $programs = $dba->query('SELECT name FROM program p WHERE (SELECT program_id FROM plan WHERE id IN ('.implode(',', $plans).') AND program_id = p.id) = id')->fetchAll(false);
 
 	        if(count($programs) == 2){
 	            $TEMP['!program'] = "{$programs[0]} {$TEMP['#word']['and']} {$programs[1]}";
@@ -127,8 +127,8 @@ if(!empty($courses)){
 	$TEMP['courses'] .= Specific::Maket('not-found/courses');
 }
 
-$TEMP['#period_now'] = $dba->query('SELECT * FROM periods WHERE status = "enabled" AND start < '.time().' AND final > '.time())->fetchArray();
-$TEMP['#period_all'] = $dba->query('SELECT * FROM periods')->fetchAll();
+$TEMP['#period_now'] = $dba->query('SELECT * FROM period WHERE status = "enabled" AND start < '.time().' AND final > '.time())->fetchArray();
+$TEMP['#period_all'] = $dba->query('SELECT * FROM period')->fetchAll();
 
 $TEMP['#page']        = 'courses';
 $TEMP['#title']       = $TEMP['#word']['courses'] . ' - ' . $TEMP['#settings']['title'];

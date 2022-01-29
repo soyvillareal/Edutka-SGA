@@ -18,7 +18,7 @@ if(!empty($rules)){
 		$TEMP['!number'] = $number;
 
 		$TEMP['!id'] = $rule['id'];
-		$TEMP['!user'] = $dba->query('SELECT names FROM users WHERE id = '.$rule['user_id'])->fetchArray();
+		$TEMP['!user'] = $dba->query('SELECT names FROM user WHERE id = '.$rule['user_id'])->fetchArray();
 		$TEMP['!rulest'] = Specific::GetComposeRule($rule['rules']);
 		$TEMP['!rulesh'] = Specific::GetComposeRule($rule['rules'], true);
 		$TEMP['!file'] = $rule['file'];
