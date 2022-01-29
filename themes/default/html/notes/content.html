@@ -584,8 +584,9 @@ for(var j = 0, i = Nh.length; j < i; j++) addEvent(Nh[j], 'click', function(){
 for(var j = 0, i = Nj.length; j < i; j++) addEvent(Nj[j], 'click', function(){
 	var self = this,
 		el = D.querySelector('#observation-' + self.getAttribute('data-id')),
+		Nl = el.querySelector('.observation_limit'),
 		NL = el.querySelector('textarea');
-	el.style.height = "", NL.value = "", NL.innerText = "", NL.style.maxHeight = "100px";
+	el.style.height = "", NL.value = "", NL.innerText = "", Nl.innerText = 500, addClass(Nl, 'color-green'), removeClass(Nl, 'color-orange'), removeClass(Nl, 'color-red'), NL.style.maxHeight = "100px";
 });
 for(var j = 0, i = Ni.length; j < i; j++) addEvent(Ni[j], 'input', function(){
 	var self = this,
