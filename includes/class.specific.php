@@ -209,7 +209,7 @@ class Specific {
 	    } else if($type == 2){
 	        $user = $dba->query('SELECT * FROM user WHERE user_id = "'.$user_id.'"')->fetchArray();
 	    } else if($type == 3){
-	        $session_id = !empty($_SESSION['session_id']) ? $_SESSION['session_id'] : $_COOKIE['session_id'];
+	        $session_id = !empty($_SESSION['_LOGIN_TOKEN']) ? $_SESSION['_LOGIN_TOKEN'] : $_COOKIE['_LOGIN_TOKEN'];
 	        $user_id = $dba->query('SELECT user_id FROM session WHERE session_id = "'.$session_id.'"')->fetchArray();
 	        $user = $dba->query('SELECT * FROM user WHERE id = '.$user_id)->fetchArray();
 	    }
@@ -434,10 +434,10 @@ class Specific {
 
 	public static function TokenSession() {
 	    $token = md5(self::RandomKey(60, 70));
-	    if (!empty($_SESSION['session_id'])) {
-	        return $_SESSION['session_id'];
+	    if (!empty($_SESSION['_LOGIN_TOKEN'])) {
+	        return $_SESSION['_LOGIN_TOKEN'];
 	    }
-	    $_SESSION['session_id'] = $token;
+	    $_SESSION['_LOGIN_TOKEN'] = $token;
 	    return $token;
 	}
 
@@ -753,12 +753,12 @@ class Specific {
 
 	public static function Logged() {
 		global $dba;
-	    if (isset($_SESSION['session_id']) && !empty($_SESSION['session_id'])) {
-	        if ($dba->query('SELECT COUNT(*) FROM session WHERE session_id = "'.self::Filter($_SESSION['session_id']).'"')->fetchArray() > 0) {
+	    if (isset($_SESSION['_LOGIN_TOKEN']) && !empty($_SESSION['_LOGIN_TOKEN'])) {
+	        if ($dba->query('SELECT COUNT(*) FROM session WHERE session_id = "'.self::Filter($_SESSION['_LOGIN_TOKEN']).'"')->fetchArray() > 0) {
 	            return true;
 	        }
-	    } else if (isset($_COOKIE['session_id']) && !empty($_COOKIE['session_id'])) {
-	        if ($dba->query('SELECT COUNT(*) FROM session WHERE session_id = "'.self::Filter($_COOKIE['session_id']).'"')->fetchArray() > 0) {
+	    } else if (isset($_COOKIE['_LOGIN_TOKEN']) && !empty($_COOKIE['_LOGIN_TOKEN'])) {
+	        if ($dba->query('SELECT COUNT(*) FROM session WHERE session_id = "'.self::Filter($_COOKIE['_LOGIN_TOKEN']).'"')->fetchArray() > 0) {
 	            return true;
 	        }
 	    }

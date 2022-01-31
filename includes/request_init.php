@@ -14,9 +14,9 @@ if(empty($_GET['language'])){
 $TEMP['#language'] = $_SESSION['language'] = Specific::Language($language);
 $TEMP['#word'] = Specific::Words($TEMP['#language']);
 $TEMP['#token_session'] = Specific::TokenSession();
-if (isset($_SESSION['session_id'])) {
-    if (empty($_COOKIE['session_id'])) {
-        setcookie("session_id", $_SESSION['session_id'], time() + 315360000, "/");
+if (isset($_SESSION['_LOGIN_TOKEN'])) {
+    if (empty($_COOKIE['_LOGIN_TOKEN'])) {
+        setcookie("_LOGIN_TOKEN", $_SESSION['_LOGIN_TOKEN'], time() + 315360000, "/");
     }
 }
 if (empty($TEMP['#word'])) {

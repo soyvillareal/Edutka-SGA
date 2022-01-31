@@ -1,4 +1,5 @@
-<html lang="es" dir="ltr">
+<!DOCTYPE html>
+<html lang="{#language}" dir="ltr">
 <head>
   <meta charset="UTF-8" />
   <title>{$global_title}</title>
@@ -53,9 +54,6 @@
                 break;
               case 2:
                 load = '&one='+url[0]+'&two='+url[1];
-                break;
-              case 3:
-                load = '&one='+url[0]+'&two='+url[1]+'&three='+url[2];
                 break;
               default:
                 load = '&one=home';
@@ -567,7 +565,9 @@ addEvent(HA, "click", function(){
   getNotifications('new');
 }, 6000);
 <?php } ?>
-addEvent(D, "click", function(e){
+addEvent(window, 'popstate', function(){
+  location.reload();
+}, 3), addEvent(D, "click", function(e){
       var PS = e.target;
       if(PS.getAttribute('data-toggle')){
         var PP = PS.parentNode,

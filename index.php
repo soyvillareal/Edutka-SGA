@@ -6,16 +6,13 @@ if($TEMP['#loggedin'] === true){
     $page = 'home/content.php';
 }
 if (isset($_GET['one'])) {
-    if($_GET['one'] != 'admin' || ($_GET['one'] == 'admin' && !isset($_GET['two']))){
+    if(!empty($_GET['page'])){
         $page = $_GET['one'].'/'.$_GET['page'].'/content.php'; 
     } else {
-        if(!empty($_GET['three'])){
-            $page = $_GET['one'].'/'.$_GET['two'].'/'.$_GET['three'].'.php';
-        } else {
-            $page = $_GET['one'].'/'.$_GET['two'].'.php';
-        }
+        $page = $_GET['one'].'/content.php';
     }
 }
+
 $now_url = (!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] != 'on' ? 'http://' : 'https://') . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 $TEMP['#now_url']  = urlencode($now_url);
 $TEMP['#return_url'] =  Specific::Url();
@@ -24,8 +21,8 @@ if(!empty($_GET['return'])){
 }
 if($TEMP['#loggedin'] === true){
     if ($TEMP['#user']['status'] != 'active') {
-        if (isset($_COOKIE['session_id'])) {
-            setcookie('session_id', null, -1,'/');
+        if (isset($_COOKIE['_LOGIN_TOKEN'])) {
+            setcookie('_LOGIN_TOKEN', null, -1,'/');
         }
         session_destroy();
     }

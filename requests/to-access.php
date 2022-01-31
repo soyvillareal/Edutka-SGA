@@ -84,8 +84,8 @@ if($one == 'login'){
 		            $session_details = json_encode(Specific::BrowserDetails()['details']);
 		            $insert = $dba->query("INSERT INTO session (user_id, session_id, details, time) VALUES ({$to_access['id']},'$session_id','$session_details',".time().')')->insertId();
 
-		            $_SESSION['session_id'] = $session_id;
-		            setcookie("session_id", $session_id, time() + 315360000, "/");
+		            $_SESSION['_LOGIN_TOKEN'] = $session_id;
+		            setcookie("_LOGIN_TOKEN", $session_id, time() + 315360000, "/");
 		            $dba->query('UPDATE user SET ip = "'.Specific::GetClientIp().'" WHERE id = '.$to_access['id']);
 		            $deliver = array(
 		            	'status' => 200,
@@ -207,8 +207,8 @@ if($one == 'login'){
 			    $token = md5(rand(111111, 999999));
 				$session_id = sha1(Specific::RandomKey()).md5(time());
 			    if($dba->query('INSERT INTO session (user_id, session_id, time) VALUES ('.$user['id'].',"'.$session_id.'",'.time().')')->returnStatus()){
-			    	$_SESSION['session_id'] = $session_id;
-				    setcookie("session_id", $session_id, time() + 315360000, "/");
+			    	$_SESSION['_LOGIN_TOKEN'] = $session_id;
+				    setcookie("_LOGIN_TOKEN", $session_id, time() + 315360000, "/");
 				    $dba->query('UPDATE user SET ip = "'.Specific::GetClientIp().'", token = "'.$token.'" WHERE id = '.$user['id']);
 				    $deliver = array(
 					    'status' => 200,
@@ -487,8 +487,8 @@ if($one == 'login'){
 		                $session_id = sha1(Specific::RandomKey()) . md5(time());
 				        $session_details = json_encode(Specific::BrowserDetails()['details']);
 				        if($dba->query('INSERT INTO session (user_id, session_id, details, time) VALUES (?, ?, ?, ?)', $user_id, $session_id, $session_details, time())->insertId()){
-				        	$_SESSION['session_id'] = $session_id;
-			                setcookie("session_id", $session_id, time() + 315360000, "/");
+				        	$_SESSION['_LOGIN_TOKEN'] = $session_id;
+			                setcookie("_LOGIN_TOKEN", $session_id, time() + 315360000, "/");
 			                $deliver = array(
 								'status' => 200,
 								'url' => Specific::Url()
@@ -524,8 +524,8 @@ if($one == 'login'){
 				if ($dba->query('UPDATE user SET status = "active", token = "'.sha1(rand(111111,999999)).'" WHERE id = '.$user['id'])->returnStatus()) {
 					$session_id = sha1(Specific::RandomKey()).md5(time());
 				    if($dba->query('INSERT INTO session (user_id, session_id, time) VALUES ('.$user['id'].',"'.$session_id.'",'.time().')')->returnStatus()){
-				    	$_SESSION['session_id'] = $session_id;
-					    setcookie("session_id", $session_id, time() + 315360000, "/");
+				    	$_SESSION['_LOGIN_TOKEN'] = $session_id;
+					    setcookie("_LOGIN_TOKEN", $session_id, time() + 315360000, "/");
 					    $deliver = array(
 							'status' => 200,
 							'url' => Specific::Url()

@@ -11,11 +11,11 @@ if (!empty($_GET['token'])) {
 	$token = Specific::Filter($_GET['token']);
 }
 
-if (empty($token) || $token != $_SESSION['session_id']) {
+if (empty($token) || $token != $_SESSION['_LOGIN_TOKEN']) {
 	$deliver['error'] = $TEMP['#word']['invalid_request'];
 }
 
-if (!empty($_GET['request-name']) && !empty($token) && $token == $_SESSION['session_id']) {
+if (!empty($_GET['request-name']) && !empty($token) && $token == $_SESSION['_LOGIN_TOKEN']) {
 	$req = Specific::Filter($_GET['request-name']);
 	if (file_exists('./requests/'.$req.'.php')) {
 		require_once('./requests/'.$req.'.php');

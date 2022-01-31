@@ -209,8 +209,8 @@ if ($TEMP['#loggedin'] === true) {
                 if (($sessions['user_id'] == $TEMP['#user']['id']) || Specific::Admin()) {
                     if ($dba->query('DELETE FROM session WHERE id = '.$id)->returnStatus()) {
                         $deliver['status'] = 200;
-                        if ((!empty($_SESSION['session_id']) && $_SESSION['session_id'] == $sessions['session_id']) || (!empty($_COOKIE['session_id']) && $_COOKIE['session_id'] == $sessions['session_id'])) {
-                            setcookie('session_id', null, -1, '/');
+                        if ((!empty($_SESSION['_LOGIN_TOKEN']) && $_SESSION['_LOGIN_TOKEN'] == $sessions['session_id']) || (!empty($_COOKIE['_LOGIN_TOKEN']) && $_COOKIE['_LOGIN_TOKEN'] == $sessions['session_id'])) {
+                            setcookie('_LOGIN_TOKEN', null, -1, '/');
                             session_destroy();
                             $deliver['reload'] = true;
                         }
