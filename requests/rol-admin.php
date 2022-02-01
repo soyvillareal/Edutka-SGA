@@ -603,11 +603,11 @@ if ($TEMP['#loggedin'] === true && Specific::Admin() === true) {
                                         $dba->query('UPDATE period SET status = "disabled" WHERE status = "enabled"');
                                     }
                                     $courses = $dba->query('SELECT id FROM course')->fetchAll(false);
-                                    $code = Specific::RandomKey(5, 7);
-                                    if($dba->query('SELECT COUNT(*) FROM course WHERE code = "'.$code.'"')->fetchArray() > 0){
-                                        $code = Specific::RandomKey(5, 7);
-                                    }
                                     foreach ($courses as $course_id) {
+                                        $code = Specific::RandomKey(5, 7);
+                                        if($dba->query('SELECT COUNT(*) FROM course WHERE code = "'.$code.'"')->fetchArray() > 0){
+                                            $code = Specific::RandomKey(5, 7);
+                                        }
                                         $dba->query('UPDATE course SET code = "'.$code.'" WHERE id = '.$course_id);
                                     }
                                     if($dba->query('INSERT INTO period (name, start, final, status, `time`) VALUES ("'.$name.'", '.$start.', '.$final.', "'.$status.'",'.time().')')->returnStatus()){
