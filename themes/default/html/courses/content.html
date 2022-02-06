@@ -6,10 +6,12 @@
                 <label class="color-black">{$word->search}</label>
                 <div class="content-search position-relative margin-b20">
                     <div class="display-flex margin-auto border-radius-4">
-                        <input id="search-courses" class="background-grely padding-10 border-focus-blue border-all border-grey border-top-left-radius border-top-right-radius border-bottom-right-radius border-bottom-left-radius w-100 color-black" type="text" autocomplete="off">
-                        <div class="content-spinner-circle">
+                        <div class="position-relative w-100">
+                            <input id="search-courses" class="background-grely padding-10 border-focus-blue border-all border-grey border-top-left-radius border-top-right-radius border-bottom-right-radius border-bottom-left-radius w-100 color-black" type="text" autocomplete="off">
                             <div class="content-spinner-circle">
-                                <div class="spinner-circle"></div>
+                                <div class="content-spinner-circle">
+                                    <div class="spinner-circle"></div>
+                                </div>
                             </div>
                         </div>
                         <?php if($TEMP['#teacher'] === true && !empty($TEMP['#periods'])){ ?>
