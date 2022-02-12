@@ -226,8 +226,10 @@ if ($TEMP['#loggedin'] === true && (Specific::Admin() === true || Specific::Acad
             $screen = Specific::Filter($_POST['screen']);
             if($type == 'notes' && Specific::Teacher() == true){
                 $my_courses = $dba->query('SELECT course_id FROM teacher WHERE user_id = '.$TEMP['#user']['id'])->fetchAll(false);
-                $users = $dba->query('SELECT user_id FROM enrolled WHERE type = "course" AND course_id IN ('.implode(',', $my_courses).')')->fetchAll(false);
-                $users = $dba->query('SELECT * FROM user u WHERE id != '.$TEMP['#user']['id'].' AND role = "student" AND (names LIKE "%'.$keyword.'%" OR surnames LIKE "%'.$keyword.'%") AND id IN ('.implode(',', $users).') LIMIT 10')->fetchAll();
+                if(!empty($my_courses)){
+                    $users = $dba->query('SELECT user_id FROM enrolled WHERE type = "course" AND course_id IN ('.implode(',', $my_courses).')')->fetchAll(false);
+                    $users = $dba->query('SELECT * FROM user u WHERE id != '.$TEMP['#user']['id'].' AND role = "student" AND (names LIKE "%'.$keyword.'%" OR surnames LIKE "%'.$keyword.'%") AND id IN ('.implode(',', $users).') LIMIT 10')->fetchAll();
+                }
             } else if($type == 'teachers' && (Specific::Academic() == true || Specific::Admin() == true)){
                 $users = $dba->query('SELECT * FROM user WHERE id IN (SELECT user_id FROM teacher WHERE course_id IN ((SELECT course_id FROM enrolled))) AND role = "teacher" AND (names LIKE "%'.$keyword.'%" OR surnames LIKE "%'.$keyword.'%") LIMIT 10')->fetchAll();
             } else {

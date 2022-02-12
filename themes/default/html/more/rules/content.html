@@ -196,13 +196,10 @@ var GC = D.querySelectorAll('.edit_rule'),
     GB = D.querySelectorAll('.clear_file'),
     GI = D.querySelector('#alert-steps'),
     GA = D.querySelector('#alert-delete'),
-
     GQ = D.querySelector('#alert-rule'),
     GZ = D.querySelector('#upload-rule'),
-
     GP = D.querySelector('#alert-dfile'),
     GU = D.querySelector('#delete-frule'),
-
     GH = D.querySelector('#delete-rule'),
     GV = GI.querySelector('.content-modal-body'),
     GN = D.querySelector('#content-new-rules'),
@@ -313,6 +310,8 @@ addEvent(GU, 'click', function(){
     GI.style.display = "block", D.body.style.overflow = "hidden", scrollTo(0, GV);
 }), addEvent(D.querySelector('#close-alert'), 'click', function(){
     GI.style.display = "", D.body.style.overflow = "";
+}), addEvent(D.querySelector('#cancel-alert'), 'click', function(){
+    GA.style.display = "", D.body.style.overflow = "";
 }), addEvent(D.querySelector('#cancel-ralert'), 'click', function(){
     GQ.style.display = "", D.body.style.overflow = "";
 }), addEvent(D.querySelector('#cancel-dfalert'), 'click', function(){

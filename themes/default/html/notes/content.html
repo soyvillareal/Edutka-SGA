@@ -467,7 +467,7 @@ addEvent(NT, 'click', function(){
 		    removeClass(SQ, 'spinner-is-loading'), addClass(SD, 'border-left'), addClass(SD, 'border-right'), addClass(SD, 'border-bottom'), addClass(SD, 'border-grey'), addClass(SD, 'padding-10'), addClass(SD, 'border-bottom-left-radius'), addClass(SD, 'border-bottom-right-radius'), SD.innerHTML = e.html;
 		   	return false;
 	    }
-	}, "POST", "&typet=<?php echo($TEMP['#type'] == 'student') ? 'notes' : 'teachers';?>&screen={#url_screen}&keyword=" + SV);
+	}, "POST", "<?php echo($TEMP['#type'] == 'student') ? '&typet=notes&period_id={#period_id}' : '&typet=teachers';?>&screen={#url_screen}&keyword=" + SV);
 }), <?php } else{ ?>
 
 
@@ -521,14 +521,14 @@ for(var j = 0, i = NM.length; j < i; j++) doubleClick(NM[j], function(e){
 	var el = e.parentNode,
 		NL = el.querySelector('.qualification_note'),
 		Nl = el.querySelector('a[target="_blank"]');
-	removeClass(NL, 'hidden'), addClass(e, 'hidden'), addClass(Nl, 'hidden');
+	removeClass(NL, 'hidden'), addClass(e, 'hidden'), Nl && addClass(Nl, 'hidden');
 });
 for(var j = 0, i = NJ.length; j < i; j++) addEvent(NJ[j], 'click', function(){
 	var self = this.parentNode,
 		el = self.parentNode,
 		NL = el.querySelector('.upload_qualification'),
 		Nl = el.querySelector('a[target="_blank"]');
-	addClass(self, 'hidden'), removeClass(NL, 'hidden'), removeClass(Nl, 'hidden');
+	addClass(self, 'hidden'), removeClass(NL, 'hidden'), Nl && removeClass(Nl, 'hidden');
 });
 <?php if($TEMP['#admin'] == true || $TEMP['#academic'] == true || $TEMP['#teacher'] == true) { ?>
 for(var j = 0, i = Ni.length; j < i; j++) doubleClick(Ni[j], function(e){
