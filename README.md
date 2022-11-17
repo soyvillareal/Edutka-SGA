@@ -17,9 +17,9 @@ Este es un proyecto de grado realizado para la Coporación Universitaria Autóno
 ### Documentación
 Si desea descargar el código y probar su funcionamiento, puede hacerlo. Su instalación puede encontrarla en el <a href="https://edutka.soyvillareal.com/documents/manual-tecnico" target="_blank">manual tecnico</a>.
 
-- <a href="https://edutka.soyvillareal.com/documents/manual-tecnico" target="_blank">Manual técnico</a>
-- <a href="https://edutka.soyvillareal.com/documents/manual-de-usuario" target="_blank">Manual de usuario</a>
-- <a href="https://edutka.soyvillareal.com/documents/documento-principal" target="_blank">Documento principal</a>
+- <a href="https://drive.google.com/file/d/1XFAKt933ngONpmt_6dA6mFhD5klYu-ad/view?usp=share_link" target="_blank">Manual técnico</a>
+- <a href="https://drive.google.com/file/d/1VtMAe-YA2XNUnKY96GbKc5fPugJoNIFJ/view?usp=share_link" target="_blank">Manual de usuario</a>
+- <a href="https://drive.google.com/file/d/1xL5GOEg7vshgz7CZKwtGXPm7pseaVtlJ/view?usp=share_link" target="_blank">Documento principal</a>
 
 
 # Version 1.0
