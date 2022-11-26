@@ -58,7 +58,7 @@ if($one == 'login'){
 					$TEMP['code'] = $code;
 					$TEMP['name'] = $name;
 	                $send_email_data = array(
-	                   	'from_email' => $TEMP['#settings']['smtp_username'],
+	                   	'from_email' => $TEMP['#settings']['from_email'],
 	                    'from_name' => $TEMP['#settings']['title'],
 	                    'to_email' => $to_access['email'],
 	                    'to_name' => $name,
@@ -119,7 +119,7 @@ if($one == 'login'){
 		$TEMP['code'] = $code;
 		$TEMP['name'] = $user['names'];
 	    $send_email_data = array(
-	        'from_email' => $TEMP['#settings']['smtp_username'],
+	        'from_email' => $TEMP['#settings']['from_email'],
 	        'from_name' => $TEMP['#settings']['title'],
 	        'to_email' => $user['email'],
 	        'to_name' => $user['names'],
@@ -165,7 +165,7 @@ if($one == 'login'){
 			$TEMP['type'] = 'verify';
 
 			$send = Specific::SendEmail(array(
-				'from_email' => $TEMP['#settings']['smtp_username'],
+				'from_email' => $TEMP['#settings']['from_email'],
 	            'from_name' => $TEMP['#settings']['title'],
 				'to_email' => $user['email'],
 				'to_name' => $user['names'],
@@ -255,7 +255,7 @@ if($one == 'login'){
 	           	$TEMP['token'] = $token;
 				$TEMP['name'] = $user['names'];
 	           	$send_email_data = array(
-	           		'from_email' => $TEMP['#settings']['smtp_username'],
+	           		'from_email' => $TEMP['#settings']['from_email'],
 		            'from_name' => $TEMP['#settings']['title'],
 	           		'to_email' => $email,
 	           		'to_name' => $user['names'],
@@ -466,7 +466,7 @@ if($one == 'login'){
 						$TEMP['type'] = 'verify';
 
 		                $send = Specific::SendEmail(array(
-		                    'from_email' => $TEMP['#settings']['smtp_username'],
+		                    'from_email' => $TEMP['#settings']['from_email'],
 			                'from_name' => $TEMP['#settings']['title'],
 		                    'to_email' => $email,
 		                    'to_name' => $names,
@@ -594,7 +594,7 @@ if($one == 'login'){
 	        $TEMP['type'] = 'change';
 
 		    $send_email_data = array(
-		        'from_email' => $TEMP['#settings']['smtp_username'],
+		        'from_email' => $TEMP['#settings']['from_email'],
 		        'from_name' => $TEMP['#settings']['title'],
 		        'to_email' => $user['change_email'],
 		        'to_name' => $user['names'],

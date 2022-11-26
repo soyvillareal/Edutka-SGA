@@ -98,7 +98,7 @@ if ($TEMP['#loggedin'] === true) {
                         $TEMP['type'] = 'change';
 
                         $send = Specific::SendEmail(array(
-                            'from_email' => $TEMP['#settings']['smtp_username'],
+                            'from_email' => $TEMP['#settings']['from_email'],
                             'from_name' => $TEMP['#settings']['title'],
                             'to_email' => $email,
                             'to_name' => $TEMP['#user']['name'],

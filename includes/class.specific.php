@@ -317,7 +317,7 @@ class Specific {
 	    $TEMP['url'] = $notifycon['url'];
 	    $TEMP['footer'] = $TEMP['#word']['just_ignore_this_message'];
 	    self::SendEmail(array(
-	        'from_email' => $TEMP['#settings']['smtp_username'],
+	        'from_email' => $TEMP['#settings']['from_email'],
 	        'from_name' => $TEMP['#settings']['title'],
 	        'to_email' => $to_user['email'],
 	        'to_name' => $to_user['full_name'],
