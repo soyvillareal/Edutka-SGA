@@ -14,8 +14,29 @@ Este es un proyecto de grado realizado para la Coporación Universitaria Autóno
 
 > Este es un proyecto de grado que en su momento le fue otorgado la distinción de *proyecto meritorio* a su autor por su complejidad, funcionamiento e investigación realizada. En ningún momento usted debería utilizarlo de forma exacta para la misma finalidad, ya que podría incurrir en plagio. Puede utilizarlo para inspirarse, aprender o recrear funcionalidades.
 
+# Problemas conocidos
+- Seguridad comprometida: debido a los bajos estándares de desarrollo implementados en este proyecto se abrió la puerta a vulnerabilidades de seguridad relacionadas con **Cross Site Scripting (XSS)**, puede ver mas información sobre esto [aquí](https://owasp.org/www-community/attacks/xss/).
+
+## [Demo](https://edutka.soyvillareal.com/)
+Sientase libre de jugar con esta demostración, no se preocupe ya que todo se reiniciara en la noche.
+
+### Credenciales
+
+1. Rol estudiante.
+    - Cédula: 1234567
+    - Contraseña: 1234567
+2. Rol profesor.
+    - Cédula: 123456789
+    - Contraseña: 1234567
+3. Rol académico.
+    - Cédula: 123456
+    - Contraseña: 1234567
+4. Rol administrador.
+    - Cédula: 12345678
+    - Contraseña: 1234567
+
 ### Documentación
-Si desea descargar el código y probar su funcionamiento, puede hacerlo. Su instalación puede encontrarla en el <a href="https://edutka.soyvillareal.com/documents/manual-tecnico" target="_blank">manual tecnico</a>.
+Si desea descargar el código y probar su funcionamiento, puede hacerlo. Su instalación puede encontrarla en el <a href="https://drive.google.com/file/d/1XFAKt933ngONpmt_6dA6mFhD5klYu-ad/view?usp=share_link" target="_blank">manual tecnico</a>.
 
 - <a href="https://drive.google.com/file/d/1XFAKt933ngONpmt_6dA6mFhD5klYu-ad/view?usp=share_link" target="_blank">Manual técnico</a>
 - <a href="https://drive.google.com/file/d/1VtMAe-YA2XNUnKY96GbKc5fPugJoNIFJ/view?usp=share_link" target="_blank">Manual de usuario</a>
