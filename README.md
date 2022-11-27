@@ -48,5 +48,5 @@ Este código no será mantenido por el autor, por lo que no puede esperar actual
 
 <div align="center">
     <img src="https://estudiantes.aunar.edu.co/imagenes/logo.png">
-    <p>Proyecto de tesis de grado - Corporacion Universitaria Autónoma de Nariño</p>
+    <p>Proyecto de tesis de grado - Corporación Universitaria Autónoma de Nariño</p>
 </div>
