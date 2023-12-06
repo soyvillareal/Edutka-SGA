@@ -17,9 +17,6 @@ Este es un proyecto de grado realizado para la Coporación Universitaria Autóno
 # Problemas conocidos
 - Seguridad comprometida: debido a los bajos estándares de desarrollo implementados en este proyecto se abrió la puerta a vulnerabilidades de seguridad relacionadas con **Cross Site Scripting (XSS)**, puede ver mas información sobre esto [aquí](https://owasp.org/www-community/attacks/xss/).
 
-## [Demo](https://edutka.soyvillareal.com/)
-Sientase libre de jugar con esta demostración, no se preocupe ya que todo se reiniciara en la noche.
-
 ### Credenciales
 
 1. Rol estudiante.
